@@ -2,6 +2,7 @@ program SDL_Fonts;
 
 uses
 	AnimationSys,
+	CollisionSys,
 	memgraph,
 	SDL2,
 	SDL2_mixer,
@@ -14,7 +15,6 @@ var whiteCol,b_color,bf_color,f_color,navy_color,black_color,red_color: TSDL_Col
 // Bouttons
 var button_jouer: TButton;
 	button_lead : TButton;
-	button_bg : TButton;
 	button_q : TButton;
 
 	button_souligne : TButton;
@@ -40,11 +40,15 @@ var	text1 : TText;
 	text_s5: TText;
 	text_n5: TText;
 
+//Image
+	var menu_bg : TImage;
+
 //GameObjects
 var
   JoueurX, JoueurY: Integer;
 
-var Joueur : TImage;
+var Joueur : TObjet;
+	Dummy : TObjet;
 
 //Gestion des Events
 	sdlEvent: PSDL_Event;
@@ -60,7 +64,6 @@ var Joueur : TImage;
 
 //Variables de Debug
 	Hp_Debug : Integer;
-	joueurAnim : TAnimation;
 
 procedure annihiler(); //METTRE A JOUR APRES CHAQUE AJOUT D'OBJET
 begin
@@ -77,8 +80,8 @@ begin
   SDL_DestroyTexture(button_lead.labelTexture);
   
     //Anihilation Objet [button_font]
-  SDL_FreeSurface(button_bg.labelSurface);
-  SDL_DestroyTexture(button_bg.labelTexture);
+  SDL_FreeSurface(menu_bg.labelSurface);
+  SDL_DestroyTexture(menu_bg.labelTexture);
   
     //Anihilation Objet [button_font]
   SDL_FreeSurface(button_q.labelSurface);
@@ -99,9 +102,12 @@ procedure ActualiserJeu;
 	begin
 		SDL_RenderClear(sdlRenderer);
 
-		RenderRawImage(Joueur);
-		UpdateAnimation(joueurAnim, Joueur);
-    	RenderAnimation(joueurAnim, Joueur, sdlRenderer);
+		RenderRawImage(Dummy.image);
+
+		RenderRawImage(Joueur.image);
+		UpdateAnimation(Joueur.anim, Joueur.image);
+    	RenderAnimation(Joueur.anim, Joueur.image, sdlRenderer);
+		//UI de la Vie (provisoire)
 		DrawRect(black_color,255, 10, 20, 200, 30);
 		DrawRect(red_color,255, 15, 25, Round(190* Hp_Debug/100), 20 );
 
@@ -140,7 +146,7 @@ procedure lead;
 		button_q.estVisible := false;
 		button_jouer.estVisible := false;
 		
-		RenderButton(button_bg);
+		RenderRawImage(menu_bg);
 		RenderRawImage(vague);
 		RenderText(text1);
 		RenderText(titre_lead);
@@ -173,7 +179,7 @@ procedure direction_menu;
 		button_q.estVisible := true;
 		button_jouer.estVisible := true;
 		
-		RenderButton(button_bg);
+		RenderButton(menu_bg);
 		RenderRawImage(vague);
 		RenderButton(button_jouer);
 		RenderButton(button_lead); 
@@ -228,9 +234,15 @@ begin
 	SceneActive := 'Menu';
 	sdlKeyboardState := SDL_GetKeyboardState(nil);
 
-  //
+  //Joueur
+  Joueur.IsTrigger := False;
+
   JoueurX := windowWidth div 2;
   JoueurY := windowHeight div 2;
+
+  //Dummy
+  Dummy.IsTrigger := False;
+
 
   Hp_Debug := 100;
   
@@ -251,7 +263,7 @@ begin
     //Boutons
 	//
 
-    CreateButton(button_bg,0 , 0,windowWidth ,windowHeight , ' ',f_color, bf_color,dayDream30,btnProc); //BG a refaire avec un drawRect
+    
 	//Menu Principal
 	CreateButton(button_jouer, windowWidth div 2-150, 150, 350, 100, 'Jouer', b_color, bf_color,dayDream30,Pjouer);
 	CreateButton(button_lead, windowWidth  div 2-150-25, 275, 400, 100, 'Leaderboard',b_color, bf_color,dayDream30,leaderboard);
@@ -264,7 +276,7 @@ begin
 	//
     //Images
 	//
-
+	CreateButton(menu_bg,0 , 0,windowWidth ,windowHeight ,'Sprites\Menu\fond1.bmp');
 	CreateRawImage(vague, -10, 0, windowWidth+20, windowHeight, 'Sprites\Menu\vague.bmp');
 	CreateInteractableImage(engre, 200, 200, 100, 100, 'Sprites\Menu\eng.bmp',btnProc);
 
@@ -287,7 +299,9 @@ begin
 	CreateButton(button_retour_menu, 850, 625, 200, 75, 'Menu', b_color, bf_color,dayDream30,retour_menu);
 
     // GameObjects
-    CreateRawImage(Joueur, windowWidth div 2, windowHeight div 2, 150, 150, 'Sprites\Game\Joueur\Joueur_idle_1.bmp');
+    CreateRawImage(Joueur.image, windowWidth div 2, windowHeight div 2, 150, 150, 'Sprites\Game\Joueur\Joueur_idle_1.bmp');
+	CreateRawImage(Dummy.image, windowWidth - windowWidth div 5, windowHeight div 2, 100, 500, 'Sprites\Game\dummy.bmp');
+	
 	
 	
 
@@ -300,7 +314,7 @@ begin
 //Pas de Premier Render, on appelle juste direction_menu
 
 direction_menu;
-InitAnimation(joueurAnim, 'Joueur', 'idle', 6, True);
+InitAnimation(Joueur.anim, 'Joueur', 'idle', 6, True);
 {
 ==================================================================================================================================
 * EVENTS
@@ -321,33 +335,35 @@ InitAnimation(joueurAnim, 'Joueur', 'idle', 6, True);
   	if sdlKeyboardState[SDL_SCANCODE_W] = 1 then
 	begin
       JoueurY := JoueurY - 1;
-	  if joueurAnim.Etat <> 'run' then InitAnimation(joueurAnim,'Joueur','run',10,True);
+	  if Joueur.anim.Etat <> 'run' then InitAnimation(Joueur.anim,'Joueur','run',10,True);
 	end;
 	
     if sdlKeyboardState[SDL_SCANCODE_A] = 1 then
 	begin
 	  	JoueurX := JoueurX - 1;
-	  	if joueurAnim.Etat <> 'run' then InitAnimation(joueurAnim,'Joueur','run',10,True);
+	  	if Joueur.anim.Etat <> 'run' then InitAnimation(Joueur.anim,'Joueur','run',10,True);
 	end;
     
     if sdlKeyboardState[SDL_SCANCODE_S] = 1 then
       	begin
 	  	JoueurY := JoueurY + 1;
-	  	if joueurAnim.Etat <> 'run' then InitAnimation(joueurAnim,'Joueur','run',10,True);
+	  	if Joueur.anim.Etat <> 'run' then InitAnimation(Joueur.anim,'Joueur','run',10,True);
 	end;
 	
     if sdlKeyboardState[SDL_SCANCODE_D] = 1 then
     	begin
 	  	JoueurX := JoueurX + 1;
-	  	if joueurAnim.Etat <> 'run' then InitAnimation(joueurAnim,'Joueur','run',10,True);
+	  	if Joueur.anim.Etat <> 'run' then InitAnimation(Joueur.anim,'Joueur','run',10,True);
 	end;
 
-	if ((joueurAnim.Etat <> 'idle') and not((sdlKeyboardState[SDL_SCANCODE_D] = 1) or (sdlKeyboardState[SDL_SCANCODE_S] = 1) or (sdlKeyboardState[SDL_SCANCODE_W] = 1) or (sdlKeyboardState[SDL_SCANCODE_A] = 1))) 
-		then InitAnimation(joueurAnim,'Joueur','idle',6,True);
+	if ((Joueur.anim.Etat <> 'idle') and not((sdlKeyboardState[SDL_SCANCODE_D] = 1) or (sdlKeyboardState[SDL_SCANCODE_S] = 1) or (sdlKeyboardState[SDL_SCANCODE_W] = 1) or (sdlKeyboardState[SDL_SCANCODE_A] = 1))) 
+		then InitAnimation(Joueur.anim,'Joueur','idle',6,True);
 	
 
-	Joueur.rect.x := JoueurX;
-  	Joueur.rect.y := JoueurY;
+	Joueur.image.rect.x := JoueurX;
+  	Joueur.image.rect.y := JoueurY;
+
+	if CheckCollision(Joueur, Dummy,0,0) then Block(Joueur,Dummy);
 	ActualiserJeu;
   end;
 
