@@ -56,7 +56,8 @@ var
   windowWidth, windowHeight: Integer;
   
 {Fonctions & Procedures}
-procedure CreateButton(var button: TButton; x, y, w, h: Integer; labelText: PAnsiChar; bgColor, textColor: TSDL_Color; font:PTTF_font;onClick: ButtonProcedure); 
+procedure CreateButton(var button: TButton; x, y, w, h: Integer; labelText: PAnsiChar; bgColor, textColor: TSDL_Color; font:PTTF_font;onClick: ButtonProcedure); overload;
+
 procedure RenderButton(var button: TButton);
 procedure HandleButtonClick(var button: TButton; x, y: Integer);
 
@@ -118,7 +119,7 @@ procedure RenderButton(var button: TButton);
 var textRect: TSDL_Rect;
 begin
   // Remplir le fond du bouton à la couleur choisie
-  SDL_SetRenderDrawColor(sdlRenderer, button.bgColor.r, button.bgColor.g, button.bgColor.b, 255);
+  SDL_SetRenderDrawColor(sdlRenderer, button.bgColor.r, button.bgColor.g, button.bgColor.b, 20);
   SDL_RenderFillRect(sdlRenderer, @button.rect);
 
   // Calculs de la position du texte en fonction de la taille du bouton (Texte Centré)
@@ -299,13 +300,13 @@ end;
 
 {Initialisation de la Fenêtre dans le programme principal}
 BEGIN
-  dayDreamFontDirectory := 'Fonts\Daydream.ttf';
+  dayDreamFontDirectory := 'Fonts\pixeljosh6.ttf';
 
   // Initialization of video subsystem
   if SDL_Init(SDL_INIT_VIDEO) < 0 then HALT;
 
   // Creation de la Fenetre
-  sdlWindow1 := SDL_CreateWindow('Get Ins''out !', SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1080, 720, SDL_WINDOW_SHOWN);
+  sdlWindow1 := SDL_CreateWindow('Les Cartes du Destin 🃑', SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1080, 720, SDL_WINDOW_SHOWN);
   if sdlWindow1 = nil then HALT;
 
   // Creation du Renderer

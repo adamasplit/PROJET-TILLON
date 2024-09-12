@@ -24,7 +24,6 @@ var button_jouer: TButton;
 
 	engre : TIntImage;
     im1: TIntImage;
-	vague : TImage;
 
 // Textes
 var	text1 : TText;
@@ -80,8 +79,8 @@ begin
   SDL_DestroyTexture(button_lead.labelTexture);
   
     //Anihilation Objet [button_font]
-  SDL_FreeSurface(menu_bg.labelSurface);
-  SDL_DestroyTexture(menu_bg.labelTexture);
+  SDL_FreeSurface(menu_bg.imgSurface);
+  SDL_DestroyTexture(menu_bg.imgTexture);
   
     //Anihilation Objet [button_font]
   SDL_FreeSurface(button_q.labelSurface);
@@ -147,7 +146,7 @@ procedure lead;
 		button_jouer.estVisible := false;
 		
 		RenderRawImage(menu_bg);
-		RenderRawImage(vague);
+		//RenderRawImage(vague);
 		RenderText(text1);
 		RenderText(titre_lead);
 		RenderButton(button_souligne);
@@ -179,8 +178,8 @@ procedure direction_menu;
 		button_q.estVisible := true;
 		button_jouer.estVisible := true;
 		
-		RenderButton(menu_bg);
-		RenderRawImage(vague);
+		RenderRawImage(menu_bg);
+		//RenderRawImage(vague);
 		RenderButton(button_jouer);
 		RenderButton(button_lead); 
 		RenderButton(button_q); 
@@ -265,9 +264,9 @@ begin
 
     
 	//Menu Principal
-	CreateButton(button_jouer, windowWidth div 2-150, 150, 350, 100, 'Jouer', b_color, bf_color,dayDream30,Pjouer);
-	CreateButton(button_lead, windowWidth  div 2-150-25, 275, 400, 100, 'Leaderboard',b_color, bf_color,dayDream30,leaderboard);
-	CreateButton(button_q, windowWidth div 2-150, 400, 350, 100, 'Ragequit',b_color, bf_color,dayDream30,quitter);
+	CreateButton(button_jouer, windowWidth div 2-150, 150, 350, 100, 'Jouer', b_color, black_color,dayDream30,Pjouer);
+	CreateButton(button_lead, windowWidth  div 2-150-25, 275, 400, 100, 'Leaderboard',b_color, black_color,dayDream30,leaderboard);
+	CreateButton(button_q, windowWidth div 2-150, 400, 350, 100, 'Ragequit',b_color, black_color,dayDream30,quitter);
 	CreateButton(button_souligne, windowWidth div 2-215, 150, 475, 10, ' ', black_color, black_color,dayDream30,btnProc); // A refaire avec un DrawRect
 	//Menu en Jeu
 	CreateButton(button_deck, 210, 320, 240, 50,'Deck',b_color, bf_color,dayDream30,btnProc);
@@ -276,15 +275,15 @@ begin
 	//
     //Images
 	//
-	CreateButton(menu_bg,0 , 0,windowWidth ,windowHeight ,'Sprites\Menu\fond1.bmp');
-	CreateRawImage(vague, -10, 0, windowWidth+20, windowHeight, 'Sprites\Menu\vague.bmp');
+	CreateRawImage(menu_bg,0 , 0,windowWidth ,windowHeight ,'Sprites\Menu\fond1.bmp');
+	//CreateRawImage(vague, -10, 0, windowWidth+20, windowHeight, 'Sprites\Menu\vague.bmp');
 	CreateInteractableImage(engre, 200, 200, 100, 100, 'Sprites\Menu\eng.bmp',btnProc);
 
 	//
     //Textes
 	//
 
-	CreateText(text1, windowWidth div 2-150, 20, 300, 250, 'Get INS''OUT !',dayDream30, whiteCol);
+	CreateText(text1, windowWidth div 2-200, 20, 300, 250, 'Les Cartes du Destin ',dayDream30, whiteCol);
 	CreateText(titre_lead, windowWidth div 2-210, 90, 300, 250, 'Leaderboard',dayDream40, navy_color);
 	CreateText(text_score_seize, 40, 200, 150, 125, '1> Score  :',dayDream20, bf_color);
 	CreateText(text_nom_seize, 40, 225, 250, 125, 'Nom partie :',dayDream20, bf_color);
