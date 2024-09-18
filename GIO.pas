@@ -9,6 +9,7 @@ uses
 	SDL2_ttf,
 	SysUtils;
 
+var i:Integer;
 //Couleurs
 var whiteCol,b_color,bf_color,f_color,navy_color,black_color,red_color: TSDL_Color;
 
@@ -23,7 +24,6 @@ var button_jouer: TButton;
 	button_bestiaire: TButton;
 
 	engre : TIntImage;
-    im1: TIntImage;
 
 // Textes
 var	text1 : TText;
@@ -43,11 +43,10 @@ var	text1 : TText;
 	var menu_bg : TImage;
 
 //GameObjects
-var
-  JoueurX, JoueurY: Integer;
 
 var Joueur : TObjet;
 	Dummy : TObjet;
+	LObjets: Array of TObjet;
 
 //Gestion des Events
 	sdlEvent: PSDL_Event;
@@ -100,15 +99,23 @@ end;
 procedure ActualiserJeu;
 	begin
 		SDL_RenderClear(sdlRenderer);
-
-		RenderRawImage(Dummy.image);
-
-		RenderRawImage(Joueur.image);
-		UpdateAnimation(Joueur.anim, Joueur.image);
-    	RenderAnimation(Joueur.anim, Joueur.image, sdlRenderer);
+		
+		UpdateCollisions(LObjets);
+		for i:=0 to High(LObjets) do 
+			begin
+				RenderRawImage(LObjets[i].image);
+				if LObjets[i].anim.estActif then 
+					begin
+					RenderRawImage(LObjets[i].image);
+					UpdateAnimation(LObjets[i].anim, LObjets[i].image);
+    				
+					end
+			end;
 		//UI de la Vie (provisoire)
 		DrawRect(black_color,255, 10, 20, 200, 30);
 		DrawRect(red_color,255, 15, 25, Round(190* Hp_Debug/100), 20 );
+
+		
 
         //Render
 		SDL_RenderPresent(sdlRenderer);
@@ -129,6 +136,7 @@ procedure jouer;
 		
 		button_deck.estVisible := False;
 		button_bestiaire.estVisible := False;
+		
 
         //Objets de Scene
 		ActualiserJeu;
@@ -233,14 +241,37 @@ begin
 	SceneActive := 'Menu';
 	sdlKeyboardState := SDL_GetKeyboardState(nil);
 
-  //Joueur
-  Joueur.IsTrigger := False;
+  // Initialisation du joueur
+  joueur.col.isTrigger := False;
+  joueur.col.estActif := True;
+  joueur.col.dimensions.w := 100;
+  joueur.col.dimensions.h := 100;
+  joueur.col.offset.x := 25;
+  joueur.col.offset.y := 10;
+  joueur.col.nom := 'Joueur';
+  Joueur.anim.estActif := True;
 
-  JoueurX := windowWidth div 2;
-  JoueurY := windowHeight div 2;
+  // Initialisation du Dummy
+  Dummy.col.isTrigger := False;
+  Dummy.col.estActif := True;
+  Dummy.col.dimensions.w := 100;
+  Dummy.col.dimensions.h := 300;
+  Dummy.col.offset.x := 0;
+  Dummy.col.offset.y := 0;
+  Dummy.col.nom := 'Dummy';
+  Dummy.anim.estActif := False;
 
-  //Dummy
-  Dummy.IsTrigger := False;
+
+  
+
+  //Initialisation de la liste d'objets
+  setLength(LObjets,2);
+  LObjets[0] := Joueur;
+  LObjets[1] := Dummy;
+
+  LObjets[0].image.rect.x := windowWidth div 2;
+  LObjets[0].image.rect.y := windowHeight div 2;
+
 
 
   Hp_Debug := 100;
@@ -298,8 +329,8 @@ begin
 	CreateButton(button_retour_menu, 850, 625, 200, 75, 'Menu', b_color, bf_color,dayDream30,retour_menu);
 
     // GameObjects
-    CreateRawImage(Joueur.image, windowWidth div 2, windowHeight div 2, 150, 150, 'Sprites\Game\Joueur\Joueur_idle_1.bmp');
-	CreateRawImage(Dummy.image, windowWidth - windowWidth div 5, windowHeight div 2, 100, 500, 'Sprites\Game\dummy.bmp');
+    CreateRawImage(LObjets[0].image, windowWidth div 2, windowHeight div 2, 150, 150, 'Sprites\Game\Joueur\Joueur_idle_1.bmp');
+	CreateRawImage(LObjets[1].image, windowWidth - windowWidth div 5, windowHeight div 2, 100, 500, 'Sprites\Menu\fond1.bmp');
 	
 	
 	
@@ -313,7 +344,7 @@ begin
 //Pas de Premier Render, on appelle juste direction_menu
 
 direction_menu;
-InitAnimation(Joueur.anim, 'Joueur', 'idle', 6, True);
+InitAnimation(LObjets[0].anim, 'Joueur', 'idle', 6, True);
 {
 ==================================================================================================================================
 * EVENTS
@@ -333,36 +364,30 @@ InitAnimation(Joueur.anim, 'Joueur', 'idle', 6, True);
 	
   	if sdlKeyboardState[SDL_SCANCODE_W] = 1 then
 	begin
-      JoueurY := JoueurY - 1;
-	  if Joueur.anim.Etat <> 'run' then InitAnimation(Joueur.anim,'Joueur','run',10,True);
+      LObjets[0].image.rect.y := LObjets[0].image.rect.y - 1;
+	  if LObjets[0].anim.Etat <> 'run' then InitAnimation(LObjets[0].anim,'Joueur','run',10,True);
 	end;
 	
     if sdlKeyboardState[SDL_SCANCODE_A] = 1 then
 	begin
-	  	JoueurX := JoueurX - 1;
-	  	if Joueur.anim.Etat <> 'run' then InitAnimation(Joueur.anim,'Joueur','run',10,True);
+	  	LObjets[0].image.rect.x := LObjets[0].image.rect.x - 1;
+	  	if LObjets[0].anim.Etat <> 'run' then InitAnimation(LObjets[0].anim,'Joueur','run',10,True);
 	end;
     
     if sdlKeyboardState[SDL_SCANCODE_S] = 1 then
       	begin
-	  	JoueurY := JoueurY + 1;
-	  	if Joueur.anim.Etat <> 'run' then InitAnimation(Joueur.anim,'Joueur','run',10,True);
+	  	LObjets[0].image.rect.y := LObjets[0].image.rect.y + 1;
+	  	if LObjets[0].anim.Etat <> 'run' then InitAnimation(LObjets[0].anim,'Joueur','run',10,True);
 	end;
 	
     if sdlKeyboardState[SDL_SCANCODE_D] = 1 then
     	begin
-	  	JoueurX := JoueurX + 1;
-	  	if Joueur.anim.Etat <> 'run' then InitAnimation(Joueur.anim,'Joueur','run',10,True);
+	  	LObjets[0].image.rect.x := LObjets[0].image.rect.x + 1;
+	  	if LObjets[0].anim.Etat <> 'run' then InitAnimation(LObjets[0].anim,'Joueur','run',10,True);
 	end;
 
-	if ((Joueur.anim.Etat <> 'idle') and not((sdlKeyboardState[SDL_SCANCODE_D] = 1) or (sdlKeyboardState[SDL_SCANCODE_S] = 1) or (sdlKeyboardState[SDL_SCANCODE_W] = 1) or (sdlKeyboardState[SDL_SCANCODE_A] = 1))) 
-		then InitAnimation(Joueur.anim,'Joueur','idle',6,True);
-	
-
-	Joueur.image.rect.x := JoueurX;
-  	Joueur.image.rect.y := JoueurY;
-
-	if CheckCollision(Joueur, Dummy,0,0) then Block(Joueur,Dummy);
+	if ((LObjets[0].anim.Etat <> 'idle') and not((sdlKeyboardState[SDL_SCANCODE_D] = 1) or (sdlKeyboardState[SDL_SCANCODE_S] = 1) or (sdlKeyboardState[SDL_SCANCODE_W] = 1) or (sdlKeyboardState[SDL_SCANCODE_A] = 1))) 
+		then InitAnimation(LObjets[0].anim,'Joueur','idle',6,True);
 	ActualiserJeu;
   end;
 
