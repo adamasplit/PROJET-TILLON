@@ -67,7 +67,7 @@ procedure RenderText(var text: TText);
 procedure DrawRect(bgColor : TSDL_Color; aplha,x,y,w,h :Integer);
 
 procedure CreateRawImage(var image : TImage; x, y, w, h: Integer; directory : PAnsiChar);
-procedure RenderRawImage(var image: Timage);
+procedure RenderRawImage(var image: Timage; flip: Boolean);
 
 procedure CreateInteractableImage(var image : TIntImage; x, y, w, h: Integer; directory : PAnsiChar; onClick: ButtonProcedure);
 procedure RenderIntImage(var image : TIntImage);
@@ -222,7 +222,7 @@ begin
 end;
 
 
-procedure RenderRawImage(var image: Timage);
+procedure RenderRawImage(var image: Timage; flip : Boolean);
 var imgRect: TSDL_Rect;
 begin
 
@@ -233,7 +233,10 @@ begin
   imgRect.y := image.rect.y;
 
   // Render de la texture de l'image
-  SDL_RenderCopy(sdlRenderer, image.imgTexture, nil, @imgRect);
+  if (flip) then
+    SDL_RenderCopyEx(sdlRenderer, image.imgTexture, nil, @imgRect,0, nil, SDL_FLIP_HORIZONTAL)
+    else
+    SDL_RenderCopy(sdlRenderer, image.imgTexture, nil, @imgRect)
 end;
 
 { 

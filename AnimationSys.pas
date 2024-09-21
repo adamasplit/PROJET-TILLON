@@ -27,6 +27,8 @@ procedure InitAnimation(var anim: TAnimation; objectName, etat: PChar; totalFram
 // Mettre à jour l'animation (changer la frame si nécessaire)
 procedure UpdateAnimation(var anim: TAnimation; var image: TImage);
 
+// Animation de Fondu au fromage
+
 
 implementation
 
@@ -76,7 +78,7 @@ begin
     image.directory := GetFramePath(anim);
 
     // Mettre à jour l'image avec la nouvelle frame
-    WriteLn('Animation : Changing directory to : ',image.directory);
+    //WriteLn('Animation : Changing directory to : ',image.directory);
     CreateRawImage(image, image.rect.x, image.rect.y, image.rect.w, image.rect.h, image.directory);
 
     // Mettre à jour le temps de la dernière mise à jour

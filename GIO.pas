@@ -62,6 +62,7 @@ var Joueur : TObjet;
 
 //Variables de Debug
 	Hp_Debug : Integer;
+	vit : Integer;
 
 procedure annihiler(); //METTRE A JOUR APRES CHAQUE AJOUT D'OBJET
 begin
@@ -101,12 +102,12 @@ procedure ActualiserJeu;
 		SDL_RenderClear(sdlRenderer);
 		
 		UpdateCollisions(LObjets);
-		for i:=0 to High(LObjets) do 
+		for i:=1 to High(LObjets) do 
 			begin
-				RenderRawImage(LObjets[i].image);
+				RenderRawImage(LObjets[i].image, False);
 				if LObjets[i].anim.estActif then 
 					begin
-					RenderRawImage(LObjets[i].image);
+					RenderRawImage(LObjets[i].image, False);
 					UpdateAnimation(LObjets[i].anim, LObjets[i].image);
     				
 					end
@@ -153,7 +154,7 @@ procedure lead;
 		button_q.estVisible := false;
 		button_jouer.estVisible := false;
 		
-		RenderRawImage(menu_bg);
+		RenderRawImage(menu_bg, False);
 		//RenderRawImage(vague);
 		RenderText(text1);
 		RenderText(titre_lead);
@@ -186,7 +187,7 @@ procedure direction_menu;
 		button_q.estVisible := true;
 		button_jouer.estVisible := true;
 		
-		RenderRawImage(menu_bg);
+		RenderRawImage(menu_bg, False);
 		//RenderRawImage(vague);
 		RenderButton(button_jouer);
 		RenderButton(button_lead); 
@@ -244,18 +245,19 @@ begin
   // Initialisation du joueur
   joueur.col.isTrigger := False;
   joueur.col.estActif := True;
-  joueur.col.dimensions.w := 100;
-  joueur.col.dimensions.h := 100;
-  joueur.col.offset.x := 25;
-  joueur.col.offset.y := 10;
+  joueur.col.dimensions.w := 60;
+  joueur.col.dimensions.h := 150;
+  joueur.col.offset.x := 45;
+  joueur.col.offset.y := 0;
   joueur.col.nom := 'Joueur';
   Joueur.anim.estActif := True;
+  vit := 5;
 
   // Initialisation du Dummy
   Dummy.col.isTrigger := False;
   Dummy.col.estActif := True;
   Dummy.col.dimensions.w := 100;
-  Dummy.col.dimensions.h := 300;
+  Dummy.col.dimensions.h := 500;
   Dummy.col.offset.x := 0;
   Dummy.col.offset.y := 0;
   Dummy.col.nom := 'Dummy';
@@ -356,6 +358,7 @@ InitAnimation(LObjets[0].anim, 'Joueur', 'idle', 6, True);
   
   while True do
   begin
+  SDL_Delay(10); // 100 FPS
 //Mouvement Joueur
   SDL_PumpEvents;
 
@@ -364,25 +367,25 @@ InitAnimation(LObjets[0].anim, 'Joueur', 'idle', 6, True);
 	
   	if sdlKeyboardState[SDL_SCANCODE_W] = 1 then
 	begin
-      LObjets[0].image.rect.y := LObjets[0].image.rect.y - 1;
+      LObjets[0].image.rect.y := LObjets[0].image.rect.y - vit;
 	  if LObjets[0].anim.Etat <> 'run' then InitAnimation(LObjets[0].anim,'Joueur','run',10,True);
 	end;
 	
     if sdlKeyboardState[SDL_SCANCODE_A] = 1 then
 	begin
-	  	LObjets[0].image.rect.x := LObjets[0].image.rect.x - 1;
+	  	LObjets[0].image.rect.x := LObjets[0].image.rect.x - vit;
 	  	if LObjets[0].anim.Etat <> 'run' then InitAnimation(LObjets[0].anim,'Joueur','run',10,True);
 	end;
     
     if sdlKeyboardState[SDL_SCANCODE_S] = 1 then
       	begin
-	  	LObjets[0].image.rect.y := LObjets[0].image.rect.y + 1;
+	  	LObjets[0].image.rect.y := LObjets[0].image.rect.y + vit;
 	  	if LObjets[0].anim.Etat <> 'run' then InitAnimation(LObjets[0].anim,'Joueur','run',10,True);
 	end;
 	
     if sdlKeyboardState[SDL_SCANCODE_D] = 1 then
     	begin
-	  	LObjets[0].image.rect.x := LObjets[0].image.rect.x + 1;
+	  	LObjets[0].image.rect.x := LObjets[0].image.rect.x + vit;
 	  	if LObjets[0].anim.Etat <> 'run' then InitAnimation(LObjets[0].anim,'Joueur','run',10,True);
 	end;
 
