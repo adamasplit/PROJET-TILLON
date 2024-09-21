@@ -1,11 +1,9 @@
 unit SonSys;
 interface
-uses SDL2, SDL2_mixer; //télécharger SDL2_mixer au préalable
+uses SDL2, SDL2_mixer,SysUtils; //télécharger SDL2_mixer au préalable
 
-type utilite=(OST,SFX);
-
-procedure jouerSon(nomFichier:String;ext:extension);//joue un son .WAV ou .OGG
-procedure bouclerMusique(nomFichier:String); //joue une musique .OGG en boucle (connaissant la durée du fichier)
+procedure jouerSon(nomFichier:PChar);//joue un son .WAV ou .OGG
+procedure bouclerMusique(nomFichier:PCHar;duree:Integer); //joue une musique .OGG en boucle (connaissant la durée du fichier)
 
 procedure arretMus(duree:Integer);//éteindre progressivement la musique, durée en ms
 procedure arretSons(duree:Integer);//arrêter tous les sons
@@ -17,41 +15,48 @@ procedure arretSons(duree:Integer);//arrêter tous les sons
 {IMPORTANT : à la fin du programme, utiliser 'Mix_CloseAudio' ainsi que 'Mix_FreeMusic' ou 'Mix_FreeChunk' pour des variables PMix_Music ou PMix_Chunk}
 implementation
 
-function chargerSFX(nomFichier:String):PMix_Chunk;
+function chargerSFX(nomFichier:PCHar):PMix_Chunk;
     begin
-    chargerWAV := Mix_LoadWAV(nomFichier);
-    if chargerWAV = nil then Exit;
-    Mix_VolumeChunk(chargerWAV, MIX_MAX_VOLUME);
+    chargerSFX := Mix_LoadWAV(nomFichier);
+    if chargerSFX = nil then Exit;
+    Mix_VolumeChunk(chargerSFX, MIX_MAX_VOLUME);
     end;
 
-function chargerOST(nomFichier:String):PMix_Music;
+function chargerOST(nomFichier:PChar):PMix_Music;
     begin
-    chargerOGG := Mix_LoadMUS(nomFichier);
-    if chargerOGG = nil then Exit;
+    chargerOST := Mix_LoadMUS(nomFichier);
+    if chargerOST = nil then Exit;
     Mix_VolumeMusic(MIX_MAX_VOLUME);
     end;
 
-procedure jouerSon(nomFichier:String;ext:extension);
+procedure jouerSon(nomFichier:PCHar);
 begin
-    if ext=SFX then
-        Mix_PlayChannel(-1,chargerSFX(nomFichier),0)
-    else
-        Mix_PlayMusic(chargerOST(nomFichier),0)
+    Mix_PlayChannel(-1,chargerSFX(nomFichier),0)
 end;
 
-procedure bouclerMusique(nomFichier:String,duree:Integer);
+procedure bouclerMusique(nomFichier:PChar;duree:Integer);
+var
+currentTime: UInt32;
+LastUpdateTime : UInt32;
 begin
     while True do begin
         Mix_PlayMusic(chargerOST(nomFichier),0);
-        delay(duree*100);
+        currentTime := SDL_GetTicks();
+        LastUpdateTime := currentTime;
+        repeat
+
+        until (CurrentTime=LastUpdateTime+duree*1000);
         end
 end;
 
-var musique:
-procedure arretMus(duree:Integer); 
+procedure arretMus(duree:Integer);
+begin
     Mix_FadeOutMusic(duree);
+end;
 procedure arretSons(duree:Integer);
+begin
     Mix_FadeOutChannel(1, duree);
+end;
 
 
 end.

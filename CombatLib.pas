@@ -3,7 +3,7 @@ unit CombatLib;
 interface
 
 uses
-    math,
+    math,coeur,
     SDL2;
 
 var 
@@ -41,9 +41,9 @@ begin
         currentTime := SDL_GetTicks(); //récupère le temps
         LastUpdateTime := currentTime;
 
-        if ( (currentTime - LastUpdateTime)*mutiplicateurMana  >= 100) AND (mana < ManaMAX) then //attendre 1sec/mult avant +1 mana
+        if ( (currentTime - LastUpdateTime)*LObjets[0].mutiplicateurMana  >= 100) AND (LObjets[0].mana < ManaMAX) then //attendre 1sec/mult avant +1 mana
         begin
-            mana := mana + 1;
+            LObjets[0].mana := LObjets[0].mana + 1;
             LastUpdateTime := currentTime;
         end;
     end;

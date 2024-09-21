@@ -5,22 +5,11 @@ interface
 uses
   memgraph,
   SDL2,
-  SysUtils;
+  SysUtils,
+  coeur;
 
 const
   FRAME_DURATION = 66;  // Durée en ms pour 30 FPS
-
-type
-  TAnimation = record
-    ObjectName: PChar;    // Nom de l'objet (par exemple 'Joueur')
-    Etat: PChar;          // État de l'objet (par exemple 'idle', 'run')
-    CurrentFrame: Integer; // Frame actuelle de l'animation
-    TotalFrames: Integer;  // Nombre total de frames pour cet état
-    LastUpdateTime: UInt32; // Dernière mise à jour de la frame
-    IsLooping: Boolean;    // L'animation boucle-t-elle ?
-    isFliped : Boolean; // L'image doit-elle etre renversée?
-    estActif:Boolean; // L'objet est-il animé?
-  end;
 
 // Initialiser l'animation pour un objet
 procedure InitAnimation(var anim: TAnimation; objectName, etat: PChar; totalFrames: Integer; isLooping: Boolean);
