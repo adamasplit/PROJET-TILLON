@@ -102,12 +102,11 @@ procedure ActualiserJeu;
 		SDL_RenderClear(sdlRenderer);
 		
 		UpdateCollisions(LObjets);
-		for i:=1 to High(LObjets) do 
+		for i:=0 to High(LObjets) do 
 			begin
-				RenderRawImage(LObjets[i].image, False);
+				RenderRawImage(LObjets[i].image, LObjets[i].anim.isFliped);
 				if LObjets[i].anim.estActif then 
 					begin
-					RenderRawImage(LObjets[i].image, False);
 					UpdateAnimation(LObjets[i].anim, LObjets[i].image);
     				
 					end
@@ -364,7 +363,7 @@ InitAnimation(LObjets[0].anim, 'Joueur', 'idle', 6, True);
 
   if (SceneActive = 'Jeu') then
   begin
-	
+	LObjets[0].anim.isFliped := False;
   	if sdlKeyboardState[SDL_SCANCODE_W] = 1 then
 	begin
       LObjets[0].image.rect.y := LObjets[0].image.rect.y - vit;
@@ -375,6 +374,7 @@ InitAnimation(LObjets[0].anim, 'Joueur', 'idle', 6, True);
 	begin
 	  	LObjets[0].image.rect.x := LObjets[0].image.rect.x - vit;
 	  	if LObjets[0].anim.Etat <> 'run' then InitAnimation(LObjets[0].anim,'Joueur','run',10,True);
+		LObjets[0].anim.isFliped := True;
 	end;
     
     if sdlKeyboardState[SDL_SCANCODE_S] = 1 then

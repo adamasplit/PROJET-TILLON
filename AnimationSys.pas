@@ -18,6 +18,7 @@ type
     TotalFrames: Integer;  // Nombre total de frames pour cet état
     LastUpdateTime: UInt32; // Dernière mise à jour de la frame
     IsLooping: Boolean;    // L'animation boucle-t-elle ?
+    isFliped : Boolean; // L'image doit-elle etre renversée?
     estActif:Boolean; // L'objet est-il animé?
   end;
 
@@ -49,6 +50,7 @@ begin
   anim.TotalFrames := totalFrames;
   anim.CurrentFrame := 1;  // Commence à la première frame
   anim.IsLooping := isLooping;
+  anim.isFliped := False;
   anim.LastUpdateTime := SDL_GetTicks();  // Initialiser avec le temps courant
 end;
 
@@ -78,7 +80,8 @@ begin
     image.directory := GetFramePath(anim);
 
     // Mettre à jour l'image avec la nouvelle frame
-    //WriteLn('Animation : Changing directory to : ',image.directory);
+    WriteLn('Animation : Changing directory to : ',image.directory);
+    WriteLn(anim.isLooping);
     CreateRawImage(image, image.rect.x, image.rect.y, image.rect.w, image.rect.h, image.directory);
 
     // Mettre à jour le temps de la dernière mise à jour

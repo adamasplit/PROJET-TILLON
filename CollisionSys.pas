@@ -80,7 +80,7 @@ begin
       // Si aucun des deux objets n'est un trigger, on les repousse pour éviter le chevauchement
       overlapX := Min(rect1.x + rect1.w, rect2.x + rect2.w) - Max(rect1.x, rect2.x);
       overlapY := Min(rect1.y + rect1.h, rect2.y + rect2.h) - Max(rect1.y, rect2.y);
-      WriteLn(overlapX);
+      //WriteLn(overlapX);
 
       // Si le chevauchement est plus grand en X, on repousse en X
       if overlapX < overlapY then
