@@ -2,7 +2,9 @@ unit CombatLib;
 
 interface
 
-uses math, SDL2;
+uses
+    math,
+    SDL2;
 
 var 
 mana : Integer;

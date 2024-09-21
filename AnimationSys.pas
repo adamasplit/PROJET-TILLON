@@ -3,9 +3,9 @@ unit AnimationSys;
 interface
 
 uses
-    memgraph,
-    SDL2,
-    SysUtils;
+  memgraph,
+  SDL2,
+  SysUtils;
 
 const
   FRAME_DURATION = 66;  // Durée en ms pour 30 FPS
@@ -18,6 +18,8 @@ type
     TotalFrames: Integer;  // Nombre total de frames pour cet état
     LastUpdateTime: UInt32; // Dernière mise à jour de la frame
     IsLooping: Boolean;    // L'animation boucle-t-elle ?
+    isFliped : Boolean; // L'image doit-elle etre renversée?
+    estActif:Boolean; // L'objet est-il animé?
   end;
 
 // Initialiser l'animation pour un objet
@@ -26,8 +28,8 @@ procedure InitAnimation(var anim: TAnimation; objectName, etat: PChar; totalFram
 // Mettre à jour l'animation (changer la frame si nécessaire)
 procedure UpdateAnimation(var anim: TAnimation; var image: TImage);
 
-// Rendre l'image courante de l'animation
-procedure RenderAnimation(var anim: TAnimation; var image: TImage; renderer: PSDL_Renderer);
+// Animation de Fondu au fromage
+
 
 implementation
 
@@ -48,6 +50,7 @@ begin
   anim.TotalFrames := totalFrames;
   anim.CurrentFrame := 1;  // Commence à la première frame
   anim.IsLooping := isLooping;
+  anim.isFliped := False;
   anim.LastUpdateTime := SDL_GetTicks();  // Initialiser avec le temps courant
 end;
 
@@ -77,17 +80,13 @@ begin
     image.directory := GetFramePath(anim);
 
     // Mettre à jour l'image avec la nouvelle frame
+    WriteLn('Animation : Changing directory to : ',image.directory);
+    WriteLn(anim.isLooping);
     CreateRawImage(image, image.rect.x, image.rect.y, image.rect.w, image.rect.h, image.directory);
 
     // Mettre à jour le temps de la dernière mise à jour
     anim.LastUpdateTime := currentTime;
   end;
-end;
-
-// Rendre l'image courante de l'animation
-procedure RenderAnimation(var anim: TAnimation; var image: TImage; renderer: PSDL_Renderer);
-begin
-  RenderRawImage(image);
 end;
 
 end.

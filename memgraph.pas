@@ -56,7 +56,8 @@ var
   windowWidth, windowHeight: Integer;
   
 {Fonctions & Procedures}
-procedure CreateButton(var button: TButton; x, y, w, h: Integer; labelText: PAnsiChar; bgColor, textColor: TSDL_Color; font:PTTF_font;onClick: ButtonProcedure); 
+procedure CreateButton(var button: TButton; x, y, w, h: Integer; labelText: PAnsiChar; bgColor, textColor: TSDL_Color; font:PTTF_font;onClick: ButtonProcedure); overload;
+
 procedure RenderButton(var button: TButton);
 procedure HandleButtonClick(var button: TButton; x, y: Integer);
 
@@ -66,7 +67,7 @@ procedure RenderText(var text: TText);
 procedure DrawRect(bgColor : TSDL_Color; aplha,x,y,w,h :Integer);
 
 procedure CreateRawImage(var image : TImage; x, y, w, h: Integer; directory : PAnsiChar);
-procedure RenderRawImage(var image: Timage);
+procedure RenderRawImage(var image: Timage; flip: Boolean);
 
 procedure CreateInteractableImage(var image : TIntImage; x, y, w, h: Integer; directory : PAnsiChar; onClick: ButtonProcedure);
 procedure RenderIntImage(var image : TIntImage);
@@ -118,7 +119,7 @@ procedure RenderButton(var button: TButton);
 var textRect: TSDL_Rect;
 begin
   // Remplir le fond du bouton à la couleur choisie
-  SDL_SetRenderDrawColor(sdlRenderer, button.bgColor.r, button.bgColor.g, button.bgColor.b, 255);
+  SDL_SetRenderDrawColor(sdlRenderer, button.bgColor.r, button.bgColor.g, button.bgColor.b, 20);
   SDL_RenderFillRect(sdlRenderer, @button.rect);
 
   // Calculs de la position du texte en fonction de la taille du bouton (Texte Centré)
@@ -214,14 +215,14 @@ begin
 
    // Rendering text --> surface
   image.imgSurface := SDL_LoadBMP(image.directory);
-  if image.imgSurface = nil then HALT;
+  if image.imgSurface = nil then begin WriteLn('Error in Surface load : ');Write(SDL_GetError); HALT end;
   // Convertion surface --> texture
   image.imgTexture := SDL_CreateTextureFromSurface(sdlRenderer, image.imgSurface);
-  if image.imgTexture = nil then HALT;
+  if image.imgTexture = nil then begin WriteLn(SDL_GetError); HALT end;
 end;
 
 
-procedure RenderRawImage(var image: Timage);
+procedure RenderRawImage(var image: Timage; flip : Boolean);
 var imgRect: TSDL_Rect;
 begin
 
@@ -232,7 +233,10 @@ begin
   imgRect.y := image.rect.y;
 
   // Render de la texture de l'image
-  SDL_RenderCopy(sdlRenderer, image.imgTexture, nil, @imgRect);
+  if (flip) then
+    SDL_RenderCopyEx(sdlRenderer, image.imgTexture, nil, @imgRect,0, nil, SDL_FLIP_HORIZONTAL)
+    else
+    SDL_RenderCopy(sdlRenderer, image.imgTexture, nil, @imgRect)
 end;
 
 { 
@@ -299,13 +303,13 @@ end;
 
 {Initialisation de la Fenêtre dans le programme principal}
 BEGIN
-  dayDreamFontDirectory := 'Fonts\Daydream.ttf';
+  dayDreamFontDirectory := 'Fonts\pixeljosh6.ttf';
 
   // Initialization of video subsystem
   if SDL_Init(SDL_INIT_VIDEO) < 0 then HALT;
 
   // Creation de la Fenetre
-  sdlWindow1 := SDL_CreateWindow('Get Ins''out !', SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1080, 720, SDL_WINDOW_SHOWN);
+  sdlWindow1 := SDL_CreateWindow('Les Cartes du Destin 🃑', SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1080, 720, SDL_WINDOW_SHOWN);
   if sdlWindow1 = nil then HALT;
 
   // Creation du Renderer
