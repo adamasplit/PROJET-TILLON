@@ -61,7 +61,7 @@ type TStats=record
         projectile:(degats:Integer);
 end;
 
-var Cartes:Array[1..22] of TCarte; //preset pour les cartes
+var Cartes:Array[1..23] of TCarte; //preset pour les cartes
 
 // Structure TCol pour la gestion des collisions
 type  TCol = record
@@ -90,8 +90,8 @@ var LObjets: Array of TObjet;
 
         
 implementation
-var i:Integer;
-var path,ext:pchar;
+var i,j:Integer;
+path,ext:PChar;
 begin
  whiteCol.r := 255; whiteCol.g := 255; whiteCol.b := 255;
   bf_color.r :=5; bf_color.g :=12; bf_color.b :=156;
@@ -100,50 +100,76 @@ begin
   navy_color.r :=53; navy_color.g :=114; navy_color.b :=239;
   black_color.r := 0; black_color.g := 0; black_color.b := 0;
   red_color.r := 255; red_color.g := 0; red_color.b := 50;
-  setLength(LObjets,)
+
+  setLength(LObjets,2);
+
   LObjets[0].stats.genre:=joueur;
+
   for i:=1 to 22 do begin
     case i of 
-    1:cartes[i].nom:='bateleur';
-    2:cartes[i].nom:='papesse';
-    3:cartes[i].nom:='imperatrice';
-    4:cartes[i].nom:='empereur';
-    5:cartes[i].nom:='pape';
-    6:cartes[i].nom:='amants';
-    7:cartes[i].nom:='chariot';
-    8:cartes[i].nom:='justice';
-    9:cartes[i].nom:='ermite';
-    10:cartes[i].nom:='roue';
-    11:cartes[i].nom:='force';
-    12:cartes[i].nom:='pendu';
-    13:cartes[i].nom:='_';
-    14:cartes[i].nom:='temperance';
-    15:cartes[i].nom:='diable';
-    16:cartes[i].nom:='tour';
-    17:cartes[i].nom:='etoile';
-    18:cartes[i].nom:='lune';
-    19:cartes[i].nom:='soleil';
-    20:cartes[i].nom:='ange';
-    21:cartes[i].nom:='monde';
-    22:cartes[i].nom:='fou';
-    end;
+      1:cartes[i].nom:='bateleur';
+      2:cartes[i].nom:='papesse';
+      3:cartes[i].nom:='imperatrice';
+      4:cartes[i].nom:='empereur';
+      5:cartes[i].nom:='pape';
+      6:cartes[i].nom:='amants';
+      7:cartes[i].nom:='chariot';
+      8:cartes[i].nom:='justice';
+      9:cartes[i].nom:='ermite';
+      10:cartes[i].nom:='roue';
+      11:cartes[i].nom:='force';
+      12:cartes[i].nom:='pendu';
+      13:cartes[i].nom:='_';
+      14:cartes[i].nom:='temperance';
+      15:cartes[i].nom:='diable';
+      16:cartes[i].nom:='tour';
+      17:cartes[i].nom:='etoile';
+      18:cartes[i].nom:='lune';
+      19:cartes[i].nom:='soleil';
+      20:cartes[i].nom:='ange';
+      21:cartes[i].nom:='monde';
+      22:cartes[i].nom:='fou';
+      end;
     case i of
-    1,2,3,4,5,10:cartes[i].rarete:=commune;
-    6,7,8,9,11,16,19:cartes[i].rarete:=rare;
-    12,14,17,18,20,22:cartes[i].rarete:=epique;
-    13,15,21:cartes[i].rarete:=legendaire;
-    end;
+      1,2,3,4,5,10:cartes[i].rarete:=commune;
+      6,7,8,9,11,16,19:cartes[i].rarete:=rare;
+      12,14,17,18,20,22:cartes[i].rarete:=epique;
+      13,15,21:cartes[i].rarete:=legendaire;
+      end;
     case i of
-    1,6:cartes[i].cout:=1;
-    10,13,17:cartes[i].cout:=0;
-    2,5,16,18,22:cartes[i].cout:=2;
-    3,4,12,14,19:cartes[i].cout:=3;
-    11,20:cartes[i].cout:=4;
-    8,9,15,21:cartes[i].cout:=5;
-    7:cartes[i].cout:=6;
+      1,6:cartes[i].cout:=1;
+      10,13,17:cartes[i].cout:=0;
+      2,5,16,18,22:cartes[i].cout:=2;
+      3,4,12,14,19:cartes[i].cout:=3;
+      11,20:cartes[i].cout:=4;
+      8,9,15,21:cartes[i].cout:=5;
+      7:cartes[i].cout:=6;
+      end;
+    case i of 
+    1:cartes[i].dir:='Sprites/Cartes/carte1.bmp';
+    2:cartes[i].dir:='Sprites/Cartes/carte2.bmp';
+    3:cartes[i].dir:='Sprites/Cartes/carte3.bmp';
+    4:cartes[i].dir:='Sprites/Cartes/carte4.bmp';
+    5:cartes[i].dir:='Sprites/Cartes/carte5.bmp';
+    6:cartes[i].dir:='Sprites/Cartes/carte6.bmp';
+    7:cartes[i].dir:='Sprites/Cartes/carte7.bmp';
+    8:cartes[i].dir:='Sprites/Cartes/carte8.bmp';
+    9:cartes[i].dir:='Sprites/Cartes/carte9.bmp';
+    10:cartes[i].dir:='Sprites/Cartes/carte10.bmp';
+    11:cartes[i].dir:='Sprites/Cartes/carte11.bmp';
+    12:cartes[i].dir:='Sprites/Cartes/carte12.bmp';
+    13:cartes[i].dir:='Sprites/Cartes/carte13.bmp';
+    14:cartes[i].dir:='Sprites/Cartes/carte14.bmp';
+    15:cartes[i].dir:='Sprites/Cartes/carte15.bmp';
+    16:cartes[i].dir:='Sprites/Cartes/carte16.bmp';
+    17:cartes[i].dir:='Sprites/Cartes/carte17.bmp';
+    18:cartes[i].dir:='Sprites/Cartes/carte18.bmp';
+    19:cartes[i].dir:='Sprites/Cartes/carte19.bmp';
+    20:cartes[i].dir:='Sprites/Cartes/carte20.bmp';
+    21:cartes[i].dir:='Sprites/Cartes/carte21.bmp';
+    22:cartes[i].dir:='Sprites/Cartes/carte22.bmp';
     end;
-    path:='Sprites/Cartes';ext:='bmp';
-    CreateRawImage(cartes[i].image,0,0,64,64,strcat(strcat(path,cartes[i].nom),ext))
+      writeln('i ',i,'dir:',cartes[i].dir,', 1 dir:',cartes[1].dir);
     end;
     writeln('CORE ready');
 end.
