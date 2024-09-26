@@ -1,12 +1,24 @@
 unit SonSys;
 interface
-uses SDL2, SDL2_mixer,SysUtils; //télécharger SDL2_mixer au préalable
+uses SDL2, SDL2_mixer,SysUtils,crt; //télécharger SDL2_mixer au préalable
+
+const TAILLE_OST=11;
+
+type TMus=record
+    musique:PMix_Music;
+    duree:Integer;
+    nom:String;
+    dir:PChar;
+end;
+
+var OST:array[1..TAILLE_OST] of TMus;
 
 procedure jouerSon(nomFichier:PChar);//joue un son .WAV ou .OGG
-procedure bouclerMusique(nomFichier:PCHar;duree:Integer); //joue une musique .OGG en boucle (connaissant la durée du fichier)
+procedure bouclerMusique(musique:TMus;var lastUpdateTime:UInt32); //recommence une musique si elle est finie (à mettre dans la boucle d'actualisation du jeu)
 
 procedure arretMus(duree:Integer);//éteindre progressivement la musique, durée en ms
 procedure arretSons(duree:Integer);//arrêter tous les sons
+procedure detruireOST();//à mettre impérativement en fin du programme
 
 
 //autres procédures déjà présentes : mix_pause/resume, mix_pause/resumeMusic, pour arrêter/reprendre tous les sons ou la musique
@@ -29,24 +41,28 @@ function chargerOST(nomFichier:PChar):PMix_Music;
     Mix_VolumeMusic(MIX_MAX_VOLUME);
     end;
 
-procedure jouerSon(nomFichier:PCHar);
+procedure defMus(indice:Integer;dir:Pchar;nom:String;duree:Integer);
+
 begin
-    Mix_PlayChannel(-1,chargerSFX(nomFichier),0)
+    OST[indice].musique:=chargerOST(dir);
+    OST[indice].dir:=dir;
+    OST[indice].nom:=nom;
+    OST[indice].duree:=duree;
 end;
 
-procedure bouclerMusique(nomFichier:PChar;duree:Integer);
-var
-currentTime: UInt32;
-LastUpdateTime : UInt32;
+procedure jouerSon(nomFichier:PCHar);
 begin
-    while True do begin
-        Mix_PlayMusic(chargerOST(nomFichier),0);
-        currentTime := SDL_GetTicks();
-        LastUpdateTime := currentTime;
-        repeat
+    Mix_PlayChannel(1,chargerSFX(nomFichier),0)
+end;
 
-        until (CurrentTime=LastUpdateTime+duree*1000);
-        end
+procedure bouclerMusique(musique:TMus;var lastUpdateTime:UInt32);
+begin
+    SDL_PumpEvents;
+        if (SDL_GetTicks()-LastUpdateTime)>(musique.duree)*1000 then //vérifier si le morceau est fini ou non
+        begin
+            mix_rewindMusic();
+            LastUpdateTime := SDL_GetTicks();
+        end;
 end;
 
 procedure arretMus(duree:Integer);
@@ -58,6 +74,15 @@ begin
     Mix_FadeOutChannel(1, duree);
 end;
 
+procedure detruireOST();
+var i:Integer;
+begin
+    for i:=1 to TAILLE_OST do
+        if Assigned(OST[i].musique) then Mix_FreeMusic(OST[i].musique);
+    Mix_CloseAudio
+end;
+
+begin
 
 end.
 

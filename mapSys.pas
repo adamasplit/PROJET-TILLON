@@ -3,19 +3,22 @@ unit mapSys;
 interface
 uses SDL2,math,memgraph,SysUtils,coeur;
 var imgs0,imgs1,imgs2,imgs3:TIntImage;
+CombatUI:Array[1..7] of TImage;
+var salleChoisie:TSalle;
 CONST 
 windowHeight=720;windowWidth=1080;
-Y1=windowHeight div 2+windowHeight div 4;
-      Y2=windowHeight div 2;
-      Y3=windowHeight div 2-windowHeight div 4;
-      X1=windowWidth  div 2 - windowWidth div 2;
-      X2=windowWidth  div 2 + windowWidth div 2;
+      Y1=(windowHeight div 2)+(windowHeight div 4)       ;           
+      Y2=(windowHeight div 2);
+      Y3=(windowHeight div 2)-(windowHeight div 4);
+      X1=(windowWidth  div 2) - (windowWidth div 2);
+      X2=(windowWidth  div 2) + (windowWidth div 2);
 
 procedure generationChoix(avancement:Integer;var salle1,salle2,salle3:TSalle);
 procedure affichageSalles(salle1,salle2,salle3:TSalle);
 procedure choixSalle(avancement:Integer;var salle:TSalle);
 procedure choisirEnnemis(avancement:integer;var salle:TSalle);
-procedure salle(avancement:integer;var salle:TSalle);
+procedure InitUICombat();
+procedure UpdateUICombat(carteChoisie:TCarte;x,y:Integer);
 
 implementation
 
@@ -52,9 +55,50 @@ begin
         end
 end;
 
-procedure LancementSalleCombat()
+procedure choisirEnnemis(avancement:integer;var salle:TSalle);
+var precTaille,i : Integer;
 begin
-    choisirEnnemis(LObjets[0].stats);
+    precTaille := High(LObjets)+1;
+    setLength(LObjets, precTaille+avancement);
+    for i:=1 to avancement do
+    begin
+
+    end;
+end;
+
+procedure InitUICombat();
+begin
+    CreateRawImage(CombatUI[1],-50,0,144,592,'Sprites/Menu/CombatUI_1.bmp');
+    CreateRawImage(CombatUI[2],windowWidth-100,0,144,592,'Sprites/Menu/CombatUI_2.bmp');
+    RenderRawImage(CombatUI[1],False);RenderRawImage(CombatUI[2],True);
+end;
+
+procedure UpdateUICombat(carteChoisie:TCarte;x,y:Integer);
+begin
+    //CreateRawImage(CombatUI[3],x,y,64,64,carteChoisie.dir);
+    //CreateRawImage();
+end;
+
+procedure LancementSalleCombat();
+begin
+    choisirEnnemis(LObjets[0].stats.avancement,salleChoisie);
+    InitUICombat();
+end;
+
+procedure LancementSalleHasard();
+begin
+end;
+
+procedure LancementSalleBoss();
+begin
+end;
+
+procedure LancementSalleMarchand();
+begin
+end;
+
+procedure LancementSalleCamp();
+begin
 end;
 
 procedure affichageSalle(salle:TSalle;x,y:integer;var img:TIntImage);
@@ -113,26 +157,6 @@ begin
     SDL_RenderPresent(sdlRenderer);
 end;
 
-
-
-procedure choisirEnnemis(avancement:integer);
-var precTaille : Integer;
 begin
-    precTaille := High(LObjets)+1;
-    setLength(LObjets, precTaille+avancement);
-    for i:=1 to avancement do
-    begin
-
-    end;
-end;
-
-procedure salle(avancement:integer;var salle:TSalle);
-begin
-    choixSalle(avancement,salle);
-    if salle.evenement=combat then
-        choisirEnnemis(avancement,salle);
-end;
-
-begin
-
+writeln('MapSys ready')
 end.

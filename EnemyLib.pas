@@ -10,8 +10,8 @@ procedure initStatEnnemi(nom:String,vie,att,def:Integer,directory:Pchar,var enne
 implementation
 procedure initStatEnnemi(nom:String,vie,att,def:Integer,directory:Pchar,var ennemi:TObjet);
 begin
-    CreateRawImage(EnemyBasik.image,0,0, );
-    InitAnimation(EnemyBasik.anim, 'EnemyBasik', 'chase', 6,True)
+    CreateRawImage(ennemi.image,0,0, );
+    InitAnimation(ennemi.anim,nom,'Chase', 6,True)
     ennemi.stats.vieMax:=vie;
     ennemi.stats.vie:=ennemi.stats.vieMax;
     ennemi.stats.force:=att;
