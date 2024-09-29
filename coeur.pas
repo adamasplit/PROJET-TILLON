@@ -1,7 +1,11 @@
 unit coeur;
 
 interface
-uses SDL2,memgraph,SysUtils,math;
+uses
+  math,
+  memgraph,
+  SDL2,
+  SysUtils;
 
 
 
@@ -37,7 +41,7 @@ type TCarte=record
     dir:PChar;
     image:TImage;
 end;
-var carteChoisie:TCarte;
+var iCarteChoisie:Integer;
 
 type TStats=record
     genre:typeObjet;
@@ -52,16 +56,18 @@ type TStats=record
           avancement:Integer;
           multiplicateurMana:Real;
           multiplicateurDegat:Real;
-          multiplicateurVitesse:Real;
+          Vitesse:Integer;
           manaDebutCombat:Integer;
-          TDeck:array[1..MAXCARTES] of TCarte;
+          deck:array[1..MAXCARTES] of TCarte;
+          cartesUniquesJouees:Integer;
+          tailleDeck:Integer;
           bestiaire:array[1..MAXENNEMIS] of Boolean);
           
 
         projectile:(degats:Integer);
 end;
 
-var Cartes:Array[1..23] of TCarte; //preset pour les cartes
+var Cartes:Array[1..22] of TCarte; //preset pour les cartes
 
 // Structure TCol pour la gestion des collisions
 type  TCol = record
@@ -90,10 +96,10 @@ var LObjets: Array of TObjet;
 
         
 implementation
-var i,j:Integer;
-path,ext:PChar;
+var i:Integer;
 begin
- whiteCol.r := 255; whiteCol.g := 255; whiteCol.b := 255;
+   // Définir les couleurs de base
+  whiteCol.r := 255; whiteCol.g := 255; whiteCol.b := 255;
   bf_color.r :=5; bf_color.g :=12; bf_color.b :=156;
   b_color.r :=167; b_color.g :=230; b_color.b :=255;
   f_color.r :=58; f_color.g :=190; f_color.b :=249;
@@ -101,11 +107,18 @@ begin
   black_color.r := 0; black_color.g := 0; black_color.b := 0;
   red_color.r := 255; red_color.g := 0; red_color.b := 50;
 
+
   setLength(LObjets,2);
 
   LObjets[0].stats.genre:=joueur;
+  LObjets[0].stats.vieMax:=100;
+  LObjets[0].stats.vie:=100;
+  LObjets[0].stats.mana:=0;
+  LObjets[0].stats.manaMax:=10;
+  LObjets[0].stats.multiplicateurMana:=1;
 
   for i:=1 to 22 do begin
+    cartes[i].numero:=i;
     case i of 
       1:cartes[i].nom:='bateleur';
       2:cartes[i].nom:='papesse';
@@ -169,7 +182,6 @@ begin
     21:cartes[i].dir:='Sprites/Cartes/carte21.bmp';
     22:cartes[i].dir:='Sprites/Cartes/carte22.bmp';
     end;
-      writeln('i ',i,'dir:',cartes[i].dir,', 1 dir:',cartes[1].dir);
     end;
     writeln('CORE ready');
 end.

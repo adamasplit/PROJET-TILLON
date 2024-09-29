@@ -1,9 +1,8 @@
 unit mapSys;
 
 interface
-uses SDL2,math,memgraph,SysUtils,coeur;
+uses SDL2,math,memgraph,SysUtils,coeur,eventsys;
 var imgs0,imgs1,imgs2,imgs3:TIntImage;
-CombatUI:Array[1..7] of TImage;
 var salleChoisie:TSalle;
 CONST 
 windowHeight=720;windowWidth=1080;
@@ -17,9 +16,6 @@ procedure generationChoix(avancement:Integer;var salle1,salle2,salle3:TSalle);
 procedure affichageSalles(salle1,salle2,salle3:TSalle);
 procedure choixSalle(avancement:Integer;var salle:TSalle);
 procedure choisirEnnemis(avancement:integer;var salle:TSalle);
-procedure InitUICombat();
-procedure UpdateUICombat(carteChoisie:TCarte;x,y:Integer);
-
 implementation
 
 
@@ -66,19 +62,6 @@ begin
     end;
 end;
 
-procedure InitUICombat();
-begin
-    CreateRawImage(CombatUI[1],-50,0,144,592,'Sprites/Menu/CombatUI_1.bmp');
-    CreateRawImage(CombatUI[2],windowWidth-100,0,144,592,'Sprites/Menu/CombatUI_2.bmp');
-    RenderRawImage(CombatUI[1],False);RenderRawImage(CombatUI[2],True);
-end;
-
-procedure UpdateUICombat(carteChoisie:TCarte;x,y:Integer);
-begin
-    //CreateRawImage(CombatUI[3],x,y,64,64,carteChoisie.dir);
-    //CreateRawImage();
-end;
-
 procedure LancementSalleCombat();
 begin
     choisirEnnemis(LObjets[0].stats.avancement,salleChoisie);
@@ -104,7 +87,7 @@ end;
 procedure affichageSalle(salle:TSalle;x,y:integer;var img:TIntImage);
 var dir:PCHar;proc:ButtonProcedure;
 begin
-    case salle.evenement of
+    case salle.evenement of //initialisation en fonction du type de salle
         hasard:begin
             dir:='Sprites/Menu/salle_hasard.bmp';
             proc:= @LancementSalleHasard;
@@ -145,7 +128,7 @@ begin
     affichageSalle(salle3,X2,Y3,imgs3);
 end;
 
-procedure choixSalle(avancement:Integer;var salle:TSalle);
+procedure choixSalle(avancement:Integer;var salle:TSalle); //permet au joueur de choisir la salle suivante
 var   salle1,salle2,salle3:TSalle;
 begin
     writeln('initialisation des salles...');

@@ -3,15 +3,17 @@ program SDL_Fonts;
 uses
 	AnimationSys,
 	CollisionSys,
-	memgraph,
 	SDL2,
-	SDL2_mixer,
-	SDL2_ttf,
-	SysUtils;
+  SDL2_mixer,
+  coeur,
+  eventsys,
+  MapSys,
+  memgraph,
+  SysUtils,
+  sonoSys,
+  combatLib,SDL2_ttf;
 
-var i:Integer;
-//Couleurs
-var whiteCol,b_color,bf_color,f_color,navy_color,black_color,red_color: TSDL_Color;
+var i,j:Integer;
 
 // Bouttons
 var button_jouer: TButton;
@@ -46,12 +48,7 @@ var	text1 : TText;
 
 var Joueur : TObjet;
 	Dummy : TObjet;
-	LObjets: Array of TObjet;
 
-//Gestion des Events
-	sdlEvent: PSDL_Event;
-	sdlKeyboardState: PUInt8;
-	SceneActive : String;
 
 //procedures
 	btnProc : ButtonProcedure;
@@ -61,8 +58,7 @@ var Joueur : TObjet;
 	leaderboard : ButtonProcedure;
 
 //Variables de Debug
-	Hp_Debug : Integer;
-	vit : Integer;
+	var lastUpdateTime1,LastUpdateTime2:UInt32;
 
 procedure annihiler(); //METTRE A JOUR APRES CHAQUE AJOUT D'OBJET
 begin
@@ -100,6 +96,8 @@ end;
 procedure ActualiserJeu;
 	begin
 		SDL_RenderClear(sdlRenderer);
+		SDL_PumpEvents;
+		sdl_delay(10);
 		
 		UpdateCollisions(LObjets);
 		for i:=0 to High(LObjets) do 
@@ -111,14 +109,24 @@ procedure ActualiserJeu;
     				
 					end
 			end;
-		//UI de la Vie (provisoire)
-		DrawRect(black_color,255, 10, 20, 200, 30);
-		DrawRect(red_color,255, 15, 25, Round(190* Hp_Debug/100), 20 );
-
-		
-
+		RegenMana(LastUpdateTime2,LObjets[0].stats);
         //Render
+		while sdl_pollevent(testEvent)=1 do 
+			case testEvent^.type_ of
+			SDL_mousemotion: begin
+			getMouseX;getMouseY;
+			end;
+			SDL_mousebuttondown : if LObjets[0].stats.mana>=LObjets[0].stats.deck[iCarteChoisie].cout then begin
+   			retirerCarte(iCarteChoisie);
+   			end;
+			SDL_MOUSEWHEEL:begin
+  			if testEvent^.wheel.y < 0 then icarteChoisie:=(isuiv(iCarteChoisie))
+  			else icarteChoisie:=(iprec(iCarteChoisie));
+			end;
+			end;
+		UpdateUICombat(icarteChoisie,400,400,LObjets[0].stats); 
 		SDL_RenderPresent(sdlRenderer);
+		
 	end;
 
 
@@ -224,19 +232,13 @@ begin
 *=================================================================================================================================
 }
 
-  // Définir les couleurs de base
-  whiteCol.r := 255; whiteCol.g := 255; whiteCol.b := 255;
-  bf_color.r :=5; bf_color.g :=12; bf_color.b :=156;
-  b_color.r :=167; b_color.g :=230; b_color.b :=255;
-  f_color.r :=58; f_color.g :=190; f_color.b :=249;
-  navy_color.r :=53; navy_color.g :=114; navy_color.b :=239;
-  black_color.r := 0; black_color.g := 0; black_color.b := 0;
-  red_color.r := 255; red_color.g := 0; red_color.b := 50;
-
-
   //récupérer les dimensions de la fenêtre
   SDL_GetWindowSize(sdlWindow1, @windowWidth, @windowHeight);
-
+	LastUpdateTime2:=SDL_GetTicks();
+Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT,
+    MIX_DEFAULT_CHANNELS, 4096);
+IndiceMusiqueJouee:=10;
+mix_playMusic(OST[IndiceMusiqueJouee].musique,0);
   //Events
 	SceneActive := 'Menu';
 	sdlKeyboardState := SDL_GetKeyboardState(nil);
@@ -244,13 +246,12 @@ begin
   // Initialisation du joueur
   joueur.col.isTrigger := False;
   joueur.col.estActif := True;
-  joueur.col.dimensions.w := 60;
-  joueur.col.dimensions.h := 150;
-  joueur.col.offset.x := 45;
-  joueur.col.offset.y := 0;
+  joueur.col.dimensions.w := 50;
+  joueur.col.dimensions.h := 85;
+  joueur.col.offset.x := 25;
+  joueur.col.offset.y := 15;
   joueur.col.nom := 'Joueur';
   Joueur.anim.estActif := True;
-  vit := 5;
 
   // Initialisation du Dummy
   Dummy.col.isTrigger := False;
@@ -271,11 +272,32 @@ begin
   LObjets[1] := Dummy;
 
   LObjets[0].image.rect.x := windowWidth div 2;
+  LObjets[0].image.rect.x := windowWidth div 2;
   LObjets[0].image.rect.y := windowHeight div 2;
 
+  lastUpdateTime1:=SDL_GetTicks();
+	LastUpdateTime2:=SDL_GetTicks();
 
 
-  Hp_Debug := 100;
+
+SDL_RenderClear(sdlRenderer);
+new(TestEvent);
+LObjets[0].stats.tailleDeck:=5;
+LObjets[0].stats.Vitesse:=5;
+LObjets[0].stats.multiplicateurMana:=1;
+LObjets[0].stats.cartesUniquesJouees:=0;
+randomize();
+for j:=1 to 20 do begin
+  LObjets[0].stats.deck[j]:=Cartes[j]
+end;
+initStatsCombat(LObjets[0].stats);
+LObjets[0].stats.vie:=5;
+LObjets[0].stats.vieMax:=10;
+LObjets[0].stats.mana:=0;
+LObjets[0].stats.manaMax:=10;
+iCarteChoisie:=1;
+initUICombat();
+SDL_RenderPresent(sdlRenderer);
   
  {	
 ==================================================================================================================================
@@ -330,8 +352,8 @@ begin
 	CreateButton(button_retour_menu, 850, 625, 200, 75, 'Menu', b_color, bf_color,dayDream30,retour_menu);
 
     // GameObjects
-    CreateRawImage(LObjets[0].image, windowWidth div 2, windowHeight div 2, 150, 150, 'Sprites\Game\Joueur\Joueur_idle_1.bmp');
-	CreateRawImage(LObjets[1].image, windowWidth - windowWidth div 5, windowHeight div 2, 100, 500, 'Sprites\Menu\fond1.bmp');
+    CreateRawImage(LObjets[0].image, windowWidth div 2, windowHeight div 2, 100, 100, 'Sprites\Game\Joueur\Joueur_idle_1.bmp');
+	CreateRawImage(LObjets[1].image, windowWidth - windowWidth div 5, 100, 100, 500, 'Sprites\Menu\fond1.bmp');
 	
 	
 	
@@ -345,7 +367,7 @@ begin
 //Pas de Premier Render, on appelle juste direction_menu
 
 direction_menu;
-InitAnimation(LObjets[0].anim, 'Joueur', 'idle', 6, True);
+InitAnimation(LObjets[0].anim, 'Joueur', 'idle', 12, True);
 {
 ==================================================================================================================================
 * EVENTS
@@ -353,58 +375,27 @@ InitAnimation(LObjets[0].anim, 'Joueur', 'idle', 6, True);
 }
     //Systeme de detection d'évents
   
-  new( sdlEvent );
+  new( testEvent );
   
   while True do
   begin
-  SDL_Delay(10); // 100 FPS
+   // 100 FPS
 //Mouvement Joueur
-  SDL_PumpEvents;
-
-  if (SceneActive = 'Jeu') then
-  begin
-	LObjets[0].anim.isFliped := False;
-  	if sdlKeyboardState[SDL_SCANCODE_W] = 1 then
-	begin
-      LObjets[0].image.rect.y := LObjets[0].image.rect.y - vit;
-	  if LObjets[0].anim.Etat <> 'run' then InitAnimation(LObjets[0].anim,'Joueur','run',10,True);
-	end;
-	
-    if sdlKeyboardState[SDL_SCANCODE_A] = 1 then
-	begin
-	  	LObjets[0].image.rect.x := LObjets[0].image.rect.x - vit;
-	  	if LObjets[0].anim.Etat <> 'run' then InitAnimation(LObjets[0].anim,'Joueur','run',10,True);
-		LObjets[0].anim.isFliped := True;
+  if SceneActive='Jeu' then begin
+					ActualiserJeu;
+					MouvementJoueur(LObjets[0]);
 	end;
     
-    if sdlKeyboardState[SDL_SCANCODE_S] = 1 then
-      	begin
-	  	LObjets[0].image.rect.y := LObjets[0].image.rect.y + vit;
-	  	if LObjets[0].anim.Etat <> 'run' then InitAnimation(LObjets[0].anim,'Joueur','run',10,True);
-	end;
-	
-    if sdlKeyboardState[SDL_SCANCODE_D] = 1 then
-    	begin
-	  	LObjets[0].image.rect.x := LObjets[0].image.rect.x + vit;
-	  	if LObjets[0].anim.Etat <> 'run' then InitAnimation(LObjets[0].anim,'Joueur','run',10,True);
-	end;
 
-	if ((LObjets[0].anim.Etat <> 'idle') and not((sdlKeyboardState[SDL_SCANCODE_D] = 1) or (sdlKeyboardState[SDL_SCANCODE_S] = 1) or (sdlKeyboardState[SDL_SCANCODE_W] = 1) or (sdlKeyboardState[SDL_SCANCODE_A] = 1))) 
-		then InitAnimation(LObjets[0].anim,'Joueur','idle',6,True);
-	ActualiserJeu;
-  end;
-
-    
-
-    while SDL_PollEvent( sdlEvent ) = 1 do
+    while SDL_PollEvent( testEvent ) = 1 do
     begin
-      case sdlEvent^.type_ of
+      case testEvent^.type_ of
 			SDL_KEYDOWN:
 			//Touches de Debug
       		begin
-        		case sdlEvent^.key.keysym.sym of
-          			SDLK_UP:  Hp_Debug := Hp_Debug +10;
-					SDLK_DOWN: Hp_Debug := Hp_Debug-10;
+        		case testEvent^.key.keysym.sym of
+          			SDLK_UP:  LObjets[0].stats.vie := LObjets[0].stats.vie +10;
+					SDLK_DOWN: LObjets[0].stats.vie := LObjets[0].stats.vie-10;
 					SDLK_ESCAPE : menuEnJeu;
         		end;
       		end;
@@ -414,39 +405,36 @@ InitAnimation(LObjets[0].anim, 'Joueur', 'idle', 6, True);
 			begin
 				if button_jouer.estVisible then
 				begin
-				HandleButtonClick(button_jouer,sdlEvent^.motion.x,sdlEvent^.motion.y);
+				HandleButtonClick(button_jouer,testEvent^.motion.x,testEvent^.motion.y);
 				//continue;
 				end;
 				if button_lead.estVisible then
 				begin
-				HandleButtonClick(button_lead,sdlEvent^.motion.x,sdlEvent^.motion.y);
+				HandleButtonClick(button_lead,testEvent^.motion.x,testEvent^.motion.y);
 				//continue;
 				end;
 				if button_q.estVisible then
 				begin
-				HandleButtonClick(button_q,sdlEvent^.motion.x,sdlEvent^.motion.y);
+				HandleButtonClick(button_q,testEvent^.motion.x,testEvent^.motion.y);
 				//continue;
 				end;
 				if button_retour_menu.estVisible then
 				begin
-				HandleButtonClick(button_retour_menu,sdlEvent^.motion.x,sdlEvent^.motion.y);
+				HandleButtonClick(button_retour_menu,testEvent^.motion.x,testEvent^.motion.y);
 				//continue;
 				end;
 				if button_deck.estVisible then
 				begin
-				HandleButtonClick(button_deck,sdlEvent^.motion.x,sdlEvent^.motion.y);
+				HandleButtonClick(button_deck,testEvent^.motion.x,testEvent^.motion.y);
 				//continue;
 				end;
 				if button_bestiaire.estVisible then
 				begin
-				HandleButtonClick(button_bestiaire,sdlEvent^.motion.x,sdlEvent^.motion.y);
-				//continue;
+				HandleButtonClick(button_bestiaire,testEvent^.motion.x,testEvent^.motion.y);
 				end;
-			end;
-			
-			//ajouter events ici
-			end;
-	end;
+				end;
+				end;
+				end;			
   end;
 annihiler();
 end.
