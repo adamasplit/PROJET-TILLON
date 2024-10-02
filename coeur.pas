@@ -46,7 +46,9 @@ var iCarteChoisie:Integer;
 type TStats=record
     genre:typeObjet;
     case typeObjet of 
-        joueur,ennemi: (force:Integer;
+        joueur,ennemi,projectile:(force:Integer;
+        multiplicateurDegat:Real);
+        joueur,ennemi: (
           defense:Integer;
           vie:Integer;
           vieMax:Integer);
@@ -55,7 +57,6 @@ type TStats=record
           manaMax:Integer;
           avancement:Integer;
           multiplicateurMana:Real;
-          multiplicateurDegat:Real;
           Vitesse:Integer;
           manaDebutCombat:Integer;
           deck:array[1..MAXCARTES] of TCarte;

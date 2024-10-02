@@ -7,24 +7,9 @@ uses
   Math,
   memgraph,
   SDL2,
-  SysUtils;
+  SysUtils,coeur;
 
-type
-  // Structure TCol pour la gestion des collisions
-  TCol = record
-    isTrigger: Boolean;     // Si vrai, l'objet ne bloque pas
-    estActif: Boolean;      // Si vrai, l'objet est actif pour les collisions
-    dimensions: TSDL_Rect;  // Boîte de collision (dimensions w et h)
-    offset: TSDL_Point;     // Décalage par rapport à la position de l'objet
-    nom: PChar;             // Nom de l'objet (facultatif)
-  end;
 
-  // Structure TObjet pour gérer les objets du jeu
-  TObjet = record
-    image: TImage;          // Image associée à l'objet
-    anim: TAnimation;       // Animation associée à l'objet
-    col: TCol;              // Boîte de collision et propriétés
-  end;
 
   // Vérifie automatiquement les collisions entre tous les objets actifs
   procedure UpdateCollisions(var objets: array of TObjet);

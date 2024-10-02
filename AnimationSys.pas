@@ -9,7 +9,7 @@ uses
   coeur;
 
 const
-  FRAME_DURATION = 66;  // Durée en ms pour 30 FPS
+  FRAME_DURATION = 100;  // Durée en ms pour 30 FPS
 
 // Initialiser l'animation pour un objet
 procedure InitAnimation(var anim: TAnimation; objectName, etat: PChar; totalFrames: Integer; isLooping: Boolean);
@@ -69,8 +69,8 @@ begin
     image.directory := GetFramePath(anim);
 
     // Mettre à jour l'image avec la nouvelle frame
-    WriteLn('Animation : Changing directory to : ',image.directory);
-    WriteLn(anim.isLooping);
+    {WriteLn('Animation : Changing directory to : ',image.directory);
+    WriteLn(anim.isLooping);}
     CreateRawImage(image, image.rect.x, image.rect.y, image.rect.w, image.rect.h, image.directory);
 
     // Mettre à jour le temps de la dernière mise à jour
