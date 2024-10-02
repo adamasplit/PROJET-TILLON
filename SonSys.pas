@@ -12,8 +12,10 @@ type TMus=record
 end;
 
 var OST:array[1..TAILLE_OST] of TMus;
+    IndiceMusiqueJouee:Integer;
 
-procedure jouerSon(nomFichier:PChar);//joue un son .WAV ou .OGG
+procedure jouerSon(nomFichier:PChar);//joue un son .WAV
+procedure jouerMus(i:Integer);//joue une musique .OGG ou .WAV
 procedure bouclerMusique(musique:TMus;var lastUpdateTime:UInt32); //recommence une musique si elle est finie (à mettre dans la boucle d'actualisation du jeu)
 
 procedure arretMus(duree:Integer);//éteindre progressivement la musique, durée en ms
@@ -44,7 +46,8 @@ function chargerOST(nomFichier:PChar):PMix_Music;
 procedure defMus(indice:Integer;dir:Pchar;nom:String;duree:Integer);
 
 begin
-    OST[indice].musique:=chargerOST(dir);
+    OST[indice].musique:=Mix_LoadMUS(dir);
+    writeln('OST[',indice,'].musique:=MIX_LoadMUS(',dir,')');
     OST[indice].dir:=dir;
     OST[indice].nom:=nom;
     OST[indice].duree:=duree;
@@ -53,6 +56,11 @@ end;
 procedure jouerSon(nomFichier:PCHar);
 begin
     Mix_PlayChannel(1,chargerSFX(nomFichier),0)
+end;
+
+procedure jouerMus(i:Integer);
+begin
+    mix_playMusic(chargerOST(OST[i].dir),0);
 end;
 
 procedure bouclerMusique(musique:TMus;var lastUpdateTime:UInt32);
@@ -83,6 +91,7 @@ begin
 end;
 
 begin
-
+writeln('SonSys');
+    defMus(1,'Combat.ogg','Cards of Fortune',50);
 end.
 
