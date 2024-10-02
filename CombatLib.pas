@@ -3,13 +3,16 @@ unit CombatLib;
 interface
 
 uses
-    math,coeur,
+    math,coeur,eventSys,memgraph,
     SDL2;
 function degat(flat : Integer ; force : Integer ; defence : Integer;multiplicateurDegat:Real): Integer;
 procedure melangeDeck(var stats:TStats);
 procedure initStatsCombat(var stats:TStats);
 procedure RegenMana(var LastUpdateTime : UInt32;var stats:TStats); 
 procedure RetirerCarte(i:Integer);
+procedure CreerBoule(flat,force:Integer;multiplicateurDegat:Real;x,y,vitesse:Integer;var proj:TObjet);
+procedure updateBoule(var proj:TObjet);
+
 
 implementation
 
@@ -84,6 +87,37 @@ var tempCarte:TCarte;j:Integer;
             end
         
     end;
+
+procedure CreerBoule(flat,force:Integer;multiplicateurDegat:Real;x,y,vitesse:Integer;var proj:TObjet);
+var norme:Integer;destination,distance:array['X'..'Y'] of Integer;
+    begin
+        //Initialisation des caractéristiques
+        proj.stats.genre:=projectile;
+        proj.stats.degats:=flat;
+        proj.stats.force:=force;
+        proj.stats.multiplicateurDegat:=multiplicateurDegat;
+        CreateRawImage(proj.image,x,y,20,20,'Sprites/Cartes/carte1.bmp');
+        
+        //Création du vecteur de mouvement du projectile
+        destination['X']:=getMouseX;
+        destination['Y']:=getmouseY;
+        distance['X']:=destination['X']-x;
+        distance['Y']:=destination['Y']-y;
+        norme:=round(sqrt(distance['X']**2+distance['Y']**2)) div vitesse;
+        if norme<>0 then begin
+            //writeln('proj.stats.vectX:=',round(distance['X']/norme),';proj.stats.vectY:=',round(distance['Y']/norme));
+            proj.stats.vectX:=round(distance['X']/norme);
+            proj.stats.vectY:=round(distance['Y']/norme);
+            end;
+        
+
+    end;
+
+procedure updateBoule(var proj:TObjet);
+begin
+    proj.image.rect.x:=proj.image.rect.x+round(proj.stats.vectX);
+    proj.image.rect.y:=proj.image.rect.y+round(proj.stats.vectY);
+end;
 
 begin
 
