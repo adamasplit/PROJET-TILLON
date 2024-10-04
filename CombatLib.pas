@@ -3,14 +3,20 @@ unit CombatLib;
 interface
 
 uses
-    math,coeur,eventSys,memgraph,
+    animationSys,
+    coeur,
+    collisionSys,
+    eventSys,
+    math,
+    memgraph,
     SDL2;
 function degat(flat : Integer ; force : Integer ; defence : Integer;multiplicateurDegat:Real): Integer;
-procedure melangeDeck(var stats:TStats);
-procedure initStatsCombat(var stats:TStats);
 procedure RegenMana(var LastUpdateTime : UInt32;var stats:TStats); 
-procedure RetirerCarte(i:Integer);
-procedure CreerBoule(flat,force:Integer;multiplicateurDegat:Real;x,y,vitesse:Integer;var proj:TObjet);
+procedure CreerDeckCombat(stat : TStats;var DeckCombat:TDeck); 
+procedure cycle (var deck : TDeck ; i : Integer);
+procedure circoncision  (var deck : Tdeck);
+procedure initStatsCombat(statsPerm:TStats;var statsTemp:TStats);
+procedure CreerBoule(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,vitesse,xdest:Integer;dir:PChar;var proj:TObjet);
 procedure updateBoule(var proj:TObjet);
 
 
@@ -24,6 +30,13 @@ begin
     if degat < 1 then
         degat := 1;
 end;
+
+//procedure de dégat instantané : inflige des dégat FLAT 
+procedure degatInst (var vie : Integer ; degat : integer );
+begin
+    vie := vie - degat;
+end;
+
 
 //Procedure Régénération du mana
 procedure RegenMana(var LastUpdateTime : UInt32;var stats:TStats); 
@@ -45,78 +58,154 @@ begin
 
 end;
 
-procedure melangeDeck(var stats:TStats);
-var tempDeck:array of TCarte;i,j,rand:Integer;
+//On créer un deck à base de la collection
+procedure CreerDeckCombat(stat : TStats;var DeckCombat:TDeck); 
+var tempDeck:TDeck;
+    i, j, rdm : Integer;
 begin
-    setLength(tempDeck,stats.tailleDeck+1);
-    for i:=1 to stats.tailleDeck do
-        tempDeck[i]:=stats.deck[i];
-    for i:=1 to stats.tailleDeck do 
+    setLength(tempDeck, stat.tailleCollection);
+    setLength(deckCombat, stat.tailleCollection);
+    for i:= 0 to stat.tailleCollection-1 do // création d'un deck temporaire identique à la collection
+        tempDeck[i] := stat.collection[i+1];
+    for i:= 0 to stat.tailleCollection-1 do // déplacement aléatoire des cartes de temp à combat
+    begin
+        randomize();
+        rdm :=  random(stat.tailleCollection-i);
+        DeckCombat[i] := tempDeck[rdm];
+        for j := rdm to stat.tailleCollection-1-i do //réduction en continu de la taille de temp
         begin
-            randomize();
-            rand:=random(stats.tailleDeck-i)+1;
-            stats.deck[i]:=tempDeck[rand];
-            for j:=rand to stats.tailleDeck-i do
-                tempDeck[j]:=tempDeck[j+1];
+            tempDeck[j] := tempDeck[j+1];
+            setLength(tempDeck, stat.tailleCollection-i);
+        end;
+    end;
+end;
+
+// place la carte jouée au fond du paquet // prend en entrée un POINTEUR deck^
+procedure cycle (var deck : TDeck ; i : Integer); // i = indice de la carte jouée
+var j : Integer;
+    mem : TCarte;
+begin
+    mem := deck[i];
+    deck[i] := deck[3];
+
+    for j:= 4 to High(deck)-1 do
+        deck[j-1] := deck[j];
+
+    deck[j] := mem ;
+end;
+
+// retire la dernière carte du paquet
+procedure circoncision  (var deck : Tdeck);
+begin
+    setLength (deck , High(deck)-1);
+end;
+
+//supprimer une carte de la collection
+procedure supprimerCarte(var  stats : TStats; num : integer);
+var i,j: integer;
+begin
+    i := 1 ;
+    while (stats.collection[i].numero <> num) OR (i <= stats.tailleCollection) do // trouve la carte num
+        i := i + 1;
+    if (i <= stats.tailleCollection) then  // si trouvé alors supprimé et taille réduite
+        for j:=i to stats.tailleCollection-1 do 
+        begin
+            stats.collection[j] := stats.collection[j+1];
+            stats.tailleCollection := stats.tailleCollection -1;
         end;
 end;
 
-procedure initStatsCombat(var stats:TStats);
+//procedure ajouterCarte(var stats : TStats ; num : integer); //### faire une liste des toutes les cartes
+
+//Lancement du combat
+procedure initStatsCombat(statsPerm:TStats;var statsTemp:TStats);
+var i:Integer;
 begin
-    melangeDeck(stats);
-    stats.cartesUniquesJouees:=0;
+    //Création de la copie
+    statsTemp:=statsPerm;
+    creerDeckCombat(statsTemp,Pdeck);
+    //Initialisation du deck pointé
+    setlength(PDeck,statsTemp.taillecollection);
+    for i:=1 to statsTemp.tailleCollection do
+        PDeck[i-1]:=statsTemp.collection[i];
+    statsTemp.deck:=@pDeck;
+    if statsTemp.deck=NIL then writeln('AVERTISSEMENT: DECK NON DEFINI')
 end;
 
-procedure RetirerCarte(i:Integer); //retire une carte de la main et la remet dans le deck (ou non)
-var tempCarte:TCarte;j:Integer;
-    begin
-        tempCarte:=LObjets[0].stats.deck[i];
-        //writeln('numero de la carte actuelle:',LObjets[0].stats.deck[iCarteChoisie].numero);
-        LObjets[0].stats.mana:=LObjets[0].stats.mana-LObjets[0].stats.deck[i].cout; //devra sans doute être déplacé dans JouerCarte 
 
-        for j:=i to LObjets[0].stats.tailleDeck-1-LObjets[0].stats.cartesUniquesJouees do begin
-            LObjets[0].stats.deck[j]:=LObjets[0].stats.deck[j+1];
-            //writeln(j,'<-',j+1);
-            end;
-        
-        if (tempCarte.numero=15) or (tempCarte.numero=13) then //vérifie si la carte est à usage unique ou non
-            LObjets[0].stats.cartesUniquesJouees:=LObjets[0].stats.cartesUniquesJouees+1
-        else begin
-            LObjets[0].stats.deck[LObjets[0].stats.TailleDeck-LObjets[0].stats.cartesUniquesJouees]:=tempCarte;
-            //writeln(LObjets[0].stats.TailleDeck-LObjets[0].stats.cartesUniquesJouees,' <- ',i);
-            end
-        
-    end;
+procedure CreerBoule(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,vitesse,xdest:Integer;dir:PChar;var proj:TObjet); //Crée un project
+var norme:Real;destination,distance:array['X'..'Y'] of Integer;
+begin
 
-procedure CreerBoule(flat,force:Integer;multiplicateurDegat:Real;x,y,vitesse:Integer;var proj:TObjet);
-var norme:Integer;destination,distance:array['X'..'Y'] of Integer;
-    begin
         //Initialisation des caractéristiques
+
         proj.stats.genre:=projectile;
         proj.stats.degats:=flat;
         proj.stats.force:=force;
+        proj.stats.xreel:=x;
+        proj.stats.yreel:=y;
         proj.stats.multiplicateurDegat:=multiplicateurDegat;
-        CreateRawImage(proj.image,x,y,20,20,'Sprites/Cartes/carte1.bmp');
+        proj.stats.origine:=origine;
+
+        //Initialisation de l'affichage
+
+        CreateRawImage(proj.image,x,y,64,64,dir);
+        InitAnimation(proj.anim,'projectile','active',8,true);
+        proj.anim.estActif:=True;
         
+        //Initialisation de la boîte de collisions
+
+        proj.col.isTrigger := True;
+        proj.col.estActif := True;
+        proj.col.dimensions.w := proj.image.rect.w-10;
+        proj.col.dimensions.h := proj.image.rect.h-10;
+        proj.col.offset.x := 10;
+        proj.col.offset.y := 10;
+        proj.col.nom := 'boule';
+
         //Création du vecteur de mouvement du projectile
-        destination['X']:=getMouseX;
+
+        destination['X']:=xdest;
         destination['Y']:=getmouseY;
         distance['X']:=destination['X']-x;
         distance['Y']:=destination['Y']-y;
-        norme:=round(sqrt(distance['X']**2+distance['Y']**2)) div vitesse;
+        norme:=sqrt(distance['X']**2+distance['Y']**2);
         if norme<>0 then begin
-            //writeln('proj.stats.vectX:=',round(distance['X']/norme),';proj.stats.vectY:=',round(distance['Y']/norme));
-            proj.stats.vectX:=round(distance['X']/norme);
-            proj.stats.vectY:=round(distance['Y']/norme);
-            end;
-        
+            proj.stats.vectX:=(distance['X']/norme)*vitesse;
+            proj.stats.vectY:=(distance['Y']/norme)*vitesse;
+            end
+        else begin 
+            proj.stats.vectX:=0;
+            proj.stats.vectY:=0;
+            end
 
-    end;
+end;
 
 procedure updateBoule(var proj:TObjet);
 begin
-    proj.image.rect.x:=proj.image.rect.x+round(proj.stats.vectX);
-    proj.image.rect.y:=proj.image.rect.y+round(proj.stats.vectY);
+
+    //vérifie si le projectile sort de l'écran
+    if (proj.stats.xreel>1200) or (proj.stats.xreel<0) or (proj.stats.yreel>1000) or (proj.stats.yreel<0) then 
+        begin
+        supprimeObjet(proj);
+        end;
+
+    //ajustement de la position: le projectile avance
+    proj.stats.xreel:=proj.stats.xreel+(proj.stats.vectX);
+    proj.stats.yreel:=proj.stats.yreel+(proj.stats.vectY);
+    proj.image.rect.x:=round(proj.stats.xreel)-25;
+    proj.image.rect.y:=round(proj.stats.yreel)-25;
+
+        if proj.stats.vectX>0 then
+        SDL_RenderCopyEx(sdlRenderer, proj.image.imgTexture, nil, @proj.image.Rect,180*(arctan(proj.stats.vectY/proj.stats.vectX))/pi,nil, SDL_FLIP_NONE);
+        if proj.stats.vectX<0 then
+        SDL_RenderCopyEx(sdlRenderer, proj.image.imgTexture, nil, @proj.image.Rect,180*(arctan(proj.stats.vectY/proj.stats.vectX))/pi,nil, SDL_FLIP_HORIZONTAL);
+    
+end;    
+
+//###"La procédure ultime. On raconte que son accomplissement entraîne la fin de l'univers."
+procedure JouerCarte(); 
+begin
 end;
 
 begin

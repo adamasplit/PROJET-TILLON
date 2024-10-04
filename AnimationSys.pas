@@ -9,13 +9,16 @@ uses
   coeur;
 
 const
-  FRAME_DURATION = 100;  // Durée en ms pour 30 FPS
+  FRAME_DURATION = 90;  // Durée en ms pour 30 FPS
 
 // Initialiser l'animation pour un objet
 procedure InitAnimation(var anim: TAnimation; objectName, etat: PChar; totalFrames: Integer; isLooping: Boolean);
 
 // Mettre à jour l'animation (changer la frame si nécessaire)
 procedure UpdateAnimation(var anim: TAnimation; var image: TImage);
+
+
+
 
 // Animation de Fondu au fromage
 

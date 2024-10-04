@@ -9,10 +9,9 @@ uses
 
 
 
-
 const MAXSALLES=40; //nombre de salles total pour finir le jeu
   MAXENNEMIS=1; //nombre d'ennemis ayant une entrée dans le bestiaire
-  MAXCARTES=40; //taille max du deck
+  MAXCARTES=60; //taille max du deck
 
 var whiteCol,b_color,bf_color,f_color,navy_color,black_color,red_color: TSDL_Color;
 
@@ -43,7 +42,13 @@ type TCarte=record
 end;
 var iCarteChoisie:Integer;
 
+type TDeck=array of TCarte;
+type TPaquet=array[1..MAXCARTES] of TCarte;
+
+
+
 type TStats=record
+    indice:Integer; //représente l'indice de l'objets dans la liste d'objets
     genre:typeObjet;
     case typeObjet of 
         joueur,ennemi,projectile:(force:Integer;
@@ -59,13 +64,14 @@ type TStats=record
           multiplicateurMana:Real;
           Vitesse:Integer;
           manaDebutCombat:Integer;
-          deck:array[1..MAXCARTES] of TCarte;
-          cartesUniquesJouees:Integer;
-          tailleDeck:Integer;
+          collection:array[1..MAXCARTES] of TCarte;
+          deck:^TDeck;
+          tailleCollection:Integer;
           bestiaire:array[1..MAXENNEMIS] of Boolean);
-          
 
-        projectile:(degats:Integer);
+        projectile:(degats:Integer;
+        vectX,vectY,xreel,yreel:Real;
+        origine:typeObjet);
 end;
 
 var Cartes:Array[1..22] of TCarte; //preset pour les cartes
@@ -92,11 +98,43 @@ type TSalle=record
     evenement:evenements;
 end;
 
-var LObjets: Array of TObjet;
+var LObjets: Array of TObjet; //Liste universelle des objets présents
+PDeck:TDeck; //deck pointé par les stats du joueur
 
+//Procédures de gestion de LObjets
 
+procedure AjoutObjet(var obj:TObjet);
+procedure supprimeObjet(var obj:TObjet); 
         
 implementation
+
+procedure AjoutObjet(var obj:TObjet); //Ajoute directement un projectile/autre à LObjets
+begin
+    obj.stats.indice:=High(LObjets)+1;
+    setlength(LObjets,High(LObjets)+2);
+    LOBjets[obj.stats.indice]:=obj;
+end;
+
+procedure supprimeObjet(var obj:TObjet); //Retire un élément de LObjets
+
+var i,taille:Integer;
+
+begin
+    taille:=High(LObjets);
+    writeln('destruction de LOBjets[',obj.stats.indice,']');
+    for i:=obj.stats.indice to taille-1 do begin
+        if i<High(LObjets) then
+            begin
+            writeln('assigning ',i+1,'to ',i,', last i is ',taille-2);
+            LObjets[i]:=LObjets[i+1];
+            LObjets[i].stats.indice:=i;
+            end
+        end;
+    writeln('la taille change vers ',taille);
+    setlength(LObjets,taille);
+    writeln('taille changée');
+end;
+
 var i:Integer;
 begin
    // Définir les couleurs de base

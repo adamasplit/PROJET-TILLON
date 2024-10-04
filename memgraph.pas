@@ -66,7 +66,8 @@ procedure RenderText(var text: TText);
 
 procedure DrawRect(bgColor : TSDL_Color; aplha,x,y,w,h :Integer);
 
-procedure CreateRawImage(var image : TImage; x, y, w, h: Integer; directory : PAnsiChar);
+procedure CreateRawImage(var image : TImage; x, y, w, h: Integer; directory : PAnsiChar); 
+
 procedure RenderRawImage(var image: Timage; flip: Boolean);
 
 procedure CreateInteractableImage(var image : TIntImage; x, y, w, h: Integer; directory : PAnsiChar; onClick: ButtonProcedure);
@@ -331,4 +332,5 @@ BEGIN
   TTF_SetFontStyle(dayDream40, TTF_STYLE_NORMAL);
   TTF_SetFontOutline(dayDream40, 1);
   TTF_SetFontHinting(dayDream40, TTF_HINTING_NORMAL);
+  writeln('memgraph DONE.');
 END.
