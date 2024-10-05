@@ -6,11 +6,11 @@ var imgs0,imgs1,imgs2,imgs3:TIntImage;
 var salleChoisie:TSalle;
 CONST 
 windowHeight=720;windowWidth=1080;
-      Y1=(windowHeight div 2)+(windowHeight div 4)       ;           
-      Y2=(windowHeight div 2);
-      Y3=(windowHeight div 2)-(windowHeight div 4);
-      X1=(windowWidth  div 2) - (windowWidth div 2);
-      X2=(windowWidth  div 2) + (windowWidth div 2);
+      Y1=(windowHeight div 2)+(windowHeight div 4)-64;           
+      Y2=(windowHeight div 2)-64;
+      Y3=(windowHeight div 2)-(windowHeight div 4)-64;
+      X1=(windowWidth  div 2) - (windowWidth div 2)+128;
+      X2=(windowWidth  div 2) + (windowWidth div 4);
 
 procedure generationChoix(avancement:Integer;var salle1,salle2,salle3:TSalle);
 procedure affichageSalles(salle1,salle2,salle3:TSalle);
@@ -66,6 +66,7 @@ procedure LancementSalleCombat();
 begin
     choisirEnnemis(LObjets[0].stats.avancement,salleChoisie);
     InitUICombat();
+    SceneActive:='Jeu'
 end;
 
 procedure LancementSalleHasard();
@@ -114,8 +115,8 @@ begin
             end
     end;
     writeln(dir);
-    CreateInteractableImage(img,x,y,128,128,dir,proc);
-    RenderIntImage(img);
+    CreateInteractableImage(salle.image,x,y,128,128,dir,proc);
+    RenderIntImage(salle.image);
 end;
 
 procedure affichageSalles(salle1,salle2,salle3:TSalle);
@@ -131,6 +132,7 @@ end;
 procedure choixSalle(avancement:Integer;var salle:TSalle); //permet au joueur de choisir la salle suivante
 var   salle1,salle2,salle3:TSalle;
 begin
+    SceneActive:='map';
     writeln('initialisation des salles...');
     generationChoix(avancement,salle1,salle2,salle3);
     writeln('tentative d"affichage des salles');
@@ -138,6 +140,31 @@ begin
     salle.evenement:=rien;
     writeln('début du choix');
     SDL_RenderPresent(sdlRenderer);
+    new(testEvent);
+    while SceneActive='map' do 
+        begin
+        SDL_PumpEvents();
+        SDL_delay(10);
+        while SDL_PollEvent( testEvent ) = 1 do
+            begin
+                case testEvent^.type_ of
+			        SDL_KEYDOWN:
+      		            begin
+        		        case testEvent^.key.keysym.sym of
+					        SDLK_ESCAPE : writeln('h');//menuEnJeu;
+        		            end;
+      		            end;
+
+			        //Bouton de souris pressé
+			        SDL_MOUSEBUTTONDOWN: 
+			            begin
+				            HandleImageClick(salle1.image,testEvent^.motion.x,testEvent^.motion.y);
+                            HandleImageClick(salle2.image,testEvent^.motion.x,testEvent^.motion.y);
+                            HandleImageClick(salle3.image,testEvent^.motion.x,testEvent^.motion.y);
+                        end
+                    end
+            end
+        end
 end;
 
 begin

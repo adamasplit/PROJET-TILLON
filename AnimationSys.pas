@@ -17,6 +17,8 @@ procedure InitAnimation(var anim: TAnimation; objectName, etat: PChar; totalFram
 // Mettre à jour l'animation (changer la frame si nécessaire)
 procedure UpdateAnimation(var anim: TAnimation; var image: TImage);
 
+function GetFramePath(anim: TAnimation): PChar;
+
 
 
 

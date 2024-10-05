@@ -2,18 +2,20 @@ program SDL_Fonts;
 
 uses
 	AnimationSys,
+	coeur,
 	CollisionSys,
+	combatLib,
+	eventsys,
+	MapSys,
+	memgraph,
 	SDL2,
-  SDL2_mixer,
-  coeur,
-  eventsys,
-  MapSys,
-  memgraph,
-  SysUtils,
-  sonoSys,
-  combatLib,SDL2_ttf;
+	SDL2_mixer,
+	SDL2_ttf,
+	sonoSys,
+	SysUtils;
 
-var i,j:Integer;
+var i,j,xpos:Integer;
+boule:TObjet; //variable de test
 
 // Bouttons
 var button_jouer: TButton;
@@ -93,6 +95,27 @@ begin
   SDL_Quit;
 end;
 
+procedure UpdateAnimations(var Objets:Array of TObjet);
+var i:Integer;
+begin
+for i:=0 to High(Objets) do 
+			begin
+        if Objets[i].stats.genre<>projectile then
+				  RenderRawImage(Objets[i].image, Objets[i].anim.isFliped);
+				if Objets[i].anim.estActif then 
+					begin
+					UpdateAnimation(Objets[i].anim, LObjets[i].image);
+					end
+			end;
+for i:=2 to High(LObjets) do
+      if (i<=High(LObjets)) and (LObjets[i].stats.genre=projectile) then 
+        begin
+        if i<>LObjets[i].stats.indice then writeln('conflit à l"indice',i);
+        //writeln('accès à l"objet numéro ',i,' dernier indice de LObjets : ',high(LObjets));
+        updateBoule(LObjets[i]);
+        end;
+end;
+
 procedure ActualiserJeu;
 	begin
 		SDL_RenderClear(sdlRenderer);
@@ -100,25 +123,18 @@ procedure ActualiserJeu;
 		sdl_delay(10);
 		
 		UpdateCollisions(LObjets);
-		for i:=0 to High(LObjets) do 
-			begin
-				RenderRawImage(LObjets[i].image, LObjets[i].anim.isFliped);
-				if LObjets[i].anim.estActif then 
-					begin
-					UpdateAnimation(LObjets[i].anim, LObjets[i].image);
-    				
-					end
-			end;
+		UpdateAnimations(LObjets);
 		RegenMana(LastUpdateTime2,LObjets[0].stats);
         //Render
 		while sdl_pollevent(testEvent)=1 do 
 			case testEvent^.type_ of
 			SDL_mousemotion: begin
-			getMouseX;getMouseY;
+			getMouseX;getMouseY;xpos:=testevent^.motion.x;
 			end;
-			SDL_mousebuttondown : if LObjets[0].stats.mana>=LObjets[0].stats.deck[iCarteChoisie].cout then begin
-   			retirerCarte(iCarteChoisie);
-   			end;
+			SDL_mousebuttondown : 
+				begin 
+				jouerCarte(LObjets[0].stats.deck^,iCarteChoisie,LObjets[0].stats.force,LObjets[0].stats.multiplicateurDegat,LObjets[0].stats.vie,LObjets[0].stats.mana,LObjets[0].image.rect.x+(LObjets[0].image.rect.w div 2),LObjets[0].image.rect.y+(LObjets[0].image.rect.h div 2));
+   				end;
 			SDL_MOUSEWHEEL:begin
   			if testEvent^.wheel.y < 0 then icarteChoisie:=(isuiv(iCarteChoisie))
   			else icarteChoisie:=(iprec(iCarteChoisie));
@@ -270,6 +286,7 @@ mix_playMusic(OST[IndiceMusiqueJouee].musique,0);
   setLength(LObjets,2);
   LObjets[0] := Joueur;
   LObjets[1] := Dummy;
+  LObjets[1].stats.genre:=ennemi;
 
   LObjets[0].image.rect.x := windowWidth div 2;
   LObjets[0].image.rect.x := windowWidth div 2;
@@ -279,18 +296,19 @@ mix_playMusic(OST[IndiceMusiqueJouee].musique,0);
 	LastUpdateTime2:=SDL_GetTicks();
 
 
-
 SDL_RenderClear(sdlRenderer);
 new(TestEvent);
-LObjets[0].stats.tailleDeck:=5;
+LObjets[0].stats.tailleCollection:=22;
 LObjets[0].stats.Vitesse:=5;
 LObjets[0].stats.multiplicateurMana:=1;
-LObjets[0].stats.cartesUniquesJouees:=0;
-randomize();
-for j:=1 to 20 do begin
-  LObjets[0].stats.deck[j]:=Cartes[j]
+for j:=1 to 22 do begin
+  LObjets[0].stats.collection[j]:=Cartes[j]
 end;
-initStatsCombat(LObjets[0].stats);
+initStatsCombat(LObjets[0].stats,LObjets[0].stats);
+randomize();
+
+
+
 LObjets[0].stats.vie:=5;
 LObjets[0].stats.vieMax:=10;
 LObjets[0].stats.mana:=0;

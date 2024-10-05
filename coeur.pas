@@ -96,6 +96,7 @@ type
 
 type TSalle=record
     evenement:evenements;
+    image:TintImage;
 end;
 
 var LObjets: Array of TObjet; //Liste universelle des objets présents
@@ -110,9 +111,11 @@ implementation
 
 procedure AjoutObjet(var obj:TObjet); //Ajoute directement un projectile/autre à LObjets
 begin
+    
     obj.stats.indice:=High(LObjets)+1;
     setlength(LObjets,High(LObjets)+2);
     LOBjets[obj.stats.indice]:=obj;
+    writeln('création d"un projectile, taille de LOBjets: ',high(lobjets)+1);
 end;
 
 procedure supprimeObjet(var obj:TObjet); //Retire un élément de LObjets
@@ -120,19 +123,17 @@ procedure supprimeObjet(var obj:TObjet); //Retire un élément de LObjets
 var i,taille:Integer;
 
 begin
-    taille:=High(LObjets);
-    writeln('destruction de LOBjets[',obj.stats.indice,']');
-    for i:=obj.stats.indice to taille-1 do begin
-        if i<High(LObjets) then
-            begin
-            writeln('assigning ',i+1,'to ',i,', last i is ',taille-2);
+    taille:=High(LObjets)+1;
+    writeln('destruction de LOBjets[',obj.stats.indice,'], taille de LObjets:',taille);
+    for i:=obj.stats.indice to taille-2 do 
+        begin
+            //writeln('l"objet à l"indice ',i,' prend la valeur de l"objet à l"indice',i+1,', la boucle se finira à ',taille-2);
             LObjets[i]:=LObjets[i+1];
             LObjets[i].stats.indice:=i;
-            end
         end;
-    writeln('la taille change vers ',taille);
-    setlength(LObjets,taille);
-    writeln('taille changée');
+    //writeln('la taille change vers ',taille-1);
+    setlength(LObjets,taille-1);
+    //writeln('taille changée');
 end;
 
 var i:Integer;

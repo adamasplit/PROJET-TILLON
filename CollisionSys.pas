@@ -93,12 +93,12 @@ begin
   // Exemple de gestion du trigger : ici, tu peux ajouter des actions spécifiques
   //WriteLn('Trigger collision detected between ', obj1.col.nom, ' and ', obj2.col.nom);
   
-  if obj1.stats.genre=projectile then
+  {if obj1.stats.genre=projectile then
     if obj2.stats.genre<>obj1.stats.origine then
       supprimeObjet(obj1);
-  if obj1.stats.genre=projectile then
-    if obj2.stats.genre<>obj1.stats.origine then
-      supprimeObjet(obj2);
+  if obj2.stats.genre=projectile then
+    if obj1.stats.genre<>obj2.stats.origine then
+      supprimeObjet(obj2);}
 
 end;
 

@@ -16,8 +16,9 @@ procedure CreerDeckCombat(stat : TStats;var DeckCombat:TDeck);
 procedure cycle (var deck : TDeck ; i : Integer);
 procedure circoncision  (var deck : Tdeck);
 procedure initStatsCombat(statsPerm:TStats;var statsTemp:TStats);
-procedure CreerBoule(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,vitesse,xdest:Integer;dir:PChar;var proj:TObjet);
+procedure CreerBoule(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,vitesse,xdest:Integer;nom:PChar;var proj:TObjet);
 procedure updateBoule(var proj:TObjet);
+procedure JouerCarte(var deck:TDeck;i,force:Integer;multiplicateurDegat:Real;var vie,mana:Integer;x,y:Integer);  
 
 
 implementation
@@ -81,7 +82,7 @@ begin
 end;
 
 // place la carte jouée au fond du paquet // prend en entrée un POINTEUR deck^
-procedure cycle (var deck : TDeck ; i : Integer); // i = indice de la carte jouée
+procedure cycle (var deck : TDeck ; i: Integer); // i = indice de la carte jouée
 var j : Integer;
     mem : TCarte;
 begin
@@ -133,7 +134,7 @@ begin
 end;
 
 
-procedure CreerBoule(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,vitesse,xdest:Integer;dir:PChar;var proj:TObjet); //Crée un project
+procedure CreerBoule(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,vitesse,xdest:Integer;nom:PChar;var proj:TObjet); //Crée un project
 var norme:Real;destination,distance:array['X'..'Y'] of Integer;
 begin
 
@@ -148,11 +149,11 @@ begin
         proj.stats.origine:=origine;
 
         //Initialisation de l'affichage
-
-        CreateRawImage(proj.image,x,y,64,64,dir);
-        InitAnimation(proj.anim,'projectile','active',8,true);
-        proj.anim.estActif:=True;
         
+        InitAnimation(proj.anim,nom,'active',8,true);
+        proj.anim.estActif:=True;
+        CreateRawImage(proj.image,x,y,64,64,getFramePath(proj.anim));
+
         //Initialisation de la boîte de collisions
 
         proj.col.isTrigger := True;
@@ -186,28 +187,52 @@ begin
 
     //vérifie si le projectile sort de l'écran
     if (proj.stats.xreel>1200) or (proj.stats.xreel<0) or (proj.stats.yreel>1000) or (proj.stats.yreel<0) then 
+
         begin
         supprimeObjet(proj);
-        end;
+        end
 
-    //ajustement de la position: le projectile avance
-    proj.stats.xreel:=proj.stats.xreel+(proj.stats.vectX);
-    proj.stats.yreel:=proj.stats.yreel+(proj.stats.vectY);
-    proj.image.rect.x:=round(proj.stats.xreel)-25;
-    proj.image.rect.y:=round(proj.stats.yreel)-25;
+    else
 
-        if proj.stats.vectX>0 then
-        SDL_RenderCopyEx(sdlRenderer, proj.image.imgTexture, nil, @proj.image.Rect,180*(arctan(proj.stats.vectY/proj.stats.vectX))/pi,nil, SDL_FLIP_NONE);
-        if proj.stats.vectX<0 then
-        SDL_RenderCopyEx(sdlRenderer, proj.image.imgTexture, nil, @proj.image.Rect,180*(arctan(proj.stats.vectY/proj.stats.vectX))/pi,nil, SDL_FLIP_HORIZONTAL);
-    
+        begin
+
+        //ajustement de la position: le projectile avance
+        proj.stats.xreel:=proj.stats.xreel+(proj.stats.vectX);
+        proj.stats.yreel:=proj.stats.yreel+(proj.stats.vectY);
+        proj.image.rect.x:=round(proj.stats.xreel)-25;
+        proj.image.rect.y:=round(proj.stats.yreel)-25;
+            if proj.stats.vectX>0 then
+            SDL_RenderCopyEx(sdlRenderer, proj.image.imgTexture, nil, @proj.image.Rect,180*(arctan(proj.stats.vectY/proj.stats.vectX))/pi,nil, SDL_FLIP_NONE);
+            if proj.stats.vectX<0 then
+            SDL_RenderCopyEx(sdlRenderer, proj.image.imgTexture, nil, @proj.image.Rect,180*(arctan(proj.stats.vectY/proj.stats.vectX))/pi,nil, SDL_FLIP_HORIZONTAL);
+        end
 end;    
 
 //###"La procédure ultime. On raconte que son accomplissement entraîne la fin de l'univers."
-procedure JouerCarte(); 
-begin
-end;
+procedure JouerCarte(var deck:TDeck;i,force:Integer;multiplicateurDegat:Real;var vie,mana:Integer;x,y:Integer); 
+
+var tempCarte:TCarte;projectile:TOBjet;
 
 begin
+    tempCarte:=deck[i];
+    if tempCarte.cout<=mana then 
+        begin
+        mana:=mana-tempCarte.cout;
+        cycle(deck,i);
+        //Partie principale : tous les effets de cartes y seront répertoriés
+        case tempCarte.numero of
+            0:writeln('???')
+            else 
+                begin //création d'un projectile ( les éventuels changements sont sur le 2ème élément (les dégâts), celui avant getmousex (la vitesse) et l'avant-dernier (pour l'image))
+                creerBoule(typeobjet(0),1,force,multiplicateurDegat,x,y,5,getmouseX,'projectile',projectile);
+                ajoutObjet(projectile);
+                end
+            end;
+        end;
+
+
+end;
+
+
 
 end.
