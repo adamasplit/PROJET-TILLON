@@ -324,9 +324,9 @@ begin
         end
 
     else
-        if not(leMonde) then
+        
         begin
-
+        if not(leMonde) then
         begin
 
         //ajustement de la position: le projectile avance
@@ -334,6 +334,7 @@ begin
         proj.stats.yreel:=proj.stats.yreel+(proj.stats.vectY);
         proj.image.rect.x:=round(proj.stats.xreel)-25;
         proj.image.rect.y:=round(proj.stats.yreel)-25;
+        end;
         //affichage inversé ou non selon la direction
             if proj.stats.vectX>0 then
             SDL_RenderCopyEx(sdlRenderer, proj.image.imgTexture, nil, @proj.image.Rect,180*(arctan(proj.stats.vectY/proj.stats.vectX))/pi,nil, SDL_FLIP_NONE);
