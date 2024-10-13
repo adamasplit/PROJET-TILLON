@@ -17,7 +17,7 @@ var whiteCol,b_color,bf_color,f_color,navy_color,black_color,red_color: TSDL_Col
 
 
 type evenements=(combat,marchand,hasard,camp,rien,boss);
-type typeObjet=(joueur,ennemi,projectile,autre);
+type typeObjet=(joueur,ennemi,projectile,laser,epee,effet,autre);
 
 type
   TAnimation = record
@@ -39,20 +39,43 @@ type TCarte=record
     description:String; //Description dans le menu
     dir:PChar;
     image:TImage;
+    charges,chargesMax:Integer;
+    active:Boolean;
 end;
 var iCarteChoisie:Integer;
 
 type TDeck=array of TCarte;
 type TPaquet=array[1..MAXCARTES] of TCarte;
 
-
-
 type TStats=record
     indice:Integer; //représente l'indice de l'objets dans la liste d'objets
     genre:typeObjet;
-    case typeObjet of 
+    force:Integer;
+    multiplicateurDegat:Real;
+    defense:Integer;
+    vie:Integer;
+    vieMax:Integer;
+    mana:Integer;
+    manaMax:Integer;
+    avancement:Integer;
+    multiplicateurMana:Real;
+    Vitesse:Integer;
+    manaDebutCombat:Integer;
+    collection:TPaquet;
+    deck:^TDeck;
+    tailleCollection:Integer;
+    bestiaire:array[1..MAXENNEMIS] of Boolean;    
+    xcible,ycible,compteurAction:Integer;
+    degats:Integer;origine:typeObjet;vectX,vectY,xreel,yreel,angle:Real;
+    dureeVie,delai,vitRotation:Integer
+end;
+
+{type TStats=record //(version variable)
+    indice:Integer; //représente l'indice de l'objets dans la liste d'objets
+    case genre:typeObjet of 
         joueur,ennemi,projectile:(force:Integer;
         multiplicateurDegat:Real);
+
         joueur,ennemi: (
           defense:Integer;
           vie:Integer;
@@ -64,15 +87,16 @@ type TStats=record
           multiplicateurMana:Real;
           Vitesse:Integer;
           manaDebutCombat:Integer;
-          collection:array[1..MAXCARTES] of TCarte;
+          collection:TPaquet;
           deck:^TDeck;
           tailleCollection:Integer;
           bestiaire:array[1..MAXENNEMIS] of Boolean);
-
-        projectile:(degats:Integer;
-        vectX,vectY,xreel,yreel:Real;
-        origine:typeObjet);
-end;
+        
+        ennemi:(xcible,ycible,compteurAction:Integer);
+        
+        projectile,laser:(degats:Integer;origine:typeObjet;vectX,vectY,xreel,yreel:Real);
+        laser:(dureeVie,delai,vitRotation:Integer);
+end;}
 
 var Cartes:Array[1..22] of TCarte; //preset pour les cartes
 
@@ -98,8 +122,9 @@ type TSalle=record
     evenement:evenements;
     image:TintImage;
 end;
-
-var LObjets: Array of TObjet; //Liste universelle des objets présents
+type ListeObjets = Array of TObjet; 
+var LObjets: ListeObjets; //Liste universelle des objets présents
+statsJoueur: TStats;
 PDeck:TDeck; //deck pointé par les stats du joueur
 
 //Procédures de gestion de LObjets
@@ -113,9 +138,10 @@ procedure AjoutObjet(var obj:TObjet); //Ajoute directement un projectile/autre �
 begin
     
     obj.stats.indice:=High(LObjets)+1;
-    setlength(LObjets,High(LObjets)+2);
-    LOBjets[obj.stats.indice]:=obj;
-    writeln('création d"un projectile, taille de LOBjets: ',high(lobjets)+1);
+    setlength(LObjets,obj.stats.indice+1);
+    //writeln('ajout d"un objet à l"indice', obj.stats.indice,' dernier indice : ',high(LObjets));
+    LObjets[obj.stats.indice]:=obj;
+    //writeln('objet ajouté avec succès, taille de LOBjets: ',high(LObjets)+1);
 end;
 
 procedure supprimeObjet(var obj:TObjet); //Retire un élément de LObjets
@@ -125,13 +151,15 @@ var i,taille:Integer;
 begin
     taille:=High(LObjets)+1;
     writeln('destruction de LOBjets[',obj.stats.indice,'], taille de LObjets:',taille);
+    SDL_DestroyTexture(obj.image.imgtexture);
+    SDL_freeSurface(obj.image.imgSurface);
     for i:=obj.stats.indice to taille-2 do 
         begin
             //writeln('l"objet à l"indice ',i,' prend la valeur de l"objet à l"indice',i+1,', la boucle se finira à ',taille-2);
             LObjets[i]:=LObjets[i+1];
             LObjets[i].stats.indice:=i;
         end;
-    //writeln('la taille change vers ',taille-1);
+    //writeln('taille de LOBjets : ',taille-1);
     setlength(LObjets,taille-1);
     //writeln('taille changée');
 end;
@@ -148,14 +176,13 @@ begin
   red_color.r := 255; red_color.g := 0; red_color.b := 50;
 
 
-  setLength(LObjets,2);
 
-  LObjets[0].stats.genre:=joueur;
-  LObjets[0].stats.vieMax:=100;
-  LObjets[0].stats.vie:=100;
-  LObjets[0].stats.mana:=0;
-  LObjets[0].stats.manaMax:=10;
-  LObjets[0].stats.multiplicateurMana:=1;
+  statsJoueur.genre:=joueur;
+  statsJoueur.vieMax:=100;
+  statsJoueur.vie:=100;
+  statsJoueur.mana:=0;
+  statsJoueur.manaMax:=10;
+  statsJoueur.multiplicateurMana:=1;
 
   for i:=1 to 22 do begin
     cartes[i].numero:=i;
@@ -222,6 +249,7 @@ begin
     21:cartes[i].dir:='Sprites/Cartes/carte21.bmp';
     22:cartes[i].dir:='Sprites/Cartes/carte22.bmp';
     end;
+    cartes[i].chargesMax:=3;
     end;
     writeln('CORE ready');
 end.

@@ -9,7 +9,7 @@ uses
   coeur;
 
 const
-  FRAME_DURATION = 90;  // Durée en ms pour 30 FPS
+  FRAME_DURATION = 66;  // Durée en ms pour 30 FPS
 
 // Initialiser l'animation pour un objet
 procedure InitAnimation(var anim: TAnimation; objectName, etat: PChar; totalFrames: Integer; isLooping: Boolean);
@@ -18,6 +18,7 @@ procedure InitAnimation(var anim: TAnimation; objectName, etat: PChar; totalFram
 procedure UpdateAnimation(var anim: TAnimation; var image: TImage);
 
 function GetFramePath(anim: TAnimation): PChar;
+function AnimFinie(anim:TAnimation):Boolean;
 
 
 
@@ -81,6 +82,11 @@ begin
     // Mettre à jour le temps de la dernière mise à jour
     anim.LastUpdateTime := currentTime;
   end;
+end;
+
+function animFinie(anim:TAnimation):Boolean;
+begin
+  animFinie:=(anim.currentFrame=anim.totalFrames)
 end;
 
 end.

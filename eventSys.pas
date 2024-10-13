@@ -83,7 +83,7 @@ begin
     CreateRawImage(CombatUI[2],850,-40,300,800,'Sprites/Menu/CombatUI_1.bmp');
     CreateRawImage(CombatUI[4],15,560,128,128,'Sprites/Menu/CombatUI_4.bmp');
     CreateRawImage(CombatUI[5],30,575,100,100,'Sprites/Menu/CombatUI_5.bmp');
-    RenderRawImage(CombatUI[1],False);RenderRawImage(CombatUI[2],True);
+    RenderRawImage(CombatUI[1],255,False);RenderRawImage(CombatUI[2],255,True);
     iCarteChoisie:=1;
 end;
 
@@ -93,39 +93,55 @@ begin
     //Carte-curseur
     SDL_FreeSurface(CombatUI[3].imgSurface);
     SDL_DestroyTexture(CombatUI[3].imgTexture);
-    CreateRawImage(CombatUI[3],min(820,max(GetMouseX-20,140)),GetMouseY-5,128,128,stats.deck^[icarteChoisie].dir);
-    RenderRawImage(combatUI[3],false);
-    if LObjets[0].stats.mana<LObjets[0].stats.deck^[iCarteChoisie].cout then
-        drawRect(black_color,190,CombatUI[3].rect.x+20,CombatUI[3].rect.y,90,128);
-
+    CreateRawImage(CombatUI[3],min(820,max(GetMouseX-20,140)),GetMouseY-5,64,64,stats.deck^[icarteChoisie].dir);
+    if (LObjets[0].stats.mana<LObjets[0].stats.deck^[iCarteChoisie].cout) and not (LObjets[0].stats.deck^[iCarteChoisie].active) then
+      begin
+      //sdl_settexturecolormod(combatUI[3].imgTexture,120,120,120);
+      RenderRawImage(combatUI[3],100,false);
+      drawRect(black_color,120,CombatUI[3].rect.x+10,CombatUI[3].rect.y,45,64);
+      end
+    else
+      begin
+      //sdl_settexturecolormod(combatUI[3].imgTexture,120,120,120);
+      RenderRawImage(combatUI[3],200,false);
+      end;
     //Bandes de part et d'autre
-    RenderRawImage(CombatUI[1],False);
-    RenderRawImage(CombatUI[2],True);
+    RenderRawImage(CombatUI[1],255,False);
+    RenderRawImage(CombatUI[2],255,True);
     //Vie
     DrawRect(black_color,255, 30, 350, 30, 200);
-    DrawRect(red_color,255, 35, 355+190-Round(190*stats.vie/stats.vieMax), 20, Round(190*stats.vie/stats.vieMax) );
+    if stats.vie>0 then
+      DrawRect(red_color,255, 35, 355+190-Round(190*(stats.vie/stats.vieMax)), 20, Round(190*(stats.vie/stats.vieMax)) );
     //Mana
     DrawRect(black_color,255,95, 350, 30, 200);
-    DrawRect(b_color,255, 100, 355+190-Round(190* stats.mana/stats.manaMax), 20, Round(190* stats.mana/stats.manaMax) );
+    if stats.manaMax<10 then
+      writeln('Attention, le mana max est à ',stats.manaMax);
+    if stats.manaMax>0 then
+      DrawRect(b_color,255, 100, 355+190-Round(190* (stats.mana/stats.manaMax)), 20, Round(190* (stats.mana/stats.manaMax)) );
     //Portrait
-    RenderRawImage(CombatUI[4],False);
-    RenderRawImage(CombatUI[5],False);
+    RenderRawImage(CombatUI[4],255,False);
+    RenderRawImage(CombatUI[5],255,False);
     //3 cartes disponibles
-    if  high(stats.deck^)>=3 then begin
+    if  high(stats.deck^)>=3 then 
+      begin
         case icarteChoisie of //mettre une des cartes en surbrillance selon celle choisie
         0:drawRect(red_color,160,933,68,135,132);
         1:drawRect(red_color,160,933,218,135,132);
         2:drawRect(red_color,160,933,368,135,132);
-        end;
-        for i:=1 to 3 do begin
-        SDL_FreeSurface(CombatUI[6+i].imgSurface);
-        SDL_DestroyTexture(CombatUI[6+i].imgTexture);
-        end;
-        createRawImage(CombatUI[7],940,70,128,128,stats.deck^[0].dir);
-        createRawImage(CombatUI[8],940,220,128,128,stats.deck^[1].dir);
-        createRawImage(CombatUI[9],940,370,128,128,stats.deck^[2].dir);
-        RenderRawImage(combatUI[7],false);RenderRawImage(combatUI[8],false);RenderRawImage(combatUI[9],false);
-        end;
+      end;
+    for i:=1 to 3 do 
+      begin
+      SDL_FreeSurface(CombatUI[6+i].imgSurface);
+      SDL_DestroyTexture(CombatUI[6+i].imgTexture);
+      if (LObjets[0].stats.deck^[i-1].active) then
+        drawRect(black_color,round(180*(LObjets[0].stats.deck^[i-1].charges)/(LObjets[0].stats.deck^[iCarteChoisie].chargesMax)),933,68+150*(i-1),135,132);
+        
+      end;
+    createRawImage(CombatUI[7],940,70,128,128,stats.deck^[0].dir);
+    createRawImage(CombatUI[8],940,220,128,128,stats.deck^[1].dir);
+    createRawImage(CombatUI[9],940,370,128,128,stats.deck^[2].dir);
+    RenderRawImage(combatUI[7],255,false);RenderRawImage(combatUI[8],255,false);RenderRawImage(combatUI[9],255,false);
+    end;
     //Reste du deck
     if high(stats.deck^)>3 then begin
         drawRect(black_color,100,935,560,133,158);
@@ -133,7 +149,7 @@ begin
             SDL_FreeSurface(CombatUI[7+i].imgSurface);
             SDL_DestroyTexture(CombatUI[7+i].imgTexture);
             createRawImage(CombatUI[7+i],920+4*i,600-i*5,128,128,stats.deck^[i].dir);
-            renderRawImage(CombatUI[7+i],False);
+            renderRawImage(CombatUI[7+i],255,False);
             end;
             end;
     end;

@@ -3,7 +3,8 @@ interface
 uses SDL2, SDL2_mixer,SysUtils; //télécharger SDL2_mixer au préalable
 
 const TAILLE_OST=15;
-
+        VOLUME_MUSIQUE=20;
+        VOLUME_SON=40;
 type TMus=record
     musique:PMix_Music;
     duree:Integer;
@@ -13,6 +14,7 @@ end;
 
 var OST:array[1..TAILLE_OST] of TMus;
     IndiceMusiqueJouee:Integer;
+
 
 procedure jouerSon(nomFichier:PChar);//joue un son .WAV
 procedure jouerMus(i:Integer);//joue une musique .OGG ou .WAV
@@ -33,14 +35,14 @@ function chargerSFX(nomFichier:PCHar):PMix_Chunk;
     begin
     chargerSFX := Mix_LoadWAV(nomFichier);
     if chargerSFX = nil then Exit;
-    Mix_VolumeChunk(chargerSFX, MIX_MAX_VOLUME);
+    Mix_VolumeChunk(chargerSFX, VOLUME_SON);
     end;
 
 function chargerOST(nomFichier:PChar):PMix_Music;
     begin
     chargerOST := Mix_LoadMUS(nomFichier);
     if chargerOST = nil then Exit;
-    Mix_VolumeMusic(MIX_MAX_VOLUME);
+    Mix_VolumeMusic(VOLUME_MUSIQUE);
     end;
 
 procedure defMus(indice:Integer;dir:Pchar;nom:String;duree:Integer);

@@ -64,11 +64,11 @@ procedure HandleButtonClick(var button: TButton; x, y: Integer);
 procedure CreateText(var text : TText; x, y, w, h: Integer; labelText: PAnsiChar;font:PTTF_font; textColor: TSDL_Color);
 procedure RenderText(var text: TText);
 
-procedure DrawRect(bgColor : TSDL_Color; aplha,x,y,w,h :Integer);
+procedure DrawRect(bgColor : TSDL_Color; alpha,x,y,w,h :Integer);
 
 procedure CreateRawImage(var image : TImage; x, y, w, h: Integer; directory : PAnsiChar); 
 
-procedure RenderRawImage(var image: Timage; flip: Boolean);
+procedure RenderRawImage(var image: Timage;alpha:Integer; flip : Boolean);
 
 procedure CreateInteractableImage(var image : TIntImage; x, y, w, h: Integer; directory : PAnsiChar; onClick: ButtonProcedure);
 procedure RenderIntImage(var image : TIntImage);
@@ -176,7 +176,7 @@ begin
   SDL_RenderCopy(sdlRenderer, text.textTexture, nil, @textRect);
 end;
 
-procedure DrawRect(bgColor: TSDL_Color; aplha, x, y, w, h: Integer);
+procedure DrawRect(bgColor: TSDL_Color; alpha, x, y, w, h: Integer);
 var
   drect: TSDL_Rect;
   prevR, prevG, prevB, prevA: UInt8;  // Variables pour sauvegarder la couleur actuelle
@@ -191,7 +191,7 @@ begin
   drect.y := y;
 
   // Changement de la couleur de rendu pour dessiner le rectangle
-  SDL_SetRenderDrawColor(sdlRenderer, bgColor.r, bgColor.g, bgColor.b, aplha);
+  SDL_SetRenderDrawColor(sdlRenderer, bgColor.r, bgColor.g, bgColor.b, alpha);
   SDL_RenderFillRect(sdlRenderer, @drect);
 
   // Restauration de la couleur de rendu précédente
@@ -220,13 +220,15 @@ begin
   // Convertion surface --> texture
   image.imgTexture := SDL_CreateTextureFromSurface(sdlRenderer, image.imgSurface);
   if image.imgTexture = nil then begin WriteLn(SDL_GetError); HALT end;
+  
 end;
 
 
-procedure RenderRawImage(var image: Timage; flip : Boolean);
+procedure RenderRawImage(var image: Timage;alpha:Integer; flip : Boolean);
 var imgRect: TSDL_Rect;
 begin
-
+  // Sauvegarde de la couleur actuelle du renderer
+  sdl_settexturealphamod(image.imgTexture,alpha);
   // Calculs de la position du texte
   imgRect.w := image.rect.w;
   imgRect.h := image.rect.h;
@@ -237,7 +239,7 @@ begin
   if (flip) then
     SDL_RenderCopyEx(sdlRenderer, image.imgTexture, nil, @imgRect,0, nil, SDL_FLIP_HORIZONTAL)
     else
-    SDL_RenderCopy(sdlRenderer, image.imgTexture, nil, @imgRect)
+    SDL_RenderCopy(sdlRenderer, image.imgTexture, nil, @imgRect);
 end;
 
 { 

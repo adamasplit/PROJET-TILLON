@@ -5,6 +5,7 @@ uses
 	coeur,
 	CollisionSys,
 	combatLib,
+	enemyLib,
 	eventsys,
 	MapSys,
 	memgraph,
@@ -15,7 +16,7 @@ uses
 	SysUtils;
 
 var i,j,xpos:Integer;
-boule:TObjet; //variable de test
+boule,enn:TObjet; //variable de test
 
 // Bouttons
 var button_jouer: TButton;
@@ -44,7 +45,7 @@ var	text1 : TText;
 	text_n5: TText;
 
 //Image
-	var menu_bg : TImage;
+	var menu_bg,combat_bg : TImage;
 
 //GameObjects
 
@@ -95,52 +96,64 @@ begin
   SDL_Quit;
 end;
 
-procedure UpdateAnimations(var Objets:Array of TObjet);
+procedure UpdateAnimations();
 var i:Integer;
 begin
-for i:=0 to High(Objets) do 
-			begin
-        if Objets[i].stats.genre<>projectile then
-				  RenderRawImage(Objets[i].image, Objets[i].anim.isFliped);
-				if Objets[i].anim.estActif then 
+for i:=0 to High(LObjets) do 
+		if i<=High(LObjets) then	begin
+			//writeln('mise à jour des animations : indice ',i,', dernier indice :',high(lobjets));
+			LObjets[i].stats.indice:=i;
+        	if (LObjets[i].stats.genre<>projectile) and (LObjets[i].stats.genre<>laser) and (LObjets[i].stats.genre<>epee) then
+				RenderRawImage(LObjets[i].image,255, LObjets[i].anim.isFliped);
+			if LObjets[i].anim.estActif then 
+				begin
+				if (LObjets[i].stats.genre<>laser) and (LObjets[i].stats.genre<>epee) then
 					begin
-					UpdateAnimation(Objets[i].anim, LObjets[i].image);
+					UpdateAnimation(LObjets[i].anim, LObjets[i].image);
+					if (LObjets[i].stats.genre=effet) and (LObjets[i].anim.currentFrame=6) then
+					supprimeObjet(LObjets[i]);
 					end
+				end
 			end;
 for i:=2 to High(LObjets) do
-      if (i<=High(LObjets)) and (LObjets[i].stats.genre=projectile) then 
-        begin
-        if i<>LObjets[i].stats.indice then writeln('conflit à l"indice',i);
-        //writeln('accès à l"objet numéro ',i,' dernier indice de LObjets : ',high(LObjets));
-        updateBoule(LObjets[i]);
-        end;
+      if (i<=High(LObjets)) then
+	  	begin
+	  		//writeln('mise à jour des projectiles : indice ',i,', dernier indice :',high(lobjets));
+			case LObjets[i].stats.genre of 
+        	projectile:begin
+        		if i<>LObjets[i].stats.indice then writeln('conflit à l"indice',i);
+        		//writeln('accès à l"objet numéro ',i,' dernier indice de LObjets : ',high(LObjets));
+        		updateBoule(LObjets[i]);
+        		end;
+			laser:updateRayon(LObjets[i]);
+			epee:UpdateJustice(LObjets[i]);
+			end;
+		end
 end;
 
 procedure ActualiserJeu;
 	begin
+		randomize();
 		SDL_RenderClear(sdlRenderer);
+		renderRawImage(combat_bg,255,False);
 		SDL_PumpEvents;
 		sdl_delay(10);
-		
-		UpdateCollisions(LObjets);
-		UpdateAnimations(LObjets);
-		RegenMana(LastUpdateTime2,LObjets[0].stats);
+		//writeln('mise à jour des collisions');
+		UpdateCollisions();
+		//writeln('mise à jour des animations');
+		UpdateAnimations();
+		//writeln('animations mises à jour');
+		RegenMana(LastUpdateTime2,LObjets[0].stats.mana,LObjets[0].stats.manaMax,LObjets[0].stats.multiplicateurMana);
         //Render
-		while sdl_pollevent(testEvent)=1 do 
-			case testEvent^.type_ of
-			SDL_mousemotion: begin
-			getMouseX;getMouseY;xpos:=testevent^.motion.x;
-			end;
-			SDL_mousebuttondown : 
-				begin 
-				jouerCarte(LObjets[0].stats.deck^,iCarteChoisie,LObjets[0].stats.force,LObjets[0].stats.multiplicateurDegat,LObjets[0].stats.vie,LObjets[0].stats.mana,LObjets[0].image.rect.x+(LObjets[0].image.rect.w div 2),LObjets[0].image.rect.y+(LObjets[0].image.rect.h div 2));
-   				end;
-			SDL_MOUSEWHEEL:begin
-  			if testEvent^.wheel.y < 0 then icarteChoisie:=(isuiv(iCarteChoisie))
-  			else icarteChoisie:=(iprec(iCarteChoisie));
-			end;
-			end;
-		UpdateUICombat(icarteChoisie,400,400,LObjets[0].stats); 
+		//writeln('mise à jour de l"UI');
+		//ébauche d'IA pour l'ennemi
+		//writeln('les ennemis agissent');
+		for i:=1 to High(LObjets) do
+			if i<=High(LObjets) then
+				if LObjets[i].stats.genre=TypeObjet(1) then
+					IAEnnemi(LObjets[i],LObjets[0]);
+		//writeln('les ennemis ont fini d"agir');
+		UpdateUICombat(icarteChoisie,400,400,LObjets[0].stats);
 		SDL_RenderPresent(sdlRenderer);
 		
 	end;
@@ -165,7 +178,6 @@ procedure jouer;
         //Objets de Scene
 		ActualiserJeu;
 	end;
-
 procedure lead;
 	begin
 		SceneActive := 'Leaderboard';
@@ -177,7 +189,7 @@ procedure lead;
 		button_q.estVisible := false;
 		button_jouer.estVisible := false;
 		
-		RenderRawImage(menu_bg, False);
+		RenderRawImage(menu_bg,255, False);
 		//RenderRawImage(vague);
 		RenderText(text1);
 		RenderText(titre_lead);
@@ -210,7 +222,7 @@ procedure direction_menu;
 		button_q.estVisible := true;
 		button_jouer.estVisible := true;
 		
-		RenderRawImage(menu_bg, False);
+		RenderRawImage(menu_bg,255, False);
 		//RenderRawImage(vague);
 		RenderButton(button_jouer);
 		RenderButton(button_lead); 
@@ -254,7 +266,7 @@ begin
 Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT,
     MIX_DEFAULT_CHANNELS, 4096);
 IndiceMusiqueJouee:=10;
-mix_playMusic(OST[IndiceMusiqueJouee].musique,0);
+//mix_playMusic(OST[IndiceMusiqueJouee].musique,0);
   //Events
 	SceneActive := 'Menu';
 	sdlKeyboardState := SDL_GetKeyboardState(nil);
@@ -279,40 +291,39 @@ mix_playMusic(OST[IndiceMusiqueJouee].musique,0);
   Dummy.col.nom := 'Dummy';
   Dummy.anim.estActif := False;
 
-
-  
-
   //Initialisation de la liste d'objets
-  setLength(LObjets,2);
+  setLength(LObjets,7);
   LObjets[0] := Joueur;
   LObjets[1] := Dummy;
-  LObjets[1].stats.genre:=ennemi;
-
+  LObjets[1].stats.genre:=autre;
   LObjets[0].image.rect.x := windowWidth div 2;
   LObjets[0].image.rect.x := windowWidth div 2;
+    LObjets[1].image.rect.x := windowWidth div 2;
+  LObjets[1].image.rect.y := windowWidth div 2;
   LObjets[0].image.rect.y := windowHeight div 2;
+
+  LObjets[2].image.rect.x := windowWidth div 2-100;
+  LObjets[2].image.rect.y := windowHeight div 2-100;
 
   lastUpdateTime1:=SDL_GetTicks();
 	LastUpdateTime2:=SDL_GetTicks();
-
+	SDL_SetRenderDrawBlendMode(sdlRenderer, SDL_BLENDMODE_BLEND);
 
 SDL_RenderClear(sdlRenderer);
 new(TestEvent);
-LObjets[0].stats.tailleCollection:=22;
-LObjets[0].stats.Vitesse:=5;
-LObjets[0].stats.multiplicateurMana:=1;
+statsJoueur.tailleCollection:=22;
+statsJoueur.Vitesse:=5;
+statsJoueur.multiplicateurMana:=1;
 for j:=1 to 22 do begin
-  LObjets[0].stats.collection[j]:=Cartes[j]
+  statsJoueur.collection[j]:=Cartes[j]
 end;
-initStatsCombat(LObjets[0].stats,LObjets[0].stats);
+statsJoueur.vie:=100;statsJoueur.vieMax:=100;
+initStatsCombat(statsJoueur,LObjets[0].stats);
+
 randomize();
 
 
 
-LObjets[0].stats.vie:=5;
-LObjets[0].stats.vieMax:=10;
-LObjets[0].stats.mana:=0;
-LObjets[0].stats.manaMax:=10;
 iCarteChoisie:=1;
 initUICombat();
 SDL_RenderPresent(sdlRenderer);
@@ -371,7 +382,8 @@ SDL_RenderPresent(sdlRenderer);
 
     // GameObjects
     CreateRawImage(LObjets[0].image, windowWidth div 2, windowHeight div 2, 100, 100, 'Sprites\Game\Joueur\Joueur_idle_1.bmp');
-	CreateRawImage(LObjets[1].image, windowWidth - windowWidth div 5, 100, 100, 500, 'Sprites\Menu\fond1.bmp');
+	CreateRawImage(LObjets[1].image, windowWidth, 100, 100, 500, 'Sprites\Menu\fond1.bmp');
+	
 	
 	
 	
@@ -386,6 +398,16 @@ SDL_RenderPresent(sdlRenderer);
 
 direction_menu;
 InitAnimation(LObjets[0].anim, 'Joueur', 'idle', 12, True);
+for j:=1 to 1 do begin 
+	initStatEnnemi('Archimage',10,1,1,128,128,LObjets[j]);
+	LObjets[j].stats.vie:=100;
+	LObjets[j].stats.vieMax:=100
+	end;
+
+createRawImage(combat_bg,88,-80,900,900,'Sprites/Game/floor/Floor.bmp');
+IndiceMusiqueJouee:=5;
+Mix_VolumeMusic(VOLUME_MUSIQUE);
+//mix_playMusic(OST[IndiceMusiqueJouee].musique,0);
 {
 ==================================================================================================================================
 * EVENTS
@@ -399,10 +421,11 @@ InitAnimation(LObjets[0].anim, 'Joueur', 'idle', 12, True);
   begin
    // 100 FPS
 //Mouvement Joueur
-  if SceneActive='Jeu' then begin
-					ActualiserJeu;
-					MouvementJoueur(LObjets[0]);
-	end;
+  if SceneActive='Jeu' then 
+  		begin
+		ActualiserJeu;
+		MouvementJoueur(LObjets[0]);
+		end;
     
 
     while SDL_PollEvent( testEvent ) = 1 do
@@ -417,11 +440,15 @@ InitAnimation(LObjets[0].anim, 'Joueur', 'idle', 12, True);
 					SDLK_ESCAPE : menuEnJeu;
         		end;
       		end;
-
-			//Bouton de souris pressé
-			SDL_MOUSEBUTTONDOWN: 
-			begin
-				if button_jouer.estVisible then
+			
+			SDL_mousemotion: 
+				begin
+				getMouseX;getMouseY;xpos:=testevent^.motion.x;
+				end;
+			SDL_mousebuttondown : 
+				begin 
+				if sceneActive='Jeu' then jouerCarte(LObjets[0].stats.deck^,iCarteChoisie,LObjets[0].stats.force,LObjets[0].stats.multiplicateurDegat,LObjets[0].stats.vie,LObjets[0].stats.mana,LObjets[0].image.rect.x+(LObjets[0].image.rect.w div 2),LObjets[0].image.rect.y+(LObjets[0].image.rect.h div 2));
+   				if button_jouer.estVisible then
 				begin
 				HandleButtonClick(button_jouer,testEvent^.motion.x,testEvent^.motion.y);
 				//continue;
@@ -451,8 +478,13 @@ InitAnimation(LObjets[0].anim, 'Joueur', 'idle', 12, True);
 				HandleButtonClick(button_bestiaire,testEvent^.motion.x,testEvent^.motion.y);
 				end;
 				end;
+			SDL_MOUSEWHEEL:begin
+  				if testEvent^.wheel.y < 0 then icarteChoisie:=(isuiv(iCarteChoisie))
+  				else icarteChoisie:=(iprec(iCarteChoisie));
 				end;
-				end;			
+				
+				end;
+			end;		
   end;
 annihiler();
 end.
