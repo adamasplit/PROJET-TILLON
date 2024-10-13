@@ -438,6 +438,7 @@ Mix_VolumeMusic(VOLUME_MUSIQUE);
           			SDLK_UP:  LObjets[0].stats.vie := LObjets[0].stats.vie +10;
 					SDLK_DOWN: LObjets[0].stats.vie := LObjets[0].stats.vie-10;
 					SDLK_ESCAPE : menuEnJeu;
+					SDLK_SPACE:leMonde:=not(leMonde);
         		end;
       		end;
 			

@@ -324,6 +324,8 @@ begin
         end
 
     else
+        if not(leMonde) then
+        begin
 
         begin
 
@@ -401,7 +403,7 @@ begin
         
         
         end
-    else if justice.stats.delai=0 then
+    else if (justice.stats.delai=0) and not (leMonde) then
         begin
         justice.stats.xreel:=justice.image.rect.x;
         justice.stats.yreel:=justice.image.rect.y;
