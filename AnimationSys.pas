@@ -9,7 +9,7 @@ uses
   coeur;
 
 const
-  FRAME_DURATION = 66;  // Durée en ms pour 30 FPS
+  FRAME_DURATION = 90;  // Durée en ms pour 30 FPS
 
 // Initialiser l'animation pour un objet
 procedure InitAnimation(var anim: TAnimation; objectName, etat: PChar; totalFrames: Integer; isLooping: Boolean);

@@ -100,14 +100,15 @@ procedure UpdateAnimations();
 var i:Integer;
 begin
 for i:=0 to High(LObjets) do 
-		if i<=High(LObjets) then	begin
+		if (i<=High(LObjets)) then
+			begin
 			//writeln('mise à jour des animations : indice ',i,', dernier indice :',high(lobjets));
 			LObjets[i].stats.indice:=i;
         	if (LObjets[i].stats.genre<>projectile) and (LObjets[i].stats.genre<>laser) and (LObjets[i].stats.genre<>epee) then
 				RenderRawImage(LObjets[i].image,255, LObjets[i].anim.isFliped);
 			if LObjets[i].anim.estActif then 
 				begin
-				if (LObjets[i].stats.genre<>laser) and (LObjets[i].stats.genre<>epee) then
+				if (LObjets[i].stats.genre<>laser) and (LObjets[i].stats.genre<>epee) or (LObjets[i].stats.genre=TypeObjet(1)) then
 					begin
 					UpdateAnimation(LObjets[i].anim, LObjets[i].image);
 					if (LObjets[i].stats.genre=effet) and (LObjets[i].anim.currentFrame=6) then
@@ -145,14 +146,11 @@ procedure ActualiserJeu;
 		//writeln('animations mises à jour');
 		RegenMana(LastUpdateTime2,LObjets[0].stats.mana,LObjets[0].stats.manaMax,LObjets[0].stats.multiplicateurMana);
         //Render
-		//writeln('mise à jour de l"UI');
 		//ébauche d'IA pour l'ennemi
-		//writeln('les ennemis agissent');
 		for i:=1 to High(LObjets) do
-			if i<=High(LObjets) then
+			if (i<=High(LObjets)) and not leMonde then
 				if LObjets[i].stats.genre=TypeObjet(1) then
 					IAEnnemi(LObjets[i],LObjets[0]);
-		//writeln('les ennemis ont fini d"agir');
 		UpdateUICombat(icarteChoisie,400,400,LObjets[0].stats);
 		SDL_RenderPresent(sdlRenderer);
 		

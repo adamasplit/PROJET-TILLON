@@ -23,7 +23,7 @@ procedure initStatsCombat(statsPerm:TStats;var statsTemp:TStats);
 procedure updateBoule(var proj:TObjet);
 procedure multiProjs(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,vitesse,nb,range,angleDepart:Integer;nom:PChar);
 procedure multiLasers(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,vitesse,nb,range,angleDepart,duree,delai:Integer;nom:PChar);
-//procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,xdest,ydest,vitRotation,dureeVie:Integer;nom:PChar;var rayon:TObjet);
+procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,xdest,ydest,vitRotation,dureeVie,delai:Integer;nom:PChar;var rayon:TObjet);
 procedure updateRayon(var rayon:TObjet);
 procedure UpdateJustice(var justice:TObjet);
 procedure JouerCarte(var deck:TDeck;i,force:Integer;multiplicateurDegat:Real;var vie,mana:Integer;x,y:Integer);  
@@ -421,8 +421,8 @@ begin
         updateAnimation(justice.anim,justice.image);
         justice.stats.xreel:=justice.stats.xreel+(justice.stats.vectX);
         justice.stats.yreel:=justice.stats.yreel+(justice.stats.vectY);
-        justice.image.rect.x:=round(justice.stats.xreel)-25;
-        justice.image.rect.y:=round(justice.stats.yreel)-25;
+        justice.image.rect.x:=round(justice.stats.xreel);
+        justice.image.rect.y:=round(justice.stats.yreel);
         //justice.stats.angle:=justice.stats.angle+1;
         end;
     if justice.stats.vectX>0 then
@@ -464,7 +464,7 @@ begin
                 
                 //on peut aussi utiliser MultiProjs pour un arc de cercle si il faut
                 //creerBoule(typeobjet(0),1,force,multiplicateurDegat,x,y,5,getmouseX,getmouseY,'projectile',projectile);
-                //CreerRayon(typeobjet(0),2,force,multiplicateurDegat,x,y,getmouseX,getmouseY,0,10,'rayon',projectile);
+                //CreerRayon(typeobjet(0),2,force,multiplicateurDegat,x,y,getmouseX,getmouseY,0,10,0,'rayon',projectile);
                 //ajoutObjet(projectile);
                 initJustice(typeobjet(0),1,force,multiplicateurDegat,x,y,getmouseX,getmouseY,37,50);
                 //multiProjs(TypeObjet(0),1,1,1,x,y,5,3,360,random(18)*10,'projectile');
