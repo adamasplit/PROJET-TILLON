@@ -13,7 +13,7 @@ uses
 
 var leMonde:Boolean;
 
-function degat(flat : Integer ; force : Integer ; defence : Integer;multiplicateurDegat:Real): Integer;
+function degat(flat : Integer ; force : Integer ; defense : Integer;multiplicateurDegat:Real): Integer;
 procedure RegenMana(var LastUpdateTime : UInt32;var mana:Integer;manaMax:Integer;multiplicateurMana:Real); 
 procedure CreerDeckCombat(stat : TStats;var DeckCombat:TDeck); 
 procedure cycle (var deck : TDeck ; i : Integer);
@@ -32,9 +32,11 @@ procedure JouerCarte(var deck:TDeck;i,force:Integer;multiplicateurDegat:Real;var
 
 implementation
 
+
+
 procedure InitAngle(vectX,vectY:Real;var angle:Real);
 begin
-if round(vectX*1000)=0 then
+    if round(vectX*1000)=0 then
         if vectY>0 then
             angle:=pi/2
         else
@@ -44,10 +46,10 @@ if round(vectX*1000)=0 then
 end;
 
 //Fonction de calcul des dégats
-function degat(flat : Integer ; force : Integer ; defence : Integer;multiplicateurDegat:Real): Integer;
+function degat(flat : Integer ; force : Integer ; defense : Integer;multiplicateurDegat:Real): Integer;
 begin
 
-    degat := math.ceil((flat + force - defence)*multiplicateurDegat);
+    degat := math.ceil((flat + force - defense)*multiplicateurDegat);
     if degat < 1 then
         degat := 1;
 end;
@@ -126,7 +128,7 @@ begin
 end;
 
 //supprimer une carte de la collection
-procedure supprimerCarte(var  stats : TStats; num : integer);
+procedure supprimerCarte(var  stats : TStats; num : integer); // num : numéro de la carte
 var i,j: integer;
 begin
     i := 1 ;
@@ -140,7 +142,13 @@ begin
         end;
 end;
 
-//procedure ajouterCarte(var stats : TStats ; num : integer); //### faire une liste des toutes les cartes
+//Ajoute carte à la fin de la collection
+procedure ajouterCarte(var stats : TStats ; num : integer); 
+begin
+    stats.tailleCollection : stats.tailleCollection + 1; //taille +1 
+    stats.collection[stats.tailleCollection] := cartes[num]; //carte mise à la fin
+
+end;
 
 //Lancement du combat
 procedure initStatsCombat(statsPerm:TStats;var statsTemp:TStats);
@@ -345,7 +353,6 @@ end;
 
 procedure multiProjs(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,vitesse,nb,range,angleDepart:Integer;nom:PChar);
 var proj:TObjet;i:Integer;
-
 begin
     for i:=0 to nb-1 do
         begin
@@ -356,7 +363,6 @@ end;
 
 procedure multiLasers(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,vitesse,nb,range,angleDepart,duree,delai:Integer;nom:PChar);
 var rayon:TObjet;i:Integer;
-
 begin
     for i:=0 to nb-1 do
         begin
@@ -436,6 +442,76 @@ begin
         supprimeObjet(justice);
         end
     
+end;
+
+//----------------------------------------------
+//-----------Déroulant des cartes---------------
+//----------------------------------------------
+begin
+
+    //10 La roue de la fortune
+    procedure X(var s : TStats);
+    var rdm : integer    
+    begin
+        randomize
+        rdm := random(10)+1;
+
+        case rdm of
+            1,2,3 : degatInst(s, 5); //-5pv
+            4 : s.force := s.force + 3; // +3 force
+            5,6,7,8  : s.mana := s.mana + 2; //+2 mana
+            //9,10 : rien 
+        end;
+    end;
+
+    //11 La force
+    procedure XI(var s : TStats);
+    begin
+        s.force := s.force + 1;
+    end;
+
+    //12 Le pendu
+    procedure XII(var s : TStats);
+    var
+    begin
+        s.force := s.force + 5;
+        s.defense := s.defense +5;
+        s.multiplicateurMana := s.multiplicateurMana + 0.25
+        s.vitesse := s.vitesse + 0.1
+
+        //###retourner le sprite
+        //### inverser les contrôles
+
+    end;
+
+    //13 La mort
+
+    //14 La tempérance
+    procedure XIV(var s : TStats);
+    begin
+        s.defense := s.defense + 1;
+    end;
+
+    //15 Le diable
+    procedure XV(var sCombat, sPerm : TStats);
+    begin
+        degatInst(sCombat, 45); // infliger 45 dmg
+        sCombat.defense := sCombat.defense + 1; //modifier le s en combat
+        sPerm.defense := sPerm.defense + 1; // appliqué aussi au s de sauvegarde
+        sCombat.multiplicateurDegat := sCombat.multiplicateurDegat + 0.5;
+        sPerm.multiplicateurDegat := sPerm.multiplicateurDegat + 0.5;
+    end;
+
+    //19 Le soleil
+    procedure XIX(var s : TStats);
+    var i : integer;
+    begin
+        for i := 0 to high(LOBjets) do
+            LOBjets[i].stats.vie := LOBjets[i].stats.vie -1;
+
+        soinInst(s , 5); //### rajouter soinInst
+    end;
+
 end;
 
 //###"La procédure ultime. On raconte que son accomplissement entraîne la fin de l'univers."
