@@ -227,7 +227,7 @@ begin
 end;
 
 
-procedure ActionEnnemi(ennemi:TObjet); //permet à un ennemi d'agir (donc d'attaquer)
+procedure ActionEnnemi(ennemi:TObjet;x,y:Integer); //permet à un ennemi d'agir (donc d'attaquer)
 var obj:TObjet;
 begin
   if (ennemi.stats.typeIA_MVT=0) and (ennemi.stats.compteurAction=100) then
@@ -253,6 +253,28 @@ begin
     end;
   if (ennemi.stats.typeIA_MVT=4) and animFinie(ennemi.anim) and (ennemi.anim.etat='chase') and (random(5)=0)  then 
     multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+64,ennemi.image.rect.y+64,5,3,360,random(18)*10,'projectile');
+  if (ennemi.anim.etat='strike') and (ennemi.stats.typeIA_MVT=5) then
+    begin
+    ennemi.anim.isFliped:=(ennemi.stats.xcible>ennemi.image.rect.x);
+    if ennemi.anim.currentFrame=6 then
+      begin
+      if (ennemi.image.rect.x<ennemi.stats.xcible) then
+        CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+40,ennemi.image.rect.y+50,ennemi.image.rect.x+60,ennemi.image.rect.y+50,0,10,5,'rayonAbysse',obj)
+      else
+        CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+40,ennemi.image.rect.y+50,ennemi.image.rect.x-60,ennemi.image.rect.y+50,0,10,5,'rayonAbysse',obj);
+      ajoutObjet(obj);
+      end;
+    end;
+  if (ennemi.stats.typeIA_MVT=6) then
+    begin
+    if (ennemi.stats.compteurAction mod 60 = 0) and (ennemi.stats.compteurAction>0) and (ennemi.stats.compteurAction<200) then
+      begin
+      creerBoule(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,ennemi.image.rect.x+64,ennemi.image.rect.y+64,4,x,y,'eclairR',obj);
+      ajoutObjet(obj)
+      end;
+    if ennemi.stats.compteurAction=100 then
+      multiLasers(TypeObjet(1),1,1,1,ennemi.image.rect.x+50,ennemi.image.rect.y+50,0,4,360,0,10,100,'rayon');
+    end
 end;
 
 procedure DeplacementEnnemi(var ennemi:TObjet;joueur:TObjet); //déplace un ennemi 
@@ -333,18 +355,6 @@ begin
           AIDodge(ennemi,joueur);
         if (ennemi.anim.etat='dodge') then
           DodgeUpdate(ennemi);
-        if ennemi.anim.etat='strike' then
-          begin
-          ennemi.anim.isFliped:=(joueur.image.rect.x>ennemi.image.rect.x);
-          if ennemi.anim.currentFrame=6 then
-            begin
-            if (ennemi.image.rect.x<joueur.image.rect.x) then
-              CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+40,ennemi.image.rect.y+50,ennemi.image.rect.x+60,ennemi.image.rect.y+50,0,10,5,'rayonAbysse',obj)
-            else
-              CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+40,ennemi.image.rect.y+50,ennemi.image.rect.x-60,ennemi.image.rect.y+50,0,10,5,'rayonAbysse',obj);
-            ajoutObjet(obj);
-            end;
-          end;
         if (ennemi.anim.etat='strike') and (animFinie(ennemi.anim)) then begin
           ennemi.col.estActif:=True;
           initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',6,True);
@@ -356,13 +366,6 @@ begin
         else
           begin
           moveToTarget(ennemi,10);
-          if (ennemi.stats.compteurAction mod 60 = 0) and (ennemi.stats.compteurAction>0) and (ennemi.stats.compteurAction<200) then
-            begin
-            creerBoule(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,ennemi.image.rect.x+64,ennemi.image.rect.y+64,4,joueur.image.rect.x,joueur.image.rect.y,'eclairR',obj);
-            ajoutObjet(obj)
-            end;
-          if ennemi.stats.compteurAction=100 then
-            multiLasers(TypeObjet(1),1,1,1,ennemi.image.rect.x+50,ennemi.image.rect.y+50,0,4,360,0,10,100,'rayon');
           end;
         end
     end
@@ -377,7 +380,7 @@ begin
   if (ennemi.stats.vie>0) then 
     begin
       deplacementEnnemi(ennemi,joueur);
-      actionEnnemi(ennemi);
+      actionEnnemi(ennemi,joueur.image.rect.x,joueur.image.rect.y);
     end
       
 		else

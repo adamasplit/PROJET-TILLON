@@ -241,11 +241,13 @@ begin
             rayon.stats.angle:=-pi/2
     else
         rayon.stats.angle:=arctan(rayon.stats.vectY/rayon.stats.vectX);
-    if rayon.stats.delai>0 then //si le rayon n'est pas encore actif, il est transparent
+    
+    if (rayon.stats.delai>0) then //si le rayon n'est pas encore actif, il est transparent
         begin
         rayon.col.estActif:=False;
-        rayon.stats.delai:=rayon.stats.delai-1;
-        sdl_settexturealphamod(rayon.image.imgtexture,200-round((rayon.stats.delai)/(rayon.stats.delaiInit)*200))
+        if not leMonde then
+            rayon.stats.delai:=rayon.stats.delai-1;
+        sdl_settexturealphamod(rayon.image.imgtexture,200-round((rayon.stats.delai)/(rayon.stats.delaiInit)*200));
         end
     else
         begin //si le rayon atteint son délai, il s'active
