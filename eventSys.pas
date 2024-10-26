@@ -44,35 +44,37 @@ end;
 
 procedure MouvementJoueur(var joueur:TObjet);
   begin
-	
-	joueur.anim.isFliped := False;
-  	if sdlKeyboardState[SDL_SCANCODE_W] = 1 then
-	begin
-      joueur.image.rect.y := joueur.image.rect.y - joueur.stats.Vitesse;
-	  if joueur.anim.Etat <> 'run' then InitAnimation(joueur.anim,'Joueur','run',6,True);
-	end;
-	
-    if sdlKeyboardState[SDL_SCANCODE_A] = 1 then
-	begin
-	  	joueur.image.rect.x := joueur.image.rect.x - joueur.stats.Vitesse;
-	  	if joueur.anim.Etat <> 'run' then InitAnimation(joueur.anim,'Joueur','run',6,True);
-		joueur.anim.isFliped := True;
-	end;
+	if joueur.anim.etat<>'degats' then
+    begin
+    joueur.anim.isFliped := False;
+      if sdlKeyboardState[SDL_SCANCODE_W] = 1 then
+    begin
+        joueur.image.rect.y := joueur.image.rect.y - joueur.stats.Vitesse;
+      if joueur.anim.Etat <> 'run' then InitAnimation(joueur.anim,'Joueur','run',6,True);
+    end;
     
-    if sdlKeyboardState[SDL_SCANCODE_S] = 1 then
-      	begin
-	  	joueur.image.rect.y := joueur.image.rect.y + joueur.stats.Vitesse;
-	  	if joueur.anim.Etat <> 'run' then InitAnimation(joueur.anim,'Joueur','run',6,True);
-	end;
-	
-    if sdlKeyboardState[SDL_SCANCODE_D] = 1 then
-    	begin
-	  	joueur.image.rect.x := joueur.image.rect.x + joueur.stats.Vitesse;
-	  	if joueur.anim.Etat <> 'run' then InitAnimation(joueur.anim,'Joueur','run',6,True);
-	end;
+      if sdlKeyboardState[SDL_SCANCODE_A] = 1 then
+    begin
+        joueur.image.rect.x := joueur.image.rect.x - joueur.stats.Vitesse;
+        if joueur.anim.Etat <> 'run' then InitAnimation(joueur.anim,'Joueur','run',6,True);
+      joueur.anim.isFliped := True;
+    end;
+      
+      if sdlKeyboardState[SDL_SCANCODE_S] = 1 then
+          begin
+        joueur.image.rect.y := joueur.image.rect.y + joueur.stats.Vitesse;
+        if joueur.anim.Etat <> 'run' then InitAnimation(joueur.anim,'Joueur','run',6,True);
+    end;
+    
+      if sdlKeyboardState[SDL_SCANCODE_D] = 1 then
+        begin
+        joueur.image.rect.x := joueur.image.rect.x + joueur.stats.Vitesse;
+        if joueur.anim.Etat <> 'run' then InitAnimation(joueur.anim,'Joueur','run',6,True);
+    end;
 
-	if ((joueur.anim.Etat <> 'idle') and not((sdlKeyboardState[SDL_SCANCODE_D] = 1) or (sdlKeyboardState[SDL_SCANCODE_S] = 1) or (sdlKeyboardState[SDL_SCANCODE_W] = 1) or (sdlKeyboardState[SDL_SCANCODE_A] = 1))) 
-		then InitAnimation(joueur.anim,'Joueur','idle',12,True);
+    if ((joueur.anim.Etat <> 'idle') and not((sdlKeyboardState[SDL_SCANCODE_D] = 1) or (sdlKeyboardState[SDL_SCANCODE_S] = 1) or (sdlKeyboardState[SDL_SCANCODE_W] = 1) or (sdlKeyboardState[SDL_SCANCODE_A] = 1))) 
+      then InitAnimation(joueur.anim,'Joueur','idle',12,True);
+    end
 		
   end;
 
@@ -97,13 +99,13 @@ begin
     if (LObjets[0].stats.mana<LObjets[0].stats.deck^[iCarteChoisie].cout) and not (LObjets[0].stats.deck^[iCarteChoisie].active) then
       begin
       //sdl_settexturecolormod(combatUI[3].imgTexture,120,120,120);
-      RenderRawImage(combatUI[3],100,false);
-      drawRect(black_color,120,CombatUI[3].rect.x+10,CombatUI[3].rect.y,45,64);
+      RenderRawImage(combatUI[3],0,false);
+      drawRect(black_color,0,CombatUI[3].rect.x+10,CombatUI[3].rect.y,45,64);
       end
     else
       begin
       //sdl_settexturecolormod(combatUI[3].imgTexture,120,120,120);
-      RenderRawImage(combatUI[3],200,false);
+      RenderRawImage(combatUI[3],0,false);
       end;
     //Bandes de part et d'autre
     RenderRawImage(CombatUI[1],255,False);

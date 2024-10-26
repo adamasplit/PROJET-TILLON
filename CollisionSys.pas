@@ -6,7 +6,7 @@ uses
   AnimationSys,
   Math,
   memgraph,
-  SDL2,sdl2_mixer,
+  SDL2,sdl2_mixer,combatLib,eventSys,
   SysUtils,coeur;
 
 
@@ -23,19 +23,7 @@ uses
 
 implementation
 
-procedure impact(x,y:Integer);
-var obj:TObjet;
-begin
-  //Initialisation de l'affichage
-  writeln('impact');
-  InitAnimation(obj.anim,'impact','active',6,False);
-  obj.anim.estActif:=True;
-  obj.stats.genre:=effet;
-  createRawImage(obj.image,x,y,64,64,getFramePath(obj.anim));
-  obj.col.estActif:=False;
-  writeln('ajout de l"objet');
-  ajoutObjet(obj);
-end;
+
 
 // Vérifie si deux rectangles (boîtes englobantes) se chevauchent (AABB)
 function CheckAABB(rect1, rect2: TSDL_Rect): Boolean;
@@ -116,20 +104,13 @@ begin
   begin
     if (obj1.stats.genre=projectile) and (obj1.stats.origine<>obj2.stats.genre) then
       begin
-      //WriteLn('Trigger collision detected between ', obj1.col.nom, ' and ', obj2.col.nom);
       end;
     if ((obj2.stats.genre=projectile) or (obj2.stats.genre=laser) or (obj2.stats.genre=epee)) and (obj2.stats.origine<>obj1.stats.genre) then
       begin
-      //WriteLn('Trigger collision detected between ', obj1.col.nom, ' and ', obj2.col.nom);
-      writeln('la vie de ',obj1.col.nom,' passe de ',obj1.stats.vie,' à ',obj1.stats.vie-obj2.stats.degats);
-      obj1.stats.vie:=obj1.stats.vie-1;
-      mix_playchannel(random(5)+4,mix_loadWav('dmg.wav'),0);
-      impact(obj2.image.rect.x,obj2.image.rect.y);
-      obj1.image.rect.x:=obj1.image.rect.x+round(obj2.stats.vectX) div 2;
-      obj1.image.rect.y:=obj1.image.rect.y+round(obj2.stats.vectY) div 2;
-      if obj2.stats.genre=projectile then supprimeObjet(obj2)
+        subirDegats(obj1,degat(obj2.stats.degats,obj2.stats.force,obj1.stats.defense,obj2.stats.multiplicateurDegat),round(obj2.stats.vectx),round(obj2.stats.vecty));
+        if obj2.stats.genre=projectile then
+          creerEffet(obj2.image.rect.x,obj2.image.rect.y,64,64,6,'impact',obj2)
       end
-    //***problème dans la gestion des dégâts: le mana max semble être affecté à la place 
   end
 end;
 
@@ -138,6 +119,7 @@ procedure UpdateCollisions();
 var
   i, j: Integer;
 begin
+  
   for i := 0 to High(LObjets) do
   if (i<=High(LObjets)) then
   begin

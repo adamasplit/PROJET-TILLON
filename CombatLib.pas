@@ -5,7 +5,6 @@ interface
 uses
     animationSys,
     coeur,
-    collisionSys,
     eventSys,
     math,
     memgraph,
@@ -19,14 +18,16 @@ procedure CreerDeckCombat(stat : TStats;var DeckCombat:TDeck);
 procedure cycle (var deck : TDeck ; i : Integer);
 procedure circoncision  (var deck : Tdeck);
 procedure initStatsCombat(statsPerm:TStats;var statsTemp:TStats);
-//procedure CreerBoule(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,vitesse,xdest,ydest:Integer;nom:PChar;var proj:TObjet);
+procedure CreerBoule(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,vitesse,xdest,ydest:Integer;nom:PChar;var proj:TObjet);
 procedure updateBoule(var proj:TObjet);
 procedure multiProjs(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,vitesse,nb,range,angleDepart:Integer;nom:PChar);
 procedure multiLasers(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,vitesse,nb,range,angleDepart,duree,delai:Integer;nom:PChar);
 procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,xdest,ydest,vitRotation,dureeVie,delai:Integer;nom:PChar;var rayon:TObjet);
 procedure updateRayon(var rayon:TObjet);
 procedure UpdateJustice(var justice:TObjet);
-procedure JouerCarte(var deck:TDeck;i,force:Integer;multiplicateurDegat:Real;var vie,mana:Integer;x,y:Integer);  
+procedure creerEffet(x,y,w,h,frames:Integer;nom:PCHar;var obj:TObjet);
+procedure subirDegats(var victime:TObjet;degats,knockbackX,knockbackY:Integer);
+procedure JouerCarte(var stats:TStats;x,y,i:Integer); 
 
 
 
@@ -145,9 +146,8 @@ end;
 //Ajoute carte à la fin de la collection
 procedure ajouterCarte(var stats : TStats ; num : integer); 
 begin
-    stats.tailleCollection : stats.tailleCollection + 1; //taille +1 
+    stats.tailleCollection := stats.tailleCollection + 1; //taille +1 
     stats.collection[stats.tailleCollection] := cartes[num]; //carte mise à la fin
-
 end;
 
 //Lancement du combat
@@ -160,6 +160,16 @@ begin
     //Initialisation du deck pointé
     statsTemp.deck:=@pDeck;
     if statsTemp.deck=NIL then writeln('AVERTISSEMENT: DECK NON DEFINI')
+end;
+
+procedure creerEffet(x,y,w,h,frames:Integer;nom:PCHar;var obj:TObjet); // crée un effet (objet sans collisions qui joue son animation puis s'efface)
+begin
+  InitAnimation(obj.anim,nom,'active',frames,False);
+  obj.anim.estActif:=True;
+  obj.stats.genre:=effet;
+  createRawImage(obj.image,x,y,w,h,getFramePath(obj.anim));
+  obj.col.estActif:=False;
+  obj.col.nom:=nom;
 end;
 
 procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,xdest,ydest,vitRotation,dureeVie,delai:Integer;nom:PChar;var rayon:TObjet);
@@ -177,6 +187,7 @@ begin
     rayon.stats.vitRotation:=vitRotation;
     rayon.stats.dureeVie:=dureeVie;
     rayon.stats.delai:=delai;
+    rayon.stats.delaiInit:=delai;
 
     //Initialisation de l'affichage
     InitAnimation(rayon.anim,nom,'actif',4,False);
@@ -234,13 +245,13 @@ begin
         begin
         rayon.col.estActif:=False;
         rayon.stats.delai:=rayon.stats.delai-1;
-        sdl_settexturealphamod(rayon.image.imgtexture,200-(rayon.stats.delai)*4)
+        sdl_settexturealphamod(rayon.image.imgtexture,200-round((rayon.stats.delai)/(rayon.stats.delaiInit)*200))
         end
     else
         begin //si le rayon atteint son délai, il s'active
         sdl_settexturealphamod(rayon.image.imgtexture,255);
         rayon.col.estActif:=True;
-        if rayon.stats.dureeVie<=0 then updateanimation(rayon.anim,rayon.image)
+        if (rayon.stats.dureeVie<=0) and not(leMonde) then updateanimation(rayon.anim,rayon.image)
         else rayon.stats.dureeVie:=rayon.stats.dureeVie-1;
         end;
     if (rayon.anim.currentFrame=rayon.anim.totalFrames) then
@@ -250,7 +261,7 @@ begin
         if rayon.stats.vectX>0 then //render du rayon du côté droit
             begin
             SDL_RenderCopyEx(sdlRenderer, rayon.image.imgTexture, nil, @rayon.image.Rect,rayon.stats.angle*180/pi,nil, SDL_FLIP_NONE);
-            if (rayon.stats.vitRotation<>0) and (rayon.stats.delai<=0) then
+            if (rayon.stats.vitRotation<>0) and (rayon.stats.delai<=0) and not(leMonde) then
                 begin
                 //mise à jour du vecteur de direction
                 rayon.stats.vectX:=cos(rayon.stats.angle+(rayon.stats.vitRotation/180));
@@ -262,7 +273,7 @@ begin
         else if (rayon.stats.vectX<>0) then //render du rayon du côté gauche
             begin
             SDL_RenderCopyEx(sdlRenderer, rayon.image.imgTexture, nil, @rayon.image.Rect,rayon.stats.angle*180/pi,nil, SDL_FLIP_HORIZONTAL);
-            if (rayon.stats.vitRotation<>0) and (rayon.stats.delai<=0) then
+            if (rayon.stats.vitRotation<>0) and (rayon.stats.delai<=0) and not(leMonde) then
                 begin
                 //mise à jour du vecteur de direction
                 rayon.stats.vectX:=-cos(rayon.stats.angle+(rayon.stats.vitRotation/180));
@@ -297,10 +308,10 @@ begin
 
         proj.col.isTrigger := True;
         proj.col.estActif := True;
-        proj.col.dimensions.w := proj.image.rect.w-20;
+        proj.col.dimensions.w := proj.image.rect.w div 2;
         proj.col.dimensions.h := proj.image.rect.h div 2;
-        proj.col.offset.x := 10;
-        proj.col.offset.y := 30;
+        proj.col.offset.x := 16;
+        proj.col.offset.y := 16;
         proj.col.nom := 'boule';
 
         //Création du vecteur de mouvement du projectile
@@ -323,7 +334,7 @@ end;
 
 procedure updateBoule(var proj:TObjet);
 begin
-
+    
     //vérifie si le projectile sort de l'écran
     if (proj.stats.xreel>1200) or (proj.stats.xreel<0) or (proj.stats.yreel>1000) or (proj.stats.yreel<0) then 
 
@@ -444,20 +455,33 @@ begin
     
 end;
 
+procedure subirDegats(var victime:TObjet;degats,knockbackX,knockbackY:Integer);
+begin
+    victime.stats.vie:=victime.stats.vie-degats;
+    knockbackX:=min(knockbackX*2,2);
+    knockbackY:=min(knockbackY*2,2);
+    if (victime.anim.etat<>'degats') then begin 
+        victime.stats.etatPrec:=victime.anim;
+        victime.image.rect.x:=victime.image.rect.x+knockbackX;
+        victime.image.rect.y:=victime.image.rect.y+knockbackY;
+        if victime.stats.genre=TypeObjet(0) then
+            initAnimation(victime.anim,victime.anim.objectname,'degats',4,False)
+    end;
+end;
+
 //----------------------------------------------
 //-----------Déroulant des cartes---------------
 //----------------------------------------------
-begin
 
     //10 La roue de la fortune
     procedure X(var s : TStats);
-    var rdm : integer    
+    var rdm : integer ;   
     begin
-        randomize
+        randomize;
         rdm := random(10)+1;
 
         case rdm of
-            1,2,3 : degatInst(s, 5); //-5pv
+            1,2,3 : degatInst(s.vie, 5); //-5pv
             4 : s.force := s.force + 3; // +3 force
             5,6,7,8  : s.mana := s.mana + 2; //+2 mana
             //9,10 : rien 
@@ -472,12 +496,12 @@ begin
 
     //12 Le pendu
     procedure XII(var s : TStats);
-    var
+    
     begin
         s.force := s.force + 5;
         s.defense := s.defense +5;
-        s.multiplicateurMana := s.multiplicateurMana + 0.25
-        s.vitesse := s.vitesse + 0.1
+        s.multiplicateurMana := s.multiplicateurMana + 0.25;
+        s.vitesse := s.vitesse + 1
 
         //###retourner le sprite
         //### inverser les contrôles
@@ -495,7 +519,7 @@ begin
     //15 Le diable
     procedure XV(var sCombat, sPerm : TStats);
     begin
-        degatInst(sCombat, 45); // infliger 45 dmg
+        degatInst(sCombat.vie, 45); // infliger 45 dmg
         sCombat.defense := sCombat.defense + 1; //modifier le s en combat
         sPerm.defense := sPerm.defense + 1; // appliqué aussi au s de sauvegarde
         sCombat.multiplicateurDegat := sCombat.multiplicateurDegat + 0.5;
@@ -509,41 +533,37 @@ begin
         for i := 0 to high(LOBjets) do
             LOBjets[i].stats.vie := LOBjets[i].stats.vie -1;
 
-        soinInst(s , 5); //### rajouter soinInst
+        //soinInst(s , 5); //### rajouter soinInst
     end;
 
-end;
+//end;
 
 //###"La procédure ultime. On raconte que son accomplissement entraîne la fin de l'univers."
-procedure JouerCarte(var deck:TDeck;i,force:Integer;multiplicateurDegat:Real;var vie,mana:Integer;x,y:Integer); 
+procedure JouerCarte(var stats:TStats;x,y:Integer;i:Integer); 
 
 var tempCarte:TCarte;projectile:TOBjet;
 
 begin
-    tempCarte:=deck[i];
-    if True or deck[i].active or (tempCarte.cout<=mana) then 
+    tempCarte:=stats.deck^[i];
+    if True or stats.deck^[i].active or (tempCarte.cout<=stats.mana) then 
         begin
-        if not deck[i].active then
+        if not stats.deck^[i].active then
             begin
-            mana:=mana-tempCarte.cout;
-            deck[i].active:=True;
+            stats.mana:=stats.mana-tempCarte.cout;
+            stats.deck^[i].active:=True;
             end;
-        deck[i].charges:=deck[i].charges-1;
-        //writeln('carte active : ',deck[i].active,' , nb charges : ',deck[i].charges);
-        if deck[i].charges=0 then
-            cycle(deck,i);
+        stats.deck^[i].charges:=stats.deck^[i].charges-1;
+        //writeln('carte active : ',deck^[i].active,' , nb charges : ',deck^[i].charges);
+        if stats.deck^[i].charges=0 then
+            cycle(stats.deck^,i);
         //Partie principale : tous les effets de cartes y seront répertoriés
         case tempCarte.numero of
             0:writeln('???')
             else 
                 begin //!! création d'un projectile ( les éventuelles variations sont sur le 2ème élément (les dégâts), celui avant getmousex (la vitesse) et l'avant-dernier (pour l'image)), pareil pour un rayon mais sans la vitesse
+                creerBoule(typeobjet(0),1,stats.force,stats.multiplicateurDegat,x-32,y-32,5,getmouseX,getmouseY,'projectile',projectile);
+                ajoutObjet(projectile);
                 
-                //on peut aussi utiliser MultiProjs pour un arc de cercle si il faut
-                //creerBoule(typeobjet(0),1,force,multiplicateurDegat,x,y,5,getmouseX,getmouseY,'projectile',projectile);
-                //CreerRayon(typeobjet(0),2,force,multiplicateurDegat,x,y,getmouseX,getmouseY,0,10,0,'rayon',projectile);
-                //ajoutObjet(projectile);
-                initJustice(typeobjet(0),1,force,multiplicateurDegat,x,y,getmouseX,getmouseY,37,50);
-                //multiProjs(TypeObjet(0),1,1,1,x,y,5,3,360,random(18)*10,'projectile');
                 end
             end;
         end;

@@ -10,7 +10,7 @@ uses
 
 
 const MAXSALLES=40; //nombre de salles total pour finir le jeu
-  MAXENNEMIS=1; //nombre d'ennemis ayant une entrée dans le bestiaire
+  MAXENNEMIS=15; //nombre d'ennemis ayant une entrée dans le bestiaire
   MAXCARTES=60; //taille max du deck
 
 var whiteCol,b_color,bf_color,f_color,navy_color,black_color,red_color: TSDL_Color;
@@ -47,7 +47,7 @@ var iCarteChoisie:Integer;
 type TDeck=array of TCarte;
 type TPaquet=array[1..MAXCARTES] of TCarte;
 
-type TStats=record
+{type TStats=record
     indice:Integer; //représente l'indice de l'objets dans la liste d'objets
     genre:typeObjet;
     force:Integer;
@@ -68,19 +68,18 @@ type TStats=record
     xcible,ycible,compteurAction:Integer;
     degats:Integer;origine:typeObjet;vectX,vectY,xreel,yreel,angle:Real;
     dureeVie,delai,vitRotation:Integer
-end;
+end;}
 
-{type TStats=record //(version variable)
+type TStats=record //(version variable)
     indice:Integer; //représente l'indice de l'objets dans la liste d'objets
+    force:Integer;
+    multiplicateurDegat:Real;
+    defense:Integer;
+    vie:Integer;
+    vieMax:Integer;
+    xreel,yreel:Real;
+    etatPrec:TANimation; //dans le cas où l'objet est interrompu (par des dégâts par exemple) 
     case genre:typeObjet of 
-        joueur,ennemi,projectile:(force:Integer;
-        multiplicateurDegat:Real);
-
-        joueur,ennemi: (
-          defense:Integer;
-          vie:Integer;
-          vieMax:Integer);
-
         joueur:(mana:Integer;
           manaMax:Integer;
           avancement:Integer;
@@ -92,11 +91,10 @@ end;
           tailleCollection:Integer;
           bestiaire:array[1..MAXENNEMIS] of Boolean);
         
-        ennemi:(xcible,ycible,compteurAction:Integer);
+        ennemi:(xcible,ycible,compteurAction,nbFrames1,nbFrames2,nbFrames3,nbFramesMort:Integer;typeIA_MVT:Byte);
         
-        projectile,laser:(degats:Integer;origine:typeObjet;vectX,vectY,xreel,yreel:Real);
-        laser:(dureeVie,delai,vitRotation:Integer);
-end;}
+        projectile,laser:(degats:Integer;origine:typeObjet;vectX,vectY,angle:Real;dureeVie,delai,delaiInit,vitRotation:Integer);
+end;
 
 var Cartes:Array[1..22] of TCarte; //preset pour les cartes
 
@@ -139,9 +137,8 @@ begin
     
     obj.stats.indice:=High(LObjets)+1;
     setlength(LObjets,obj.stats.indice+1);
-    //writeln('ajout d"un objet à l"indice', obj.stats.indice,' dernier indice : ',high(LObjets));
-    LObjets[obj.stats.indice]:=obj;
-    //writeln('objet ajouté avec succès, taille de LOBjets: ',high(LObjets)+1);
+    if (obj.stats.indice<=High(LObjets)) then
+      LObjets[obj.stats.indice]:=obj;
 end;
 
 procedure supprimeObjet(var obj:TObjet); //Retire un élément de LObjets
@@ -150,19 +147,19 @@ var i,taille:Integer;
 
 begin
     taille:=High(LObjets)+1;
-    writeln('destruction de LOBjets[',obj.stats.indice,'], taille de LObjets:',taille);
+    //writeln('destruction de LOBjets[',obj.stats.indice,'], taille de LObjets:',taille);
     SDL_DestroyTexture(obj.image.imgtexture);
     SDL_freeSurface(obj.image.imgSurface);
     for i:=obj.stats.indice to taille-2 do 
+        if (i<=High(LObjets)) then
         begin
-            //writeln('l"objet à l"indice ',i,' prend la valeur de l"objet à l"indice',i+1,', la boucle se finira à ',taille-2);
             LObjets[i]:=LObjets[i+1];
             LObjets[i].stats.indice:=i;
         end;
-    //writeln('taille de LOBjets : ',taille-1);
     setlength(LObjets,taille-1);
-    //writeln('taille changée');
 end;
+
+
 
 var i:Integer;
 begin
@@ -182,6 +179,8 @@ begin
   statsJoueur.vie:=100;
   statsJoueur.mana:=0;
   statsJoueur.manaMax:=10;
+  statsJoueur.force:=1;
+  statsJoueur.multiplicateurDegat:=1;
   statsJoueur.multiplicateurMana:=1;
 
   for i:=1 to 22 do begin
@@ -249,7 +248,7 @@ begin
     21:cartes[i].dir:='Sprites/Cartes/carte21.bmp';
     22:cartes[i].dir:='Sprites/Cartes/carte22.bmp';
     end;
-    cartes[i].chargesMax:=3;
+    cartes[i].chargesMax:=1;
     end;
     writeln('CORE ready');
 end.

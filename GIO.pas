@@ -102,13 +102,19 @@ begin
 for i:=0 to High(LObjets) do 
 		if (i<=High(LObjets)) then
 			begin
-			//writeln('mise à jour des animations : indice ',i,', dernier indice :',high(lobjets));
+			//writeln('mise à jour des animations sss: indice ',i,', dernier indice :',high(lobjets));
 			LObjets[i].stats.indice:=i;
         	if (LObjets[i].stats.genre<>projectile) and (LObjets[i].stats.genre<>laser) and (LObjets[i].stats.genre<>epee) then
 				RenderRawImage(LObjets[i].image,255, LObjets[i].anim.isFliped);
 			if LObjets[i].anim.estActif then 
 				begin
-				if (LObjets[i].stats.genre<>laser) and (LObjets[i].stats.genre<>epee) or (LObjets[i].stats.genre=TypeObjet(1)) then
+				if (LObjets[i].anim.etat='degats') then
+					begin
+					LObjets[i].anim.isFliped:=LObjets[i].stats.etatPrec.isFliped;
+					if animFinie(LObjets[i].anim) then
+						LObjets[i].anim:=LObjets[i].stats.etatPrec;
+					end;
+				if (LObjets[i].stats.genre<>laser) and (LObjets[i].stats.genre<>epee) and ((not leMonde) or (LObjets[i].stats.genre=TypeObjet(0))) then
 					begin
 					UpdateAnimation(LObjets[i].anim, LObjets[i].image);
 					if (LObjets[i].stats.genre=effet) and (LObjets[i].anim.currentFrame=6) then
@@ -123,6 +129,7 @@ for i:=2 to High(LObjets) do
 			case LObjets[i].stats.genre of 
         	projectile:begin
         		if i<>LObjets[i].stats.indice then writeln('conflit à l"indice',i);
+				LObjets[i].stats.indice:=i;
         		//writeln('accès à l"objet numéro ',i,' dernier indice de LObjets : ',high(LObjets));
         		updateBoule(LObjets[i]);
         		end;
@@ -133,8 +140,10 @@ for i:=2 to High(LObjets) do
 end;
 
 procedure ActualiserJeu;
+var obj:TObjet;
 	begin
 		randomize();
+		
 		SDL_RenderClear(sdlRenderer);
 		renderRawImage(combat_bg,255,False);
 		SDL_PumpEvents;
@@ -147,11 +156,17 @@ procedure ActualiserJeu;
 		RegenMana(LastUpdateTime2,LObjets[0].stats.mana,LObjets[0].stats.manaMax,LObjets[0].stats.multiplicateurMana);
         //Render
 		//ébauche d'IA pour l'ennemi
+		UpdateUICombat(icarteChoisie,400,400,LObjets[0].stats);
 		for i:=1 to High(LObjets) do
 			if (i<=High(LObjets)) and not leMonde then
+			begin
+				//writeln('l"objet n°',i,' agit');
 				if LObjets[i].stats.genre=TypeObjet(1) then
+					begin
 					IAEnnemi(LObjets[i],LObjets[0]);
-		UpdateUICombat(icarteChoisie,400,400,LObjets[0].stats);
+					//impact(LObjets[0].image.rect.x+(random(16)*2)+16,LObjets[0].image.rect.y+random(16)*2+16);
+					end;
+			end;
 		SDL_RenderPresent(sdlRenderer);
 		
 	end;
@@ -312,6 +327,7 @@ new(TestEvent);
 statsJoueur.tailleCollection:=22;
 statsJoueur.Vitesse:=5;
 statsJoueur.multiplicateurMana:=1;
+statsJoueur.multiplicateurDegat:=1;
 for j:=1 to 22 do begin
   statsJoueur.collection[j]:=Cartes[j]
 end;
@@ -396,16 +412,17 @@ SDL_RenderPresent(sdlRenderer);
 
 direction_menu;
 InitAnimation(LObjets[0].anim, 'Joueur', 'idle', 12, True);
-for j:=1 to 1 do begin 
-	initStatEnnemi('Archimage',10,1,1,128,128,LObjets[j]);
-	LObjets[j].stats.vie:=100;
-	LObjets[j].stats.vieMax:=100
+setlength(LObjets,3);
+for j:=1 to 2 do begin 
+	LObjets[j]:=TemplatesEnnemis[j*2]
 	end;
 
+
+
 createRawImage(combat_bg,88,-80,900,900,'Sprites/Game/floor/Floor.bmp');
-IndiceMusiqueJouee:=5;
+IndiceMusiqueJouee:=11;
 Mix_VolumeMusic(VOLUME_MUSIQUE);
-//mix_playMusic(OST[IndiceMusiqueJouee].musique,0);
+mix_playMusic(OST[IndiceMusiqueJouee].musique,0);
 {
 ==================================================================================================================================
 * EVENTS
@@ -417,6 +434,7 @@ Mix_VolumeMusic(VOLUME_MUSIQUE);
   
   while True do
   begin
+  bouclerMusique(ost[IndiceMusiqueJouee],LastUpdateTime2);
    // 100 FPS
 //Mouvement Joueur
   if SceneActive='Jeu' then 
@@ -446,7 +464,7 @@ Mix_VolumeMusic(VOLUME_MUSIQUE);
 				end;
 			SDL_mousebuttondown : 
 				begin 
-				if sceneActive='Jeu' then jouerCarte(LObjets[0].stats.deck^,iCarteChoisie,LObjets[0].stats.force,LObjets[0].stats.multiplicateurDegat,LObjets[0].stats.vie,LObjets[0].stats.mana,LObjets[0].image.rect.x+(LObjets[0].image.rect.w div 2),LObjets[0].image.rect.y+(LObjets[0].image.rect.h div 2));
+				if sceneActive='Jeu' then jouerCarte(LObjets[0].stats,LObjets[0].image.rect.x+(LObjets[0].image.rect.w div 2),LObjets[0].image.rect.y+(LObjets[0].image.rect.h div 2),iCarteChoisie);
    				if button_jouer.estVisible then
 				begin
 				HandleButtonClick(button_jouer,testEvent^.motion.x,testEvent^.motion.y);
@@ -483,7 +501,7 @@ Mix_VolumeMusic(VOLUME_MUSIQUE);
 				end;
 				
 				end;
-			end;		
+			end;
   end;
 annihiler();
 end.
