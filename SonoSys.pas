@@ -3,7 +3,7 @@ interface
 uses SDL2, SDL2_mixer,SysUtils; //télécharger SDL2_mixer au préalable
 
 const TAILLE_OST=15;
-        VOLUME_MUSIQUE=0;
+        VOLUME_MUSIQUE=10;
         VOLUME_SON=25;
 type TMus=record
     musique:PMix_Music;

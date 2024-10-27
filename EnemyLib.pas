@@ -351,10 +351,13 @@ begin
       5:begin
         if ennemi.anim.etat='chase' then
           AIPathFollow(ennemi,joueur,3,true,true);
-        if (ennemi.anim.etat='chase') and (sqrt((ennemi.image.rect.x-joueur.image.rect.x)**2+(ennemi.image.rect.y-joueur.image.rect.y)**2)<100) then
+        if (ennemi.anim.etat='chase') and (sqrt((ennemi.image.rect.x-joueur.image.rect.x)**2+(ennemi.image.rect.y-joueur.image.rect.y)**2)<120) then
           AIDodge(ennemi,joueur);
         if (ennemi.anim.etat='dodge') then
           DodgeUpdate(ennemi);
+        if ennemi.anim.etat='strike' then
+          ennemi.stats.xcible:=joueur.image.rect.x;
+        ennemi.anim.isFliped:=(ennemi.stats.xcible>ennemi.image.rect.x);
         if (ennemi.anim.etat='strike') and (animFinie(ennemi.anim)) then begin
           ennemi.col.estActif:=True;
           initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',6,True);

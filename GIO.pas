@@ -414,7 +414,7 @@ direction_menu;
 InitAnimation(LObjets[0].anim, 'Joueur', 'idle', 12, True);
 setlength(LObjets,3);
 for j:=1 to 2 do begin 
-	LObjets[j]:=TemplatesEnnemis[j*2+1]
+	LObjets[j]:=TemplatesEnnemis[6]
 	end;
 
 
