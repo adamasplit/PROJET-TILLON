@@ -45,7 +45,8 @@ var	text1 : TText;
 	text_n5: TText;
 
 //Image
-	var menu_bg,combat_bg : TImage;
+	var menu_bg,combat_bg,menuBook : TImage;
+	menuBookAnim : TAnimation;
 
 //GameObjects
 
@@ -239,6 +240,15 @@ procedure direction_menu;
 		
 
 	end;
+	procedure ActualiserMenuEnJeu;
+	begin
+		UpdateAnimation(menuBookAnim,menuBook);
+		RenderButton(button_deck);
+		RenderButton(button_bestiaire);
+		RenderRawImage(menuBook,False);
+
+		SDL_RenderPresent(sdlRenderer);
+	end;
 
 	procedure menuEnJeu;
 	begin
@@ -250,16 +260,12 @@ procedure direction_menu;
 			button_deck.estVisible :=True;
 			button_bestiaire.estVisible := True;
 		
-			DrawRect(black_color,200, windowWidth div 10, windowHeight div 10, windowWidth - windowWidth div 8,windowHeight - windowHeight div 8);
-			DrawRect(black_color, 230,windowWidth div 10 + 400, windowHeight div 10, 5,windowHeight - windowHeight div 8);
-			RenderButton(button_deck);
-			RenderButton(button_bestiaire);
+			DrawRect(black_color,50, 0, 0, windowWidth,windowHeight);
+			InitAnimation(menuBookAnim,'Book','Opening',5,False);
 
-			
-
-			SDL_RenderPresent(sdlRenderer);
 		end;
 	end;
+	
 begin
  {	
 ==================================================================================================================================
@@ -390,6 +396,8 @@ SDL_RenderPresent(sdlRenderer);
     // GameObjects
     CreateRawImage(LObjets[0].image, windowWidth div 2, windowHeight div 2, 100, 100, 'Sprites\Game\Joueur\Joueur_idle_1.bmp');
 	CreateRawImage(LObjets[1].image, windowWidth, 100, 100, 500, 'Sprites\Menu\fond1.bmp');
+
+	CreateRawImage(menuBook,0,0,windowWidth,windowHeight,'Sprites\Game\Book\Book_Opening_1.bmp');
 	
 	
 	
@@ -434,6 +442,10 @@ mix_playMusic(OST[IndiceMusiqueJouee].musique,0);
   		begin
 		ActualiserJeu;
 		MouvementJoueur(LObjets[0]);
+		end;
+  if SceneActive='MenuEnJeu' then 
+  		begin
+		ActualiserMenuEnJeu;
 		end;
   if SceneActive='Menu' then 
   		begin
