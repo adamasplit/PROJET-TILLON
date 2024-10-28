@@ -19,14 +19,14 @@ var i,j,xpos:Integer;
 boule,enn:TObjet; //variable de test
 
 // Bouttons
-var button_jouer: TButton;
-	button_lead : TButton;
-	button_q : TButton;
+var button_jouer: TButtonGroup;
+	button_lead : TButtonGroup;
+	button_q : TButtonGroup;
 
-	button_souligne : TButton;
-	button_retour_menu : TButton;
+	button_retour_menu : TButtonGroup;
 	button_deck : TButton;
 	button_bestiaire: TButton;
+
 
 	engre : TIntImage;
 
@@ -69,21 +69,14 @@ begin
   TTF_CloseFont(dayDream30);
   TTF_Quit;
 
-	//Anihilation Objet [button]
+{	//Anihilation Objet [button]
   SDL_FreeSurface(button_jouer.labelSurface);
-  SDL_DestroyTexture(button_jouer.labelTexture);
-  
-  	//Anihilation Objet [btn2]
-  SDL_FreeSurface(button_lead.labelSurface);
-  SDL_DestroyTexture(button_lead.labelTexture);
+  SDL_DestroyTexture(button_jouer.labelTexture);}
   
     //Anihilation Objet [button_font]
   SDL_FreeSurface(menu_bg.imgSurface);
   SDL_DestroyTexture(menu_bg.imgTexture);
   
-    //Anihilation Objet [button_font]
-  SDL_FreeSurface(button_q.labelSurface);
-  SDL_DestroyTexture(button_q.labelTexture);
   
 	//Anihilation Objet [text1]
   SDL_FreeSurface(text1.textSurface);
@@ -140,7 +133,6 @@ for i:=2 to High(LObjets) do
 end;
 
 procedure ActualiserJeu;
-var obj:TObjet;
 	begin
 		randomize();
 		
@@ -179,10 +171,10 @@ procedure jouer;
 		SDL_RenderClear(sdlRenderer);
 
 		//Objets dissimulés
-		button_lead.estVisible := false;
-		button_q.estVisible := false;
-		button_jouer.estVisible := false;
-		button_retour_menu.estVisible :=false;
+		button_lead.button.estVisible := false;
+		button_q.button.estVisible := false;
+		button_jouer.button.estVisible := false;
+		button_retour_menu.button.estVisible :=false;
 		
 		button_deck.estVisible := False;
 		button_bestiaire.estVisible := False;
@@ -198,15 +190,14 @@ procedure lead;
 		ClearScreen;
 		SDL_RenderClear(sdlRenderer);
 		
-		button_lead.estVisible := false;
-		button_q.estVisible := false;
-		button_jouer.estVisible := false;
+		button_lead.button.estVisible := false;
+		button_q.button.estVisible := false;
+		button_jouer.button.estVisible := false;
 		
 		RenderRawImage(menu_bg,255, False);
 		//RenderRawImage(vague);
 		RenderText(text1);
 		RenderText(titre_lead);
-		RenderButton(button_souligne);
 		RenderText(text_score_seize);
 		RenderText(text_score_trente);
 		RenderText(text_nom_seize);
@@ -219,8 +210,8 @@ procedure lead;
 		RenderText(text_s5);
 
 
-		
-		RenderButton(button_retour_menu);
+		OnMouseHover(button_retour_menu,GetMouseX,GetMouseY);
+		RenderButtonGroup(button_retour_menu);
 		SDL_RenderPresent(sdlRenderer);
 	end;
 
@@ -228,21 +219,24 @@ procedure direction_menu;
 	begin
 		SceneActive := 'Menu';
 
-		ClearScreen;
-		SDL_RenderClear(sdlRenderer);
+
 		//Menu Pricipal							A FAIRE Fonction ActiverEventsMenuPrincipal(Boolean) ?
-		button_lead.estVisible := true;
-		button_q.estVisible := true;
-		button_jouer.estVisible := true;
+		button_lead.button.estVisible := true;
+		button_q.button.estVisible := true;
+		button_jouer.button.estVisible := true;
 		
-		RenderRawImage(menu_bg,255, False);
-		//RenderRawImage(vague);
-		RenderButton(button_jouer);
-		RenderButton(button_lead); 
-		RenderButton(button_q); 
+		SDL_PollEvent(testEvent);
+		RenderRawImage(menu_bg, False);
+		OnMouseHover(button_jouer, GetMouseX,GetMouseY);
+		OnMouseHover(button_lead, GetMouseX,GetMouseY);
+		OnMouseHover(button_q,GetMouseX,GetMouseY);
+		RenderButtonGroup(button_jouer);
+		RenderButtonGroup(button_lead); 
+		RenderButtonGroup(button_q); 
 		RenderIntImage(engre);
 		RenderText(text1);
 		SDL_RenderPresent(sdlRenderer);
+		
 
 	end;
 
@@ -338,7 +332,7 @@ randomize();
 
 
 
-iCarteChoisie:=1;
+iCarteChoisie:=8;
 initUICombat();
 SDL_RenderPresent(sdlRenderer);
   
@@ -361,10 +355,9 @@ SDL_RenderPresent(sdlRenderer);
 
     
 	//Menu Principal
-	CreateButton(button_jouer, windowWidth div 2-150, 150, 350, 100, 'Jouer', b_color, black_color,dayDream30,Pjouer);
-	CreateButton(button_lead, windowWidth  div 2-150-25, 275, 400, 100, 'Leaderboard',b_color, black_color,dayDream30,leaderboard);
-	CreateButton(button_q, windowWidth div 2-150, 400, 350, 100, 'Ragequit',b_color, black_color,dayDream30,quitter);
-	CreateButton(button_souligne, windowWidth div 2-215, 150, 475, 10, ' ', black_color, black_color,dayDream30,btnProc); // A refaire avec un DrawRect
+	InitButtonGroup(button_jouer,windowWidth div 2-208, windowHeight div 5, 416, 208,'Sprites\Menu\Button1.bmp', 'Jouer',Pjouer);
+	InitButtonGroup(button_lead, windowWidth  div 2-208, 2*windowHeight div 4, 416, 150,'Sprites\Menu\Button1.bmp','Leaderboard',leaderboard);
+	InitButtonGroup(button_q, windowWidth div 2-208, 3 * windowHeight div 4, 416, 100,'Sprites\Menu\Button1.bmp','Ragequit',quitter);
 	//Menu en Jeu
 	CreateButton(button_deck, 210, 320, 240, 50,'Deck',b_color, bf_color,dayDream30,btnProc);
 	CreateButton(button_bestiaire, 210, 390, 240, 50,'Bestiaire',b_color, bf_color,dayDream30,btnProc);
@@ -380,7 +373,7 @@ SDL_RenderPresent(sdlRenderer);
     //Textes
 	//
 
-	CreateText(text1, windowWidth div 2-200, 20, 300, 250, 'Les Cartes du Destin ',dayDream30, whiteCol);
+	CreateText(text1, windowWidth div 2-150, 20, 300, 250, 'Les Cartes du Destin ',dayDream30, whiteCol);
 	CreateText(titre_lead, windowWidth div 2-210, 90, 300, 250, 'Leaderboard',dayDream40, navy_color);
 	CreateText(text_score_seize, 40, 200, 150, 125, '1> Score  :',dayDream20, bf_color);
 	CreateText(text_nom_seize, 40, 225, 250, 125, 'Nom partie :',dayDream20, bf_color);
@@ -392,7 +385,7 @@ SDL_RenderPresent(sdlRenderer);
 	CreateText(text_s4, 40, 450, 150, 125, 'Nom partie :',dayDream20, bf_color);
 	CreateText(text_n5, 40, 500, 150, 125, '5> Score :',dayDream20, bf_color);
 	CreateText(text_s5, 40, 525, 150, 125, 'Arrive prochainement !',dayDream20, bf_color);
-	CreateButton(button_retour_menu, 850, 625, 200, 75, 'Menu', b_color, bf_color,dayDream30,retour_menu);
+	InitButtonGroup(button_retour_menu, 850, 625, 200, 75,'Sprites\Menu\Button1.bmp','Menu',retour_menu);
 
     // GameObjects
     CreateRawImage(LObjets[0].image, windowWidth div 2, windowHeight div 2, 100, 100, 'Sprites\Game\Joueur\Joueur_idle_1.bmp');
@@ -413,8 +406,8 @@ SDL_RenderPresent(sdlRenderer);
 direction_menu;
 InitAnimation(LObjets[0].anim, 'Joueur', 'idle', 12, True);
 setlength(LObjets,3);
-for j:=1 to 2 do begin 
-	LObjets[j]:=TemplatesEnnemis[6]
+for j:=1 to 1 do begin 
+	LObjets[j]:=TemplatesEnnemis[4];
 	end;
 
 
@@ -442,6 +435,10 @@ mix_playMusic(OST[IndiceMusiqueJouee].musique,0);
 		ActualiserJeu;
 		MouvementJoueur(LObjets[0]);
 		end;
+  if SceneActive='Menu' then 
+  		begin
+		direction_menu;
+		end;
     
 
     while SDL_PollEvent( testEvent ) = 1 do
@@ -465,24 +462,28 @@ mix_playMusic(OST[IndiceMusiqueJouee].musique,0);
 			SDL_mousebuttondown : 
 				begin 
 				if sceneActive='Jeu' then jouerCarte(LObjets[0].stats,LObjets[0].image.rect.x+(LObjets[0].image.rect.w div 2),LObjets[0].image.rect.y+(LObjets[0].image.rect.h div 2),iCarteChoisie);
-   				if button_jouer.estVisible then
+   				if button_jouer.button.estVisible then
 				begin
-				HandleButtonClick(button_jouer,testEvent^.motion.x,testEvent^.motion.y);
+				OnMouseClick(button_jouer,testEvent^.motion.x,testEvent^.motion.y);
+				HandleButtonClick(button_jouer.button,testEvent^.motion.x,testEvent^.motion.y);
 				//continue;
 				end;
-				if button_lead.estVisible then
+				if button_lead.button.estVisible then
 				begin
-				HandleButtonClick(button_lead,testEvent^.motion.x,testEvent^.motion.y);
+				OnMouseClick(button_lead,testEvent^.motion.x,testEvent^.motion.y);
+				HandleButtonClick(button_lead.button,testEvent^.motion.x,testEvent^.motion.y);
 				//continue;
 				end;
-				if button_q.estVisible then
+				if button_q.button.estVisible then
 				begin
-				HandleButtonClick(button_q,testEvent^.motion.x,testEvent^.motion.y);
+				OnMouseClick(button_q,testEvent^.motion.x,testEvent^.motion.y);
+				HandleButtonClick(button_q.button,testEvent^.motion.x,testEvent^.motion.y);
 				//continue;
 				end;
-				if button_retour_menu.estVisible then
+				if button_retour_menu.button.estVisible then
 				begin
-				HandleButtonClick(button_retour_menu,testEvent^.motion.x,testEvent^.motion.y);
+				OnMouseClick(button_retour_menu,testEvent^.motion.x,testEvent^.motion.y);
+				HandleButtonClick(button_retour_menu.button,testEvent^.motion.x,testEvent^.motion.y);
 				//continue;
 				end;
 				if button_deck.estVisible then

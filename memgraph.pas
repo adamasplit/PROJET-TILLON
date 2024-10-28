@@ -68,7 +68,8 @@ procedure DrawRect(bgColor : TSDL_Color; alpha,x,y,w,h :Integer);
 
 procedure CreateRawImage(var image : TImage; x, y, w, h: Integer; directory : PAnsiChar); 
 
-procedure RenderRawImage(var image: Timage;alpha:Integer; flip : Boolean);
+procedure RenderRawImage(var image: Timage;alpha:Integer; flip : Boolean); overload;
+procedure RenderRawImage(var image: Timage; flip : Boolean); overload;
 
 procedure CreateInteractableImage(var image : TIntImage; x, y, w, h: Integer; directory : PAnsiChar; onClick: ButtonProcedure);
 procedure RenderIntImage(var image : TIntImage);
@@ -120,7 +121,7 @@ procedure RenderButton(var button: TButton);
 var textRect: TSDL_Rect;
 begin
   // Remplir le fond du bouton à la couleur choisie
-  SDL_SetRenderDrawColor(sdlRenderer, button.bgColor.r, button.bgColor.g, button.bgColor.b, 20);
+  SDL_SetRenderDrawColor(sdlRenderer, button.bgColor.r, button.bgColor.g, button.bgColor.b, 5);
   SDL_RenderFillRect(sdlRenderer, @button.rect);
 
   // Calculs de la position du texte en fonction de la taille du bouton (Texte Centré)
@@ -224,7 +225,7 @@ begin
 end;
 
 
-procedure RenderRawImage(var image: Timage;alpha:Integer; flip : Boolean);
+procedure RenderRawImage(var image: Timage;alpha:Integer; flip : Boolean); overload;
 var imgRect: TSDL_Rect;
 begin
   // Sauvegarde de la couleur actuelle du renderer
@@ -241,6 +242,23 @@ begin
     else
     SDL_RenderCopy(sdlRenderer, image.imgTexture, nil, @imgRect);
 end;
+
+procedure RenderRawImage(var image: Timage; flip : Boolean); overload;
+var imgRect: TSDL_Rect;
+begin
+  // Calculs de la position du texte
+  imgRect.w := image.rect.w;
+  imgRect.h := image.rect.h;
+  imgRect.x := image.rect.x;
+  imgRect.y := image.rect.y;
+
+  // Render de la texture de l'image
+  if (flip) then
+    SDL_RenderCopyEx(sdlRenderer, image.imgTexture, nil, @imgRect,0, nil, SDL_FLIP_HORIZONTAL)
+    else
+    SDL_RenderCopy(sdlRenderer, image.imgTexture, nil, @imgRect);
+end;
+
 
 { 
 * CreateInteractableImage 	| Crée une Image avec interaction
@@ -306,7 +324,7 @@ end;
 
 {Initialisation de la Fenêtre dans le programme principal}
 BEGIN
-  dayDreamFontDirectory := 'Fonts\pixeljosh6.ttf';
+  dayDreamFontDirectory := 'Fonts\Font_Fantasy_M_Edit.ttf';
 
   // Initialization of video subsystem
   if SDL_Init(SDL_INIT_VIDEO) < 0 then HALT;
