@@ -1,8 +1,8 @@
 unit mapSys;
 
 interface
-uses SDL2,math,memgraph,SysUtils,coeur,eventsys;
-var imgs0,imgs1,imgs2,imgs3:TIntImage;
+uses SDL2,math,memgraph,SysUtils,coeur,eventsys,AnimationSys,EnemyLib;
+var imgs0,imgs1,imgs2,imgs3:TButtonGroup;
 var salleChoisie:TSalle;
 CONST 
 windowHeight=720;windowWidth=1080;
@@ -12,17 +12,24 @@ windowHeight=720;windowWidth=1080;
       X1=(windowWidth  div 2) - (windowWidth div 2)+128;
       X2=(windowWidth  div 2) + (windowWidth div 4);
 
-procedure generationChoix(avancement:Integer;var salle1,salle2,salle3:TSalle);
-procedure affichageSalles(salle1,salle2,salle3:TSalle);
-procedure choixSalle(avancement:Integer;var salle:TSalle);
-procedure choisirEnnemis(avancement:integer;var salle:TSalle);
+var avancementPartie : Integer;
+
+procedure generationChoix(var salle1,salle2,salle3:TSalle);
+procedure affichageSalles(var salle1,salle2,salle3:TSalle);
+procedure choixSalle();
+procedure choisirEnnemis;
+procedure LancementSalleHasard;
+procedure LancementSalleBoss;
+procedure LancementSalleMarchand;
+procedure LancementSalleCamp;
 implementation
 
 
-procedure generationChoix(avancement:Integer;var salle1,salle2,salle3:TSalle);
+procedure generationChoix(var salle1,salle2,salle3:TSalle);
 var alea:Integer;
 begin
-    if (avancement mod (MAXSALLES/4))=(MAXSALLES/4-1) then 
+    writeln('Actuellement en salle : ',avancementPartie);
+    if ((avancementPartie mod 2) = 0) then 
         begin
             salle1.evenement:=rien;
             salle2.evenement:=boss;
@@ -51,41 +58,74 @@ begin
         end
 end;
 
-procedure choisirEnnemis(avancement:integer;var salle:TSalle);
-var precTaille,i : Integer;
+procedure choisirEnnemis;
+var j : integer;
 begin
-    precTaille := High(LObjets)+1;
-    setLength(LObjets, precTaille+avancement);
-    for i:=1 to avancement do
-    begin
+setlength(LObjets,avancementPartie+1);
+for j:=1 to avancementPartie do
+begin
+randomize;
+LObjets[j]:=TemplatesEnnemis[random(5)];
+writeln('summoning');
+end
 
-    end;
 end;
 
 procedure LancementSalleCombat();
 begin
-    choisirEnnemis(LObjets[0].stats.avancement,salleChoisie);
-    InitUICombat();
-    SceneActive:='Jeu'
+writeln('Lancement de salle Combat');
+avancementPartie := avancementPartie+1;
+ClearScreen;
+SDL_RenderClear(sdlRenderer);
+SceneActive := 'Jeu';
+choisirEnnemis
 end;
 
-procedure LancementSalleHasard();
+procedure LancementSalleHasard;
 begin
+writeln('Lancement de salle Hasard');
+avancementPartie := avancementPartie+1;
+ClearScreen;
+SDL_RenderClear(sdlRenderer);
+SceneActive := 'Jeu';
+choisirEnnemis;
 end;
 
-procedure LancementSalleBoss();
+procedure LancementSalleBoss;
+var j : integer;
 begin
+writeln('Lancement de salle Boss');
+avancementPartie := avancementPartie+1;
+ClearScreen;
+SDL_RenderClear(sdlRenderer);
+SceneActive := 'Jeu';
+setlength(LObjets,5);
+for j:=1 to 4 do
+randomize;
+LObjets[j]:=TemplatesEnnemis[4];
 end;
 
-procedure LancementSalleMarchand();
+procedure LancementSalleMarchand;
 begin
+writeln('Lancement de salle Marchand');
+avancementPartie := avancementPartie+1;
+SceneActive := 'Jeu';
+ClearScreen;
+SDL_RenderClear(sdlRenderer);
+choisirEnnemis;
 end;
 
-procedure LancementSalleCamp();
+procedure LancementSalleCamp;
 begin
+writeln('Lancement de salle Camp');
+avancementPartie := avancementPartie+1;
+ClearScreen;
+SDL_RenderClear(sdlRenderer);
+SceneActive := 'Jeu';
+choisirEnnemis;
 end;
 
-procedure affichageSalle(salle:TSalle;x,y:integer;var img:TIntImage);
+procedure affichageSalle(var salle:TSalle;x,y:integer);
 var dir:PCHar;proc:ButtonProcedure;
 begin
     case salle.evenement of //initialisation en fonction du type de salle
@@ -111,62 +151,76 @@ begin
             end;
         else begin
             dir:='Sprites/Menu/salle_rien.bmp';
-            proc:=@OnButtonClickDebug;
+            proc:= @OnButtonClickDebug;
             end
     end;
     writeln(dir);
-    CreateInteractableImage(salle.image,x,y,128,128,dir,proc);
-    RenderIntImage(salle.image);
+    InitButtonGroup(salle.image,x,y,128,128,dir,' ',proc);
+    RenderButtonGroup(salle.image);
 end;
 
-procedure affichageSalles(salle1,salle2,salle3:TSalle);
+procedure affichageSalles(var salle1,salle2,salle3:TSalle);
 var depart:TSalle;
 begin
     depart.evenement:=rien;
-    affichageSalle(depart,X1,Y2,imgs0);
-    affichageSalle(salle1,X2,Y1,imgs1);
-    affichageSalle(salle2,X2,Y2,imgs2);
-    affichageSalle(salle3,X2,Y3,imgs3);
+    affichageSalle(depart,X1,Y2);
+    affichageSalle(salle1,X2,Y1);
+    affichageSalle(salle2,X2,Y2);
+    affichageSalle(salle3,X2,Y3);
 end;
 
-procedure choixSalle(avancement:Integer;var salle:TSalle); //permet au joueur de choisir la salle suivante
-var   salle1,salle2,salle3:TSalle;
+procedure choixSalle();
+var
+    salle1, salle2, salle3: TSalle;
 begin
-    SceneActive:='map';
-    writeln('initialisation des salles...');
-    generationChoix(avancement,salle1,salle2,salle3);
-    writeln('tentative d"affichage des salles');
-    affichageSalles(salle1,salle2,salle3);
-    salle.evenement:=rien;
-    writeln('début du choix');
+    SceneActive := 'map';
+    writeln('Initializing rooms...');
+    
+    generationChoix(salle1, salle2, salle3);
+    writeln('Displaying rooms');
+    affichageSalles(salle1, salle2, salle3);
+    
+    writeln('Room choice started');
     SDL_RenderPresent(sdlRenderer);
     new(testEvent);
-    while SceneActive='map' do 
-        begin
+    
+    while SceneActive = 'map' do 
+    begin
         SDL_PumpEvents();
-        SDL_delay(10);
-        while SDL_PollEvent( testEvent ) = 1 do
-            begin
-                case testEvent^.type_ of
-			        SDL_KEYDOWN:
-      		            begin
-        		        case testEvent^.key.keysym.sym of
-					        SDLK_ESCAPE : writeln('h');//menuEnJeu;
-        		            end;
-      		            end;
+        SDL_Delay(10);
+        //OnMouseHover(salle1.image,testEvent^.motion.x, testEvent^.motion.y);
+        //OnMouseHover(salle2.image,testEvent^.motion.x, testEvent^.motion.y);
+        //OnMouseHover(salle3.image,testEvent^.motion.x, testEvent^.motion.y);
+        RenderButtonGroup(salle1.image);
+        RenderButtonGroup(salle2.image);
+        RenderButtonGroup(salle3.image);
+        SDL_RenderPresent(sdlRenderer);
+        while SDL_PollEvent(testEvent) = 1 do
+        begin
+            case testEvent^.type_ of
+                SDL_KEYDOWN:
+                    case testEvent^.key.keysym.sym of
+                        SDLK_ESCAPE: 
+                            writeln('Escape key pressed'); // Add your menu or escape logic here
+                    end;
 
-			        //Bouton de souris pressé
-			        SDL_MOUSEBUTTONDOWN: 
-			            begin
-				            HandleImageClick(salle1.image,testEvent^.motion.x,testEvent^.motion.y);
-                            HandleImageClick(salle2.image,testEvent^.motion.x,testEvent^.motion.y);
-                            HandleImageClick(salle3.image,testEvent^.motion.x,testEvent^.motion.y);
-                        end
-                    end
-            end
-        end
+                SDL_MOUSEBUTTONDOWN:
+                    begin
+                        writeln('Mouse button pressed at (', testEvent^.motion.x, ',', testEvent^.motion.y, ')');
+                        writeln(salle1.image.button.rect.x);
+                        OnMouseClick(salle1.image, testEvent^.motion.x, testEvent^.motion.y);
+                        OnMouseClick(salle2.image, testEvent^.motion.x, testEvent^.motion.y);
+                        OnMouseClick(salle3.image, testEvent^.motion.x, testEvent^.motion.y);
+                        HandleButtonClick(salle1.image.button, testEvent^.motion.x, testEvent^.motion.y);
+                        HandleButtonClick(salle2.image.button, testEvent^.motion.x, testEvent^.motion.y);
+                        HandleButtonClick(salle3.image.button, testEvent^.motion.x, testEvent^.motion.y);
+                    end;
+            end;
+        end;
+    end;
 end;
 
 begin
+avancementPartie:=1;
 writeln('MapSys ready')
 end.

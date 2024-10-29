@@ -12,7 +12,9 @@ uses
   combatLib;
   var lastUpdateTime1,LastUpdateTime2:UInt32;
   musique:TMus;
+
 var s:TSalle;
+
 function isuiv(i:Integer):Integer;
   begin
     if i>2 then  
@@ -27,6 +29,7 @@ function iprec(i:Integer):Integer;
     else iprec:=i-1;
   end;
   var j: integer;
+
 procedure annihiler(); //METTRE A JOUR APRES CHAQUE AJOUT D'OBJET
 begin
   // Nettoyage de Ram (DETRUIRE IMPERATIVEMENT TOUTES LES TEXTURES UTILISEES SOUS PEINE DE FUITE DE RAM !!!!)
@@ -49,7 +52,7 @@ IndiceMusiqueJouee:=4;
 //mix_playMusic(OST[IndiceMusiqueJouee].musique,0);
 
 
-choixSalle(1,s);
+choixSalle(1);
 detruireOST;
 annihiler();
 end.

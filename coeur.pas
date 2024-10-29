@@ -125,10 +125,19 @@ type
     col:TCol;
   end;
 
+type
+  TButtonGroup = record
+    button: TButton;       // Bouton de base
+    image: TImage;         // Image de fond animée (taille et alpha)
+    hoverSoundPlayed: Boolean;  // Pour suivre le premier survol de la souris
+    originalWidth, originalHeight: Integer; 
+  end;
 type TSalle=record
     evenement:evenements;
-    image:TintImage;
+    image:TButtonGroup;
 end;
+
+
 type ListeObjets = Array of TObjet; 
 var LObjets: ListeObjets; //Liste universelle des objets présents
 combatFini:Boolean;

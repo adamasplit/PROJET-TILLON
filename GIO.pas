@@ -190,10 +190,13 @@ procedure jouer;
 	end;
 procedure lead;
 	begin
+
 		SceneActive := 'Leaderboard';
 
 		ClearScreen;
 		SDL_RenderClear(sdlRenderer);
+
+		
 		
 		button_lead.button.estVisible := false;
 		button_q.button.estVisible := false;
@@ -461,6 +464,7 @@ InitAnimation(LObjets[0].anim, 'Joueur', 'idle', 12, True);
 					SDLK_DOWN: LObjets[0].stats.vie := LObjets[0].stats.vie-10;
 					SDLK_ESCAPE : menuEnJeu;
 					SDLK_SPACE:leMonde:=not(leMonde);
+					SDLK_H : choixSalle();
         		end;
       		end;
 			
