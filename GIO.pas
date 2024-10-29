@@ -96,10 +96,8 @@ begin
 for i:=0 to High(LObjets) do 
 		if (i<=High(LObjets)) then
 			begin
-			//writeln('mise à jour des animations sss: indice ',i,', dernier indice :',high(lobjets));
+			//writeln('objet actuel : ',Lobjets[i].stats.genre,' ',lobjets[i].anim.objectName);
 			LObjets[i].stats.indice:=i;
-        	if (LObjets[i].stats.genre<>projectile) and (LObjets[i].stats.genre<>laser) and (LObjets[i].stats.genre<>epee) then
-				RenderRawImage(LObjets[i].image,255, LObjets[i].anim.isFliped);
 			if LObjets[i].anim.estActif then 
 				begin
 				if (LObjets[i].anim.etat='degats') then
@@ -133,23 +131,30 @@ for i:=2 to High(LObjets) do
 		end
 end;
 
+procedure AfficherTout();
+begin
+	renderRawImage(combat_bg,255,False);
+	for i:=0 to high(LObjets) do
+		case LOBjets[i].stats.genre of
+			TypeObjet(2),TypeObjet(3),TypeObjet(4):RenderAvecAngle(LObjets[i])
+			else
+				RenderRawImage(LObjets[i].image,255, LObjets[i].anim.isFliped);
+		end;
+			UpdateUICombat(icarteChoisie,400,400,LObjets[0].stats);
+	
+end;
+
 procedure ActualiserJeu;
 	begin
 		randomize();
-		
+		bouclerMusique(ost[IndiceMusiqueJouee],LastUpdateTime1);
 		SDL_RenderClear(sdlRenderer);
-		renderRawImage(combat_bg,255,False);
 		SDL_PumpEvents;
 		sdl_delay(10);
-		//writeln('mise à jour des collisions');
+		afficherTout;
 		UpdateCollisions();
-		//writeln('mise à jour des animations');
 		UpdateAnimations();
-		//writeln('animations mises à jour');
 		RegenMana(LastUpdateTime2,LObjets[0].stats.mana,LObjets[0].stats.manaMax,LObjets[0].stats.multiplicateurMana);
-        //Render
-		//ébauche d'IA pour l'ennemi
-		UpdateUICombat(icarteChoisie,400,400,LObjets[0].stats);
 		for i:=1 to High(LObjets) do
 			if (i<=High(LObjets)) and not leMonde then
 			begin
@@ -161,7 +166,6 @@ procedure ActualiserJeu;
 					end;
 			end;
 		SDL_RenderPresent(sdlRenderer);
-		
 	end;
 
 
@@ -305,18 +309,22 @@ IndiceMusiqueJouee:=10;
   Dummy.anim.estActif := False;
 
   //Initialisation de la liste d'objets
-  setLength(LObjets,7);
-  LObjets[0] := Joueur;
-  LObjets[1] := Dummy;
-  LObjets[1].stats.genre:=autre;
-  LObjets[0].image.rect.x := windowWidth div 2;
-  LObjets[0].image.rect.x := windowWidth div 2;
-    LObjets[1].image.rect.x := windowWidth div 2;
-  LObjets[1].image.rect.y := windowWidth div 2;
-  LObjets[0].image.rect.y := windowHeight div 2;
+  setlength(LObjets,5);
+	for j:=1 to 4 do begin 
+		LObjets[j]:=TemplatesEnnemis[j*2-1];
+		end;
 
-  LObjets[2].image.rect.x := windowWidth div 2-100;
-  LObjets[2].image.rect.y := windowHeight div 2-100;
+
+
+	createRawImage(combat_bg,88,-80,900,900,'Sprites/Game/floor/Floor.bmp');
+	randomize();
+	IndiceMusiqueJouee:=random(12)+1;
+	Mix_VolumeMusic(VOLUME_MUSIQUE);
+	mix_playMusic(OST[IndiceMusiqueJouee].musique,0);
+	lastUpdateTime2:=sdl_getticks;
+  LObjets[0] := Joueur;
+  LObjets[0].image.rect.x := windowWidth div 2;
+  LObjets[0].image.rect.y := windowHeight div 2;
 
   lastUpdateTime1:=SDL_GetTicks();
 	LastUpdateTime2:=SDL_GetTicks();
@@ -395,7 +403,7 @@ SDL_RenderPresent(sdlRenderer);
 
     // GameObjects
     CreateRawImage(LObjets[0].image, windowWidth div 2, windowHeight div 2, 100, 100, 'Sprites\Game\Joueur\Joueur_idle_1.bmp');
-	CreateRawImage(LObjets[1].image, windowWidth, 100, 100, 500, 'Sprites\Menu\fond1.bmp');
+	//CreateRawImage(LObjets[1].image, windowWidth, 100, 100, 500, 'Sprites\Menu\fond1.bmp');
 
 	CreateRawImage(menuBook,0,0,windowWidth,windowHeight,'Sprites\Game\Book\Book_Opening_1.bmp');
 	
@@ -413,17 +421,7 @@ SDL_RenderPresent(sdlRenderer);
 
 direction_menu;
 InitAnimation(LObjets[0].anim, 'Joueur', 'idle', 12, True);
-setlength(LObjets,3);
-for j:=1 to 1 do begin 
-	LObjets[j]:=TemplatesEnnemis[4];
-	end;
 
-
-
-createRawImage(combat_bg,88,-80,900,900,'Sprites/Game/floor/Floor.bmp');
-IndiceMusiqueJouee:=11;
-Mix_VolumeMusic(VOLUME_MUSIQUE);
-mix_playMusic(OST[IndiceMusiqueJouee].musique,0);
 {
 ==================================================================================================================================
 * EVENTS
@@ -435,7 +433,6 @@ mix_playMusic(OST[IndiceMusiqueJouee].musique,0);
   
   while True do
   begin
-  bouclerMusique(ost[IndiceMusiqueJouee],LastUpdateTime2);
    // 100 FPS
 //Mouvement Joueur
   if SceneActive='Jeu' then 

@@ -230,10 +230,6 @@ end;
 procedure ActionEnnemi(ennemi:TObjet;x,y:Integer); //permet à un ennemi d'agir (donc d'attaquer)
 var obj:TObjet;
 begin
-  if (ennemi.stats.typeIA_MVT=0) and (ennemi.stats.compteurAction=100) then
-    begin
-    multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+64,ennemi.image.rect.y+64,5,5,360,(ennemi.stats.xcible-ennemi.image.rect.x),'kamui');
-    end;
   if (ennemi.anim.etat='shoot') and (ennemi.stats.compteurAction>10) and (ennemi.stats.compteurAction<15) then
     begin
       if (ennemi.image.rect.x<ennemi.stats.xcible) then
@@ -242,39 +238,45 @@ begin
               CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+60,ennemi.image.rect.y+130,ennemi.image.rect.x-60,ennemi.image.rect.y+130,(random(5)-3)*3,10,100,'rayonAL',obj);
             ajoutObjet(obj);
     end;
-  if (ennemi.stats.typeIA_MVT=3) and (ennemi.stats.compteurAction>50) and (ennemi.stats.compteurAction mod 15=0) then
-    begin
-    //multiLasers(TypeObjet(1),1,1,1,ennemi.image.rect.x+50,ennemi.image.rect.y+50,0,10,360,0,10,80,'rayon');
-    multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+64,ennemi.image.rect.y+64,5,20,360,(ennemi.stats.xcible-ennemi.image.rect.x),'eclairR');
-    initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',10,true);
-    if ennemi.stats.compteurAction mod 2=0 then
-    multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+64,ennemi.image.rect.y+64,5,18,360,(ennemi.stats.xcible-ennemi.image.rect.x) div 2,'projectile');
-    writeln(ennemi.stats.compteurAction);
-    end;
-  if (ennemi.stats.typeIA_MVT=4) and animFinie(ennemi.anim) and (ennemi.anim.etat='chase') and (random(5)=0)  then 
-    multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+64,ennemi.image.rect.y+64,5,3,360,random(18)*10,'projectile');
-  if (ennemi.anim.etat='strike') and (ennemi.stats.typeIA_MVT=5) then
-    begin
-    ennemi.anim.isFliped:=(ennemi.stats.xcible>ennemi.image.rect.x);
-    if ennemi.anim.currentFrame=6 then
+  case ennemi.stats.typeIA_MVT of
+    1: if(ennemi.stats.compteurAction=100) then
       begin
-      if (ennemi.image.rect.x<ennemi.stats.xcible) then
-        CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+40,ennemi.image.rect.y+50,ennemi.image.rect.x+60,ennemi.image.rect.y+50,0,10,5,'rayonAbysse',obj)
-      else
-        CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+40,ennemi.image.rect.y+50,ennemi.image.rect.x-60,ennemi.image.rect.y+50,0,10,5,'rayonAbysse',obj);
-      ajoutObjet(obj);
+      multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+64,ennemi.image.rect.y+64,5,5,360,(ennemi.stats.xcible-ennemi.image.rect.x),'kamui');
       end;
-    end;
-  if (ennemi.stats.typeIA_MVT=6) then
-    begin
-    if (ennemi.stats.compteurAction mod 60 = 0) and (ennemi.stats.compteurAction>0) and (ennemi.stats.compteurAction<200) then
+    3: if (ennemi.stats.compteurAction>50) and (ennemi.stats.compteurAction mod 15=0) then
       begin
-      creerBoule(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,ennemi.image.rect.x+64,ennemi.image.rect.y+64,4,x,y,'eclairR',obj);
-      ajoutObjet(obj)
+      //multiLasers(TypeObjet(1),1,1,1,ennemi.image.rect.x+50,ennemi.image.rect.y+50,0,10,360,0,10,80,'rayon');
+      multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+64,ennemi.image.rect.y+64,5,20,360,(ennemi.stats.xcible-ennemi.image.rect.x),'eclairR');
+      initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',10,true);
+      if ennemi.stats.compteurAction mod 2=0 then
+      multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+64,ennemi.image.rect.y+64,5,18,360,(ennemi.stats.xcible-ennemi.image.rect.x) div 2,'projectile');
+      writeln(ennemi.stats.compteurAction);
       end;
-    if ennemi.stats.compteurAction=100 then
-      multiLasers(TypeObjet(1),1,1,1,ennemi.image.rect.x+50,ennemi.image.rect.y+50,0,4,360,0,10,100,'rayon');
-    end
+    4:if animFinie(ennemi.anim) and (ennemi.anim.etat='chase') and (random(5)=0)  then 
+      multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+(ennemi.image.rect.w div 2),ennemi.image.rect.y+(ennemi.image.rect.h div 2),5,3,360,random(18)*10,'projectile');
+    5: if (ennemi.anim.etat='strike')then
+      begin
+      ennemi.anim.isFliped:=(ennemi.stats.xcible>ennemi.image.rect.x);
+      if ennemi.anim.currentFrame=6 then
+        begin
+        if (ennemi.image.rect.x<ennemi.stats.xcible) then
+          CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+40,ennemi.image.rect.y+50,ennemi.image.rect.x+60,ennemi.image.rect.y+50,0,10,5,'rayonAbysse',obj)
+        else
+          CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+40,ennemi.image.rect.y+50,ennemi.image.rect.x-60,ennemi.image.rect.y+50,0,10,5,'rayonAbysse',obj);
+        ajoutObjet(obj);
+        end;
+      end;
+    6: if (ennemi.stats.typeIA_MVT=6) then
+      begin
+      if (ennemi.stats.compteurAction mod 60 = 0) and (ennemi.stats.compteurAction>0) and (ennemi.stats.compteurAction<200) then
+        begin
+        creerBoule(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,ennemi.image.rect.x+64,ennemi.image.rect.y+64,4,x,y,'eclairR',obj);
+        ajoutObjet(obj)
+        end;
+      if ennemi.stats.compteurAction=100 then
+        multiLasers(TypeObjet(1),1,1,1,ennemi.image.rect.x+50,ennemi.image.rect.y+50,0,4,360,0,10,100,'rayon');
+      end
+    end;
 end;
 
 procedure DeplacementEnnemi(var ennemi:TObjet;joueur:TObjet); //déplace un ennemi 
@@ -376,9 +378,9 @@ end;
 
 procedure IAEnnemi(var ennemi:TObjet;joueur:TObjet);
 begin
-  DrawRect(black_color,255, ennemi.image.rect.x-2,ennemi.image.rect.y+ennemi.col.dimensions.h+ennemi.col.offset.y+5, 104, 14);
+  DrawRect(black_color,255, ennemi.image.rect.x-2+ennemi.col.offset.x,ennemi.image.rect.y+ennemi.col.dimensions.h+ennemi.col.offset.y+5, ennemi.col.dimensions.w+4, 14);
   if ennemi.stats.vieMax>0 then
-  DrawRect(red_color,255, ennemi.image.rect.x,ennemi.image.rect.y+ennemi.col.dimensions.h+ennemi.col.offset.y+7, Round(100*(ennemi.stats.vie/ennemi.stats.vieMax)), 10 );
+  DrawRect(red_color,255, ennemi.image.rect.x+ennemi.col.offset.x,ennemi.image.rect.y+ennemi.col.dimensions.h+ennemi.col.offset.y+7, Round(ennemi.col.dimensions.w*(ennemi.stats.vie/ennemi.stats.vieMax)), 10 );
   if ennemi.stats.vie<0 then ennemi.stats.vie:=0;
   if (ennemi.stats.vie>0) then 
     begin
@@ -407,8 +409,10 @@ begin
 initStatEnnemi('undrixel',3,50,5,0,288,192,10,4,0,10,TemplatesEnnemis[1],200,128,10,40);
 initStatEnnemi('Archimage',4,100,2,6,128,128,6,6,6,4,TemplatesEnnemis[2],60,100,24,14);
 initStatEnnemi('liche',0,50,2,4,128,128,6,0,0,10,TemplatesEnnemis[3],70,110,19,7);
-initStatEnnemi('altegh',1,50,2,4,192,192,6,4,0,10,TemplatesEnnemis[6],160,96,16,96);
 initStatEnnemi('chevalier',5,10,10,1,90,90,6,3,10,5,TemplatesEnnemis[4],54,90,5,0);
 initStatEnnemi('expurgateur',6,20,3,1,128,128,12,0,0,7,TemplatesEnnemis[5],128,104,0,24);
+initStatEnnemi('altegh',1,50,2,4,192,192,6,4,0,14,TemplatesEnnemis[6],160,96,16,96);
+initStatEnnemi('Akr',4,150,2,-20,384,256,9,9,8,16,TemplatesEnnemis[7],200,96,80,150);
+
 
 end.

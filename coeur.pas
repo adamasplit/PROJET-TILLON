@@ -91,7 +91,16 @@ type TStats=record //(version variable)
           tailleCollection:Integer;
           bestiaire:array[1..MAXENNEMIS] of Boolean);
         
-        ennemi:(xcible,ycible,compteurAction,nbFrames1,nbFrames2,nbFrames3,nbFramesMort:Integer;typeIA_MVT:Byte);
+        ennemi:(
+          xcible,
+          ycible,
+          compteurAction,
+          nbFrames1,
+          nbFrames2,
+          nbFrames3,
+          nbFramesMort:Integer;
+          typeIA_MVT:Byte;
+          nomAttaque:PCHar);
         
         projectile,laser:(degats:Integer;origine:typeObjet;vectX,vectY,angle:Real;dureeVie,delai,delaiInit,vitRotation:Integer);
 end;
@@ -122,6 +131,7 @@ type TSalle=record
 end;
 type ListeObjets = Array of TObjet; 
 var LObjets: ListeObjets; //Liste universelle des objets présents
+combatFini:Boolean;
 statsJoueur: TStats;
 PDeck:TDeck; //deck pointé par les stats du joueur
 
