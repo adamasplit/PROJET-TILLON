@@ -12,16 +12,6 @@ uses
 const
   FRAME_DURATION = 90;  // Durée en ms pour 30 FPS
 
-
-type
-//Type de bouton animé avec imaghe
-  TButtonGroup = record
-    button: TButton;       // Bouton de base
-    image: TImage;         // Image de fond animée (taille et alpha)
-    hoverSoundPlayed: Boolean;  // Pour suivre le premier survol de la souris
-    originalWidth, originalHeight: Integer; 
-  end;
-
   
 
 // Initialiser l'animation pour un objet
