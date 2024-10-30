@@ -29,7 +29,7 @@ procedure generationChoix(var salle1,salle2,salle3:TSalle);
 var alea:Integer;
 begin
     writeln('Actuellement en salle : ',avancementPartie);
-    if ((avancementPartie mod 2) = 0) then 
+    if ((avancementPartie mod 5) = 0) then 
         begin
             salle1.evenement:=rien;
             salle2.evenement:=boss;
@@ -66,7 +66,6 @@ for j:=1 to avancementPartie do
 begin
 randomize;
 LObjets[j]:=TemplatesEnnemis[random(5)+1];
-writeln('summoning');
 end
 
 end;
@@ -101,8 +100,10 @@ SDL_RenderClear(sdlRenderer);
 SceneActive := 'Jeu';
 setlength(LObjets,5);
 for j:=1 to 4 do
+begin
 randomize;
 LObjets[j]:=TemplatesEnnemis[4];
+end;
 end;
 
 procedure LancementSalleMarchand;
@@ -203,12 +204,12 @@ begin
                 SDL_KEYDOWN:
                     case testEvent^.key.keysym.sym of
                         SDLK_ESCAPE: 
-                            writeln('Escape key pressed'); // Add your menu or escape logic here
+                            // Un Gwo pwoblem wai
                     end;
 
                 SDL_MOUSEBUTTONDOWN:
                     begin
-                        writeln('Mouse button pressed at (', testEvent^.motion.x, ',', testEvent^.motion.y, ')');
+                        //writeln('Mouse button pressed at (', testEvent^.motion.x, ',', testEvent^.motion.y, ')');
                         writeln(salle1.image.button.rect.x);
                         OnMouseClick(salle1.image, testEvent^.motion.x, testEvent^.motion.y);
                         OnMouseClick(salle2.image, testEvent^.motion.x, testEvent^.motion.y);
