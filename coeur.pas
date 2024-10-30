@@ -89,7 +89,11 @@ type TStats=record //(version variable)
           collection:TPaquet;
           deck:^TDeck;
           tailleCollection:Integer;
-          bestiaire:array[1..MAXENNEMIS] of Boolean);
+          bestiaire:array[1..MAXENNEMIS] of Boolean;
+          pendu:Boolean;
+          compteurLeMonde:Integer;
+          laMort,leFou:Boolean;
+          nbJustice : Integer);
         
         ennemi:(
           xcible,
@@ -201,6 +205,7 @@ begin
   statsJoueur.force:=1;
   statsJoueur.multiplicateurDegat:=1;
   statsJoueur.multiplicateurMana:=1;
+  statsJoueur.nbJustice:=0;
 
   for i:=1 to 22 do begin
     cartes[i].numero:=i;

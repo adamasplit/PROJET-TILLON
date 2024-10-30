@@ -117,12 +117,10 @@ for i:=0 to High(LObjets) do
 for i:=2 to High(LObjets) do
       if (i<=High(LObjets)) then
 	  	begin
-	  		//writeln('mise à jour des projectiles : indice ',i,', dernier indice :',high(lobjets));
 			case LObjets[i].stats.genre of 
         	projectile:begin
         		if i<>LObjets[i].stats.indice then writeln('conflit à l"indice',i);
 				LObjets[i].stats.indice:=i;
-        		//writeln('accès à l"objet numéro ',i,' dernier indice de LObjets : ',high(LObjets));
         		updateBoule(LObjets[i]);
         		end;
 			laser:updateRayon(LObjets[i]);
@@ -134,7 +132,14 @@ end;
 procedure AfficherTout();
 begin
 	renderRawImage(combat_bg,255,False);
-	for i:=0 to high(LObjets) do
+	if LObjets[0].stats.pendu then
+		if LObjets[i].anim.isFliped then
+			SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
+		else
+			SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
+		else
+			RenderRawImage(LObjets[0].image,255, LObjets[0].anim.isFliped);
+	for i:=1 to high(LObjets) do
 		case LOBjets[i].stats.genre of
 			TypeObjet(2),TypeObjet(3),TypeObjet(4):RenderAvecAngle(LObjets[i])
 			else
@@ -154,15 +159,15 @@ procedure ActualiserJeu;
 		afficherTout;
 		UpdateCollisions();
 		UpdateAnimations();
+		if leMonde and (sdl_getTicks-UpdateTimeMonde>LObjets[0].compteurLeMonde*1000);
+		if LObjets[0].laMort and (sdl_getTicks-updateTimeMode>5000);
 		RegenMana(LastUpdateTime2,LObjets[0].stats.mana,LObjets[0].stats.manaMax,LObjets[0].stats.multiplicateurMana);
 		for i:=1 to High(LObjets) do
 			if (i<=High(LObjets)) and not leMonde then
 			begin
-				//writeln('l"objet n°',i,' agit');
 				if LObjets[i].stats.genre=TypeObjet(1) then
 					begin
 					IAEnnemi(LObjets[i],LObjets[0]);
-					//impact(LObjets[0].image.rect.x+(random(16)*2)+16,LObjets[0].image.rect.y+random(16)*2+16);
 					end;
 			end;
 		SDL_RenderPresent(sdlRenderer);

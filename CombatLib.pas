@@ -10,7 +10,7 @@ uses
     memgraph,
     SDL2;
 
-var leMonde:Boolean;
+var leMonde:Boolean;updateTimeMonde:UInt32;updateTimeMort:UInt32;
 
 function degat(flat : Integer ; force : Integer ; defense : Integer;multiplicateurDegat:Real): Integer;
 procedure RegenMana(var LastUpdateTime : UInt32;var mana:Integer;manaMax:Integer;multiplicateurMana:Real); 
@@ -57,9 +57,9 @@ begin
 end;
 
 //procedure de dégat instantané : inflige des dégat FLAT 
-procedure degatInst (var vie : Integer ; degat : integer );
+procedure degatInst (var s : Tstats ; degat : integer );
 begin
-    vie := vie - degat;
+    s.vie := s.vie - degat;
 end;
 
 
@@ -158,6 +158,8 @@ begin
     creerDeckCombat(statsTemp,Pdeck);
     //Initialisation du deck pointé
     statsTemp.deck:=@pDeck;
+    statsTemp.compteurLeMonde:=0;
+    
     if statsTemp.deck=NIL then writeln('AVERTISSEMENT: DECK NON DEFINI');
     combatFini:=False;
 end;
@@ -376,7 +378,7 @@ var rayon:TObjet;i:Integer;
 begin
     for i:=0 to nb-1 do
         begin
-        CreerRayon(origine,degats,force,mult,x,y,x+round(100*cos((i*2*pi+(angleDepart*pi/180))/(nb*360/range))),y+round(100*sin((i*2*pi+(angleDepart*pi/180))/(nb*360/range))),vitesse,duree,delai,nom,rayon);
+        CreerRayon(origine,degats,force,mult,x,y,x+round(100*cos((i*2*pi+(angleDepart*pi/180))/((nb)*360/range))),y+round(100*sin((i*2*pi+(angleDepart*pi/180))/((nb)*360/range))),vitesse,duree,delai,nom,rayon);
         ajoutObjet(rayon);
         end;
 end;
@@ -407,7 +409,7 @@ end;
 
 procedure renderAvecAngle(objet:TObjet);
 begin
-    if objet.stats.vectX>0 then
+    if objet.stats.vectX>=0 then
         SDL_RenderCopyEx(sdlRenderer, objet.image.imgTexture, nil, @objet.image.Rect,180*objet.stats.angle/pi,nil, SDL_FLIP_NONE);
     if objet.stats.vectX<0 then
         SDL_RenderCopyEx(sdlRenderer, objet.image.imgTexture, nil, @objet.image.Rect,180*objet.stats.angle/pi,nil, SDL_FLIP_HORIZONTAL);
@@ -460,7 +462,13 @@ end;
 
 procedure subirDegats(var victime:TObjet;degats,knockbackX,knockbackY:Integer);
 begin
-    victime.stats.vie:=victime.stats.vie-degats;
+    if (victime.stats.genre=joueur) and (victime.stats.leFou) then
+        victime.stats.leFou:=False
+    else
+    if (victime.stats.genre=joueur) and (victime.stats.lamort) and (degats>victime.stats.vie) then
+        victime.stats.vie:=1
+    else
+        victime.stats.vie:=victime.stats.vie-degats;
     knockbackX:=max(min(knockbackX*2,5),-5);
     knockbackY:=max(min(knockbackY*2,5),-5);
     if (victime.anim.etat<>'degats') then begin 
@@ -474,12 +482,13 @@ begin
     end;
 end;
 
+
 //----------------------------------------------
 //-----------Déroulant des cartes---------------
 //----------------------------------------------
 
     //1 Le batteleur
-    procedure I(s : TStats ; x,y : Integer);
+    procedure I_(s : TStats ; x,y : Integer);
     var proj : TObjet;
     begin
         creerBoule(joueur, 1, s.force, s.multiplicateurDegat, x, y, {vitesse} 10, getmouseX, getmouseY, 'projectile', proj);
@@ -490,7 +499,7 @@ end;
     procedure II(s : TStats ; x,y : integer);
     var proj : TObjet;
     begin
-        procedure CreerRayon(joueur , 2 , s.force , s.multiplicateurDegat , x,y, getmouseX,getmouseY,{vitRotation}0,{dureeVie}30,{delai}1, 'rayon', proj);
+        CreerRayon(joueur , 2 , s.force , s.multiplicateurDegat , x,y, getmouseX,getmouseY,{vitRotation}0,{dureeVie}30,{delai}1, 'rayon', proj);
         ajoutObjet(proj);
     end;
 
@@ -498,7 +507,7 @@ end;
     procedure III(s : TStats ; x,y : integer);
     var proj : TObjet;
     begin
-        procedure CreerRayon(joueur , 3 , s.force , s.multiplicateurDegat , x,y, getmouseX,getmouseY,{vitRotation}0,{dureeVie}50,{delai}1, 'rayon', proj);
+        CreerRayon(joueur , 3 , s.force , s.multiplicateurDegat , x,y, getmouseX,getmouseY,{vitRotation}0,{dureeVie}50,{delai}1, 'rayon', proj);
         ajoutObjet(proj);
     end;
 
@@ -521,24 +530,50 @@ end;
     //6 les amants
     procedure VI(s : TStats ; x,y : Integer);
     var proj : TObjet;
-        flat : integer;
+        flat,i : integer;
     begin
-    
-        for i:=0 to high(s.deck^)
+        flat := 1;
+        for i:=0 to high(s.deck^) do //augmente le flat pour chaque copie de la carte dans le deck
+            if (s.deck^[i].numero = 6) then 
+                flat := flat +1 ;
+        
+        creerBoule(joueur, flat, s.force, s.multiplicateurDegat, x, y, {vitesse} 10, getmouseX, getmouseY, 'projectile', proj);
+        ajoutObjet(proj);
 
     end;
 
+    //7 le chariot
+    procedure VII(var s: TStats);
+    begin
+        s.defense := s.defense + 3;
+        //### à supprimer apres jouer
+    end; 
 
+    //8 la justice 
+    procedure VIII(var sPerm, sCombat :Tstats;x,y:Integer );
+    begin    
+        sPerm.nbJustice := sPerm.nbJustice + 1;
+        sCombat.nbJustice := sCombat.nbJustice + 1;   //### à initialiser à 0 en débur de partie 
+        initJustice(typeObjet(0),scombat.nbjustice,scombat.force,sCombat.multiplicateurDegat,x,y,getmousex,getmousey,28,50);
+    end;
+    
+    //9 L'ermite
+    procedure IX(var s : TStats);
+    begin
+        s.multiplicateurMana := s.multiplicateurMana + 0.2;
+        //### à supprimer apres jouer
+
+    end;
 
     //10 La roue de la fortune
-    procedure X(var s : TStats);
+    procedure X_(var s : TStats);
     var rdm : integer ;   
     begin
         randomize;
         rdm := random(10)+1;
 
         case rdm of
-            1,2,3 : degatInst(s.vie, 5); //-5pv
+            1,2,3 : degatInst(s, 5); //-5pv
             4 : s.force := s.force + 3; // +3 force
             5,6,7,8  : s.mana := s.mana + 2; //+2 mana
             //9,10 : rien 
@@ -558,14 +593,22 @@ end;
         s.force := s.force + 5;
         s.defense := s.defense +5;
         s.multiplicateurMana := s.multiplicateurMana + 0.25;
-        s.vitesse := s.vitesse + 1
+        s.vitesse := s.vitesse + 1;
 
-        //###retourner le sprite
-        //### inverser les contrôles
+        //inverser les contrôles
+        s.pendu := not(s.pendu); 
+        //### mono usage
+
 
     end;
 
     //13 La mort
+    procedure XIII(var s : Tstats);
+    begin
+        s.laMort := True;
+        updateTimeMort:=sdl_getticks;
+    end;
+
 
     //14 La tempérance
     procedure XIV(var s : TStats);
@@ -576,11 +619,50 @@ end;
     //15 Le diable
     procedure XV(var sCombat, sPerm : TStats);
     begin
-        degatInst(sCombat.vie, 45); // infliger 45 dmg
+        degatInst(sCombat, 45); // infliger 45 dmg
         sCombat.defense := sCombat.defense + 1; //modifier le s en combat
         sPerm.defense := sPerm.defense + 1; // appliqué aussi au s de sauvegarde
         sCombat.multiplicateurDegat := sCombat.multiplicateurDegat + 0.5;
         sPerm.multiplicateurDegat := sPerm.multiplicateurDegat + 0.5;
+    end;
+
+    //16 La tour
+    procedure XVI(s : TStats ; x,y : Integer);
+    begin
+        multiLasers(joueur, 2 ,s.force , s.multiplicateurDegat , x,y , {vitesse} 0 ,4 ,360,0, 100 ,1,'rayon');
+    end;
+
+    //17 L'étoile
+    procedure XVII(s : Tstats ; x,y : integer);
+    begin
+        multiLasers(joueur, 2 ,s.force , s.multiplicateurDegat , x,y , {vitesse} 0 ,8 ,360,0, 100 ,1,'rayon');
+    end;
+
+    //18 La lune
+    procedure XVIII(var s : Tstats ; x,y : integer);
+    var flat, vitesse : integer;
+        proj : Tobjet;
+    begin
+        case s.mana of 
+            0 : begin flat := 0 ; vitesse := 10; end;
+            1, 2 : begin flat := 1 ; vitesse := 10; end;
+            3 : begin flat := 2 ; vitesse := 10;end;
+            4 : begin flat := 3 ; vitesse := 10;end;
+            5 : begin flat := 5 ; vitesse := 10;end;
+            6 : begin flat := 8 ; vitesse := 10;end;
+            7 : begin flat := 13 ; vitesse := 10;end;
+            8 : begin flat := 21 ; vitesse := 10;end;
+            9 : begin flat := 34 ; vitesse := 10;end;
+            10 : begin flat := 55 ; vitesse := 10;end;
+            11 : begin flat := 89 ; vitesse := 10;end; 
+            12 : begin flat := 144 ; vitesse := 10;end;
+            13 : begin flat := 233 ; vitesse := 10;end;
+            14 : begin flat := 377 ; vitesse := 10;end;
+        end;
+
+        s.mana:=0; //consomme tout le mana
+        creerBoule(joueur, flat, s.force, s.multiplicateurDegat, x, y, vitesse, getmouseX, getmouseY, 'projectile', proj);
+        ajoutObjet(proj);
     end;
 
     //19 Le soleil
@@ -590,10 +672,29 @@ end;
         for i := 0 to high(LOBjets) do
             LOBjets[i].stats.vie := LOBjets[i].stats.vie -1;
 
-        //soinInst(s , 5); //### rajouter soinInst
+        degatInst(s, -5); // soin de 5 pv 
     end;
 
-//end;
+    //20 L'ange
+    procedure XX(var s : Tstats);
+    begin
+        degatInst(s, -20);
+    end;
+
+    //21 Le monde
+    procedure XXI(var s : TStats);
+    begin
+        s.compteurLemonde := s.compteurLemonde +1;
+        leMonde:=True;
+        updateTimeMonde:=sdl_getticks;
+    end;
+    
+    //22 Le fou
+    procedure __(var s:TStats);
+    begin
+        s.lefou:=True
+    end;
+//end
 
 //###"La procédure ultime. On raconte que son accomplissement entraîne la fin de l'univers."
 procedure JouerCarte(var stats:TStats;x,y:Integer;i:Integer); 
@@ -602,7 +703,7 @@ var tempCarte:TCarte;projectile:TOBjet;
 
 begin
     tempCarte:=stats.deck^[i];
-    if True or stats.deck^[i].active or (tempCarte.cout<=stats.mana) then 
+    if stats.deck^[i].active or (tempCarte.cout<=stats.mana) then 
         begin
         if not stats.deck^[i].active then
             begin
@@ -610,19 +711,34 @@ begin
             stats.deck^[i].active:=True;
             end;
         stats.deck^[i].charges:=stats.deck^[i].charges-1;
-        //writeln('carte active : ',deck^[i].active,' , nb charges : ',deck^[i].charges);
         if stats.deck^[i].charges=0 then
             cycle(stats.deck^,i);
         //Partie principale : tous les effets de cartes y seront répertoriés
         case tempCarte.numero of
-            0:writeln('???')
+            1: I_(stats,x,y);  
+            2: II(stats,x,y);
+            3: III(stats,x,y);
+            4: IV(stats,x,y);
+            5: V(stats,x,y);
+            6: VI(stats,x,y);
+            7: VII(stats);
+            8: VIII(statsJoueur,stats,x,y);
+            9: IX(stats);
+            10: X_(stats);
+            11: XI(stats);
+            12: XII(stats);
+            13: XIII(stats);
+            14: XIV(stats);
+            15: XV(statsJoueur, stats);
+            16: XVI(stats,x,y);
+            17: XVII(stats,x,y);
+            18: XVIII(stats,x,y);
+            19: XIX(stats);
+            20: XX(stats);
+            21: XXI(stats);
+            22: __(stats);
             else 
-                begin //!! création d'un projectile ( les éventuelles variations sont sur le 2ème élément (les dégâts), celui avant getmousex (la vitesse) et l'avant-dernier (pour l'image)), pareil pour un rayon mais sans la vitesse
-                //creerBoule(typeobjet(0),1,stats.force,stats.multiplicateurDegat,x-32,y-32,5,getmouseX,getmouseY,'projectile',projectile);
-                //ajoutObjet(projectile);
-                initJustice(typeObjet(0),1,stats.force,stats.multiplicateurDegat,x-32,y-32,getmousex,getmousey,28,50)
-                
-                end
+            writeln('???')
             end;
         end;
 

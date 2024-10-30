@@ -47,26 +47,26 @@ procedure MouvementJoueur(var joueur:TObjet);
 	if joueur.anim.etat<>'degats' then
     begin
     joueur.anim.isFliped := False;
-      if sdlKeyboardState[SDL_SCANCODE_W] = 1 then
+      if ( (sdlKeyboardState[SDL_SCANCODE_W] = 1) AND not(joueur.stats.pendu)) OR ((sdlKeyboardState[SDL_SCANCODE_S] = 1) AND joueur.stats.pendu) then //si z appuyé (ou s si pendu activé) alors déplacer vers le haut
     begin
         joueur.image.rect.y := joueur.image.rect.y - joueur.stats.Vitesse;
       if joueur.anim.Etat <> 'run' then InitAnimation(joueur.anim,'Joueur','run',6,True);
     end;
     
-      if sdlKeyboardState[SDL_SCANCODE_A] = 1 then
+      if ( (sdlKeyboardState[SDL_SCANCODE_A] = 1) AND not(joueur.stats.pendu)) OR ((sdlKeyboardState[SDL_SCANCODE_D] = 1) AND joueur.stats.pendu) then
     begin
         joueur.image.rect.x := joueur.image.rect.x - joueur.stats.Vitesse;
         if joueur.anim.Etat <> 'run' then InitAnimation(joueur.anim,'Joueur','run',6,True);
       joueur.anim.isFliped := True;
     end;
       
-      if sdlKeyboardState[SDL_SCANCODE_S] = 1 then
+      if ( (sdlKeyboardState[SDL_SCANCODE_S] = 1) AND not(joueur.stats.pendu)) OR ((sdlKeyboardState[SDL_SCANCODE_W] = 1) AND joueur.stats.pendu) then
           begin
         joueur.image.rect.y := joueur.image.rect.y + joueur.stats.Vitesse;
         if joueur.anim.Etat <> 'run' then InitAnimation(joueur.anim,'Joueur','run',6,True);
     end;
     
-      if sdlKeyboardState[SDL_SCANCODE_D] = 1 then
+      if ( (sdlKeyboardState[SDL_SCANCODE_D] = 1) AND not(joueur.stats.pendu)) OR ((sdlKeyboardState[SDL_SCANCODE_A] = 1) AND joueur.stats.pendu) then
         begin
         joueur.image.rect.x := joueur.image.rect.x + joueur.stats.Vitesse;
         if joueur.anim.Etat <> 'run' then InitAnimation(joueur.anim,'Joueur','run',6,True);
