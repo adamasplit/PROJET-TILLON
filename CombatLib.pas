@@ -282,7 +282,13 @@ begin
         end;
 end;
 
-procedure CreerBoule(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,vitesse,xdest,ydest:Integer;nom:PChar;var proj:TObjet); //Crée un project
+procedure CreerBoule(   origine:TypeObjet ; 
+                        flat,force:Integer ; 
+                        multiplicateurDegat:Real ; 
+                        x,y,vitesse,xdest,ydest:Integer; 
+                        nom:PChar ;
+                        var proj:TObjet); //Crée un project
+
 var norme:Real;destination,distance:array['X'..'Y'] of Integer;
 begin
         //Initialisation des caractéristiques
@@ -471,6 +477,58 @@ end;
 //----------------------------------------------
 //-----------Déroulant des cartes---------------
 //----------------------------------------------
+
+    //1 Le batteleur
+    procedure I(s : TStats ; x,y : Integer);
+    var proj : TObjet;
+    begin
+        creerBoule(joueur, 1, s.force, s.multiplicateurDegat, x, y, {vitesse} 10, getmouseX, getmouseY, 'projectile', proj);
+        ajoutObjet(proj);
+    end;
+
+    //2 La papesse 
+    procedure II(s : TStats ; x,y : integer);
+    var proj : TObjet;
+    begin
+        procedure CreerRayon(joueur , 2 , s.force , s.multiplicateurDegat , x,y, getmouseX,getmouseY,{vitRotation}0,{dureeVie}30,{delai}1, 'rayon', proj);
+        ajoutObjet(proj);
+    end;
+
+    //3 L'impératrice
+    procedure III(s : TStats ; x,y : integer);
+    var proj : TObjet;
+    begin
+        procedure CreerRayon(joueur , 3 , s.force , s.multiplicateurDegat , x,y, getmouseX,getmouseY,{vitRotation}0,{dureeVie}50,{delai}1, 'rayon', proj);
+        ajoutObjet(proj);
+    end;
+
+    //4 L'empereur
+    procedure IV(s : TStats ; x,y : Integer);
+    var proj : TObjet;
+    begin
+        creerBoule(joueur, 3, s.force, s.multiplicateurDegat, x, y, {vitesse} 7, getmouseX, getmouseY, 'projectile', proj);
+        ajoutObjet(proj);
+    end;
+
+    //5 Le pape
+    procedure V(s : TStats ; x,y : Integer);
+    var proj : TObjet;
+    begin
+        creerBoule(joueur, 6, s.force, s.multiplicateurDegat, x, y, {vitesse} 5, getmouseX, getmouseY, 'projectile', proj);
+        ajoutObjet(proj);
+    end;
+
+    //6 les amants
+    procedure VI(s : TStats ; x,y : Integer);
+    var proj : TObjet;
+        flat : integer;
+    begin
+    
+        for i:=0 to high(s.deck^)
+
+    end;
+
+
 
     //10 La roue de la fortune
     procedure X(var s : TStats);
