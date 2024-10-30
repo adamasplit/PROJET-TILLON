@@ -217,7 +217,7 @@ begin
 
    // Rendering text --> surface
   image.imgSurface := SDL_LoadBMP(image.directory);
-  if image.imgSurface = nil then begin WriteLn('Error in Surface load : ');Write(SDL_GetError); HALT end;
+  if image.imgSurface = nil then begin WriteLn('Error in Surface load : ',image.directory);Write(SDL_GetError); HALT end;
   // Convertion surface --> texture
   image.imgTexture := SDL_CreateTextureFromSurface(sdlRenderer, image.imgSurface);
   if image.imgTexture = nil then begin WriteLn(SDL_GetError); HALT end;

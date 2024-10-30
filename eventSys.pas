@@ -85,7 +85,7 @@ begin
     CreateRawImage(CombatUI[2],850,-40,300,800,'Sprites/Menu/CombatUI_1.bmp');
     CreateRawImage(CombatUI[4],15,560,128,128,'Sprites/Menu/CombatUI_4.bmp');
     CreateRawImage(CombatUI[5],30,575,100,100,'Sprites/Menu/CombatUI_5.bmp');
-    RenderRawImage(CombatUI[1],255,False);RenderRawImage(CombatUI[2],255,True);
+    renderRawImage(CombatUI[1],255,False);
     iCarteChoisie:=1;
 end;
 

@@ -25,6 +25,7 @@ procedure multiLasers(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,vites
 procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,xdest,ydest,vitRotation,dureeVie,delai:Integer;nom:PChar;var rayon:TObjet);
 procedure updateRayon(var rayon:TObjet);
 procedure UpdateJustice(var justice:TObjet);
+procedure renderAvecAngle(objet:TObjet);
 procedure creerEffet(x,y,w,h,frames:Integer;nom:PCHar;var obj:TObjet);
 procedure subirDegats(var victime:TObjet;degats,knockbackX,knockbackY:Integer);
 procedure JouerCarte(var stats:TStats;x,y,i:Integer); 
@@ -72,8 +73,6 @@ begin
 
         SDL_PumpEvents;
         currentTime := SDL_GetTicks(); //récupère le temps
-        //writeln(currentTime,' comparé à ',lastUpdateTime);
-        //writeln((( (currentTime - LastUpdateTime)*LObjets[0].stats.multiplicateurMana)>= 1000),' and ',(LObjets[0].stats.mana < LObjets[0].stats.manaMax));
         if (( (currentTime - LastUpdateTime)*multiplicateurMana)>= 1000) AND (mana < manaMax) then //attendre 1sec/mult avant +1 mana
         begin
             mana := mana + 1;
@@ -159,7 +158,8 @@ begin
     creerDeckCombat(statsTemp,Pdeck);
     //Initialisation du deck pointé
     statsTemp.deck:=@pDeck;
-    if statsTemp.deck=NIL then writeln('AVERTISSEMENT: DECK NON DEFINI')
+    if statsTemp.deck=NIL then writeln('AVERTISSEMENT: DECK NON DEFINI');
+    combatFini:=False;
 end;
 
 procedure creerEffet(x,y,w,h,frames:Integer;nom:PCHar;var obj:TObjet); // crée un effet (objet sans collisions qui joue son animation puis s'efface)
@@ -228,26 +228,21 @@ begin
         begin
         rayon.image.rect.x:=round(rayon.image.rect.x+rayon.stats.vectX*600);
         rayon.image.rect.y:=round(rayon.image.rect.y+rayon.stats.vecty*600);
-        end
-        
+        end;
+    initAngle(rayon.stats.vectX,rayon.stats.vectY,rayon.stats.angle);
+    sdl_settexturealphamod(rayon.image.imgtexture,0);
 end;
 
 procedure updateRayon(var rayon:TObjet);
 begin
-    if round(rayon.stats.vectX*1000)=0 then //on définit l'angle en faisant attention de ne pas diviser par 0
-        if rayon.stats.vectY>0 then
-            rayon.stats.angle:=pi/2
-        else
-            rayon.stats.angle:=-pi/2
-    else
-        rayon.stats.angle:=arctan(rayon.stats.vectY/rayon.stats.vectX);
+    initAngle(rayon.stats.vectX,rayon.stats.vectY,rayon.stats.angle);
     
     if (rayon.stats.delai>0) then //si le rayon n'est pas encore actif, il est transparent
         begin
         rayon.col.estActif:=False;
         if not leMonde then
             rayon.stats.delai:=rayon.stats.delai-1;
-        sdl_settexturealphamod(rayon.image.imgtexture,200-round((rayon.stats.delai)/(rayon.stats.delaiInit)*200));
+        sdl_settexturealphamod(rayon.image.imgtexture,max(200-round((rayon.stats.delai)/(rayon.stats.delaiInit)*200),0));
         end
     else
         begin //si le rayon atteint son délai, il s'active
@@ -330,7 +325,8 @@ begin
         else begin 
             proj.stats.vectX:=0;
             proj.stats.vectY:=0;
-            end
+            end;
+        initAngle(proj.stats.vectX,proj.stats.vectY,proj.stats.angle)
 
 end;
 
@@ -356,11 +352,6 @@ begin
         proj.image.rect.x:=round(proj.stats.xreel)-25;
         proj.image.rect.y:=round(proj.stats.yreel)-25;
         end;
-        //affichage inversé ou non selon la direction
-            if proj.stats.vectX>0 then
-            SDL_RenderCopyEx(sdlRenderer, proj.image.imgTexture, nil, @proj.image.Rect,180*(arctan(proj.stats.vectY/proj.stats.vectX))/pi,nil, SDL_FLIP_NONE);
-            if proj.stats.vectX<0 then
-            SDL_RenderCopyEx(sdlRenderer, proj.image.imgTexture, nil, @proj.image.Rect,180*(arctan(proj.stats.vectY/proj.stats.vectX))/pi,nil, SDL_FLIP_HORIZONTAL);
         end
 end;    
 
@@ -408,6 +399,14 @@ begin
     ajoutObjet(justice);
 end;
 
+procedure renderAvecAngle(objet:TObjet);
+begin
+    if objet.stats.vectX>0 then
+        SDL_RenderCopyEx(sdlRenderer, objet.image.imgTexture, nil, @objet.image.Rect,180*objet.stats.angle/pi,nil, SDL_FLIP_NONE);
+    if objet.stats.vectX<0 then
+        SDL_RenderCopyEx(sdlRenderer, objet.image.imgTexture, nil, @objet.image.Rect,180*objet.stats.angle/pi,nil, SDL_FLIP_HORIZONTAL);
+end;
+
 procedure UpdateJustice(var justice:TObjet);
 var angleDepart:Real;
 begin
@@ -444,10 +443,6 @@ begin
         justice.image.rect.y:=round(justice.stats.yreel);
         //justice.stats.angle:=justice.stats.angle+1;
         end;
-    if justice.stats.vectX>0 then
-        SDL_RenderCopyEx(sdlRenderer, justice.image.imgTexture, nil, @justice.image.Rect,180*justice.stats.angle/pi,nil, SDL_FLIP_NONE);
-    if justice.stats.vectX<0 then
-        SDL_RenderCopyEx(sdlRenderer, justice.image.imgTexture, nil, @justice.image.Rect,180*justice.stats.angle/pi,nil, SDL_FLIP_HORIZONTAL);
     //vérifie si le projectile sort de l'écran
     if (justice.stats.xreel>1200) or (justice.stats.xreel<-100) or (justice.stats.yreel>1000) or (justice.stats.yreel<-200) then 
         begin
@@ -460,14 +455,16 @@ end;
 procedure subirDegats(var victime:TObjet;degats,knockbackX,knockbackY:Integer);
 begin
     victime.stats.vie:=victime.stats.vie-degats;
-    knockbackX:=min(knockbackX*2,2);
-    knockbackY:=min(knockbackY*2,2);
+    knockbackX:=max(min(knockbackX*2,5),-5);
+    knockbackY:=max(min(knockbackY*2,5),-5);
     if (victime.anim.etat<>'degats') then begin 
         victime.stats.etatPrec:=victime.anim;
         victime.image.rect.x:=victime.image.rect.x+knockbackX;
         victime.image.rect.y:=victime.image.rect.y+knockbackY;
         if victime.stats.genre=TypeObjet(0) then
-            initAnimation(victime.anim,victime.anim.objectname,'degats',4,False)
+            initAnimation(victime.anim,victime.anim.objectname,'degats',4,False);
+        if victime.stats.genre=TypeObjet(1) then
+            victime.stats.compteurAction:=victime.stats.compteurAction+1;
     end;
 end;
 
@@ -563,8 +560,9 @@ begin
             0:writeln('???')
             else 
                 begin //!! création d'un projectile ( les éventuelles variations sont sur le 2ème élément (les dégâts), celui avant getmousex (la vitesse) et l'avant-dernier (pour l'image)), pareil pour un rayon mais sans la vitesse
-                creerBoule(typeobjet(0),1,stats.force,stats.multiplicateurDegat,x-32,y-32,5,getmouseX,getmouseY,'projectile',projectile);
-                ajoutObjet(projectile);
+                //creerBoule(typeobjet(0),1,stats.force,stats.multiplicateurDegat,x-32,y-32,5,getmouseX,getmouseY,'projectile',projectile);
+                //ajoutObjet(projectile);
+                initJustice(typeObjet(0),1,stats.force,stats.multiplicateurDegat,x-32,y-32,getmousex,getmousey,28,50)
                 
                 end
             end;

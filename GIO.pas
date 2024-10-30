@@ -166,6 +166,7 @@ procedure ActualiserJeu;
 					end;
 			end;
 		SDL_RenderPresent(sdlRenderer);
+		if combatFini then choixSalle;
 	end;
 
 
@@ -249,10 +250,16 @@ procedure direction_menu;
 	end;
 	procedure ActualiserMenuEnJeu;
 	begin
+		SDL_RenderClear(sdlrenderer);
+		affichertout();
 		UpdateAnimation(menuBookAnim,menuBook);
-		RenderButton(button_deck);
-		RenderButton(button_bestiaire);
 		RenderRawImage(menuBook,False);
+		if animFinie(menuBookAnim) then
+			begin
+			RenderButton(button_deck);
+			RenderButton(button_bestiaire);
+			end;
+		
 
 		SDL_RenderPresent(sdlRenderer);
 	end;
@@ -272,7 +279,7 @@ procedure direction_menu;
 
 		end;
 	end;
-	
+
 begin
  {	
 ==================================================================================================================================
@@ -312,9 +319,9 @@ IndiceMusiqueJouee:=10;
   Dummy.anim.estActif := False;
 
   //Initialisation de la liste d'objets
-  setlength(LObjets,5);
-	for j:=1 to 4 do begin 
-		LObjets[j]:=TemplatesEnnemis[j*2-1];
+  setlength(LObjets,2);
+	for j:=1 to 1 do begin 
+		LObjets[j]:=TemplatesEnnemis[1];
 		end;
 
 
@@ -424,7 +431,6 @@ SDL_RenderPresent(sdlRenderer);
 
 direction_menu;
 InitAnimation(LObjets[0].anim, 'Joueur', 'idle', 12, True);
-
 {
 ==================================================================================================================================
 * EVENTS

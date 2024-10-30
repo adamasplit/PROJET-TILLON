@@ -32,7 +32,7 @@ begin
   sdlRect1.y := 260;
   SDL_SetRenderDrawBlendMode(sdlRenderer, SDL_BLENDMODE_BLEND);
   SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 255, 10);
-  Surf := SDL_LoadBMP('Sprites/Cartes/carte1.bmp');
+  Surf := SDL_LoadBMP('Sprites/Menu/CombatUI_1.bmp');
 
   // Convertion surface --> texture
   Tex := SDL_CreateTextureFromSurface(sdlRenderer,Surf);

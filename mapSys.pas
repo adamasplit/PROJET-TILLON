@@ -65,7 +65,7 @@ setlength(LObjets,avancementPartie+1);
 for j:=1 to avancementPartie do
 begin
 randomize;
-LObjets[j]:=TemplatesEnnemis[random(5)];
+LObjets[j]:=TemplatesEnnemis[random(5)+1];
 writeln('summoning');
 end
 
@@ -173,6 +173,8 @@ procedure choixSalle();
 var
     salle1, salle2, salle3: TSalle;
 begin
+    combatFini:=false;
+    sdl_renderclear(sdlrenderer);
     SceneActive := 'map';
     writeln('Initializing rooms...');
     
