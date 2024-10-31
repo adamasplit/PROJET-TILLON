@@ -252,18 +252,18 @@ begin
   case ennemi.stats.typeIA_MVT of
     0: if(ennemi.stats.compteurAction=100) then
       begin
-      multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+64,ennemi.image.rect.y+64,5,5,360,(ennemi.stats.xcible-ennemi.image.rect.x),ennemi.stats.nomAttaque);
+      multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+64,ennemi.image.rect.y+64,100,100,5,5,360,(ennemi.stats.xcible-ennemi.image.rect.x),ennemi.stats.nomAttaque);
       end;
     2: if (ennemi.anim.currentFrame=4) and (ennemi.anim.etat='cast') then
-      multiProjs(typeObjet(1),1,1,1,ennemi.image.rect.x+96,ennemi.image.rect.y+96,3,10,360,0,ennemi.stats.nomAttaque);
+      multiProjs(typeObjet(1),1,1,1,ennemi.image.rect.x+96,ennemi.image.rect.y+96,100,100,3,10,360,0,ennemi.stats.nomAttaque);
     3: if (ennemi.anim.etat='dash') and (ennemi.stats.compteurAction>50) and (ennemi.stats.compteurAction mod 45=0) then
       begin
       //multiLasers(TypeObjet(1),1,1,1,ennemi.image.rect.x+50,ennemi.image.rect.y+50,0,10,360,0,10,80,'rayon');
-      multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+64,ennemi.image.rect.y+64,5,4,360,(ennemi.stats.xcible-ennemi.image.rect.x),ennemi.stats.nomAttaque);
-      multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+64,ennemi.image.rect.y+64,5,4,360,(ennemi.stats.xcible-ennemi.image.rect.x) div 2,'kamui');
+      multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+64,ennemi.image.rect.y+64,100,100,5,4,360,(ennemi.stats.xcible-ennemi.image.rect.x),ennemi.stats.nomAttaque);
+      multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+64,ennemi.image.rect.y+64,100,100,5,4,360,(ennemi.stats.xcible-ennemi.image.rect.x) div 2,'kamui');
       end;
     4:if (ennemi.anim.etat='warp') and (ennemi.stats.compteurAction=1) then 
-      multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+(ennemi.image.rect.w div 2),ennemi.image.rect.y+(ennemi.image.rect.h div 2),5,3,360,random(18)*10,ennemi.stats.nomAttaque);
+      multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+(ennemi.image.rect.w div 2),ennemi.image.rect.y+(ennemi.image.rect.h div 2),100,100,5,3,360,random(18)*10,ennemi.stats.nomAttaque);
     5: if (ennemi.anim.etat='strike')then
       begin
       ennemi.anim.isFliped:=(ennemi.stats.xcible>ennemi.image.rect.x);
@@ -280,19 +280,19 @@ begin
       begin
       if (ennemi.stats.compteurAction mod 60 = 0) and (ennemi.stats.compteurAction>0) and (ennemi.stats.compteurAction<200) then
         begin
-        creerBoule(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,ennemi.image.rect.x+64,ennemi.image.rect.y+64,4,x,y,ennemi.stats.nomAttaque,obj);
+        creerBoule(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,ennemi.image.rect.x+64,ennemi.image.rect.y+64,100,100,4,x,y,ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj)
         end;
       if ennemi.stats.compteurAction=100 then
         multiLasers(TypeObjet(1),1,1,1,ennemi.image.rect.x+50,ennemi.image.rect.y+50,0,4,360,0,10,100,'rayon');
       end;
     7:if (ennemi.stats.compteurAction mod 20 = 0) and (ennemi.anim.etat='fly') then begin
-        creerBoule(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,ennemi.image.rect.x+96+random(192),ennemi.image.rect.y+64+random(128),10,x,y,ennemi.stats.nomAttaque,obj);
+        creerBoule(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,ennemi.image.rect.x+96+random(192),ennemi.image.rect.y+64+random(128),200,100,10,x,y,ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj)
         end;
     8:if (ennemi.anim.etat='cast') and (random(2)=1) then
       begin
-      creerBoule(typeobjet(1),0,ennemi.stats.force,ennemi.stats.multiplicateurDegat,ennemi.image.rect.x+16,ennemi.image.rect.y+16,3,x-128+random(64)*4,y-128+random(64)*4,ennemi.stats.nomAttaque,obj);
+      creerBoule(typeobjet(1),0,ennemi.stats.force,ennemi.stats.multiplicateurDegat,ennemi.image.rect.x+16,ennemi.image.rect.y+16,60,60,3,x-128+random(64)*4,y-128+random(64)*4,ennemi.stats.nomAttaque,obj);
       ajoutObjet(obj)
       end
     end;
