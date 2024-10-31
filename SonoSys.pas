@@ -3,8 +3,8 @@ interface
 uses SDL2, SDL2_mixer,SysUtils; //télécharger SDL2_mixer au préalable
 
 const TAILLE_OST=15;
-        VOLUME_MUSIQUE=25;
-        VOLUME_SON=25;
+        VOLUME_MUSIQUE=0;
+        VOLUME_SON=20;
 type TMus=record
     musique:PMix_Music;
     duree:Integer;
@@ -14,6 +14,7 @@ end;
 
 var OST:array[1..TAILLE_OST] of TMus;
     IndiceMusiqueJouee:Integer;
+    indiceMusiquePrec:Integer;
 
 
 procedure jouerSon(nomFichier:PChar);//joue un son .WAV
@@ -93,6 +94,7 @@ begin
 end;
 
 begin
+indiceMusiquePrec:=0;
 Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT,
     MIX_DEFAULT_CHANNELS, 4096);
     defMus(1,'OST/Project_TITLE.wav','Cards of Fortune',102);

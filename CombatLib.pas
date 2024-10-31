@@ -8,6 +8,7 @@ uses
     eventSys,
     math,
     memgraph,
+    sdl2_mixer,
     SDL2;
 
 var leMonde:Boolean;updateTimeMonde:UInt32;updateTimeMort:UInt32;
@@ -26,7 +27,7 @@ procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Re
 procedure updateRayon(var rayon:TObjet);
 procedure UpdateJustice(var justice:TObjet);
 procedure renderAvecAngle(objet:TObjet);
-procedure creerEffet(x,y,w,h,frames:Integer;nom:PCHar;var obj:TObjet);
+procedure creerEffet(x,y,w,h,frames:Integer;nom:PCHar;fixeJoueur:Boolean;var obj:TObjet);
 procedure subirDegats(var victime:TObjet;degats,knockbackX,knockbackY:Integer);
 procedure JouerCarte(var stats:TStats;x,y,i:Integer); 
 
@@ -164,7 +165,7 @@ begin
     combatFini:=False;
 end;
 
-procedure creerEffet(x,y,w,h,frames:Integer;nom:PCHar;var obj:TObjet); // crée un effet (objet sans collisions qui joue son animation puis s'efface)
+procedure creerEffet(x,y,w,h,frames:Integer;nom:PCHar;fixeJoueur:Boolean;var obj:TObjet); // crée un effet (objet sans collisions qui joue son animation puis s'efface)
 begin
   InitAnimation(obj.anim,nom,'active',frames,False);
   obj.anim.estActif:=True;
@@ -172,6 +173,7 @@ begin
   createRawImage(obj.image,x,y,w,h,getFramePath(obj.anim));
   obj.col.estActif:=False;
   obj.col.nom:=nom;
+  obj.stats.fixeJoueur:=fixeJoueur;
 end;
 
 procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,xdest,ydest,vitRotation,dureeVie,delai:Integer;nom:PChar;var rayon:TObjet);
@@ -192,9 +194,10 @@ begin
     rayon.stats.delaiInit:=delai;
 
     //Initialisation de l'affichage
-    InitAnimation(rayon.anim,nom,'actif',4,False);
+    InitAnimation(rayon.anim,nom,'start',5,False);
     rayon.anim.estActif:=True;
     CreateRawImage(rayon.image,x-600,y-64,1200,120,getFramePath(rayon.anim));
+    
 
     //Initialisation de la boîte de collisions
 
@@ -218,6 +221,7 @@ begin
     else begin 
         rayon.stats.vectX:=0;
         rayon.stats.vectY:=0;
+        writeln('le rayon n"a pas pu être créé')
         end;
     //rayon.stats.vectX:=cos(arctan(rayon.stats.vectY/rayon.stats.vectX)-(40/180));
     //rayon.stats.vectY:=sin(arctan(rayon.stats.vectY/rayon.stats.vectX)-(40/180));
@@ -232,34 +236,44 @@ begin
         rayon.image.rect.y:=round(rayon.image.rect.y+rayon.stats.vecty*600);
         end;
     initAngle(rayon.stats.vectX,rayon.stats.vectY,rayon.stats.angle);
-    sdl_settexturealphamod(rayon.image.imgtexture,0);
+    //sdl_settexturealphamod(rayon.image.imgtexture,0);
 end;
 
 procedure updateRayon(var rayon:TObjet);
 begin
-    initAngle(rayon.stats.vectX,rayon.stats.vectY,rayon.stats.angle);
-    
+    initAngle(rayon.stats.vectX,rayon.stats.vectY,rayon.stats.angle);;
     if (rayon.stats.delai>0) then //si le rayon n'est pas encore actif, il est transparent
         begin
         rayon.col.estActif:=False;
         if not leMonde then
             rayon.stats.delai:=rayon.stats.delai-1;
-        sdl_settexturealphamod(rayon.image.imgtexture,max(200-round((rayon.stats.delai)/(rayon.stats.delaiInit)*200),0));
+        //updateAnimation(rayon.anim,rayon.image);
+        //sdl_settexturealphamod(rayon.image.imgtexture,max(200-round((rayon.stats.delai)/(rayon.stats.delaiInit)*200),0));
+
+        if (rayon.stats.delaiInit>4) and (rayon.anim.currentFrame<4-(rayon.stats.delai div (rayon.stats.delaiInit div 4))) then
+            updateAnimation(rayon.anim,rayon.image)
         end
     else
-        begin //si le rayon atteint son délai, il s'active
-        sdl_settexturealphamod(rayon.image.imgtexture,255);
-        rayon.col.estActif:=True;
-        if (rayon.stats.dureeVie<=0) and not(leMonde) then updateanimation(rayon.anim,rayon.image)
+        if rayon.stats.delai=0 then //si le rayon atteint son délai, il s'active
+            begin 
+            initAnimation(rayon.anim,rayon.anim.objectName,'actif',5,False);
+            rayon.col.estActif:=True;
+            rayon.anim.estActif:=True;
+            rayon.stats.delai:=-1;
+            SDL_DestroyTexture(rayon.image.imgTexture);SDL_freeSurface(rayon.image.imgSurface);
+            CreateRawImage(rayon.image,rayon.image.rect.x,rayon.image.rect.y,1200,120,getFramePath(rayon.anim))
+            end
+    else
+        begin 
+            if (rayon.stats.dureeVie<=0) and not(leMonde) then updateanimation(rayon.anim,rayon.image)
         else rayon.stats.dureeVie:=rayon.stats.dureeVie-1;
         end;
-    if (rayon.anim.currentFrame=rayon.anim.totalFrames) then
-            supprimeObjet(rayon)
+    if (rayon.anim.currentFrame=rayon.anim.totalFrames) and (rayon.stats.dureeVie<=0) then
+        supprimeObjet(rayon)
     else
         begin
         if rayon.stats.vectX>0 then //render du rayon du côté droit
             begin
-            SDL_RenderCopyEx(sdlRenderer, rayon.image.imgTexture, nil, @rayon.image.Rect,rayon.stats.angle*180/pi,nil, SDL_FLIP_NONE);
             if (rayon.stats.vitRotation<>0) and (rayon.stats.delai<=0) and not(leMonde) then
                 begin
                 //mise à jour du vecteur de direction
@@ -271,7 +285,6 @@ begin
             end
         else if (rayon.stats.vectX<>0) then //render du rayon du côté gauche
             begin
-            SDL_RenderCopyEx(sdlRenderer, rayon.image.imgTexture, nil, @rayon.image.Rect,rayon.stats.angle*180/pi,nil, SDL_FLIP_HORIZONTAL);
             if (rayon.stats.vitRotation<>0) and (rayon.stats.delai<=0) and not(leMonde) then
                 begin
                 //mise à jour du vecteur de direction
@@ -543,10 +556,14 @@ end;
     end;
 
     //7 le chariot
-    procedure VII(var s: TStats);
+    procedure VII(var s: TStats;x,y:Integer);
+    var eff:TObjet;
     begin
         s.defense := s.defense + 3;
         //### à supprimer apres jouer
+        creerEffet(0,0,100,100,11,'chariot',True,eff);
+        ajoutObjet(eff);
+        writeln(LObjets[0].image.rect.w)
     end; 
 
     //8 la justice 
@@ -559,15 +576,18 @@ end;
     
     //9 L'ermite
     procedure IX(var s : TStats);
+    var eff:TObjet;
     begin
-        s.multiplicateurMana := s.multiplicateurMana + 0.2;
+        s.multiplicateurMana := s.multiplicateurMana * 1.2;
+        creerEffet(0,0,100,140,20,'ermite',True,eff);
+        ajoutObjet(eff);
         //### à supprimer apres jouer
 
     end;
 
     //10 La roue de la fortune
     procedure X_(var s : TStats);
-    var rdm : integer ;   
+    var rdm : integer ;  eff:TObjet; 
     begin
         randomize;
         rdm := random(10)+1;
@@ -575,7 +595,12 @@ end;
         case rdm of
             1,2,3 : degatInst(s, 5); //-5pv
             4 : s.force := s.force + 3; // +3 force
-            5,6,7,8  : s.mana := s.mana + 2; //+2 mana
+            5,6,7,8  : begin 
+                s.mana := s.mana + 2;
+                creerEffet(0,0,70,70,12,'plus',True,eff);
+                ajoutObjet(eff);
+                end;
+                 //+2 mana
             //9,10 : rien 
         end;
     end;
@@ -604,9 +629,12 @@ end;
 
     //13 La mort
     procedure XIII(var s : Tstats);
+    var eff:TObjet;
     begin
         s.laMort := True;
         updateTimeMort:=sdl_getticks;
+        creerEffet(0,0,120,120,12,'mort',True,eff);
+        ajoutObjet(eff);
     end;
 
 
@@ -618,12 +646,15 @@ end;
 
     //15 Le diable
     procedure XV(var sCombat, sPerm : TStats);
+    var eff:TOBjet;
     begin
         degatInst(sCombat, 45); // infliger 45 dmg
         sCombat.defense := sCombat.defense + 1; //modifier le s en combat
         sPerm.defense := sPerm.defense + 1; // appliqué aussi au s de sauvegarde
         sCombat.multiplicateurDegat := sCombat.multiplicateurDegat + 0.5;
         sPerm.multiplicateurDegat := sPerm.multiplicateurDegat + 0.5;
+        creerEffet(0,0,120,120,15,'diable',True,eff);
+        ajoutObjet(eff);
     end;
 
     //16 La tour
@@ -677,22 +708,32 @@ end;
 
     //20 L'ange
     procedure XX(var s : Tstats);
+    var eff:TObjet;
     begin
         degatInst(s, -20);
+        creerEffet(0,0,150,150,15,'ange',True,eff);
+        ajoutObjet(eff);
     end;
 
     //21 Le monde
     procedure XXI(var s : TStats);
+    var eff:TObjet;
     begin
         s.compteurLemonde := s.compteurLemonde +1;
         leMonde:=True;
         updateTimeMonde:=sdl_getticks;
+        mix_pauseMusic;
+        creerEffet(0,0,150,150,6,'monde',True,eff);
+        ajoutObjet(eff);
     end;
     
     //22 Le fou
     procedure __(var s:TStats);
+    var eff:TObjet;
     begin
-        s.lefou:=True
+        s.lefou:=True;
+        creerEffet(0,0,100,100,25,'fou',True,eff);
+        ajoutObjet(eff);
     end;
 //end
 
@@ -721,7 +762,7 @@ begin
             4: IV(stats,x,y);
             5: V(stats,x,y);
             6: VI(stats,x,y);
-            7: VII(stats);
+            7: VII(stats,x,y);
             8: VIII(statsJoueur,stats,x,y);
             9: IX(stats);
             10: X_(stats);

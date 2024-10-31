@@ -106,11 +106,11 @@ for i:=0 to High(LObjets) do
 					if animFinie(LObjets[i].anim) then
 						LObjets[i].anim:=LObjets[i].stats.etatPrec;
 					end;
-				if (LObjets[i].stats.genre<>laser) and (LObjets[i].stats.genre<>epee) and ((not leMonde) or (LObjets[i].stats.genre=TypeObjet(0))) then
+				if (LObjets[i].stats.genre<>laser) and (LObjets[i].stats.genre<>epee) and ((not leMonde) or (LObjets[i].stats.genre=TypeObjet(0)) or (LObjets[i].anim.objectName='monde')) then
 					begin
 					UpdateAnimation(LObjets[i].anim, LObjets[i].image);
-					if (LObjets[i].stats.genre=effet) and (LObjets[i].anim.currentFrame=6) then
-					supprimeObjet(LObjets[i]);
+					if (LObjets[i].stats.genre=effet) and (animFinie(LObjets[i].anim)) then
+						supprimeObjet(LObjets[i]);
 					end
 				end
 			end;
@@ -125,6 +125,11 @@ for i:=2 to High(LObjets) do
         		end;
 			laser:updateRayon(LObjets[i]);
 			epee:UpdateJustice(LObjets[i]);
+			effet:if (LObjets[i].stats.fixeJoueur) and (not (leMonde) or (LObjets[i].anim.objectName='monde')) then 
+				begin
+				LObjets[i].image.rect.x:=LObjets[0].image.rect.x+50-(LObjets[i].image.rect.w div 2);
+				LObjets[i].image.rect.y:=LObjets[0].image.rect.y+50-(LObjets[i].image.rect.h div 2);
+				end;
 			end;
 		end
 end;
@@ -133,19 +138,32 @@ procedure AfficherTout();
 begin
 	renderRawImage(combat_bg,255,False);
 	if LObjets[0].stats.pendu then
-		if LObjets[i].anim.isFliped then
-			SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
-		else
-			SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
-		else
-			RenderRawImage(LObjets[0].image,255, LObjets[0].anim.isFliped);
+			if LObjets[i].anim.isFliped then
+				SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
+			else
+				SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
+			else
+				RenderRawImage(LObjets[0].image,255, LObjets[0].anim.isFliped);
+
 	for i:=1 to high(LObjets) do
 		case LOBjets[i].stats.genre of
 			TypeObjet(2),TypeObjet(3),TypeObjet(4):RenderAvecAngle(LObjets[i])
 			else
 				RenderRawImage(LObjets[i].image,255, LObjets[i].anim.isFliped);
 		end;
-			UpdateUICombat(icarteChoisie,400,400,LObjets[0].stats);
+	UpdateUICombat(icarteChoisie,400,400,LObjets[0].stats);
+	if leMonde then 
+		begin
+		drawrect(black_color,30,0,0,windowWidth,windowHeight);
+		if LObjets[0].stats.pendu then
+			if LObjets[i].anim.isFliped then
+				SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
+			else
+				SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
+			else
+				RenderRawImage(LObjets[0].image,255, LObjets[0].anim.isFliped);
+		end;
+	
 	
 end;
 
@@ -159,8 +177,13 @@ procedure ActualiserJeu;
 		afficherTout;
 		UpdateCollisions();
 		UpdateAnimations();
-		if leMonde and (sdl_getTicks-UpdateTimeMonde>LObjets[0].compteurLeMonde*1000);
-		if LObjets[0].laMort and (sdl_getTicks-updateTimeMode>5000);
+		if leMonde and (sdl_getTicks-UpdateTimeMonde>LObjets[0].stats.compteurLeMonde*1000) then
+			begin
+			leMonde:=False;
+			mix_resumeMusic();
+			end;
+		if LObjets[0].stats.laMort and (sdl_getTicks-updateTimeMort>5000) then
+			LObjets[0].stats.laMort:=False;
 		RegenMana(LastUpdateTime2,LObjets[0].stats.mana,LObjets[0].stats.manaMax,LObjets[0].stats.multiplicateurMana);
 		for i:=1 to High(LObjets) do
 			if (i<=High(LObjets)) and not leMonde then
@@ -326,7 +349,7 @@ IndiceMusiqueJouee:=10;
   //Initialisation de la liste d'objets
   setlength(LObjets,2);
 	for j:=1 to 1 do begin 
-		LObjets[j]:=TemplatesEnnemis[1];
+		LObjets[j]:=TemplatesEnnemis[9];
 		end;
 
 
@@ -352,7 +375,7 @@ statsJoueur.Vitesse:=5;
 statsJoueur.multiplicateurMana:=1;
 statsJoueur.multiplicateurDegat:=1;
 for j:=1 to 22 do begin
-  statsJoueur.collection[j]:=Cartes[j]
+  statsJoueur.collection[j]:=Cartes[random(j)+1]
 end;
 statsJoueur.vie:=100;statsJoueur.vieMax:=100;
 initStatsCombat(statsJoueur,LObjets[0].stats);
@@ -475,6 +498,7 @@ InitAnimation(LObjets[0].anim, 'Joueur', 'idle', 12, True);
 					SDLK_DOWN: LObjets[0].stats.vie := LObjets[0].stats.vie-10;
 					SDLK_ESCAPE : menuEnJeu;
 					SDLK_SPACE:leMonde:=not(leMonde);
+					SDLK_O:LOBjets[0].stats.multiplicateurMana:=10;
 					SDLK_H : choixSalle();
         		end;
       		end;

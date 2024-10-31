@@ -99,13 +99,13 @@ begin
     if (LObjets[0].stats.mana<LObjets[0].stats.deck^[iCarteChoisie].cout) and not (LObjets[0].stats.deck^[iCarteChoisie].active) then
       begin
       //sdl_settexturecolormod(combatUI[3].imgTexture,120,120,120);
-      RenderRawImage(combatUI[3],0,false);
-      drawRect(black_color,0,CombatUI[3].rect.x+10,CombatUI[3].rect.y,45,64);
+      RenderRawImage(combatUI[3],50,false);
+      drawRect(black_color,50,CombatUI[3].rect.x+10,CombatUI[3].rect.y,45,64);
       end
     else
       begin
       //sdl_settexturecolormod(combatUI[3].imgTexture,120,120,120);
-      RenderRawImage(combatUI[3],0,false);
+      RenderRawImage(combatUI[3],100,false);
       end;
     //Bandes de part et d'autre
     RenderRawImage(CombatUI[1],255,False);

@@ -104,9 +104,12 @@ type TStats=record //(version variable)
           nbFrames3,
           nbFramesMort:Integer;
           typeIA_MVT:Byte;
+          degatsContact:Integer;
+          cooldown:Byte;
           nomAttaque:PCHar);
         
         projectile,laser:(degats:Integer;origine:typeObjet;vectX,vectY,angle:Real;dureeVie,delai,delaiInit,vitRotation:Integer);
+        effet:(fixeJoueur:Boolean);
 end;
 
 var Cartes:Array[1..22] of TCarte; //preset pour les cartes

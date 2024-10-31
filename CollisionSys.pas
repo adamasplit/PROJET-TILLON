@@ -85,6 +85,11 @@ begin
         else
           obj1.image.rect.y := obj1.image.rect.y + overlapY;  // Repousser vers le bas
         end;
+      if (obj2.stats.genre=typeobjet(1)) and (obj2.stats.degatsContact>0) and (obj2.stats.cooldown=0) then
+        begin
+        subirDegats(obj1,obj2.stats.degatsContact,0,0);
+        obj2.stats.cooldown:=150
+        end;
     end;
   end;
 end;
@@ -109,7 +114,7 @@ begin
       begin
         subirDegats(obj1,degat(obj2.stats.degats,obj2.stats.force,obj1.stats.defense,obj2.stats.multiplicateurDegat),round(obj2.stats.vectx),round(obj2.stats.vecty));
         if obj2.stats.genre=projectile then
-          creerEffet(obj2.image.rect.x,obj2.image.rect.y,64,64,6,'impact',obj2)
+          creerEffet(obj2.image.rect.x,obj2.image.rect.y,64,64,6,'impact',False,obj2)
       end
   end
 end;
