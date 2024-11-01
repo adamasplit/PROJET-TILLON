@@ -69,7 +69,6 @@ begin
         begin
         randomize;
         ennemis[j]:=TemplatesEnnemis[random(5)+1];
-        writeln('ennemis[',j,'] assigné')
         end
 
 end;

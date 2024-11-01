@@ -82,9 +82,9 @@ begin
                 indiceMusiquePrec:=indiceMusiqueJouee;
                 updatetimemusique:=sdl_getticks;
                 enFondu:=True;
-                mix_fadeoutmusic(3000)
+                //mix_fadeoutmusic(3000)
                 end;
-        if enFondu and (sdl_getTicks-updateTimeMusique>3000) then
+        if enFondu and (sdl_getTicks-updateTimeMusique>0) then
             begin
             mix_playMusic(OST[IndiceMusiqueJouee].musique,0);
             enFondu:=False;

@@ -16,7 +16,7 @@ const TAILLE_VAGUE=3;
 var EnemyBasik : TObjet;
 var templatesEnnemis:array[1..MAXENNEMIS] of TObjet;
     ennemis:Array of TOBjet;
-procedure initStatEnnemi(nom:PChar;typeIA_MVT,vie,att,dmg,def,w,h,frames1,frames2,frames3,framesM:Integer;var ennemi:TObjet;wcol,hcol,offx,offy:Integer;nomAttaques:PChar);
+procedure initStatEnnemi(nom:PChar;typeIA_MVT,vie,att,dmg,def,w,h,framesA,frames1,frames2,frames3,framesM:Integer;var ennemi:TObjet;wcol,hcol,offx,offy:Integer;nomAttaques:PChar);
 procedure IAEnnemi(var ennemi:TObjet;joueur:TObjet);
 procedure ajoutVague();
 
@@ -25,7 +25,7 @@ implementation
 procedure ajoutVague();
 var i:Integer;
 begin
-  writeln('tentative d"ajout d"une vague , ennemis restants : ',high(ennemis));
+  //writeln('tentative d"ajout d"une vague , ennemis restants : ',high(ennemis));
   if high(ennemis)<=0 then
     combatFini:=True
   else
@@ -37,7 +37,7 @@ begin
       begin
         if high(ennemis)>0 then
           begin
-          writeln('tentative d"ajout d"un ennemi');
+          //writeln('tentative d"ajout d"un ennemi');
           LObjets[i]:=ennemis[high(ennemis)];
           setlength(ennemis,high(ennemis));
           end;
@@ -45,15 +45,16 @@ begin
     end;
 end;
 
-procedure initStatEnnemi(nom:PChar;typeIA_MVT,vie,att,dmg,def,w,h,frames1,frames2,frames3,framesM:Integer;var ennemi:TObjet;wcol,hcol,offx,offy:Integer;nomAttaques:PChar);
+procedure initStatEnnemi(nom:PChar;typeIA_MVT,vie,att,dmg,def,w,h,framesA,frames1,frames2,frames3,framesM:Integer;var ennemi:TObjet;wcol,hcol,offx,offy:Integer;nomAttaques:PChar);
 begin
 
     //Initialisation de l'affichage
     ennemi.stats.nbframes1:=frames1;
     ennemi.stats.nbframes2:=frames2;
     ennemi.stats.nbframes3:=frames3;
+    ennemi.stats.nbFramesApparition:=framesA;
     ennemi.stats.nbframesMort:=framesM;
-    InitAnimation(ennemi.anim,nom,'chase', ennemi.stats.nbframes1,True);
+    InitAnimation(ennemi.anim,nom,'apparition', ennemi.stats.nbFramesApparition,False);
     //writeln('accès au fichier ',getframePath(ennemi.anim));
     CreateRawImage(ennemi.image,(random(20)+5)*20,0,w,h,getFramePath(ennemi.anim));
     
@@ -75,7 +76,7 @@ begin
 
     // Initialisation de la boîte de collisions
     ennemi.col.isTrigger := False;
-    ennemi.col.estActif := True;
+    ennemi.col.estActif := False;
     ennemi.col.dimensions.w := wcol;
     ennemi.col.dimensions.h := hcol;
     ennemi.col.offset.x := offx;
@@ -500,6 +501,11 @@ end;
 procedure IAEnnemi(var ennemi:TObjet;joueur:TObjet);
 var i:Integer;
 begin
+  if animFinie(ennemi.anim) and (ennemi.anim.etat='apparition') then
+    begin
+    InitAnimation(ennemi.anim,ennemi.anim.objectName,'chase', ennemi.stats.nbFrames1,True);
+    ennemi.col.estActif:=True;
+    end;
   if ennemi.stats.cooldown>0 then
     ennemi.stats.cooldown:=ennemi.stats.cooldown-1;
   DrawRect(black_color,255, ennemi.image.rect.x-2+ennemi.col.offset.x,ennemi.image.rect.y+ennemi.col.dimensions.h+ennemi.col.offset.y+5, ennemi.col.dimensions.w+4, 14);
@@ -525,7 +531,7 @@ begin
               end;
           end
           
-      else
+      else if ennemi.stats.vie<=0 then
       begin
       ennemi.anim.isFliped:=(joueur.image.rect.x>ennemi.image.rect.x);
 			  if not (ennemi.anim.etat='mort') then 
@@ -537,17 +543,17 @@ begin
 end;
 
 begin
-initStatEnnemi('undrixel',3,50,5,2,0,288,192,10,4,0,10,TemplatesEnnemis[1],200,128,10,40,'eclairR');
-initStatEnnemi('Archimage',4,100,2,0,6,128,128,6,6,6,4,TemplatesEnnemis[2],70,100,24,14,'projectile');
-initStatEnnemi('liche',0,50,2,0,4,128,128,6,0,0,10,TemplatesEnnemis[3],70,110,19,7,'kamui');
-initStatEnnemi('chevalier',5,10,10,0,1,90,90,6,3,10,5,TemplatesEnnemis[4],54,90,5,0,'rayonAbysse');
-initStatEnnemi('expurgateur',6,20,3,1,1,128,128,12,0,0,7,TemplatesEnnemis[5],128,104,0,24,'eclairR');
-initStatEnnemi('altegh',1,50,2,0,4,192,192,6,4,0,14,TemplatesEnnemis[6],160,96,16,96,'rayonAL');
-initStatEnnemi('Akr',4,150,2,0,-20,384,256,9,9,8,16,TemplatesEnnemis[7],200,96,80,150,'kamui');
-initStatEnnemi('UNKNOWN',4,150,2,0,-20,128,128,12,8,4,8,TemplatesEnnemis[8],64,114,32,14,'Roue');
-initStatEnnemi('armure',7,400,0,0,10,384,256,2,13,9,16,TemplatesEnnemis[9],192,192,96,64,'justice');
-initStatEnnemi('dracomage',2,100,2,5,6,192,192,12,8,8,13,TemplatesEnnemis[10],128,164,32,28,'eclairR');
-initStatEnnemi('grenouille',8,20,1,0,2,90,90,6,4,4,7,templatesEnnemis[11],54,90,5,0,'boule')
+initStatEnnemi('undrixel',3,50,5,2,0,288,192,4,10,4,0,10,TemplatesEnnemis[1],200,128,10,40,'eclairR');
+initStatEnnemi('Archimage',4,100,2,0,6,128,128,10,6,6,6,4,TemplatesEnnemis[2],70,100,24,14,'projectile');
+initStatEnnemi('liche',5,50,2,0,4,128,128,9,6,5,16,10,TemplatesEnnemis[3],70,110,19,7,'rayonAbysse');
+initStatEnnemi('chevalier',5,10,10,0,1,90,90,5,6,3,10,5,TemplatesEnnemis[4],54,90,5,0,'rayonAbysse');
+initStatEnnemi('expurgateur',6,20,3,1,1,128,128,13,12,0,0,7,TemplatesEnnemis[5],128,104,0,24,'eclairR');
+initStatEnnemi('altegh',1,50,2,0,4,192,192,3,6,4,0,14,TemplatesEnnemis[6],160,96,16,96,'rayonAL');
+initStatEnnemi('Akr',4,150,2,0,-20,384,256,14,9,9,8,16,TemplatesEnnemis[7],200,96,80,150,'kamui');
+initStatEnnemi('UNKNOWN',4,150,2,0,-20,128,128,8,12,8,4,8,TemplatesEnnemis[8],64,114,32,14,'Roue');
+initStatEnnemi('armure',7,400,0,0,10,384,256,7,2,13,9,16,TemplatesEnnemis[9],192,192,96,64,'justice');
+initStatEnnemi('dracomage',2,100,2,5,6,192,192,26,12,8,8,13,TemplatesEnnemis[10],128,164,32,28,'eclairR');
+initStatEnnemi('grenouille',8,20,1,0,2,90,90,7,6,4,4,7,templatesEnnemis[11],54,90,5,0,'boule')
 
 
 end.

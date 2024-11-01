@@ -350,11 +350,10 @@ IndiceMusiqueJouee:=10;
 
   //Initialisation de la liste d'objets
   setlength(LObjets,2);
+  vagueFinie:=False;combatFini:=False;
 	for j:=1 to 1 do begin 
-		LObjets[j]:=TemplatesEnnemis[10];
+		LObjets[j]:=TemplatesEnnemis[3];
 		end;
-
-
 
 	createRawImage(combat_bg,88,-80,900,900,'Sprites/Game/floor/Floor.bmp');
 	randomize();

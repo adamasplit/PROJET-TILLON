@@ -755,7 +755,7 @@ var tempCarte:TCarte;projectile:TOBjet;
 
 begin
     tempCarte:=stats.deck^[i];
-    writeln('carte jouée : ',tempCarte.nom);
+    //writeln('carte jouée : ',tempCarte.nom);
     if stats.deck^[i].active or (tempCarte.cout<=stats.mana) then 
         begin
         if not stats.deck^[i].active then
