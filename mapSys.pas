@@ -1,7 +1,7 @@
 unit mapSys;
 
 interface
-uses SDL2,math,memgraph,SysUtils,coeur,eventsys,AnimationSys,EnemyLib;
+uses SDL2,math,memgraph,SysUtils,coeur,eventsys,AnimationSys,EnemyLib,sonoSys;
 var imgs0,imgs1,imgs2,imgs3:TButtonGroup;
 var salleChoisie:TSalle;
 CONST 
@@ -61,12 +61,16 @@ end;
 procedure choisirEnnemis;
 var j : integer;
 begin
-setlength(LObjets,avancementPartie+1);
-for j:=1 to avancementPartie do
-begin
-randomize;
-LObjets[j]:=TemplatesEnnemis[random(5)+1];
-end
+    setlength(LObjets,1);
+    setlength(ennemis,avancementPartie+1);
+    vagueFinie:=True;
+    combatFini:=False;
+    for j:=1 to avancementPartie do
+        begin
+        randomize;
+        ennemis[j]:=TemplatesEnnemis[random(5)+1];
+        writeln('ennemis[',j,'] assigné')
+        end
 
 end;
 
@@ -77,7 +81,8 @@ avancementPartie := avancementPartie+1;
 ClearScreen;
 SDL_RenderClear(sdlRenderer);
 SceneActive := 'Jeu';
-choisirEnnemis
+choisirEnnemis;
+indiceMusiqueJouee:=random(8)+1;
 end;
 
 procedure LancementSalleHasard;

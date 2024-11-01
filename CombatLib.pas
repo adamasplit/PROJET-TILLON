@@ -11,7 +11,7 @@ uses
     sdl2_mixer,
     SDL2;
 
-var leMonde:Boolean;updateTimeMonde:UInt32;updateTimeMort:UInt32;
+var updateTimeMonde:UInt32;updateTimeMort:UInt32;
 
 function degat(flat : Integer ; force : Integer ; defense : Integer;multiplicateurDegat:Real): Integer;
 procedure RegenMana(var LastUpdateTime : UInt32;var mana:Integer;manaMax:Integer;multiplicateurMana:Real); 
@@ -163,6 +163,7 @@ begin
     
     if statsTemp.deck=NIL then writeln('AVERTISSEMENT: DECK NON DEFINI');
     combatFini:=False;
+    vagueFinie:=True;
 end;
 
 procedure creerEffet(x,y,w,h,frames:Integer;nom:PCHar;fixeJoueur:Boolean;var obj:TObjet); // crée un effet (objet sans collisions qui joue son animation puis s'efface)
@@ -732,7 +733,7 @@ end;
         s.compteurLemonde := s.compteurLemonde +1;
         leMonde:=True;
         updateTimeMonde:=sdl_getticks;
-        mix_pauseMusic;
+        //mix_pauseMusic;
         creerEffet(0,0,150,150,6,'monde',True,eff);
         ajoutObjet(eff);
     end;

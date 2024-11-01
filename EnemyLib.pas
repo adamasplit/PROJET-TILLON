@@ -11,13 +11,40 @@ uses
     sonoSys,
     SysUtils;
 
+const TAILLE_VAGUE=3;
 
 var EnemyBasik : TObjet;
 var templatesEnnemis:array[1..MAXENNEMIS] of TObjet;
+    ennemis:Array of TOBjet;
 procedure initStatEnnemi(nom:PChar;typeIA_MVT,vie,att,dmg,def,w,h,frames1,frames2,frames3,framesM:Integer;var ennemi:TObjet;wcol,hcol,offx,offy:Integer;nomAttaques:PChar);
 procedure IAEnnemi(var ennemi:TObjet;joueur:TObjet);
+procedure ajoutVague();
 
 implementation
+
+procedure ajoutVague();
+var i:Integer;
+begin
+  writeln('tentative d"ajout d"une vague , ennemis restants : ',high(ennemis));
+  if high(ennemis)<=0 then
+    combatFini:=True
+  else
+    begin
+    vagueFinie:=False;
+    if (high(LObjets)<TAILLE_VAGUE+1) then
+    setlength(LObjets,TAILLE_VAGUE+1);
+    for i:=1 to TAILLE_VAGUE do
+      begin
+        if high(ennemis)>0 then
+          begin
+          writeln('tentative d"ajout d"un ennemi');
+          LObjets[i]:=ennemis[high(ennemis)];
+          setlength(ennemis,high(ennemis));
+          end;
+      end;
+    end;
+end;
+
 procedure initStatEnnemi(nom:PChar;typeIA_MVT,vie,att,dmg,def,w,h,frames1,frames2,frames3,framesM:Integer;var ennemi:TObjet;wcol,hcol,offx,offy:Integer;nomAttaques:PChar);
 begin
 
@@ -299,7 +326,6 @@ begin
 end;
 
 procedure DeplacementEnnemi(var ennemi:TObjet;joueur:TObjet); //déplace un ennemi 
-var obj:TObjet;
 begin
   case ennemi.stats.typeIA_MVT of
       0:
@@ -489,16 +515,16 @@ begin
 		else
       if (animFinie(ennemi.anim)) and (ennemi.anim.etat='mort') then
           begin
-          supprimeObjet(ennemi);
           //writeln(ennemi.anim.objectname,' détruit')
-          combatFini:=True;
+          supprimeObjet(ennemi);
+          vagueFinie:=True;
           for i:=1 to High(LObjets) do
             if LObjets[i].stats.genre=TypeObjet(1) then
               begin
-              combatFini:=False;
-              //writeln('il reste des ennemis')
-              end
+              vagueFinie:=False;
+              end;
           end
+          
       else
       begin
       ennemi.anim.isFliped:=(joueur.image.rect.x>ennemi.image.rect.x);

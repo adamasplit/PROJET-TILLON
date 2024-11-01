@@ -170,7 +170,6 @@ end;
 procedure ActualiserJeu;
 	begin
 		randomize();
-		bouclerMusique(ost[IndiceMusiqueJouee],LastUpdateTime1);
 		SDL_RenderClear(sdlRenderer);
 		SDL_PumpEvents;
 		sdl_delay(10);
@@ -196,6 +195,7 @@ procedure ActualiserJeu;
 					end;
 			end;
 		SDL_RenderPresent(sdlRenderer);
+		if vagueFinie then ajoutVague;
 		if combatFini then choixSalle;
 	end;
 
@@ -351,7 +351,7 @@ IndiceMusiqueJouee:=10;
   //Initialisation de la liste d'objets
   setlength(LObjets,2);
 	for j:=1 to 1 do begin 
-		LObjets[j]:=TemplatesEnnemis[8];
+		LObjets[j]:=TemplatesEnnemis[10];
 		end;
 
 
@@ -360,7 +360,7 @@ IndiceMusiqueJouee:=10;
 	randomize();
 	IndiceMusiqueJouee:=random(12)+1;
 	Mix_VolumeMusic(VOLUME_MUSIQUE);
-	mix_playMusic(OST[IndiceMusiqueJouee].musique,0);
+	
 	lastUpdateTime2:=sdl_getticks;
   LObjets[0] := Joueur;
   LObjets[0].image.rect.x := windowWidth div 2;
@@ -472,6 +472,7 @@ InitAnimation(LObjets[0].anim, 'Joueur', 'idle', 12, True);
   
   while True do
   begin
+  autoMusique();
    // 100 FPS
 //Mouvement Joueur
   if SceneActive='Jeu' then 
