@@ -5,6 +5,7 @@ INTERFACE
 uses
   SDL2,
   SDL2_ttf,
+  math,
   SysUtils;
 
 type
@@ -45,20 +46,17 @@ type
     OnClick: ButtonProcedure;
   end;
 
-  type
+type
   TDialogueBox = record
-    BackgroundImage: TImage;        // Image de fond
-    LabelSurface: PSDL_Surface;     // Surface temporaire pour le texte
-    LabelTexture: PSDL_Texture;     // Texture finale du texte
-    Text: Pchar;                   // Texte complet
-    DisplayedText: Pchar;          // Texte affiché lettre par lettre
-    RemainingText: Pchar;          // Texte restant à afficher
-    CurrentLetter: Integer;         // Position de la lettre actuelle
-    LastUpdateTime: UInt32;         // Délai entre chaque lettre
-    X, Y, Width, Height: Integer;   // Position et dimensions
-    Complete: Boolean;              // Indicateur si tout le texte est affiché
+    BackgroundImage: TImage; 
+    Lines: array[1..6] of string;  
+    RemainingText: string;       
+    DisplayedLetters: Integer;   
+    CurrentLine: Integer;      
+    LastUpdateTime: UInt32;       
+    LetterDelay: UInt32;            // Délai entre l'affichage de chaque lettre C UN PUTAIN DE UINT32 MA GUEULE
+    Complete: Boolean;              
   end;
-
   
 {Variables}
 var
@@ -91,8 +89,9 @@ procedure CreateInteractableImage(var image : TIntImage; x, y, w, h: Integer; di
 procedure RenderIntImage(var image : TIntImage);
 procedure HandleImageClick(var image: TIntImage; x, y: Integer);
 
-procedure InitDialogueBox(var Box: TDialogueBox; ImgPath: pchar; X, Y, W, H: Integer; const DialogueText: pchar);
+procedure InitDialogueBox(var Box: TDialogueBox; ImgPath: PChar; X, Y, W, H: Integer; const DialogueText: string; Delay: UInt32);
 procedure UpdateDialogueBox(var Box: TDialogueBox);
+procedure RenderDialogueText(var Box: TDialogueBox);
 
 
 procedure ClearScreen;
@@ -340,99 +339,136 @@ StringToPChar := StrAlloc(Length(s)+1);
 StrPCopy(StringToPChar, s);
 end;
 
-procedure InitDialogueBox(var Box: TDialogueBox; ImgPath: pchar; X, Y, W, H: Integer; const DialogueText: pchar);
+function WidthBasedLineLength(Font: PTTF_Font; const Text: string): Integer;
+var
+  LineWidth, i: Integer;
+  TempText: string;
 begin
-  CreateRawImage(Box.BackgroundImage,X,Y,W,H,ImgPath);
-  Box.X := X;
-  Box.Y := Y;
-  Box.Width := W;
-  Box.Height := H;
-  Box.Text := DialogueText;
-  Box.RemainingText := DialogueText;
-  Box.DisplayedText := StringToPChar(Box.RemainingText[0]);
-  Box.CurrentLetter := 0;
-  Box.LastUpdateTime := SDL_GetTicks();
-  Box.Complete := False;
+  TempText := '';
+  LineWidth:= 0;
+  for i := 1 to Length(Text) do
+  begin
+    LineWidth:= Length(TempText);
+    TempText := TempText + Text[i];
+    if LineWidth >= 20 then
+      Exit(i - 1);
+  end;
+  WidthBasedLineLength := Length(Text);
+end;
+function ExtractNextLine(var Text: string): string;
+var
+  LineEnd: Integer;
+begin
+  LineEnd := Min(WidthBasedLineLength(Fantasy30, Text), Length(Text));
+  ExtractNextLine := Copy(Text, 1, LineEnd);
+  Delete(Text, 1, LineEnd);
 end;
 
-procedure UpdateDialogueBox(var Box: TDialogueBox);
+procedure FillDialogueLines(var Box: TDialogueBox);
 var
-  TextRect: TSDL_Rect;
-  CurrentTime: UInt32;
-  LineText: string;
-  RemainingChars: string;
-  i, TextWidth: Integer;
-  LineFinished: Boolean;
+  i: Integer;
 begin
-  if Box.Complete then 
+  for i := 1 to 6 do
   begin
-    // Si complet, on affiche l'image de fond et le texte complet
-    RenderRawImage(Box.BackgroundImage, 255, False);
-    SDL_RenderCopy(sdlRenderer, Box.LabelTexture, nil, @TextRect);
-    Exit;
+    if Box.RemainingText = '' then
+      Box.Lines[i] := ''
+    else
+      Box.Lines[i] := ExtractNextLine(Box.RemainingText);
   end;
+end;
 
-  // Affiche l'image de fond
+
+
+procedure InitDialogueBox(var Box: TDialogueBox; ImgPath: PChar; X, Y, W, H: Integer; const DialogueText: string; Delay: UInt32);
+begin
+  CreateRawImage(Box.BackgroundImage, X, Y, W, H, ImgPath);
+  Box.RemainingText := DialogueText;
+  Box.DisplayedLetters := 0;
+  Box.CurrentLine := 1;
+  Box.LastUpdateTime := SDL_GetTicks();
+  Box.LetterDelay := Delay;
+  Box.Complete := False;
+
+  // Charger les premières lignes
+  FillDialogueLines(Box);
+  writeln('INIT OK');
+end;
+
+
+
+
+
+procedure UpdateDialogueBox(var Box: TDialogueBox); // C'est la la scene de crime
+var
+  CurrentTime: UInt32;
+  TimeDiff: UInt32;
+begin
+  CurrentTime := SDL_GetTicks();
+
+  if Box.Complete then Exit;
+
   RenderRawImage(Box.BackgroundImage, 255, False);
 
-  // Vérifie le temps pour afficher la prochaine lettre
-  CurrentTime := SDL_GetTicks();
-  if (CurrentTime - Box.LastUpdateTime > 100) then
+  TimeDiff := CurrentTime - Box.LastUpdateTime;
+  WriteLn('CurrentLine: ', Box.CurrentLine);
+  WriteLn('DisplayedLetters: ', Box.DisplayedLetters);
+  WriteLn('Lines[CurrentLine]: ', Box.Lines[Box.CurrentLine]);
+  WriteLn('LetterDelay: ', Box.LetterDelay);
+  WriteLn('LastUpdateTime: ', Box.LastUpdateTime);
+  WriteLn('TimeDiff: ', TimeDiff);
+
+
+if (TimeDiff > Box.LetterDelay) and (Box.DisplayedLetters < Length(Box.Lines[Box.CurrentLine])) then
   begin
-    if Box.CurrentLetter < Length(Box.RemainingText) then
-    begin
-      // Ajoute la lettre suivante
-      Box.DisplayedText := StringToPChar(Box.DisplayedText + Box.RemainingText[Box.CurrentLetter + 1]);
-      Inc(Box.CurrentLetter);
-      Box.LastUpdateTime := CurrentTime;
-    end
-    else
-    begin
-      // Texte complet, prêt pour le clic suivant
-      Box.Complete := True;
-    end;
+    writeln('2');
+    Inc(Box.DisplayedLetters);
+    Box.LastUpdateTime := CurrentTime;
   end;
 
-  // Initialisation pour l'affichage ligne par ligne
-  RemainingChars := Box.DisplayedText;
-  i := 1;
-  TextRect.x := Box.X + 10;   // Position de départ en X (10 pixels de marge)
-  TextRect.y := Box.Y + 10;   // Position de départ en Y (10 pixels de marge)
-  TextRect.w := Box.Width - 20;
-  
-  // Découpage et affichage du texte ligne par ligne
-  while RemainingChars <> '' do
+  RenderDialogueText(Box);
+end;
+
+procedure RenderTextLine(const Text: string; x, y: Integer);
+var
+  Surface: PSDL_Surface;
+  Texture: PSDL_Texture;
+  Rect: TSDL_Rect;
+begin
+  Surface := TTF_RenderText_Blended(Fantasy30, StringToPChar(Text), black_color);
+  Texture := SDL_CreateTextureFromSurface(sdlRenderer, Surface);
+  Rect.x := x;
+  Rect.y := y;
+  Rect.w := Surface^.w;
+  Rect.h := Surface^.h;
+  SDL_RenderCopy(sdlRenderer, Texture, nil, @Rect);
+  SDL_FreeSurface(Surface);
+  SDL_DestroyTexture(Texture);
+end;
+
+procedure RenderDialogueText(var Box: TDialogueBox);
+var
+  i: Integer;
+  DisplayedText: string;
+begin
+  for i := 1 to Box.CurrentLine do
   begin
-    LineText := '';
-    LineFinished := False;
-    TextWidth:=0;
+    if i = Box.CurrentLine then
+      DisplayedText := Copy(Box.Lines[i], 1, Box.DisplayedLetters)
+    else
+      DisplayedText := Box.Lines[i];
 
-    // Remplir une ligne jusqu'à ce qu'on atteigne la largeur limite
-    while (RemainingChars <> '') and not LineFinished do
-    begin
-      LineText := LineText + RemainingChars[1];
-      Delete(RemainingChars, 1, 1);
-      
-      // Calculer la largeur de la ligne courante
-      //TTF_SizeText(Fantasy30, StringToPChar(LineText), TextWidth, TextWidth);
-      
-      if TextWidth >= TextRect.w then
-        LineFinished := True;
-    end;
+    RenderTextLine(DisplayedText, Box.BackgroundImage.rect.x, Box.BackgroundImage.rect.y + (i - 1) * 40);
+  end;
 
-    // Créer la surface et la texture pour la ligne courante
-    Box.LabelSurface := TTF_RenderText_Blended(Fantasy30, StringToPChar(LineText), black_color);
-    Box.LabelTexture := SDL_CreateTextureFromSurface(sdlRenderer, Box.LabelSurface);
-    
-    // Afficher la ligne
-    SDL_RenderCopy(sdlRenderer, Box.LabelTexture, nil, @TextRect);
-    
-    // Libérer les ressources temporaires
-    SDL_FreeSurface(Box.LabelSurface);
-    SDL_DestroyTexture(Box.LabelTexture);
-
-    // Passer à la ligne suivante
-    TextRect.y := TextRect.y + TextRect.h + 5;  // 5 pixels d'espace entre les lignes
+  if (Box.DisplayedLetters = Length(Box.Lines[Box.CurrentLine])) and (Box.CurrentLine < 6) then
+  begin
+    writeln('1');
+    Inc(Box.CurrentLine);
+    Box.DisplayedLetters := 0;
+  end
+  else if (Box.CurrentLine = 6) and (Box.DisplayedLetters = Length(Box.Lines[6])) then
+  begin
+    Box.Complete := True;
   end;
 end;
 

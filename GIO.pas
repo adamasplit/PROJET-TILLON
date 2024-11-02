@@ -217,7 +217,7 @@ procedure jouer;
 		
 		button_deck.estVisible := False;
 		button_bestiaire.estVisible := False;
-		InitDialogueBox(box,'Sprites\Menu\Button1.bmp',0,0,windowWidth,400,'hello, i''m proud to see you there ! My name is john');
+		InitDialogueBox(box,'Sprites\Menu\Button1.bmp',0,0,windowWidth,400,'hello, i''m proud to see you there ! My name is john',30);
 
         //Objets de Scene
 		ActualiserJeu;
