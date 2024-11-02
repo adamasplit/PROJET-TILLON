@@ -44,13 +44,29 @@ type
     imgTexture: PSDL_Texture;
     OnClick: ButtonProcedure;
   end;
+
+  type
+  TDialogueBox = record
+    BackgroundImage: TImage;        // Image de fond
+    LabelSurface: PSDL_Surface;     // Surface temporaire pour le texte
+    LabelTexture: PSDL_Texture;     // Texture finale du texte
+    Text: Pchar;                   // Texte complet
+    DisplayedText: Pchar;          // Texte affiché lettre par lettre
+    RemainingText: Pchar;          // Texte restant à afficher
+    CurrentLetter: Integer;         // Position de la lettre actuelle
+    LastUpdateTime: UInt32;         // Délai entre chaque lettre
+    X, Y, Width, Height: Integer;   // Position et dimensions
+    Complete: Boolean;              // Indicateur si tout le texte est affiché
+  end;
+
   
 {Variables}
 var
-  dayDreamFontDirectory : PChar;
-  dayDream40 : PTTF_Font;
-  dayDream30 : PTTF_Font;
+  FantasyFontDirectory : PChar;
+  Fantasy40 : PTTF_Font;
+  Fantasy30 : PTTF_Font;
   dayDream20 : PTTF_Font;
+  black_color: TSDL_Color;
   sdlWindow1 : PSDL_Window;
   sdlRenderer : PSDL_Renderer;
   windowWidth, windowHeight: Integer;
@@ -74,6 +90,9 @@ procedure RenderRawImage(var image: Timage; flip : Boolean); overload;
 procedure CreateInteractableImage(var image : TIntImage; x, y, w, h: Integer; directory : PAnsiChar; onClick: ButtonProcedure);
 procedure RenderIntImage(var image : TIntImage);
 procedure HandleImageClick(var image: TIntImage; x, y: Integer);
+
+procedure InitDialogueBox(var Box: TDialogueBox; ImgPath: pchar; X, Y, W, H: Integer; const DialogueText: pchar);
+procedure UpdateDialogueBox(var Box: TDialogueBox);
 
 
 procedure ClearScreen;
@@ -315,6 +334,111 @@ begin
 	SDL_RenderPresent(sdlRenderer);
 end;
 
+function StringToPChar(s : string) : Pchar;
+begin
+StringToPChar := StrAlloc(Length(s)+1);
+StrPCopy(StringToPChar, s);
+end;
+
+procedure InitDialogueBox(var Box: TDialogueBox; ImgPath: pchar; X, Y, W, H: Integer; const DialogueText: pchar);
+begin
+  CreateRawImage(Box.BackgroundImage,X,Y,W,H,ImgPath);
+  Box.X := X;
+  Box.Y := Y;
+  Box.Width := W;
+  Box.Height := H;
+  Box.Text := DialogueText;
+  Box.RemainingText := DialogueText;
+  Box.DisplayedText := StringToPChar(Box.RemainingText[0]);
+  Box.CurrentLetter := 0;
+  Box.LastUpdateTime := SDL_GetTicks();
+  Box.Complete := False;
+end;
+
+procedure UpdateDialogueBox(var Box: TDialogueBox);
+var
+  TextRect: TSDL_Rect;
+  CurrentTime: UInt32;
+  LineText: string;
+  RemainingChars: string;
+  i, TextWidth: Integer;
+  LineFinished: Boolean;
+begin
+  if Box.Complete then 
+  begin
+    // Si complet, on affiche l'image de fond et le texte complet
+    RenderRawImage(Box.BackgroundImage, 255, False);
+    SDL_RenderCopy(sdlRenderer, Box.LabelTexture, nil, @TextRect);
+    Exit;
+  end;
+
+  // Affiche l'image de fond
+  RenderRawImage(Box.BackgroundImage, 255, False);
+
+  // Vérifie le temps pour afficher la prochaine lettre
+  CurrentTime := SDL_GetTicks();
+  if (CurrentTime - Box.LastUpdateTime > 100) then
+  begin
+    if Box.CurrentLetter < Length(Box.RemainingText) then
+    begin
+      // Ajoute la lettre suivante
+      Box.DisplayedText := StringToPChar(Box.DisplayedText + Box.RemainingText[Box.CurrentLetter + 1]);
+      Inc(Box.CurrentLetter);
+      Box.LastUpdateTime := CurrentTime;
+    end
+    else
+    begin
+      // Texte complet, prêt pour le clic suivant
+      Box.Complete := True;
+    end;
+  end;
+
+  // Initialisation pour l'affichage ligne par ligne
+  RemainingChars := Box.DisplayedText;
+  i := 1;
+  TextRect.x := Box.X + 10;   // Position de départ en X (10 pixels de marge)
+  TextRect.y := Box.Y + 10;   // Position de départ en Y (10 pixels de marge)
+  TextRect.w := Box.Width - 20;
+  
+  // Découpage et affichage du texte ligne par ligne
+  while RemainingChars <> '' do
+  begin
+    LineText := '';
+    LineFinished := False;
+    TextWidth:=0;
+
+    // Remplir une ligne jusqu'à ce qu'on atteigne la largeur limite
+    while (RemainingChars <> '') and not LineFinished do
+    begin
+      LineText := LineText + RemainingChars[1];
+      Delete(RemainingChars, 1, 1);
+      
+      // Calculer la largeur de la ligne courante
+      //TTF_SizeText(Fantasy30, StringToPChar(LineText), TextWidth, TextWidth);
+      
+      if TextWidth >= TextRect.w then
+        LineFinished := True;
+    end;
+
+    // Créer la surface et la texture pour la ligne courante
+    Box.LabelSurface := TTF_RenderText_Blended(Fantasy30, StringToPChar(LineText), black_color);
+    Box.LabelTexture := SDL_CreateTextureFromSurface(sdlRenderer, Box.LabelSurface);
+    
+    // Afficher la ligne
+    SDL_RenderCopy(sdlRenderer, Box.LabelTexture, nil, @TextRect);
+    
+    // Libérer les ressources temporaires
+    SDL_FreeSurface(Box.LabelSurface);
+    SDL_DestroyTexture(Box.LabelTexture);
+
+    // Passer à la ligne suivante
+    TextRect.y := TextRect.y + TextRect.h + 5;  // 5 pixels d'espace entre les lignes
+  end;
+end;
+
+
+
+
 
 {Debug}
 procedure OnButtonClickDebug;
@@ -324,7 +448,8 @@ end;
 
 {Initialisation de la Fenêtre dans le programme principal}
 BEGIN
-  dayDreamFontDirectory := 'Fonts\Font_Fantasy_M_Edit.ttf';
+  black_color.r := 0; black_color.g := 0; black_color.b := 0;
+  FantasyFontDirectory := 'Fonts\Font_Fantasy_M_Edit.ttf';
 
   // Initialization of video subsystem
   if SDL_Init(SDL_INIT_VIDEO) < 0 then HALT;
@@ -339,18 +464,18 @@ BEGIN
 
   // Initialisation de la police [DayDream] et chargement de la police
   if TTF_Init = -1 then HALT;
-  dayDream40 := TTF_OpenFont(dayDreamFontDirectory, 40);
-  if dayDream40 = nil then HALT;
-  dayDream30 := TTF_OpenFont(dayDreamFontDirectory, 30);
-  if dayDream30 = nil then HALT;
-  dayDream20 := TTF_OpenFont(dayDreamFontDirectory, 20);
+  Fantasy40 := TTF_OpenFont(FantasyFontDirectory, 40);
+  if Fantasy40 = nil then HALT;
+  Fantasy30 := TTF_OpenFont(FantasyFontDirectory, 30);
+  if Fantasy30 = nil then HALT;
+  dayDream20 := TTF_OpenFont(FantasyFontDirectory, 20);
   if dayDream20 = nil then HALT;
 
   // activation de l'opacité
   SDL_SetRenderDrawBlendMode(sdlRenderer, SDL_BLENDMODE_BLEND);
   
-  TTF_SetFontStyle(dayDream40, TTF_STYLE_NORMAL);
-  TTF_SetFontOutline(dayDream40, 1);
-  TTF_SetFontHinting(dayDream40, TTF_HINTING_NORMAL);
+  TTF_SetFontStyle(Fantasy40, TTF_STYLE_NORMAL);
+  TTF_SetFontOutline(Fantasy40, 1);
+  TTF_SetFontHinting(Fantasy40, TTF_HINTING_NORMAL);
   writeln('memgraph DONE.');
 END.

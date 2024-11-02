@@ -44,6 +44,8 @@ var	text1 : TText;
 	text_s5: TText;
 	text_n5: TText;
 
+	box : TDialogueBox;
+
 //Image
 	var menu_bg,combat_bg,menuBook : TImage;
 	menuBookAnim : TAnimation;
@@ -67,7 +69,7 @@ var Joueur : TObjet;
 procedure annihiler(); //METTRE A JOUR APRES CHAQUE AJOUT D'OBJET
 begin
   // Nettoyage de Ram (DETRUIRE IMPERATIVEMENT TOUTES LES TEXTURES UTILISEES SOUS PEINE DE FUITE DE RAM !!!!)
-  TTF_CloseFont(dayDream30);
+  TTF_CloseFont(Fantasy30);
   TTF_Quit;
 
 {	//Anihilation Objet [button]
@@ -175,6 +177,7 @@ procedure ActualiserJeu;
 		SDL_PumpEvents;
 		sdl_delay(10);
 		afficherTout;
+		UpdateDialogueBox(box);
 		UpdateCollisions();
 		UpdateAnimations();
 		if leMonde and (sdl_getTicks-UpdateTimeMonde>LObjets[0].stats.compteurLeMonde*1000) then
@@ -212,7 +215,7 @@ procedure jouer;
 		
 		button_deck.estVisible := False;
 		button_bestiaire.estVisible := False;
-		
+		InitDialogueBox(box,'Sprites\Menu\Button1.bmp',0,0,windowWidth,400,'hello, i''m proud to see you there ! My name is john');
 
         //Objets de Scene
 		ActualiserJeu;
@@ -301,7 +304,7 @@ procedure direction_menu;
 
 			button_deck.estVisible :=True;
 			button_bestiaire.estVisible := True;
-		
+			jouerSon('SFX\Pausemenu_appear.wav');
 			DrawRect(black_color,50, 0, 0, windowWidth,windowHeight);
 			InitAnimation(menuBookAnim,'Book','Opening',5,False);
 
@@ -411,8 +414,8 @@ SDL_RenderPresent(sdlRenderer);
 	InitButtonGroup(button_lead, windowWidth  div 2-208, 2*windowHeight div 4, 416, 150,'Sprites\Menu\Button1.bmp','Leaderboard',leaderboard);
 	InitButtonGroup(button_q, windowWidth div 2-208, 3 * windowHeight div 4, 416, 100,'Sprites\Menu\Button1.bmp','Ragequit',quitter);
 	//Menu en Jeu
-	CreateButton(button_deck, 210, 320, 240, 50,'Deck',b_color, bf_color,dayDream30,btnProc);
-	CreateButton(button_bestiaire, 210, 390, 240, 50,'Bestiaire',b_color, bf_color,dayDream30,btnProc);
+	CreateButton(button_deck, 210, 320, 240, 50,'Deck',b_color, bf_color,Fantasy30,btnProc);
+	CreateButton(button_bestiaire, 210, 390, 240, 50,'Bestiaire',b_color, bf_color,Fantasy30,btnProc);
 
 	//
     //Images
@@ -425,8 +428,8 @@ SDL_RenderPresent(sdlRenderer);
     //Textes
 	//
 
-	CreateText(text1, windowWidth div 2-150, 20, 300, 250, 'Les Cartes du Destin ',dayDream30, whiteCol);
-	CreateText(titre_lead, windowWidth div 2-210, 90, 300, 250, 'Leaderboard',dayDream40, navy_color);
+	CreateText(text1, windowWidth div 2-150, 20, 300, 250, 'Les Cartes du Destin ',Fantasy30, whiteCol);
+	CreateText(titre_lead, windowWidth div 2-210, 90, 300, 250, 'Leaderboard',Fantasy40, navy_color);
 	CreateText(text_score_seize, 40, 200, 150, 125, '1> Score  :',dayDream20, bf_color);
 	CreateText(text_nom_seize, 40, 225, 250, 125, 'Nom partie :',dayDream20, bf_color);
 	CreateText(text_score_trente, 40, 275, 150, 125, '2> Score :',dayDream20, bf_color);
