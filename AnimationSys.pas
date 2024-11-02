@@ -5,6 +5,7 @@ interface
 uses
   memgraph,
   SDL2,
+  math,
   SysUtils,
   sonoSys,
   coeur;
@@ -103,7 +104,7 @@ end;
 procedure InitButtonGroup(var btnGroup: TButtonGroup;  x, y, w, h: Integer; imgPath: PChar;labelText: PAnsiChar;onClick: ButtonProcedure);
 begin
   // Initialiser le bouton avec l'image de fond
-  CreateButton(btnGroup.button,x,y,w,h,labelText,b_color,black_color,dayDream30,onClick);  // Créer le bouton
+  CreateButton(btnGroup.button,x,y,w,h,labelText,b_color,black_color,Fantasy30,onClick);  // Créer le bouton
 
   // Charger l'image de fond
   CreateRawImage(btnGroup.image,x,y,w,h,imgPath);  // Créer l'image de fond
@@ -112,6 +113,69 @@ begin
   btnGroup.originalWidth := btnGroup.image.rect.w;
   SDL_SetTextureAlphaMod(btnGroup.image.imgTexture, 150);  
 end;
+
+procedure FonduNoir(activation: Boolean; duree: Integer);
+var
+  startTime, currentTime, elapsedTime: UInt32;
+  alphaStep, alpha: Integer;
+  isFadingIn: Boolean;
+  bgColor: TSDL_Color;
+begin
+  // Couleur de fond noir
+  bgColor.r := 0;
+  bgColor.g := 0;
+  bgColor.b := 0;
+  
+  // Est-ce un fondu vers noir (activation) ou un rétablissement (désactivation) ?
+  if activation then
+  begin
+    alpha := 0;  // On commence transparent
+    isFadingIn := True;
+  end
+  else
+  begin
+    alpha := 255;  // On commence complètement opaque
+    isFadingIn := False;
+  end;
+
+  // Temps initial et durée
+  startTime := SDL_GetTicks();
+  elapsedTime := 0;
+  
+  // Calcul du pas d'alpha pour chaque frame (ajusté à ~60 FPS, soit 16 ms par frame)
+  alphaStep := 255 * 16 div duree;  // Chaque frame, on ajuste l'alpha
+
+  while elapsedTime < duree do
+  begin
+    // Temps écoulé depuis le début du fondu
+    currentTime := SDL_GetTicks();
+    elapsedTime := currentTime - startTime;
+
+    // Ajuster l'alpha en fonction du temps écoulé
+    if isFadingIn then
+      alpha := Min(255, alpha + alphaStep)  // Vers le noir
+    else
+      alpha := Max(0, alpha - alphaStep);  // Retour à transparent
+    DrawRect(bgColor, alpha, 0, 0, windowWidth, windowHeight);
+    SDL_RenderPresent(sdlRenderer);
+
+    SDL_Delay(10);
+  end;
+
+  // S'assurer que l'alpha soit exactement 255 (si activation) ou 0 (si désactivation)
+  if isFadingIn then
+    alpha := 255
+  else
+    alpha := 0;
+
+  // Dessiner la frame finale
+  DrawRect(bgColor, alpha, 0, 0, windowWidth, windowHeight);
+  SDL_RenderPresent(sdlRenderer);
+
+  // Dernière pause pour laisser le temps de voir le résultat final (facultatif)
+  SDL_Delay(16);
+end;
+
 
 procedure RenderButtonGroup(var btnGroup: TButtonGroup);
 begin
