@@ -107,6 +107,7 @@ type TStats=record //(version variable)
           typeIA_MVT:Byte;
           degatsContact:Integer;
           cooldown:Byte;
+          vitessePoursuite:Integer;
           nomAttaque:PCHar);
         
         projectile,laser:(degats:Integer;origine:typeObjet;vectX,vectY,angle:Real;dureeVie,delai,delaiInit,vitRotation:Integer);

@@ -111,7 +111,7 @@ begin
     RenderRawImage(CombatUI[1],255,False);
     RenderRawImage(CombatUI[2],255,True);
     //Vie
-    DrawRect(black_color,255, 30, 350, 30, 200);
+    DrawRect(black_color,255, 30, 350, 30, 2*stats.vieMax);
     if stats.vie>0 then
       DrawRect(red_color,255, 35, 355+190-Round(190*(stats.vie/stats.vieMax)), 20, Round(190*(stats.vie/stats.vieMax)) );
     //Mana

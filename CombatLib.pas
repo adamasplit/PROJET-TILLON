@@ -318,8 +318,10 @@ begin
         proj.stats.origine:=origine;
 
         //Initialisation de l'affichage
-        
-        InitAnimation(proj.anim,nom,'active',8,true);
+        if nom='justice' then
+            InitAnimation(proj.anim,nom,'modeProj',6,true)
+        else
+            InitAnimation(proj.anim,nom,'active',8,true);
         proj.anim.estActif:=True;
         CreateRawImage(proj.image,x,y,w,h,getFramePath(proj.anim));
 
@@ -696,7 +698,7 @@ end;
             13 : begin flat := 233 ; vitesse := 10;end;
             14 : begin flat := 377 ; vitesse := 10;end;
         end;
-        creerBoule(joueur, flat, s.force, s.multiplicateurDegat, x, y,s.mana*20,s.mana*20, vitesse, getmouseX, getmouseY, 'projectile', proj);
+        creerBoule(joueur, flat, s.force, s.multiplicateurDegat, x, y,s.mana*30,s.mana*30, vitesse, getmouseX, getmouseY, 'projectile', proj);
         s.mana:=0; //consomme tout le mana
         ajoutObjet(proj);
     end;
@@ -733,7 +735,6 @@ end;
         s.compteurLemonde := s.compteurLemonde +1;
         leMonde:=True;
         updateTimeMonde:=sdl_getticks;
-        //mix_pauseMusic;
         creerEffet(0,0,150,150,6,'monde',True,eff);
         ajoutObjet(eff);
     end;
@@ -782,7 +783,7 @@ begin
             12: XII(stats);
             13: XIII(stats);
             14: XIV(stats);
-            15: XV(statsJoueur, stats);
+            15: XV(stats, statsJoueur);
             16: XVI(stats,x,y);
             17: XVII(stats,x,y);
             18: XVIII(stats,x,y);
