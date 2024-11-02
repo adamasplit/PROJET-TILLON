@@ -156,7 +156,7 @@ begin
 	UpdateUICombat(icarteChoisie,400,400,LObjets[0].stats);
 	if leMonde then 
 		begin
-		drawrect(black_color,30,0,0,windowWidth,windowHeight);
+		drawrect(black_color,50,0,0,windowWidth,windowHeight);
 		if LObjets[0].stats.pendu then
 			if LObjets[i].anim.isFliped then
 				SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
@@ -172,7 +172,6 @@ end;
 procedure ActualiserJeu;
 	begin
 		randomize();
-		bouclerMusique(ost[IndiceMusiqueJouee],LastUpdateTime1);
 		SDL_RenderClear(sdlRenderer);
 		SDL_PumpEvents;
 		sdl_delay(10);
@@ -180,6 +179,8 @@ procedure ActualiserJeu;
 		UpdateDialogueBox(box);
 		UpdateCollisions();
 		UpdateAnimations();
+		if LObjets[0].stats.vie>LObjets[0].stats.vieMax then LObjets[0].stats.vie:=LObjets[0].stats.vieMax;
+		if LObjets[0].stats.vie<0 then LObjets[0].stats.vie:=0;
 		if leMonde and (sdl_getTicks-UpdateTimeMonde>LObjets[0].stats.compteurLeMonde*1000) then
 			begin
 			leMonde:=False;
@@ -197,6 +198,7 @@ procedure ActualiserJeu;
 					end;
 			end;
 		SDL_RenderPresent(sdlRenderer);
+		if vagueFinie then ajoutVague;
 		if combatFini then choixSalle;
 	end;
 
@@ -351,17 +353,16 @@ IndiceMusiqueJouee:=10;
 
   //Initialisation de la liste d'objets
   setlength(LObjets,2);
+  vagueFinie:=False;combatFini:=False;
 	for j:=1 to 1 do begin 
-		LObjets[j]:=TemplatesEnnemis[9];
+		LObjets[j]:=TemplatesEnnemis[3];
 		end;
-
-
 
 	createRawImage(combat_bg,88,-80,900,900,'Sprites/Game/floor/Floor.bmp');
 	randomize();
 	IndiceMusiqueJouee:=random(12)+1;
 	Mix_VolumeMusic(VOLUME_MUSIQUE);
-	mix_playMusic(OST[IndiceMusiqueJouee].musique,0);
+	
 	lastUpdateTime2:=sdl_getticks;
   LObjets[0] := Joueur;
   LObjets[0].image.rect.x := windowWidth div 2;
@@ -378,7 +379,7 @@ statsJoueur.Vitesse:=5;
 statsJoueur.multiplicateurMana:=1;
 statsJoueur.multiplicateurDegat:=1;
 for j:=1 to 22 do begin
-  statsJoueur.collection[j]:=Cartes[random(j)+1]
+  statsJoueur.collection[j]:=Cartes[j]
 end;
 statsJoueur.vie:=100;statsJoueur.vieMax:=100;
 initStatsCombat(statsJoueur,LObjets[0].stats);
@@ -473,6 +474,7 @@ InitAnimation(LObjets[0].anim, 'Joueur', 'idle', 12, True);
   
   while True do
   begin
+  autoMusique();
    // 100 FPS
 //Mouvement Joueur
   if SceneActive='Jeu' then 
@@ -500,7 +502,11 @@ InitAnimation(LObjets[0].anim, 'Joueur', 'idle', 12, True);
           			SDLK_UP:  LObjets[0].stats.vie := LObjets[0].stats.vie +10;
 					SDLK_DOWN: LObjets[0].stats.vie := LObjets[0].stats.vie-10;
 					SDLK_ESCAPE : menuEnJeu;
-					SDLK_SPACE:leMonde:=not(leMonde);
+					SDLK_SPACE:begin
+						leMonde:=not(leMonde);
+						LObjets[0].stats.compteurLeMonde:=100;
+						updateTimeMonde:=sdl_getTicks;
+						end;
 					SDLK_O:LOBjets[0].stats.multiplicateurMana:=10;
 					SDLK_H : choixSalle();
         		end;

@@ -1,9 +1,9 @@
 unit SonoSys;
 interface
-uses SDL2, SDL2_mixer,SysUtils; //télécharger SDL2_mixer au préalable
+uses SDL2, SDL2_mixer,SysUtils,coeur; //télécharger SDL2_mixer au préalable
 
 const TAILLE_OST=15;
-        VOLUME_MUSIQUE=0;
+        VOLUME_MUSIQUE=20;
         VOLUME_SON=20;
 type TMus=record
     musique:PMix_Music;
@@ -15,11 +15,13 @@ end;
 var OST:array[1..TAILLE_OST] of TMus;
     IndiceMusiqueJouee:Integer;
     indiceMusiquePrec:Integer;
+    updateTimeMusique,tempsTemp:UInt32;
+    enFondu:Boolean;
 
 
 procedure jouerSon(nomFichier:PChar);//joue un son .WAV
 procedure jouerMus(i:Integer);//joue une musique .OGG ou .WAV
-procedure bouclerMusique(musique:TMus;var lastUpdateTime:UInt32); //recommence une musique si elle est finie (à mettre dans la boucle d'actualisation du jeu)
+procedure autoMusique(); //recommence une musique si elle est finie (à mettre dans la boucle d'actualisation du jeu)
 
 procedure arretMus(duree:Integer);//éteindre progressivement la musique, durée en ms
 procedure arretSons(duree:Integer);//arrêter tous les sons
@@ -66,14 +68,43 @@ begin
     mix_playMusic(chargerOST(OST[i].dir),0);
 end;
 
-procedure bouclerMusique(musique:TMus;var lastUpdateTime:UInt32);
+procedure autoMusique();
 begin
     SDL_PumpEvents;
-        if (SDL_GetTicks()-LastUpdateTime)>(musique.duree)*1000 then //vérifier si le morceau est fini ou non
-        begin
+        if (IndiceMusiqueJouee<>indiceMusiquePrec) then
+            if indiceMusiquePrec=0 then
+                begin
+                mix_playMusic(OST[IndiceMusiqueJouee].musique,0);
+                indiceMusiquePrec:=indiceMusiqueJouee;
+                end
+            else
+                begin
+                indiceMusiquePrec:=indiceMusiqueJouee;
+                updatetimemusique:=sdl_getticks;
+                enFondu:=True;
+                //mix_fadeoutmusic(3000)
+                end;
+        if enFondu and (sdl_getTicks-updateTimeMusique>0) then
+            begin
+            mix_playMusic(OST[IndiceMusiqueJouee].musique,0);
+            enFondu:=False;
+            end;
+        if (SDL_GetTicks()-UpdateTimeMusique)>(OST[indiceMusiqueJouee].duree)*1000 then //vérifier si le morceau est fini ou non
+            begin
             mix_rewindMusic();
-            LastUpdateTime := SDL_GetTicks();
-        end;
+            updatetimeMusique := SDL_GetTicks();
+            end;
+        if leMonde and (tempsTemp=0) and not(enFondu) then
+            begin
+            mix_pauseMusic;
+            tempsTemp:=sdl_getticks;
+            end;
+        if (not leMonde) and (tempsTemp<>0) then
+            begin
+            mix_resumeMusic;
+            updateTimeMusique:=updateTimeMusique+(sdl_getTicks-tempsTemp);
+            tempsTemp:=0;
+            end;
 end;
 
 procedure arretMus(duree:Integer);
@@ -95,6 +126,7 @@ end;
 
 begin
 indiceMusiquePrec:=0;
+tempsTemp:=0;
 Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT,
     MIX_DEFAULT_CHANNELS, 4096);
     defMus(1,'OST/Project_TITLE.wav','Cards of Fortune',102);

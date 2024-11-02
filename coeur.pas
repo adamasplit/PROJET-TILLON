@@ -102,7 +102,8 @@ type TStats=record //(version variable)
           nbFrames1,
           nbFrames2,
           nbFrames3,
-          nbFramesMort:Integer;
+          nbFramesMort,
+          nbFramesApparition:Integer;
           typeIA_MVT:Byte;
           degatsContact:Integer;
           cooldown:Byte;
@@ -147,7 +148,7 @@ end;
 
 type ListeObjets = Array of TObjet; 
 var LObjets: ListeObjets; //Liste universelle des objets présents
-combatFini:Boolean;
+combatFini,vagueFinie,leMonde:Boolean;
 statsJoueur: TStats;
 PDeck:TDeck; //deck pointé par les stats du joueur
 

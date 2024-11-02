@@ -11,7 +11,7 @@ uses
     sdl2_mixer,
     SDL2;
 
-var leMonde:Boolean;updateTimeMonde:UInt32;updateTimeMort:UInt32;
+var updateTimeMonde:UInt32;updateTimeMort:UInt32;
 
 function degat(flat : Integer ; force : Integer ; defense : Integer;multiplicateurDegat:Real): Integer;
 procedure RegenMana(var LastUpdateTime : UInt32;var mana:Integer;manaMax:Integer;multiplicateurMana:Real); 
@@ -19,9 +19,9 @@ procedure CreerDeckCombat(stat : TStats;var DeckCombat:TDeck);
 procedure cycle (var deck : TDeck ; i : Integer);
 procedure circoncision  (var deck : Tdeck);
 procedure initStatsCombat(statsPerm:TStats;var statsTemp:TStats);
-procedure CreerBoule(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,vitesse,xdest,ydest:Integer;nom:PChar;var proj:TObjet);
+procedure CreerBoule(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,w,h,vitesse,xdest,ydest:Integer;nom:PChar;var proj:TObjet);
 procedure updateBoule(var proj:TObjet);
-procedure multiProjs(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,vitesse,nb,range,angleDepart:Integer;nom:PChar);
+procedure multiProjs(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,w,h,vitesse,nb,range,angleDepart:Integer;nom:PChar);
 procedure multiLasers(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,vitesse,nb,range,angleDepart,duree,delai:Integer;nom:PChar);
 procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,xdest,ydest,vitRotation,dureeVie,delai:Integer;nom:PChar;var rayon:TObjet);
 procedure updateRayon(var rayon:TObjet);
@@ -163,6 +163,7 @@ begin
     
     if statsTemp.deck=NIL then writeln('AVERTISSEMENT: DECK NON DEFINI');
     combatFini:=False;
+    vagueFinie:=True;
 end;
 
 procedure creerEffet(x,y,w,h,frames:Integer;nom:PCHar;fixeJoueur:Boolean;var obj:TObjet); // crée un effet (objet sans collisions qui joue son animation puis s'efface)
@@ -300,7 +301,7 @@ end;
 procedure CreerBoule(   origine:TypeObjet ; 
                         flat,force:Integer ; 
                         multiplicateurDegat:Real ; 
-                        x,y,vitesse,xdest,ydest:Integer; 
+                        x,y,w,h,vitesse,xdest,ydest:Integer; 
                         nom:PChar ;
                         var proj:TObjet); //Crée un project
 
@@ -320,16 +321,16 @@ begin
         
         InitAnimation(proj.anim,nom,'active',8,true);
         proj.anim.estActif:=True;
-        CreateRawImage(proj.image,x,y,100,100,getFramePath(proj.anim));
+        CreateRawImage(proj.image,x,y,w,h,getFramePath(proj.anim));
 
         //Initialisation de la boîte de collisions
 
         proj.col.isTrigger := True;
         proj.col.estActif := True;
-        proj.col.dimensions.w := proj.image.rect.w div 2;
-        proj.col.dimensions.h := proj.image.rect.h div 2;
-        proj.col.offset.x := 16;
-        proj.col.offset.y := 16;
+        proj.col.dimensions.w := w div 2;
+        proj.col.dimensions.h := h div 2;
+        proj.col.offset.x := w div 5;
+        proj.col.offset.y := h div 5;
         proj.col.nom := 'boule';
 
         //Création du vecteur de mouvement du projectile
@@ -376,12 +377,12 @@ begin
         end
 end;    
 
-procedure multiProjs(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,vitesse,nb,range,angleDepart:Integer;nom:PChar);
+procedure multiProjs(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,w,h,vitesse,nb,range,angleDepart:Integer;nom:PChar);
 var proj:TObjet;i:Integer;
 begin
     for i:=0 to nb-1 do
         begin
-        creerBoule(origine,degats,force,mult,x,y,vitesse,x+round(100*cos((i*2*pi+(angleDepart*pi/180))/(nb*360/range))),y+round(100*sin((i*2*pi+(angleDepart*pi/180))/(nb*360/range))),nom,proj);
+        creerBoule(origine,degats,force,mult,x,y,w,h,vitesse,x+round(100*cos((i*2*pi+(angleDepart*pi/180))/(nb*360/range))),y+round(100*sin((i*2*pi+(angleDepart*pi/180))/(nb*360/range))),nom,proj);
         ajoutObjet(proj);
         end;
 end;
@@ -399,7 +400,7 @@ end;
 procedure InitJustice(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,xCible,yCible,vitesse,delai:Integer);
 var justice:TObjet;
 begin
-    creerBoule(typeobjet(1),degats,force,mult,x,y,vitesse,xCible,yCible,'justice',justice);
+    creerBoule(typeobjet(1),degats,force,mult,x,y,200,100,vitesse,xCible,yCible,'justice',justice);
     InitAnimation(justice.anim,justice.anim.objectname,'start',9,False);
     justice.anim.estActif:=True;
     justice.anim.currentFrame:=2;
@@ -504,7 +505,7 @@ end;
     procedure I_(s : TStats ; x,y : Integer);
     var proj : TObjet;
     begin
-        creerBoule(joueur, 1, s.force, s.multiplicateurDegat, x, y, {vitesse} 10, getmouseX, getmouseY, 'projectile', proj);
+        creerBoule(joueur, 1, s.force, s.multiplicateurDegat, x, y,100,100, {vitesse} 10, getmouseX, getmouseY, 'projectile', proj);
         ajoutObjet(proj);
     end;
 
@@ -528,7 +529,7 @@ end;
     procedure IV(s : TStats ; x,y : Integer);
     var proj : TObjet;
     begin
-        creerBoule(joueur, 3, s.force, s.multiplicateurDegat, x, y, {vitesse} 7, getmouseX, getmouseY, 'projectile', proj);
+        creerBoule(joueur, 3, s.force, s.multiplicateurDegat, x, y,100,100, {vitesse} 7, getmouseX, getmouseY, 'projectile', proj);
         ajoutObjet(proj);
     end;
 
@@ -536,7 +537,7 @@ end;
     procedure V(s : TStats ; x,y : Integer);
     var proj : TObjet;
     begin
-        creerBoule(joueur, 6, s.force, s.multiplicateurDegat, x, y, {vitesse} 5, getmouseX, getmouseY, 'projectile', proj);
+        creerBoule(joueur, 6, s.force, s.multiplicateurDegat, x, y,150,150, {vitesse} 5, getmouseX, getmouseY, 'projectile', proj);
         ajoutObjet(proj);
     end;
 
@@ -550,7 +551,7 @@ end;
             if (s.deck^[i].numero = 6) then 
                 flat := flat +1 ;
         
-        creerBoule(joueur, flat, s.force, s.multiplicateurDegat, x, y, {vitesse} 10, getmouseX, getmouseY, 'projectile', proj);
+        creerBoule(joueur, flat, s.force, s.multiplicateurDegat, x, y,80,80, {vitesse} 10, getmouseX, getmouseY, 'projectile', proj);
         ajoutObjet(proj);
 
     end;
@@ -561,9 +562,8 @@ end;
     begin
         s.defense := s.defense + 3;
         //### à supprimer apres jouer
-        creerEffet(0,0,100,100,11,'chariot',True,eff);
+        creerEffet(0,0,140,140,12,'chariot2',True,eff);
         ajoutObjet(eff);
-        writeln(LObjets[0].image.rect.w)
     end; 
 
     //8 la justice 
@@ -607,8 +607,11 @@ end;
 
     //11 La force
     procedure XI(var s : TStats);
+    var eff:TObjet;
     begin
         s.force := s.force + 1;
+        creerEffet(0,0,100,100,16,'force',True,eff);
+        ajoutObjet(eff);
     end;
 
     //12 Le pendu
@@ -640,8 +643,11 @@ end;
 
     //14 La tempérance
     procedure XIV(var s : TStats);
+    var eff:TObjet;
     begin
         s.defense := s.defense + 1;
+        creerEffet(0,0,100,100,11,'chariot',True,eff);
+        ajoutObjet(eff);
     end;
 
     //15 Le diable
@@ -690,20 +696,25 @@ end;
             13 : begin flat := 233 ; vitesse := 10;end;
             14 : begin flat := 377 ; vitesse := 10;end;
         end;
-
+        creerBoule(joueur, flat, s.force, s.multiplicateurDegat, x, y,s.mana*20,s.mana*20, vitesse, getmouseX, getmouseY, 'projectile', proj);
         s.mana:=0; //consomme tout le mana
-        creerBoule(joueur, flat, s.force, s.multiplicateurDegat, x, y, vitesse, getmouseX, getmouseY, 'projectile', proj);
         ajoutObjet(proj);
     end;
 
     //19 Le soleil
     procedure XIX(var s : TStats);
-    var i : integer;
+    var i : integer;eff:TObjet;
     begin
-        for i := 0 to high(LOBjets) do
-            LOBjets[i].stats.vie := LOBjets[i].stats.vie -1;
-
         degatInst(s, -5); // soin de 5 pv 
+        for i := 0 to high(LOBjets) do
+            if LOBjets[i].stats.genre=ennemi then
+            begin
+                degatInst(LObjets[i].stats,1);
+                creerEffet(LObjets[i].image.rect.x+LObjets[i].col.offset.x,LObjets[i].image.rect.y+LObjets[i].col.offset.x,LObjets[i].col.dimensions.w,LObjets[i].col.dimensions.h,7,'impact_solaire',False,eff);
+                ajoutObjet(eff);
+            end;
+        creerEffet(0,0,150,150,15,'soleil',True,eff);
+        ajoutObjet(eff);
     end;
 
     //20 L'ange
@@ -722,7 +733,7 @@ end;
         s.compteurLemonde := s.compteurLemonde +1;
         leMonde:=True;
         updateTimeMonde:=sdl_getticks;
-        mix_pauseMusic;
+        //mix_pauseMusic;
         creerEffet(0,0,150,150,6,'monde',True,eff);
         ajoutObjet(eff);
     end;
@@ -744,6 +755,7 @@ var tempCarte:TCarte;projectile:TOBjet;
 
 begin
     tempCarte:=stats.deck^[i];
+    //writeln('carte jouée : ',tempCarte.nom);
     if stats.deck^[i].active or (tempCarte.cout<=stats.mana) then 
         begin
         if not stats.deck^[i].active then
