@@ -1,7 +1,7 @@
 unit mapSys;
 
 interface
-uses SDL2,math,memgraph,SysUtils,coeur,eventsys,AnimationSys,EnemyLib,sonoSys;
+uses SDL2,math,memgraph,SysUtils,coeur,eventsys,AnimationSys,EnemyLib,combatlib,sonoSys;
 var imgs0,imgs1,imgs2,imgs3:TButtonGroup;
 var salleChoisie:TSalle;
 CONST 
@@ -61,14 +61,15 @@ end;
 procedure choisirEnnemis;
 var j : integer;
 begin
+    initStatsCombat(statsJoueur,LObjets[0].stats);
     setlength(LObjets,1);
     setlength(ennemis,avancementPartie+1);
     vagueFinie:=True;
     combatFini:=False;
+    randomize;
     for j:=1 to avancementPartie do
         begin
-        randomize;
-        ennemis[j]:=TemplatesEnnemis[random(5)+1];
+        ennemis[j]:=TemplatesEnnemis[random(11)+1];
         end
 
 end;
@@ -97,17 +98,20 @@ end;
 procedure LancementSalleBoss;
 var j : integer;
 begin
-writeln('Lancement de salle Boss');
-avancementPartie := avancementPartie+1;
-ClearScreen;
-SDL_RenderClear(sdlRenderer);
-SceneActive := 'Jeu';
-setlength(LObjets,5);
-for j:=1 to 4 do
-begin
-randomize;
-LObjets[j]:=TemplatesEnnemis[4];
-end;
+    writeln('Lancement de salle Boss');
+    avancementPartie := avancementPartie+1;
+    ClearScreen;
+    SDL_RenderClear(sdlRenderer);
+    SceneActive := 'Jeu';
+    vagueFinie:=False;
+    setlength(LObjets,5);
+    for j:=1 to 4 do
+    begin
+        randomize;  
+        LObjets[j]:=TemplatesEnnemis[4];
+    end;
+    setlength(ennemis,2);
+    ennemis[1]:=templatesEnnemis[9];
 end;
 
 procedure LancementSalleMarchand;
@@ -143,7 +147,7 @@ begin
             proc:= @LancementSalleCombat;
             end;
         boss:begin
-            dir:='Sprites/Menu/salle_combat.bmp';
+            dir:='Sprites/Menu/salle_boss.bmp';
             proc:= @LancementSalleBoss;
             end;
         marchand:begin

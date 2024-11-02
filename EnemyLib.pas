@@ -16,7 +16,7 @@ const TAILLE_VAGUE=3;
 var EnemyBasik : TObjet;
 var templatesEnnemis:array[1..MAXENNEMIS] of TObjet;
     ennemis:Array of TOBjet;
-procedure initStatEnnemi(nom:PChar;typeIA_MVT,vie,att,dmg,def,w,h,framesA,frames1,frames2,frames3,framesM:Integer;var ennemi:TObjet;wcol,hcol,offx,offy:Integer;nomAttaques:PChar);
+procedure initStatEnnemi(nom:PChar;typeIA_MVT,vie,att,dmg,def,vitesse,w,h,framesA,frames1,frames2,frames3,framesM:Integer;var ennemi:TObjet;wcol,hcol,offx,offy:Integer;nomAttaques:PChar);
 procedure IAEnnemi(var ennemi:TObjet;joueur:TObjet);
 procedure ajoutVague();
 
@@ -31,7 +31,7 @@ begin
   else
     begin
     vagueFinie:=False;
-    if (high(LObjets)<TAILLE_VAGUE+1) then
+    if (high(LObjets)<TAILLE_VAGUE) then
     setlength(LObjets,TAILLE_VAGUE+1);
     for i:=1 to TAILLE_VAGUE do
       begin
@@ -39,13 +39,18 @@ begin
           begin
           //writeln('tentative d"ajout d"un ennemi');
           LObjets[i]:=ennemis[high(ennemis)];
+          //sdl_destroytexture(ennemis[high(ennemis)].image.imgtexture);
+          //sdl_freesurface(ennemis[high(ennemis)].image.imgsurface);
           setlength(ennemis,high(ennemis));
+          LObjets[i].image.rect.x:=i*200+100;
+          LObjets[i].image.rect.y:=50;
+          writeln('ennemi n°',i,' placé à ',LOBjets[i].image.rect.x)
           end;
       end;
     end;
 end;
 
-procedure initStatEnnemi(nom:PChar;typeIA_MVT,vie,att,dmg,def,w,h,framesA,frames1,frames2,frames3,framesM:Integer;var ennemi:TObjet;wcol,hcol,offx,offy:Integer;nomAttaques:PChar);
+procedure initStatEnnemi(nom:PChar;typeIA_MVT,vie,att,dmg,def,vitesse,w,h,framesA,frames1,frames2,frames3,framesM:Integer;var ennemi:TObjet;wcol,hcol,offx,offy:Integer;nomAttaques:PChar);
 begin
 
     //Initialisation de l'affichage
@@ -66,6 +71,7 @@ begin
     ennemi.stats.force:=att;
     ennemi.stats.defense:=def;
     ennemi.stats.compteurAction:=0;
+    ennemi.stats.vitessePoursuite:=vitesse;
     ennemi.stats.multiplicateurDegat:=1;
     ennemi.stats.typeIA_MVT:=typeIA_MVT;
     ennemi.stats.xcible:=ennemi.image.rect.x;
@@ -83,7 +89,6 @@ begin
     ennemi.col.offset.y := offy;
     ennemi.col.nom := nom;
     ennemi.anim.estActif := True;
-
 end;
 
 procedure AIWarp(var ennemi:TObjet;targetx,targety:Integer);
@@ -93,7 +98,7 @@ begin
   ennemi.col.estActif:=False;
   repeat
     xdest:=random(10)*100;
-  until (xdest<1000) and (xdest>0) and (abs(xdest-targetx)>100) and (abs(xdest-ennemi.image.rect.x)>100);
+  until (xdest<=800) and (xdest>=200) and (abs(xdest-targetx)>100) and (abs(xdest-ennemi.image.rect.x)>100);
   repeat
     ydest:=random(10)*100;
   until (ydest<700) and (ydest>0) and (abs(ydest-targety)>100) and (abs(ydest-ennemi.image.rect.y)>100);
@@ -114,19 +119,19 @@ var xdest,ydest:Integer;
 begin
   repeat
   xdest:=random(10)*100;
-  until (xdest<1000) and (xdest>0) and (abs(xdest-targetx)>100) and (abs(xdest-ennemi.image.rect.x)>100);
+  until (xdest<=800) and (xdest>=200) and (abs(xdest-targetx)>100) and (abs(xdest-ennemi.image.rect.x)>100);
   repeat
     ydest:=random(10)*100;
   until (ydest<700) and (ydest>0) and (abs(ydest-targety)>50) and (abs(ydest-ennemi.image.rect.y)>50);
   ennemi.stats.xcible:=xdest;ennemi.stats.ycible:=ydest;
 end;
 
-procedure FlyUpdate(var ennemi:TObjet);
+procedure FlyUpdate(var ennemi:TObjet;vit:Integer);
 var distx,disty:Integer;
 begin
   distx:=-(ennemi.image.rect.x-ennemi.stats.xcible);disty:=-(ennemi.image.rect.y-ennemi.stats.ycible);
-  ennemi.image.rect.x:=ennemi.image.rect.x + (distx div 10);
-  ennemi.image.rect.y:=ennemi.image.rect.y + (disty div 10);
+  ennemi.image.rect.x:=ennemi.image.rect.x + (distx div vit);
+  ennemi.image.rect.y:=ennemi.image.rect.y + (disty div vit);
   //writeln('x : ',ennemi.image.rect.x,', y : ',ennemi.image.rect.y);
   ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
 end;
@@ -295,12 +300,12 @@ begin
     5: if (ennemi.anim.etat='strike')then
       begin
       ennemi.anim.isFliped:=(ennemi.stats.xcible>ennemi.image.rect.x);
-      if ennemi.anim.currentFrame=6 then
+      if (ennemi.anim.currentFrame=6) and (sdl_getTicks-ennemi.anim.lastUpdateTime<15) then
         begin
         if (ennemi.image.rect.x<ennemi.stats.xcible) then
-          CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+40,ennemi.image.rect.y+50,ennemi.image.rect.x+60,ennemi.image.rect.y+50,0,10,5,ennemi.stats.nomAttaque,obj)
+          CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+40,ennemi.image.rect.y+50,ennemi.image.rect.x+60,ennemi.image.rect.y+50,0,10,ennemi.stats.vie,ennemi.stats.nomAttaque,obj)
         else
-          CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+40,ennemi.image.rect.y+50,ennemi.image.rect.x-60,ennemi.image.rect.y+50,0,10,5,ennemi.stats.nomAttaque,obj);
+          CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+40,ennemi.image.rect.y+50,ennemi.image.rect.x-60,ennemi.image.rect.y+50,0,10,ennemi.stats.vie,ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj);
         end;
       end;
@@ -315,10 +320,10 @@ begin
         multiLasers(TypeObjet(1),1,1,1,ennemi.image.rect.x+50,ennemi.image.rect.y+50,0,4,360,0,10,100,'rayon');
       end;
     7:if (ennemi.stats.compteurAction mod 20 = 0) and (ennemi.anim.etat='fly') then begin
-        creerBoule(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,ennemi.image.rect.x+96+random(192),ennemi.image.rect.y+64+random(128),200,100,10,x,y,ennemi.stats.nomAttaque,obj);
+        creerBoule(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,ennemi.image.rect.x+96+random(192),ennemi.image.rect.y+64+random(128),200,100,4,x,y,ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj)
         end;
-    8:if (ennemi.anim.etat='cast') and (random(2)=1) then
+    8:if (ennemi.anim.etat='cast') and (random(6)=1) then
       begin
       creerBoule(typeobjet(1),0,ennemi.stats.force,ennemi.stats.multiplicateurDegat,ennemi.image.rect.x+16,ennemi.image.rect.y+16,60,60,3,x-128+random(64)*4,y-128+random(64)*4,ennemi.stats.nomAttaque,obj);
       ajoutObjet(obj)
@@ -328,11 +333,12 @@ end;
 
 procedure DeplacementEnnemi(var ennemi:TObjet;joueur:TObjet); //déplace un ennemi 
 begin
+
   case ennemi.stats.typeIA_MVT of
       0:
         begin //ennemi qui ne fait que suivre le joueur
-        AIPathFollow(ennemi,joueur,1,true,true);
-        if ennemi.stats.compteurAction>300 then
+        AIPathFollow(ennemi,joueur,ennemi.stats.vitesse,true,true);
+        if ennemi.stats.compteurAction>(400*ennemi.stats.vie/ennemi.stats.vieMax) then
           ennemi.stats.compteurAction:=0
         else ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1
         end;
@@ -340,7 +346,7 @@ begin
         begin
         if ennemi.anim.etat='chase' then
           begin
-          AIPathFollow(ennemi,joueur,2,true,true);
+          AIPathFollow(ennemi,joueur,ennemi.stats.vitessePoursuite,true,true);
           if ennemi.stats.compteurAction>300 then
             begin
             InitAnimation(ennemi.anim,ennemi.anim.objectName,'shoot',ennemi.stats.nbFrames2,True);
@@ -363,7 +369,8 @@ begin
         begin
         if ennemi.anim.etat='chase' then
           begin
-          AIPathFollow(ennemi,joueur,2,true,true);
+          AIPathFollow(ennemi,joueur,ennemi.stats.vitessePoursuite,true,true);
+          if (ennemi.stats.vie<100) then ennemi.stats.vitessePoursuite:=2;
           if ennemi.stats.compteurAction>300 then
             begin
             InitAnimation(ennemi.anim,ennemi.anim.objectName,'charge',ennemi.stats.nbFrames2,True);
@@ -382,7 +389,7 @@ begin
         if (ennemi.anim.etat='chase') then
           begin
           //ennemi.anim.isFliped:=(joueur.image.rect.x>ennemi.image.rect.x);
-          AIPathFollow(ennemi,joueur,1,false,true);
+          AIPathFollow(ennemi,joueur,ennemi.stats.vitessePoursuite,true,true);
           if abs((joueur.image.rect.y+64)-(ennemi.image.rect.y+(ennemi.col.dimensions.h div 2)))<50 then
             begin
             dashInit(ennemi);
@@ -408,6 +415,8 @@ begin
         end;
       4: //pour un ennemi qui se téléporte 
         begin
+          if ennemi.anim.etat='chase' then
+            AIPathFollow(ennemi,joueur,ennemi.stats.vitessePoursuite,true,true);
           if (ennemi.anim.etat='rewarp') and animFinie(ennemi.anim) then
             InitAnimation(ennemi.anim,ennemi.anim.objectName,'chase', ennemi.stats.nbFrames1,True);
           if animFinie(ennemi.anim) and (ennemi.anim.etat='chase') and (random(15)=0)  then 
@@ -426,7 +435,7 @@ begin
       //pour un ennemi qui esquive puis attaque
       5:begin
         if ennemi.anim.etat='chase' then
-          AIPathFollow(ennemi,joueur,3,true,true);
+          AIPathFollow(ennemi,joueur,ennemi.stats.vitessePoursuite,true,true);
         if (ennemi.anim.etat='chase') and (sqrt((ennemi.image.rect.x-joueur.image.rect.x)**2+(ennemi.image.rect.y-joueur.image.rect.y)**2)<120) then
           AIDodge(ennemi,joueur);
         if (ennemi.anim.etat='dodge') then
@@ -463,7 +472,7 @@ begin
             begin
               aiFly(ennemi,joueur.image.rect.x,joueur.image.rect.y)
             end;
-          flyUpdate(ennemi);
+          flyUpdate(ennemi,15);
           if ennemi.stats.compteurAction>300 then
             begin
             initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
@@ -474,22 +483,23 @@ begin
       8://ennemi qui saute d'endroit en endroit
         begin
         if ennemi.anim.etat='chase' then
+          AIPathFollow(ennemi,joueur,ennemi.stats.vitessePoursuite,true,true);
           ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
-        if ennemi.stats.compteurAction mod 50=0 then
+        if ennemi.stats.compteurAction mod 100=0 then
           begin
           initAnimation(ennemi.anim,ennemi.anim.objectName,'jump',ennemi.stats.nbFrames2,True);
           randomize();
-          ennemi.stats.xcible:=ennemi.image.rect.x+101-random(200);
-          ennemi.stats.ycible:=ennemi.image.rect.y+101-random(200);
+          ennemi.stats.xcible:=ennemi.image.rect.x+12*(random(20)-10);
+          ennemi.stats.ycible:=ennemi.image.rect.y+12*(random(20)-10);
           end;
         if ennemi.anim.etat='jump' then
-          if ennemi.stats.compteurAction mod 50=25 then
+          if ennemi.stats.compteurAction mod 100=50 then
             initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,true)
           else
-            flyUpdate(ennemi);
-        if (ennemi.stats.compteurAction>200) and not (ennemi.anim.etat='cast') then
+            flyUpdate(ennemi,20);
+        if (ennemi.stats.compteurAction>300) and not (ennemi.anim.etat='cast') then
           initAnimation(ennemi.anim,ennemi.anim.objectName,'cast',ennemi.stats.nbFrames3,true);
-        if (ennemi.anim.etat='cast') and (animFinie(ennemi.anim)) and (random(4)=0) then
+        if (ennemi.anim.etat='cast') and (animFinie(ennemi.anim)) and (random(2)=0) then
           begin
           ennemi.stats.compteurAction:=0;
           initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
@@ -512,12 +522,11 @@ begin
   if ennemi.stats.vieMax>0 then
   DrawRect(red_color,255, ennemi.image.rect.x+ennemi.col.offset.x,ennemi.image.rect.y+ennemi.col.dimensions.h+ennemi.col.offset.y+7, Round(ennemi.col.dimensions.w*(ennemi.stats.vie/ennemi.stats.vieMax)), 10 );
   if ennemi.stats.vie<0 then ennemi.stats.vie:=0;
-  if (ennemi.stats.vie>0) then 
+  if (ennemi.stats.vie>0) and (ennemi.anim.etat<>'apparition') then 
     begin
       deplacementEnnemi(ennemi,joueur);
       actionEnnemi(ennemi,joueur.image.rect.x,joueur.image.rect.y);
     end
-      
 		else
       if (animFinie(ennemi.anim)) and (ennemi.anim.etat='mort') then
           begin
@@ -543,17 +552,19 @@ begin
 end;
 
 begin
-initStatEnnemi('undrixel',3,50,5,2,0,288,192,4,10,4,0,10,TemplatesEnnemis[1],200,128,10,40,'eclairR');
-initStatEnnemi('Archimage',4,100,2,0,6,128,128,10,6,6,6,4,TemplatesEnnemis[2],70,100,24,14,'projectile');
-initStatEnnemi('liche',5,50,2,0,4,128,128,9,6,5,16,10,TemplatesEnnemis[3],70,110,19,7,'rayonAbysse');
-initStatEnnemi('chevalier',5,10,10,0,1,90,90,5,6,3,10,5,TemplatesEnnemis[4],54,90,5,0,'rayonAbysse');
-initStatEnnemi('expurgateur',6,20,3,1,1,128,128,13,12,0,0,7,TemplatesEnnemis[5],128,104,0,24,'eclairR');
-initStatEnnemi('altegh',1,50,2,0,4,192,192,3,6,4,0,14,TemplatesEnnemis[6],160,96,16,96,'rayonAL');
-initStatEnnemi('Akr',4,150,2,0,-20,384,256,14,9,9,8,16,TemplatesEnnemis[7],200,96,80,150,'kamui');
-initStatEnnemi('UNKNOWN',4,150,2,0,-20,128,128,8,12,8,4,8,TemplatesEnnemis[8],64,114,32,14,'Roue');
-initStatEnnemi('armure',7,400,0,0,10,384,256,7,2,13,9,16,TemplatesEnnemis[9],192,192,96,64,'justice');
-initStatEnnemi('dracomage',2,100,2,5,6,192,192,26,12,8,8,13,TemplatesEnnemis[10],128,164,32,28,'eclairR');
-initStatEnnemi('grenouille',8,20,1,0,2,90,90,7,6,4,4,7,templatesEnnemis[11],54,90,5,0,'boule')
+// !!format : nom,mvt,vie,att,dmg,def,vit,w,h,nbFrames(apparition,chase,action1,action2,mort),(résultat),collisions(w,h,offsetX,offsetY),nom de l'attaque
+//(mvt: type de mouvement, dmg: dégâts au contact)
+initStatEnnemi('undrixel',3,50,5,2,0,1,288,192,4,10,4,0,10,TemplatesEnnemis[1],200,128,10,40,'eclairR');
+initStatEnnemi('Archimage',4,100,2,0,6,0,128,128,10,6,6,6,4,TemplatesEnnemis[2],70,100,24,14,'projectile');
+initStatEnnemi('liche',5,50,2,0,4,1,128,128,9,6,5,16,10,TemplatesEnnemis[3],70,110,19,7,'rayonMort');
+initStatEnnemi('chevalier',5,10,10,0,1,3,90,90,5,6,3,10,5,TemplatesEnnemis[4],54,90,5,0,'rayonAbysse');
+initStatEnnemi('expurgateur',6,20,3,1,1,0,128,128,13,12,0,0,7,TemplatesEnnemis[5],128,104,0,24,'eclairR');
+initStatEnnemi('altegh',1,50,2,0,4,3,192,192,3,6,4,0,14,TemplatesEnnemis[6],160,96,16,96,'rayonAL');
+initStatEnnemi('Akr',4,150,2,0,-20,1,384,256,14,9,9,8,16,TemplatesEnnemis[7],200,96,80,150,'kamui');
+initStatEnnemi('UNKNOWN',4,150,2,0,-20,0,128,128,8,12,8,4,8,TemplatesEnnemis[8],64,114,32,14,'Roue');
+initStatEnnemi('armure',7,400,0,0,10,0,384,256,7,2,13,9,16,TemplatesEnnemis[9],192,192,96,64,'justice');
+initStatEnnemi('dracomage',2,100,2,5,6,1,192,192,34,12,8,8,13,TemplatesEnnemis[10],128,164,32,28,'eclairR');
+initStatEnnemi('grenouille',8,20,1,0,2,0,90,90,7,6,4,4,7,templatesEnnemis[11],54,90,5,0,'boule')
 
 
 end.
