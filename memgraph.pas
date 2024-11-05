@@ -55,6 +55,7 @@ type
     CurrentLine: Integer;      
     LastUpdateTime: UInt32;       
     LetterDelay: UInt32;            // Délai entre l'affichage de chaque lettre C UN PUTAIN DE UINT32 MA GUEULE
+    portrait:TImage;
     Complete: Boolean;              
   end;
   
@@ -89,7 +90,7 @@ procedure CreateInteractableImage(var image : TIntImage; x, y, w, h: Integer; di
 procedure RenderIntImage(var image : TIntImage);
 procedure HandleImageClick(var image: TIntImage; x, y: Integer);
 
-procedure InitDialogueBox(var Box: TDialogueBox; ImgPath: PChar; X, Y, W, H: Integer; const DialogueText: string; Delay: UInt32);
+procedure InitDialogueBox(var Box: TDialogueBox; ImgPath,portraitPath: PChar; X, Y, W, H: Integer; const DialogueText: string; Delay: UInt32);
 procedure UpdateDialogueBox(var Box: TDialogueBox);
 procedure RenderDialogueText(var Box: TDialogueBox);
 
@@ -173,7 +174,7 @@ begin
   text.textcolor := textcolor;
   
    // Rendering text --> surface
-  text.textSurface := TTF_RenderText_Solid(font, labelText, textColor);
+  text.textSurface := TTF_RenderUTF8_Solid(font, labelText, textColor);
   if text.textSurface = nil then HALT;
   // Convertion surface --> texture
   text.textTexture := SDL_CreateTextureFromSurface(sdlRenderer, text.textSurface);
@@ -350,7 +351,7 @@ begin
   begin
     LineWidth:= Length(TempText);
     TempText := TempText + Text[i];
-    if LineWidth >= 20 then
+    if (LineWidth >= 40) and (text[i]=' ')  then
       Exit(i - 1);
   end;
   WidthBasedLineLength := Length(Text);
@@ -379,9 +380,10 @@ end;
 
 
 
-procedure InitDialogueBox(var Box: TDialogueBox; ImgPath: PChar; X, Y, W, H: Integer; const DialogueText: string; Delay: UInt32);
+procedure InitDialogueBox(var Box: TDialogueBox; ImgPath,portraitPath: PChar; X, Y, W, H: Integer; const DialogueText: string; Delay: UInt32);
 begin
   CreateRawImage(Box.BackgroundImage, X, Y, W, H, ImgPath);
+  CreateRawImage(Box.portrait, X, Y, W div 4, W div 4, portraitPath);
   Box.RemainingText := DialogueText;
   Box.DisplayedLetters := 0;
   Box.CurrentLine := 1;
@@ -402,30 +404,43 @@ procedure UpdateDialogueBox(var Box: TDialogueBox); // C'est la la scene de crim
 var
   CurrentTime: UInt32;
   TimeDiff: UInt32;
+  delay:UInt32;
+  test:Boolean;
 begin
   CurrentTime := SDL_GetTicks();
-
-  if Box.Complete then Exit;
-
+  
+  if Box.Complete then RenderDialogueText(box);
+  
   RenderRawImage(Box.BackgroundImage, 255, False);
+  RenderRawImage(Box.portrait, 255, False);
 
   TimeDiff := CurrentTime - Box.LastUpdateTime;
-  WriteLn('CurrentLine: ', Box.CurrentLine);
+  delay:=box.letterdelay;
+  test:=timediff>box.letterdelay;
+  {WriteLn('CurrentLine: ', Box.CurrentLine);
   WriteLn('DisplayedLetters: ', Box.DisplayedLetters);
   WriteLn('Lines[CurrentLine]: ', Box.Lines[Box.CurrentLine]);
   WriteLn('LetterDelay: ', Box.LetterDelay);
   WriteLn('LastUpdateTime: ', Box.LastUpdateTime);
   WriteLn('TimeDiff: ', TimeDiff);
+  writeln('timediff>box.letterdelay:',timediff>box.letterdelay);
+  writeln(box.displayedLetters,'<',length(box.lines[box.currentline]),':',(Box.DisplayedLetters < Length(Box.Lines[Box.CurrentLine])));}
 
-
-if (TimeDiff > Box.LetterDelay) and (Box.DisplayedLetters < Length(Box.Lines[Box.CurrentLine])) then
+  if (Box.DisplayedLetters < Length(Box.Lines[Box.CurrentLine])) then
   begin
-    writeln('2');
-    Inc(Box.DisplayedLetters);
-    Box.LastUpdateTime := CurrentTime;
+    //writeln('testing, condition : ',test=True);
+    if test=false then
+      begin
+      //writeln('trying to render');
+      end
+    else
+    begin
+      writeln('2');
+      Inc(Box.DisplayedLetters);
+      Box.LastUpdateTime := CurrentTime;
+    end;
   end;
-
-  RenderDialogueText(Box);
+  if box.displayedLetters<>0 then RenderDialogueText(Box);
 end;
 
 procedure RenderTextLine(const Text: string; x, y: Integer);
@@ -434,10 +449,10 @@ var
   Texture: PSDL_Texture;
   Rect: TSDL_Rect;
 begin
-  Surface := TTF_RenderText_Blended(Fantasy30, StringToPChar(Text), black_color);
+  Surface := TTF_RenderUTF8_Blended(Fantasy30, StringToPChar(Text), black_color);
   Texture := SDL_CreateTextureFromSurface(sdlRenderer, Surface);
-  Rect.x := x;
-  Rect.y := y;
+  Rect.x := x+300;
+  Rect.y := y+100;
   Rect.w := Surface^.w;
   Rect.h := Surface^.h;
   SDL_RenderCopy(sdlRenderer, Texture, nil, @Rect);
@@ -460,7 +475,7 @@ begin
     RenderTextLine(DisplayedText, Box.BackgroundImage.rect.x, Box.BackgroundImage.rect.y + (i - 1) * 40);
   end;
 
-  if (Box.DisplayedLetters = Length(Box.Lines[Box.CurrentLine])) and (Box.CurrentLine < 6) then
+  if (Box.Lines[Box.CurrentLine+1] <> '') and (Box.DisplayedLetters = Length(Box.Lines[Box.CurrentLine])) and (Box.CurrentLine < 6) then
   begin
     writeln('1');
     Inc(Box.CurrentLine);

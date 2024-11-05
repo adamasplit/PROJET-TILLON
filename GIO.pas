@@ -44,7 +44,7 @@ var	text1 : TText;
 	text_s5: TText;
 	text_n5: TText;
 
-	box : TDialogueBox;
+	box,box2 : TDialogueBox;
 
 //Image
 	var menu_bg,combat_bg,menuBook : TImage;
@@ -176,7 +176,7 @@ procedure ActualiserJeu;
 		SDL_PumpEvents;
 		sdl_delay(10);
 		afficherTout;
-		UpdateDialogueBox(box);
+		//UpdateDialogueBox(box);
 		UpdateCollisions();
 		UpdateAnimations();
 		if LObjets[0].stats.vie>LObjets[0].stats.vieMax then LObjets[0].stats.vie:=LObjets[0].stats.vieMax;
@@ -217,7 +217,8 @@ procedure jouer;
 		
 		button_deck.estVisible := False;
 		button_bestiaire.estVisible := False;
-		InitDialogueBox(box,'Sprites\Menu\Button1.bmp',0,0,windowWidth,400,'hello, i''m proud to see you there ! My name is john',30);
+		//InitDialogueBox(box,'Sprites\Menu\Button1.bmp',000,000,windowWidth,400,'',30);
+		InitDialogueBox(box2,'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',000,000,windowWidth,400,'J''ai longtemps attendu ce moment. L''humanité toute entière connaîtra mon courroux...',100);
 
         //Objets de Scene
 		ActualiserJeu;
@@ -490,6 +491,35 @@ InitAnimation(LObjets[0].anim, 'Joueur', 'idle', 12, True);
   		begin
 		direction_menu;
 		end;
+  if sceneActive='Dracomage' then
+		begin
+		sdl_renderclear(sdlrenderer);
+		affichertout;
+		UpdateDialogueBox(box);
+		updateanimation(LObjets[0].anim,LObjets[0].image);
+		sdl_renderpresent(sdlrenderer);
+		while (SDL_PollEvent( testEvent ) = 1) do
+    		begin
+      			case testEvent^.type_ of
+					SDL_mousebuttondown : sceneActive:='Jeu';
+				end
+			end
+		end;
+  if sceneActive='Behemoth' then
+		begin
+		sdl_renderclear(sdlrenderer);
+		affichertout;
+		UpdateDialogueBox(box2);
+		updateanimation(LObjets[0].anim,LObjets[0].image);
+		updateanimation(LObjets[1].anim,LObjets[1].image);
+		sdl_renderpresent(sdlrenderer);
+		while (SDL_PollEvent( testEvent ) = 1) do
+    		begin
+      			case testEvent^.type_ of
+					SDL_mousebuttondown:sceneActive:='Jeu';
+				end
+			end
+		end;
     
 
     while SDL_PollEvent( testEvent ) = 1 do
@@ -509,6 +539,7 @@ InitAnimation(LObjets[0].anim, 'Joueur', 'idle', 12, True);
 						end;
 					SDLK_O:LOBjets[0].stats.multiplicateurMana:=10;
 					SDLK_H : choixSalle();
+					SDLK_F3:modeDebug:=not(modeDebug);
         		end;
       		end;
 			

@@ -47,29 +47,6 @@ var iCarteChoisie:Integer;
 type TDeck=array of TCarte;
 type TPaquet=array[1..MAXCARTES] of TCarte;
 
-{type TStats=record
-    indice:Integer; //représente l'indice de l'objets dans la liste d'objets
-    genre:typeObjet;
-    force:Integer;
-    multiplicateurDegat:Real;
-    defense:Integer;
-    vie:Integer;
-    vieMax:Integer;
-    mana:Integer;
-    manaMax:Integer;
-    avancement:Integer;
-    multiplicateurMana:Real;
-    Vitesse:Integer;
-    manaDebutCombat:Integer;
-    collection:TPaquet;
-    deck:^TDeck;
-    tailleCollection:Integer;
-    bestiaire:array[1..MAXENNEMIS] of Boolean;    
-    xcible,ycible,compteurAction:Integer;
-    degats:Integer;origine:typeObjet;vectX,vectY,xreel,yreel,angle:Real;
-    dureeVie,delai,vitRotation:Integer
-end;}
-
 type TStats=record //(version variable)
     indice:Integer; //représente l'indice de l'objets dans la liste d'objets
     force:Integer;
@@ -157,7 +134,8 @@ PDeck:TDeck; //deck pointé par les stats du joueur
 
 procedure AjoutObjet(var obj:TObjet);
 procedure supprimeObjet(var obj:TObjet); 
-        
+procedure analyseObjet(obj:TObjet);
+
 implementation
 
 procedure AjoutObjet(var obj:TObjet); //Ajoute directement un projectile/autre à LObjets
@@ -175,7 +153,6 @@ var i,taille:Integer;
 
 begin
     taille:=High(LObjets)+1;
-    //writeln('destruction de LOBjets[',obj.stats.indice,'], taille de LObjets:',taille);
     SDL_DestroyTexture(obj.image.imgtexture);
     SDL_freeSurface(obj.image.imgSurface);
     for i:=obj.stats.indice to taille-2 do 
@@ -187,8 +164,11 @@ begin
     setlength(LObjets,taille-1);
 end;
 
-
-
+procedure analyseObjet(obj:TObjet); //donne toutes les caractéristiques d'un objet (procédure de debug)
+begin
+  writeln(obj.stats.genre,' nommé ',obj.anim.objectName);
+  writeln(obj.image.directory);
+end;
 var i:Integer;
 begin
    // Définir les couleurs de base

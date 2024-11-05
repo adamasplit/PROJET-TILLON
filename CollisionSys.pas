@@ -9,6 +9,7 @@ uses
   SDL2,sdl2_mixer,combatLib,eventSys,
   SysUtils,coeur;
 
+  var modeDebug:Boolean;
 
 
   // Vérifie automatiquement les collisions entre tous les objets actifs
@@ -41,6 +42,11 @@ begin
   GetCollisionRect.y := obj.image.rect.y + obj.col.offset.y;
   GetCollisionRect.w := obj.col.dimensions.w;
   GetCollisionRect.h := obj.col.dimensions.h;
+  if modeDebug then
+    begin
+    SDL_SetRenderDrawColor(sdlRenderer, 0, 255, 0, 255);
+    SDL_RenderDrawRect(sdlRenderer, @getcollisionrect);
+    end;
 end;
 
 // Vérifie la collision entre deux objets et gère les conséquences (repoussement ou trigger)

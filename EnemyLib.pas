@@ -9,6 +9,7 @@ uses
     animationSys,
     combatLib,
     sonoSys,
+    eventsys,
     SysUtils;
 
 const TAILLE_VAGUE=3;
@@ -22,8 +23,26 @@ procedure ajoutVague();
 
 implementation
 
+procedure supprimeEnn(var enn:TObjet;j:integer);
+var taille,i:Integer;
+begin
+    if enn.stats.genre=ennemi then
+    begin
+      taille:=High(ennemis)+1;
+      //SDL_DestroyTexture(enn.image.imgtexture);
+      //SDL_freeSurface(enn.image.imgSurface);
+      for i:=j to taille-2 do 
+          if (i<High(ennemis)) then
+          begin
+              ennemis[i]:=ennemis[i+1];
+          end;
+      setlength(ennemis,taille-1);
+    end
+end;
+
 procedure ajoutVague();
-var i:Integer;
+var i,taille:Integer;
+var fini:Boolean;
 begin
   //writeln('tentative d"ajout d"une vague , ennemis restants : ',high(ennemis));
   if high(ennemis)<=0 then
@@ -31,20 +50,29 @@ begin
   else
     begin
     vagueFinie:=False;
+    taille:=high(ennemis);
+    fini:=False;
     if (high(LObjets)<TAILLE_VAGUE) then
     setlength(LObjets,TAILLE_VAGUE+1);
     for i:=1 to TAILLE_VAGUE do
+      if not fini then
       begin
-        if high(ennemis)>0 then
+        if (high(ennemis)>0) then
           begin
           //writeln('tentative d"ajout d"un ennemi');
-          LObjets[i]:=ennemis[high(ennemis)];
-          //sdl_destroytexture(ennemis[high(ennemis)].image.imgtexture);
-          //sdl_freesurface(ennemis[high(ennemis)].image.imgsurface);
-          setlength(ennemis,high(ennemis));
+          LObjets[i]:=ennemis[taille];
+          analyseObjet(ennemis[taille]);
+          supprimeEnn(ennemis[taille],taille);
+          taille:=taille-1;
           LObjets[i].image.rect.x:=i*200+100;
           LObjets[i].image.rect.y:=50;
-          writeln('ennemi n°',i,' placé à ',LOBjets[i].image.rect.x)
+          writeln('ennemi n°',i,' placé à ',LOBjets[i].image.rect.x);
+          if LObjets[i].anim.objectName='dracomage' then
+            begin
+            fini:=True;
+            end;
+          if LObjets[i].anim.objectName='Béhémoth' then
+            indiceMusiqueJouee:=7;
           end;
       end;
     end;
@@ -468,11 +496,11 @@ begin
           end;
         if ennemi.anim.etat='fly' then
           begin
-          if ennemi.stats.compteurAction mod 60=0 then
+          if ((ennemi.stats.compteurAction mod 20=0) and (ennemi.stats.vie<ennemi.stats.vieMax div 4)) or (ennemi.stats.compteurAction mod 60=0) then
             begin
               aiFly(ennemi,joueur.image.rect.x,joueur.image.rect.y)
             end;
-          flyUpdate(ennemi,15);
+          flyUpdate(ennemi,10);
           if ennemi.stats.compteurAction>300 then
             begin
             initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
@@ -515,6 +543,20 @@ begin
     begin
     InitAnimation(ennemi.anim,ennemi.anim.objectName,'chase', ennemi.stats.nbFrames1,True);
     ennemi.col.estActif:=True;
+    end;
+  if ennemi.anim.objectname='Béhémoth' then
+    begin
+    ennemi.image.rect.x:=460;ennemi.image.rect.y:=00;
+    end;
+  if (ennemi.anim.etat='apparition') and (ennemi.anim.objectName='Béhémoth') and (ennemi.stats.compteurAction=0) then
+    begin
+      sceneActive:='Behemoth';
+      ennemi.stats.compteurAction:=1;
+    end;
+  if (ennemi.anim.etat='apparition') and (ennemi.anim.objectName='dracomage') and (ennemi.stats.compteurAction=0) then
+    begin
+      //sceneActive:='Dracomage';
+      ennemi.stats.compteurAction:=1;
     end;
   if ennemi.stats.cooldown>0 then
     ennemi.stats.cooldown:=ennemi.stats.cooldown-1;
@@ -564,7 +606,8 @@ initStatEnnemi('Akr',4,150,2,0,-20,1,384,256,14,9,9,8,16,TemplatesEnnemis[7],200
 initStatEnnemi('UNKNOWN',4,150,2,0,-20,0,128,128,8,12,8,4,8,TemplatesEnnemis[8],64,114,32,14,'Roue');
 initStatEnnemi('armure',7,400,0,0,10,0,384,256,7,2,13,9,16,TemplatesEnnemis[9],192,192,96,64,'justice');
 initStatEnnemi('dracomage',2,100,2,5,6,1,192,192,34,12,8,8,13,TemplatesEnnemis[10],128,164,32,28,'eclairR');
-initStatEnnemi('grenouille',8,20,1,0,2,0,90,90,7,6,4,4,7,templatesEnnemis[11],54,90,5,0,'boule')
+initStatEnnemi('grenouille',8,20,1,0,2,0,90,90,7,6,4,4,7,templatesEnnemis[11],54,90,5,0,'boule');
+initStatEnnemi('Béhémoth',10,15000,20,10,10,5,463,614,12,32,0,0,12,templatesEnnemis[12],400,307,63,307,'boule')
 
 
 end.

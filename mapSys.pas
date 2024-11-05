@@ -59,17 +59,21 @@ begin
 end;
 
 procedure choisirEnnemis;
-var j : integer;
+var j,alea : integer;
 begin
     initStatsCombat(statsJoueur,LObjets[0].stats);
-    setlength(LObjets,1);
+    if high(LOBjets)>0 then repeat supprimeObjet(LObjets[1]) until high(LObjets)=0;
     setlength(ennemis,avancementPartie+1);
     vagueFinie:=True;
     combatFini:=False;
     randomize;
     for j:=1 to avancementPartie do
         begin
-        ennemis[j]:=TemplatesEnnemis[random(11)+1];
+        alea:=random(9)+1;
+        ennemis[j]:=templatesEnnemis[alea];
+        writeln('correspondant à ',templatesEnnemis[alea].image.directory);
+        //writeln('élément ',j,' de ennemis: ',ennemis[j].anim.objectName);
+        //analyseObjet(ennemis[j]);
         end
 
 end;
@@ -82,7 +86,7 @@ ClearScreen;
 SDL_RenderClear(sdlRenderer);
 SceneActive := 'Jeu';
 choisirEnnemis;
-indiceMusiqueJouee:=random(8)+1;
+indiceMusiqueJouee:=random(4)+2;
 end;
 
 procedure LancementSalleHasard;
@@ -104,14 +108,15 @@ begin
     SDL_RenderClear(sdlRenderer);
     SceneActive := 'Jeu';
     vagueFinie:=False;
-    setlength(LObjets,5);
-    for j:=1 to 4 do
+    setlength(LObjets,2);
+    for j:=1 to 1 do
     begin
         randomize;  
-        LObjets[j]:=TemplatesEnnemis[4];
+        LObjets[j]:=TemplatesEnnemis[2];
     end;
-    setlength(ennemis,2);
-    ennemis[1]:=templatesEnnemis[9];
+    setlength(ennemis,3);
+    ennemis[2]:=templatesEnnemis[10];
+    ennemis[1]:=templatesEnnemis[12];
 end;
 
 procedure LancementSalleMarchand;

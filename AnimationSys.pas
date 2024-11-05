@@ -66,6 +66,8 @@ procedure UpdateAnimation(var anim: TAnimation; var image: TImage);
 var
   currentTime: UInt32;
 begin
+  if (anim.etat<>'') and (anim.currentFrame<>0) and (anim.objectName<>'') then
+  begin
   currentTime := SDL_GetTicks();
 
   // Vérifier si le temps écoulé est suffisant pour passer à la prochaine frame
@@ -93,6 +95,7 @@ begin
 
     // Mettre à jour le temps de la dernière mise à jour
     anim.LastUpdateTime := currentTime;
+  end;
   end;
 end;
 
