@@ -72,9 +72,10 @@ begin
         alea:=random(9)+1;
         ennemis[j]:=templatesEnnemis[alea];
         writeln('correspondant à ',templatesEnnemis[alea].image.directory);
-        //writeln('élément ',j,' de ennemis: ',ennemis[j].anim.objectName);
-        //analyseObjet(ennemis[j]);
-        end
+        writeln('élément ',j,' de ennemis: ',ennemis[j].anim.objectName);
+        analyseObjet(ennemis[j]);
+        end;
+    writeln('ennemis choisis');
 
 end;
 
@@ -84,8 +85,8 @@ writeln('Lancement de salle Combat');
 avancementPartie := avancementPartie+1;
 ClearScreen;
 SDL_RenderClear(sdlRenderer);
-SceneActive := 'Jeu';
 choisirEnnemis;
+SceneActive := 'Jeu';
 indiceMusiqueJouee:=random(4)+2;
 end;
 
@@ -222,7 +223,7 @@ begin
 
                 SDL_MOUSEBUTTONDOWN:
                     begin
-                        //writeln('Mouse button pressed at (', testEvent^.motion.x, ',', testEvent^.motion.y, ')');
+                        writeln('Mouse button pressed at (', testEvent^.motion.x, ',', testEvent^.motion.y, ')');
                         writeln(salle1.image.button.rect.x);
                         OnMouseClick(salle1.image, testEvent^.motion.x, testEvent^.motion.y);
                         OnMouseClick(salle2.image, testEvent^.motion.x, testEvent^.motion.y);

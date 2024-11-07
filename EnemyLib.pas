@@ -44,7 +44,7 @@ procedure ajoutVague();
 var i,taille:Integer;
 var fini:Boolean;
 begin
-  //writeln('tentative d"ajout d"une vague , ennemis restants : ',high(ennemis));
+  writeln('tentative d"ajout d"une vague , ennemis restants : ',high(ennemis));
   if high(ennemis)<=0 then
     combatFini:=True
   else
@@ -117,6 +117,7 @@ begin
     ennemi.col.offset.y := offy;
     ennemi.col.nom := nom;
     ennemi.anim.estActif := True;
+    ennemi.stats.inamovible:=(ennemi.anim.objectname='Béhémoth');
 end;
 
 procedure AIWarp(var ennemi:TObjet;targetx,targety:Integer);
@@ -305,9 +306,9 @@ begin
   if (ennemi.anim.etat='shoot') and (ennemi.stats.compteurAction>10) and (ennemi.stats.compteurAction<15) then
     begin
       if (ennemi.image.rect.x<ennemi.stats.xcible) then
-              CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+110,ennemi.image.rect.y+130,ennemi.image.rect.x+150,ennemi.image.rect.y+130,(random(5)-3)*3,10,100,ennemi.stats.nomAttaque,obj)
+              CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+110,ennemi.image.rect.y+130,80,ennemi.image.rect.x+150,ennemi.image.rect.y+130,(random(5)-3)*3,10,100,ennemi.stats.nomAttaque,obj)
             else
-              CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+60,ennemi.image.rect.y+130,ennemi.image.rect.x-60,ennemi.image.rect.y+130,(random(5)-3)*3,10,100,ennemi.stats.nomAttaque,obj);
+              CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+60,ennemi.image.rect.y+130,80,ennemi.image.rect.x-60,ennemi.image.rect.y+130,(random(5)-3)*3,10,100,ennemi.stats.nomAttaque,obj);
             ajoutObjet(obj);
     end;
   case ennemi.stats.typeIA_MVT of
@@ -331,9 +332,9 @@ begin
       if (ennemi.anim.currentFrame=6) and (sdl_getTicks-ennemi.anim.lastUpdateTime<15) then
         begin
         if (ennemi.image.rect.x<ennemi.stats.xcible) then
-          CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+40,ennemi.image.rect.y+50,ennemi.image.rect.x+60,ennemi.image.rect.y+50,0,10,ennemi.stats.vie,ennemi.stats.nomAttaque,obj)
+          CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+40,ennemi.image.rect.y+50,100,ennemi.image.rect.x+60,ennemi.image.rect.y+50,0,10,ennemi.stats.vie,ennemi.stats.nomAttaque,obj)
         else
-          CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+40,ennemi.image.rect.y+50,ennemi.image.rect.x-60,ennemi.image.rect.y+50,0,10,ennemi.stats.vie,ennemi.stats.nomAttaque,obj);
+          CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+40,ennemi.image.rect.y+50,100,ennemi.image.rect.x-60,ennemi.image.rect.y+50,0,10,ennemi.stats.vie,ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj);
         end;
       end;
@@ -345,15 +346,20 @@ begin
         ajoutObjet(obj)
         end;
       if ennemi.stats.compteurAction=100 then
-        multiLasers(TypeObjet(1),1,1,1,ennemi.image.rect.x+50,ennemi.image.rect.y+50,0,4,360,0,10,100,'rayon');
+        multiLasers(TypeObjet(1),1,1,1,ennemi.image.rect.x+50,ennemi.image.rect.y+50,120,0,4,360,0,10,100,'rayon');
       end;
-    7:if (ennemi.stats.compteurAction mod 20 = 0) and (ennemi.anim.etat='fly') then begin
+    7:if (((ennemi.stats.vie<ennemi.stats.vieMax div 4) and (ennemi.stats.compteurAction mod 20 = 0)) or (ennemi.stats.vie>=ennemi.stats.vieMax div 4) and (ennemi.stats.compteurAction mod 50 = 0)) and (ennemi.anim.etat='fly') then begin
         creerBoule(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,ennemi.image.rect.x+96+random(192),ennemi.image.rect.y+64+random(128),200,100,4,x,y,ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj)
         end;
     8:if (ennemi.anim.etat='cast') and (random(6)=1) then
       begin
       creerBoule(typeobjet(1),0,ennemi.stats.force,ennemi.stats.multiplicateurDegat,ennemi.image.rect.x+16,ennemi.image.rect.y+16,60,60,3,x-128+random(64)*4,y-128+random(64)*4,ennemi.stats.nomAttaque,obj);
+      ajoutObjet(obj)
+      end;
+    10:if (random(100)=0) then
+      begin
+      CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+250,ennemi.image.rect.y+250,400,ennemi.image.rect.x-60,ennemi.image.rect.y+250,0,100,200,ennemi.stats.nomAttaque,obj);
       ajoutObjet(obj)
       end
     end;
@@ -469,7 +475,10 @@ begin
         if (ennemi.anim.etat='dodge') then
           DodgeUpdate(ennemi);
         if ennemi.anim.etat='strike' then
+          begin
           ennemi.stats.xcible:=joueur.image.rect.x;
+          ennemi.col.estActif:=True;
+          end;
         ennemi.anim.isFliped:=(ennemi.stats.xcible>ennemi.image.rect.x);
         if (ennemi.anim.etat='strike') and (animFinie(ennemi.anim)) then begin
           ennemi.col.estActif:=True;
@@ -500,7 +509,10 @@ begin
             begin
               aiFly(ennemi,joueur.image.rect.x,joueur.image.rect.y)
             end;
-          flyUpdate(ennemi,10);
+          if ennemi.stats.vie>ennemi.stats.vieMax div 4 then
+            flyUpdate(ennemi,15)
+          else
+            flyUpdate(ennemi,2);
           if ennemi.stats.compteurAction>300 then
             begin
             initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
@@ -550,7 +562,7 @@ begin
     end;
   if (ennemi.anim.etat='apparition') and (ennemi.anim.objectName='Béhémoth') and (ennemi.stats.compteurAction=0) then
     begin
-      sceneActive:='Behemoth';
+      sceneActive:='Cutscene';
       ennemi.stats.compteurAction:=1;
     end;
   if (ennemi.anim.etat='apparition') and (ennemi.anim.objectName='dracomage') and (ennemi.stats.compteurAction=0) then
@@ -607,7 +619,7 @@ initStatEnnemi('UNKNOWN',4,150,2,0,-20,0,128,128,8,12,8,4,8,TemplatesEnnemis[8],
 initStatEnnemi('armure',7,400,0,0,10,0,384,256,7,2,13,9,16,TemplatesEnnemis[9],192,192,96,64,'justice');
 initStatEnnemi('dracomage',2,100,2,5,6,1,192,192,34,12,8,8,13,TemplatesEnnemis[10],128,164,32,28,'eclairR');
 initStatEnnemi('grenouille',8,20,1,0,2,0,90,90,7,6,4,4,7,templatesEnnemis[11],54,90,5,0,'boule');
-initStatEnnemi('Béhémoth',10,15000,20,10,10,5,463,614,12,32,0,0,12,templatesEnnemis[12],400,307,63,307,'boule')
+initStatEnnemi('Béhémoth',10,15000,20,10,10,5,463,614,12,32,0,0,12,templatesEnnemis[12],400,307,63,307,'rayonRykor')
 
 
 end.

@@ -15,7 +15,10 @@ implementation
 procedure sauvegarder(stats:TStats);
 var fichier:File of TStats;
 begin
-
+    assign(fichier,'sauvegarde_COF');
+    rewrite(fichier);
+    write(fichier,stats);
+    close(fichier);
 end;
 
 procedure chargerSauvegarde(var stats:TStats);
@@ -25,10 +28,12 @@ begin
         begin
         assign(fichier,'sauvegarde_COF');
         reset(fichier);
+        read(fichier,stats)
         end
     else
         begin
         end;
+    close(fichier)
 end;
 
 function extractionTexte(code:String):String;
@@ -61,6 +66,7 @@ begin
             if charTemp<>';' then
                 extractionTexte:=extractionTexte+charTemp;
             end;
+    close(fichier);
 end;
 
 

@@ -56,6 +56,7 @@ type TStats=record //(version variable)
     vieMax:Integer;
     xreel,yreel:Real;
     etatPrec:TANimation; //dans le cas où l'objet est interrompu (par des dégâts par exemple) 
+    inamovible:Boolean;
     case genre:typeObjet of 
         joueur:(mana:Integer;
           manaMax:Integer;
@@ -87,7 +88,7 @@ type TStats=record //(version variable)
           vitessePoursuite:Integer;
           nomAttaque:PCHar);
         
-        projectile,laser:(degats:Integer;origine:typeObjet;vectX,vectY,angle:Real;dureeVie,delai,delaiInit,vitRotation:Integer);
+        projectile,laser,epee:(degats:Integer;origine:typeObjet;vectX,vectY,angle:Real;dureeVie,dureeVieInit,delai,delaiInit,vitRotation:Integer);
         effet:(fixeJoueur:Boolean);
 end;
 

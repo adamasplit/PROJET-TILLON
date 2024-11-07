@@ -382,6 +382,10 @@ end;
 
 procedure InitDialogueBox(var Box: TDialogueBox; ImgPath,portraitPath: PChar; X, Y, W, H: Integer; const DialogueText: string; Delay: UInt32);
 begin
+  SDL_DestroyTexture(box.BackgroundImage.imgtexture);
+  SDL_freesurface(box.BackgroundImage.imgsurface);
+  SDL_DestroyTexture(box.portrait.imgtexture);
+  SDL_freeSurface(box.portrait.imgsurface);
   CreateRawImage(Box.BackgroundImage, X, Y, W, H, ImgPath);
   CreateRawImage(Box.portrait, X, Y, W div 4, W div 4, portraitPath);
   Box.RemainingText := DialogueText;
@@ -435,7 +439,7 @@ begin
       end
     else
     begin
-      writeln('2');
+      //writeln('2');
       Inc(Box.DisplayedLetters);
       Box.LastUpdateTime := CurrentTime;
     end;

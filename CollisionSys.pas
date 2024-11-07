@@ -69,6 +69,7 @@ begin
       OnTriggerEnter(obj1, obj2);
     end
     else
+      if not (obj1.stats.inamovible) then
       begin
       // Si aucun des deux objets n'est un trigger, on les repousse pour éviter le chevauchement
       overlapX := Min(rect1.x + rect1.w, rect2.x + rect2.w) - Max(rect1.x, rect2.x);
@@ -107,8 +108,10 @@ begin
   if (genre2=projectile) or (genre2=laser) or (genre2=epee) then
     collisionValide:=((genre1<>projectile) and (genre1<>laser) and (genre1<>epee));
 end;
+
 // Fonction appelée lorsqu'une collision avec un trigger est détectée
 procedure OnTriggerEnter(var obj1, obj2: TObjet);
+var eff:TObjet;
 begin
   // Exemple de gestion du trigger : ici, tu peux ajouter des actions spécifiques
   if (not (obj1.col.nom='Dummy')) and collisionValide (obj1.stats.genre,obj2.stats.genre) then
@@ -121,6 +124,11 @@ begin
         subirDegats(obj1,degat(obj2.stats.degats,obj2.stats.force,obj1.stats.defense,obj2.stats.multiplicateurDegat),round(obj2.stats.vectx),round(obj2.stats.vecty));
         if obj2.stats.genre=projectile then
           creerEffet(obj2.image.rect.x,obj2.image.rect.y,64,64,6,'impact',False,obj2)
+        else
+          begin
+          creerEffet(obj2.image.rect.x,obj2.image.rect.y,64,64,6,'impact',False,eff);
+          ajoutobjet(eff);
+          end
       end
   end
 end;

@@ -136,7 +136,7 @@ begin
       SDL_FreeSurface(CombatUI[6+i].imgSurface);
       SDL_DestroyTexture(CombatUI[6+i].imgTexture);
       if (LObjets[0].stats.deck^[i-1].active) then
-        drawRect(black_color,round(180*(LObjets[0].stats.deck^[i-1].charges)/(LObjets[0].stats.deck^[iCarteChoisie].chargesMax)),933,68+150*(i-1),135,132);
+        drawRect(black_color,round(180*(LObjets[0].stats.deck^[i-1].charges)/(LObjets[0].stats.deck^[i-1].chargesMax)),933,68+150*(i-1),135,132);
         
       end;
     createRawImage(CombatUI[7],940,70,128,128,stats.deck^[0].dir);

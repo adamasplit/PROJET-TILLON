@@ -22,12 +22,13 @@ procedure initStatsCombat(statsPerm:TStats;var statsTemp:TStats);
 procedure CreerBoule(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,w,h,vitesse,xdest,ydest:Integer;nom:PChar;var proj:TObjet);
 procedure updateBoule(var proj:TObjet);
 procedure multiProjs(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,w,h,vitesse,nb,range,angleDepart:Integer;nom:PChar);
-procedure multiLasers(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,vitesse,nb,range,angleDepart,duree,delai:Integer;nom:PChar);
-procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,xdest,ydest,vitRotation,dureeVie,delai:Integer;nom:PChar;var rayon:TObjet);
+procedure multiLasers(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,w,vitesse,nb,range,angleDepart,duree,delai:Integer;nom:PChar);
+procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,w,xdest,ydest,vitRotation,dureeVie,delai:Integer;nom:PChar;var rayon:TObjet);
 procedure updateRayon(var rayon:TObjet);
 procedure UpdateJustice(var justice:TObjet);
 procedure renderAvecAngle(objet:TObjet);
 procedure creerEffet(x,y,w,h,frames:Integer;nom:PCHar;fixeJoueur:Boolean;var obj:TObjet);
+procedure InitJustice(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,xCible,yCible,vitesse,delai:Integer);
 procedure subirDegats(var victime:TObjet;degats,knockbackX,knockbackY:Integer);
 procedure JouerCarte(var stats:TStats;x,y,i:Integer); 
 
@@ -171,13 +172,14 @@ begin
   InitAnimation(obj.anim,nom,'active',frames,False);
   obj.anim.estActif:=True;
   obj.stats.genre:=effet;
+  
   createRawImage(obj.image,x,y,w,h,getFramePath(obj.anim));
   obj.col.estActif:=False;
   obj.col.nom:=nom;
   obj.stats.fixeJoueur:=fixeJoueur;
 end;
 
-procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,xdest,ydest,vitRotation,dureeVie,delai:Integer;nom:PChar;var rayon:TObjet);
+procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,w,xdest,ydest,vitRotation,dureeVie,delai:Integer;nom:PChar;var rayon:TObjet);
 var norme:Real;destination,distance:array['X'..'Y'] of Integer;
 begin
     //Initialisation des caractéristiques
@@ -191,23 +193,24 @@ begin
     rayon.stats.yreel:=y-64;
     rayon.stats.vitRotation:=vitRotation;
     rayon.stats.dureeVie:=dureeVie;
+    rayon.stats.dureeVieInit:=dureeVie;
     rayon.stats.delai:=delai;
     rayon.stats.delaiInit:=delai;
 
     //Initialisation de l'affichage
     InitAnimation(rayon.anim,nom,'start',5,False);
     rayon.anim.estActif:=True;
-    CreateRawImage(rayon.image,x-600,y-64,1200,120,getFramePath(rayon.anim));
+    CreateRawImage(rayon.image,x-600,y-64,1200,w,getFramePath(rayon.anim));
     
 
     //Initialisation de la boîte de collisions
 
     rayon.col.isTrigger := True;
-    rayon.col.estActif := True;
+    rayon.col.estActif := False;
     rayon.col.dimensions.w := rayon.image.rect.w-20;
-    rayon.col.dimensions.h := 50;
+    rayon.col.dimensions.h := w div 2;
     rayon.col.offset.x := 10;
-    rayon.col.offset.y := 50;
+    rayon.col.offset.y := w div 4;
     rayon.col.nom := 'rayon';
 
     destination['X']:=xdest;
@@ -262,13 +265,13 @@ begin
             rayon.anim.estActif:=True;
             rayon.stats.delai:=-1;
             SDL_DestroyTexture(rayon.image.imgTexture);SDL_freeSurface(rayon.image.imgSurface);
-            CreateRawImage(rayon.image,rayon.image.rect.x,rayon.image.rect.y,1200,120,getFramePath(rayon.anim))
+            CreateRawImage(rayon.image,rayon.image.rect.x,rayon.image.rect.y,1200,rayon.image.rect.h,getFramePath(rayon.anim))
             end
     else
-        begin 
-            if (rayon.stats.dureeVie<=0) and not(leMonde) then updateanimation(rayon.anim,rayon.image)
-        else rayon.stats.dureeVie:=rayon.stats.dureeVie-1;
-        end;
+        if ((rayon.stats.dureeVie>4) and (rayon.anim.currentFrame<4-(rayon.stats.dureeVie div (rayon.stats.dureeVieInit div 4)))) or (rayon.stats.dureeVie<0) then
+            updateAnimation(rayon.anim,rayon.image);
+    if (rayon.stats.delai<0) and not (leMonde) then 
+        rayon.stats.dureeVie:=rayon.stats.dureeVie-1;
     if (rayon.anim.currentFrame=rayon.anim.totalFrames) and (rayon.stats.dureeVie<=0) then
         supprimeObjet(rayon)
     else
@@ -389,12 +392,12 @@ begin
         end;
 end;
 
-procedure multiLasers(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,vitesse,nb,range,angleDepart,duree,delai:Integer;nom:PChar);
+procedure multiLasers(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,w,vitesse,nb,range,angleDepart,duree,delai:Integer;nom:PChar);
 var rayon:TObjet;i:Integer;
 begin
     for i:=0 to nb-1 do
         begin
-        CreerRayon(origine,degats,force,mult,x,y,x+round(100*cos((i*2*pi+(angleDepart*pi/180))/((nb)*360/range))),y+round(100*sin((i*2*pi+(angleDepart*pi/180))/((nb)*360/range))),vitesse,duree,delai,nom,rayon);
+        CreerRayon(origine,degats,force,mult,x,y,w,x+round(100*cos((i*2*pi+(angleDepart*pi/180))/((nb)*360/range))),y+round(100*sin((i*2*pi+(angleDepart*pi/180))/((nb)*360/range))),vitesse,duree,delai,nom,rayon);
         ajoutObjet(rayon);
         end;
 end;
@@ -485,8 +488,11 @@ begin
         victime.stats.vie:=1
     else
         victime.stats.vie:=victime.stats.vie-degats;
-    knockbackX:=max(min(knockbackX*2,5),-5);
-    knockbackY:=max(min(knockbackY*2,5),-5);
+    if not (victime.stats.inamovible) then
+        begin
+        knockbackX:=max(min(knockbackX*2,5),-5);
+        knockbackY:=max(min(knockbackY*2,5),-5);
+        end;
     if (victime.anim.etat<>'degats') then begin 
         victime.stats.etatPrec:=victime.anim;
         victime.image.rect.x:=victime.image.rect.x+knockbackX;
@@ -515,7 +521,7 @@ end;
     procedure II(s : TStats ; x,y : integer);
     var proj : TObjet;
     begin
-        CreerRayon(joueur , 2 , s.force , s.multiplicateurDegat , x,y, getmouseX,getmouseY,{vitRotation}0,{dureeVie}30,{delai}1, 'rayon', proj);
+        CreerRayon(joueur , 2 , s.force , s.multiplicateurDegat , x,y,120, getmouseX,getmouseY,{vitRotation}0,{dureeVie}30,{delai}1, 'rayon', proj);
         ajoutObjet(proj);
     end;
 
@@ -523,7 +529,7 @@ end;
     procedure III(s : TStats ; x,y : integer);
     var proj : TObjet;
     begin
-        CreerRayon(joueur , 3 , s.force , s.multiplicateurDegat , x,y, getmouseX,getmouseY,{vitRotation}0,{dureeVie}50,{delai}1, 'rayon', proj);
+        CreerRayon(joueur , 3 , s.force , s.multiplicateurDegat , x,y,150, getmouseX,getmouseY,{vitRotation}0,{dureeVie}50,{delai}1, 'rayon', proj);
         ajoutObjet(proj);
     end;
 
@@ -569,10 +575,13 @@ end;
     end; 
 
     //8 la justice 
-    procedure VIII(var sPerm, sCombat :Tstats;x,y:Integer );
-    begin    
-        sPerm.nbJustice := sPerm.nbJustice + 1;
-        sCombat.nbJustice := sCombat.nbJustice + 1;   //### à initialiser à 0 en débur de partie 
+    procedure VIII(var sPerm, sCombat :Tstats;x,y,charges:Integer);
+    begin
+        if charges>=scombat.nbjustice then
+            begin
+            sPerm.nbJustice := sPerm.nbJustice + 1;
+            sCombat.nbJustice := sCombat.nbJustice + 1;   //### à initialiser à 0 en débur de partie 
+            end;
         initJustice(typeObjet(0),scombat.nbjustice,scombat.force,sCombat.multiplicateurDegat,x,y,getmousex,getmousey,28,50);
     end;
     
@@ -668,13 +677,13 @@ end;
     //16 La tour
     procedure XVI(s : TStats ; x,y : Integer);
     begin
-        multiLasers(joueur, 2 ,s.force , s.multiplicateurDegat , x,y , {vitesse} 0 ,4 ,360,0, 100 ,1,'rayon');
+        multiLasers(joueur, 2 ,s.force , s.multiplicateurDegat , x,y ,120, {vitesse} 0 ,4 ,360,0, 100 ,1,'rayon');
     end;
 
     //17 L'étoile
     procedure XVII(s : Tstats ; x,y : integer);
     begin
-        multiLasers(joueur, 2 ,s.force , s.multiplicateurDegat , x,y , {vitesse} 0 ,8 ,360,0, 100 ,1,'rayon');
+        multiLasers(joueur, 2 ,s.force , s.multiplicateurDegat , x,y ,120, {vitesse} 0 ,8 ,360,0, 100 ,1,'rayon');
     end;
 
     //18 La lune
@@ -752,20 +761,24 @@ end;
 //###"La procédure ultime. On raconte que son accomplissement entraîne la fin de l'univers."
 procedure JouerCarte(var stats:TStats;x,y:Integer;i:Integer); 
 
-var tempCarte:TCarte;projectile:TOBjet;
+var tempCarte:TCarte;
 
 begin
     tempCarte:=stats.deck^[i];
-    //writeln('carte jouée : ',tempCarte.nom);
     if stats.deck^[i].active or (tempCarte.cout<=stats.mana) then 
         begin
         if not stats.deck^[i].active then
             begin
             stats.mana:=stats.mana-tempCarte.cout;
             stats.deck^[i].active:=True;
+            if tempCarte.numero=8 then
+                begin
+                stats.deck^[i].chargesMax:=stats.nbJustice+1;
+                end;
+            stats.deck^[i].charges:=stats.deck^[i].chargesMax;
             end;
         stats.deck^[i].charges:=stats.deck^[i].charges-1;
-        if stats.deck^[i].charges=0 then
+        if stats.deck^[i].charges<=0 then
             cycle(stats.deck^,i);
         //Partie principale : tous les effets de cartes y seront répertoriés
         case tempCarte.numero of
@@ -776,7 +789,7 @@ begin
             5: V(stats,x,y);
             6: VI(stats,x,y);
             7: VII(stats,x,y);
-            8: VIII(statsJoueur,stats,x,y);
+            8: VIII(statsJoueur,stats,x,y,tempCarte.charges);
             9: IX(stats);
             10: X_(stats);
             11: XI(stats);
