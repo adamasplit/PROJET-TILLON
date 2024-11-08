@@ -1,7 +1,17 @@
 unit mapSys;
 
 interface
-uses SDL2,math,memgraph,SysUtils,coeur,eventsys,AnimationSys,EnemyLib,combatlib,sonoSys;
+uses
+    AnimationSys,
+    coeur,
+    combatlib,
+    EnemyLib,
+    eventsys,
+    math,
+    memgraph,
+    SDL2,
+    sonoSys,
+    SysUtils;
 var imgs0,imgs1,imgs2,imgs3:TButtonGroup;
 var salleChoisie:TSalle;
 CONST 
@@ -208,38 +218,38 @@ begin
     
     writeln('Room choice started');
     SDL_RenderPresent(sdlRenderer);
-    new(testEvent);
+    new(EventSystem);
     
     while SceneActive = 'map' do 
     begin
         SDL_PumpEvents();
         SDL_Delay(10);
-        //OnMouseHover(salle1.image,testEvent^.motion.x, testEvent^.motion.y);
-        //OnMouseHover(salle2.image,testEvent^.motion.x, testEvent^.motion.y);
-        //OnMouseHover(salle3.image,testEvent^.motion.x, testEvent^.motion.y);
+        //OnMouseHover(salle1.image,EventSystem^.motion.x, EventSystem^.motion.y);
+        //OnMouseHover(salle2.image,EventSystem^.motion.x, EventSystem^.motion.y);
+        //OnMouseHover(salle3.image,EventSystem^.motion.x, EventSystem^.motion.y);
         RenderButtonGroup(salle1.image);
         RenderButtonGroup(salle2.image);
         RenderButtonGroup(salle3.image);
         SDL_RenderPresent(sdlRenderer);
-        while SDL_PollEvent(testEvent) = 1 do
+        while SDL_PollEvent(EventSystem) = 1 do
         begin
-            case testEvent^.type_ of
+            case EventSystem^.type_ of
                 SDL_KEYDOWN:
-                    case testEvent^.key.keysym.sym of
+                    case EventSystem^.key.keysym.sym of
                         SDLK_ESCAPE: 
                             // Un Gwo pwoblem wai
                     end;
 
                 SDL_MOUSEBUTTONDOWN:
                     begin
-                        writeln('Mouse button pressed at (', testEvent^.motion.x, ',', testEvent^.motion.y, ')');
+                        writeln('Mouse button pressed at (', EventSystem^.motion.x, ',', EventSystem^.motion.y, ')');
                         writeln(salle1.image.button.rect.x);
-                        OnMouseClick(salle1.image, testEvent^.motion.x, testEvent^.motion.y);
-                        OnMouseClick(salle2.image, testEvent^.motion.x, testEvent^.motion.y);
-                        OnMouseClick(salle3.image, testEvent^.motion.x, testEvent^.motion.y);
-                        HandleButtonClick(salle1.image.button, testEvent^.motion.x, testEvent^.motion.y);
-                        HandleButtonClick(salle2.image.button, testEvent^.motion.x, testEvent^.motion.y);
-                        HandleButtonClick(salle3.image.button, testEvent^.motion.x, testEvent^.motion.y);
+                        OnMouseClick(salle1.image, EventSystem^.motion.x, EventSystem^.motion.y);
+                        OnMouseClick(salle2.image, EventSystem^.motion.x, EventSystem^.motion.y);
+                        OnMouseClick(salle3.image, EventSystem^.motion.x, EventSystem^.motion.y);
+                        HandleButtonClick(salle1.image.button, EventSystem^.motion.x, EventSystem^.motion.y);
+                        HandleButtonClick(salle2.image.button, EventSystem^.motion.x, EventSystem^.motion.y);
+                        HandleButtonClick(salle3.image.button, EventSystem^.motion.x, EventSystem^.motion.y);
                     end;
             end;
         end;

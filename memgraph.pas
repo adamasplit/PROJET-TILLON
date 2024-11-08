@@ -3,9 +3,9 @@ Unit memgraph;
 INTERFACE
 
 uses
+  math,
   SDL2,
   SDL2_ttf,
-  math,
   SysUtils;
 
 type
@@ -96,7 +96,7 @@ procedure RenderDialogueText(var Box: TDialogueBox);
 
 
 procedure ClearScreen;
-
+procedure StringToPChar(s:String) : PChar;
 {Debug}
 procedure OnButtonClickDebug;
 

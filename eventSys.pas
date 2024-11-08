@@ -12,7 +12,7 @@ var Boutons:array[1..20] of TButton;
 CombatUI:Array[1..15] of TImage;
 	sdlKeyboardState: PUInt8;
   lastMouseX,lastMouseY:Integer;
-testevent:PSDL_Event;
+EventSystem:PSDL_Event;
 SceneActive : String;
 
 
@@ -28,7 +28,7 @@ implementation
 
 function GetMouseX():Integer;
 begin
-        GetMouseX:=testevent^.motion.x;
+        GetMouseX:=EventSystem^.motion.x;
         if GetMouseX=0 then
           getMouseX:=lastMouseX
         else lastMouseX:=getMouseX
@@ -36,7 +36,7 @@ end;
 
 function GetMouseY():Integer;
 begin
-        GetMouseY:=testevent^.motion.y;
+        GetMouseY:=EventSystem^.motion.y;
         if GetMouseY=0 then
           getMouseY:=lastMouseY
         else lastMouseY:=getMouseY
