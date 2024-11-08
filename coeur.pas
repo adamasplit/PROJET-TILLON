@@ -88,7 +88,7 @@ type TStats=record //(version variable)
           vitessePoursuite:Integer;
           nomAttaque:PCHar);
         
-        projectile,laser,epee:(degats:Integer;origine:typeObjet;vectX,vectY,angle:Real;dureeVie,dureeVieInit,delai,delaiInit,vitRotation:Integer);
+        projectile,laser,epee:(degats:Integer;origine:typeObjet;vectX,vectY,angle,vitRotation:Real;dureeVie,dureeVieInit,delai,delaiInit:Integer);
         effet:(fixeJoueur:Boolean);
 end;
 

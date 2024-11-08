@@ -82,3 +82,4 @@
 <COMM_ENN_18>;
 <COMM_ENN_19>Ce symbole! Il doit donc s'agir d'un genre de pacte. Mais pourquoi aller aussi loin pour le pouvoir? Suis-je une telle menace?;
 <COMM_ENN_20>Dans nos légendes, les dragons sont réputés pour leur sagesse... Qu'a-t'il pu bien se passer pour en arriver là? Dans tous les cas, le seul moyen de le renvoyer dans la mort est de tuer son réceptacle.;
+<DIALOGUE_BOSS_1>Longtemps j'ai attendu ce moment. L'humanité connaîtra mon courroux.;

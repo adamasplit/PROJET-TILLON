@@ -87,8 +87,9 @@ begin
 
       // Mettre à jour le répertoire de l'image pour charger la nouvelle frame
       image.directory := GetFramePath(anim);
-      sdl_freeSurface(image.imgSurface);
+      
       SDL_DestroyTexture(image.imgtexture);
+      //sdl_freeSurface(image.imgSurface);
       // Mettre à jour l'image avec la nouvelle frame
       {WriteLn('Animation : Changing directory to : ',image.directory);
       WriteLn(anim.isLooping);}
