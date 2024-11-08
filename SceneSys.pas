@@ -176,6 +176,7 @@ var i:Integer;
 			begin
 				if LObjets[i].stats.genre=TypeObjet(1) then
 					begin
+					vagueFinie:=False;
 					IAEnnemi(LObjets[i],LObjets[0]);
 					end;
 			end;

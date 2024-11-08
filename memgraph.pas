@@ -68,7 +68,9 @@ var
   black_color: TSDL_Color;
   sdlWindow1 : PSDL_Window;
   sdlRenderer : PSDL_Renderer;
-  windowWidth, windowHeight: Integer;
+const
+  windowWidth = 1080;
+  windowHeight = 720;
   
 {Fonctions & Procedures}
 procedure CreateButton(var button: TButton; x, y, w, h: Integer; labelText: PAnsiChar; bgColor, textColor: TSDL_Color; font:PTTF_font;onClick: ButtonProcedure); overload;
