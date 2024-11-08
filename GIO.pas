@@ -141,12 +141,11 @@ procedure AfficherTout();
 begin
 	renderRawImage(combat_bg,255,False);
 	if LObjets[0].stats.pendu then
-			if LObjets[i].anim.isFliped then
+			begin
 				SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
-			else
-				SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
-			else
-				RenderRawImage(LObjets[0].image,255, LObjets[0].anim.isFliped);
+			end
+		else
+			RenderRawImage(LObjets[0].image,255, LObjets[0].anim.isFliped);
 
 	for i:=1 to high(LObjets) do
 		case LOBjets[i].stats.genre of
@@ -159,7 +158,7 @@ begin
 		begin
 		drawrect(black_color,50,0,0,windowWidth,windowHeight);
 		if LObjets[0].stats.pendu then
-			if LObjets[i].anim.isFliped then
+			if LObjets[0].anim.isFliped then
 				SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
 			else
 				SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
@@ -195,6 +194,7 @@ procedure ActualiserJeu;
 			begin
 				if LObjets[i].stats.genre=TypeObjet(1) then
 					begin
+					vagueFinie:=False;
 					IAEnnemi(LObjets[i],LObjets[0]);
 					end;
 			end;
@@ -354,13 +354,14 @@ IndiceMusiqueJouee:=10;
   Dummy.anim.estActif := False;
 
   //Initialisation de la liste d'objets
-  setlength(LObjets,2);
+  setlength(LObjets,3);
   vagueFinie:=False;combatFini:=False;
-	for j:=1 to 1 do begin 
-		LObjets[j]:=TemplatesEnnemis[12];
+	for j:=1 to 2 do begin 
+		writeln('tentative d''accès à LObjets[',j,'], dernier élément : LObjets[',high(Lobjets),']');
+		LObjets[j]:=TemplatesEnnemis[2];
 		end;
 
-	createRawImage(combat_bg,88,-80,900,900,'Sprites/Game/floor/Floor4.bmp');
+	createRawImage(combat_bg,88,-80,900,900,'Sprites/Game/floor/Floor3.bmp');
 	randomize();
 	IndiceMusiqueJouee:=1;
 	Mix_VolumeMusic(VOLUME_MUSIQUE);

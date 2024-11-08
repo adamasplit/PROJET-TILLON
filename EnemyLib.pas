@@ -65,21 +65,26 @@ begin
           begin
           //writeln('tentative d"ajout d"un ennemi');
           LObjets[i]:=ennemis[taille];
-          analyseObjet(ennemis[taille]);
+          //analyseObjet(ennemis[taille]);
           supprimeEnn(ennemis[taille],taille);
           taille:=taille-1;
           LObjets[i].image.rect.x:=i*200+100;
           LObjets[i].image.rect.y:=50;
-          writeln('ennemi n°',i,' placé à ',LOBjets[i].image.rect.x);
+          //writeln('ennemi n°',i,' placé à ',LOBjets[i].image.rect.x);
           if LObjets[i].anim.objectName='dracomage' then
             begin
             fini:=True;
             end;
           if LObjets[i].anim.objectName='Béhémoth' then
+            begin
             indiceMusiqueJouee:=7;
+            fini:=True;
+            end;
           end;
       end;
     end;
+    writeln('combat fini:',combatFini);
+    writeln('vague ajoutée');
 end;
 
 procedure initStatEnnemi(nom:PChar;typeIA_MVT,vie,att,dmg,def,vitesse,w,h,framesA,frames1,frames2,frames3,framesM:Integer;var ennemi:TObjet;wcol,hcol,offx,offy:Integer;nomAttaques:PChar);
@@ -361,11 +366,18 @@ begin
       creerBoule(typeobjet(1),0,ennemi.stats.force,ennemi.stats.multiplicateurDegat,ennemi.image.rect.x+16,ennemi.image.rect.y+16,60,60,3,x-128+random(64)*4,y-128+random(64)*4,ennemi.stats.nomAttaque,obj);
       ajoutObjet(obj)
       end;
-    10:if (random(100)=0) then
-      begin
-      CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+250,ennemi.image.rect.y+250,400,ennemi.image.rect.x-60,ennemi.image.rect.y+250,0,100,200,ennemi.stats.nomAttaque,obj);
-      ajoutObjet(obj)
-      end
+    10:begin
+        if (ennemi.anim.etat='tir') and (ennemi.anim.currentFrame=20) and (ennemi.stats.compteurAction<=601) then
+        begin
+        CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+250,ennemi.image.rect.y+350,300,ennemi.image.rect.x-60,ennemi.image.rect.y+350,-(y-(ennemi.image.rect.y+350))/280,80,50,ennemi.stats.nomAttaque,obj);
+        ajoutObjet(obj)
+        end;
+        if (ennemi.anim.etat='chase') and (ennemi.anim.currentFrame mod 5 =2) and (ennemi.anim.currentFrame<>2) then
+          begin
+          creerBoule(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,ennemi.image.rect.x+180,ennemi.image.rect.y+340,64,64,5,x+32,y+0+((ennemi.anim.lastUpdateTime-sdl_getTicks)),'projRykor',obj);
+          ajoutObjet(obj)
+          end
+        end
     end;
 end;
 
@@ -549,6 +561,27 @@ begin
           initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
           end;
         end;
+      10:begin
+        if ennemi.anim.etat='chase' then
+          begin
+          ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
+          if ennemi.stats.compteurAction>600 then
+            begin
+            initAnimation(ennemi.anim,ennemi.anim.objectName,'tir',ennemi.stats.nbFrames2,False);
+            ennemi.stats.compteurAction:=600
+            end;
+          end;
+        if (ennemi.anim.etat='tir') and (ennemi.stats.compteurAction<=601) and (ennemi.anim.currentFrame=20) then
+          begin
+          ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
+          //writeln(ennemi.stats.compteurAction);
+          end;
+        if (ennemi.anim.etat='tir') and (animFinie(ennemi.anim)) then
+          begin
+          ennemi.stats.compteurAction:=0;
+          initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
+          end;
+        end;
     end
 end;
 
@@ -600,13 +633,14 @@ begin
           
       else if ennemi.stats.vie<=0 then
       begin
-      ennemi.anim.isFliped:=(joueur.image.rect.x>ennemi.image.rect.x);
-			  if not (ennemi.anim.etat='mort') then 
-          begin
-          InitAnimation(ennemi.anim,ennemi.anim.objectName,'mort',ennemi.stats.nbFramesMort,False);
-          ennemi.col.estActif:=False
-          end;
-      end
+      if not (ennemi.anim.objectName='Béhémoth') then
+        ennemi.anim.isFliped:=(joueur.image.rect.x>ennemi.image.rect.x);
+			if not (ennemi.anim.etat='mort') then 
+        begin
+        InitAnimation(ennemi.anim,ennemi.anim.objectName,'mort',ennemi.stats.nbFramesMort,False);
+        ennemi.col.estActif:=False
+        end;
+    end
 end;
 
 begin
@@ -623,7 +657,7 @@ initStatEnnemi('UNKNOWN',4,150,2,0,-20,0,128,128,8,12,8,4,8,TemplatesEnnemis[8],
 initStatEnnemi('armure',7,400,0,0,10,0,384,256,7,2,13,9,16,TemplatesEnnemis[9],192,192,96,64,'justice');
 initStatEnnemi('dracomage',2,100,2,5,6,1,192,192,34,12,8,8,13,TemplatesEnnemis[10],128,164,32,28,'eclairR');
 initStatEnnemi('grenouille',8,20,1,0,2,0,90,90,7,6,4,4,7,templatesEnnemis[11],54,90,5,0,'boule');
-initStatEnnemi('Béhémoth',10,15000,20,10,10,5,463,614,12,32,0,0,12,templatesEnnemis[12],400,307,63,307,'rayonRykor')
+initStatEnnemi('Béhémoth',10,15000,20,10,10,5,463,614,12,32,40,0,12,templatesEnnemis[12],400,307,63,307,'rayonRykor')
 
 
 end.

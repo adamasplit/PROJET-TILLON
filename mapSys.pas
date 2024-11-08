@@ -71,12 +71,12 @@ end;
 procedure choisirEnnemis;
 var j,alea : integer;
 begin
-    if high(ennemis)>0 then
+    {if high(ennemis)>1 then
         repeat
             sdl_freeSurface(ennemis[high(ennemis)].image.imgSurface);
             SDL_DestroyTexture(ennemis[high(ennemis)].image.imgTexture);
             setlength(ennemis,high(ennemis));
-        until high(ennemis)=0;
+        until high(ennemis)=0;}
     writeln('liste ennemis vide');
     initStatsCombat(statsJoueur,LObjets[0].stats);
     if high(LOBjets)>0 then repeat supprimeObjet(LObjets[1]) until high(LObjets)=0;
@@ -92,7 +92,7 @@ begin
         //writeln('correspondant à ',templatesEnnemis[alea].image.directory);
         writeln('élément ',j,' de ennemis: ',ennemis[j].anim.objectName);
         //analyseObjet(ennemis[j]);
-        sdl_delay(20);
+        drawrect(whiteCol,255,round((j/avancementPartie)*windowWidth),300,windowWidth div avancementPartie,100)
         end;
     writeln('ennemis choisis');
 
@@ -104,6 +104,7 @@ writeln('Lancement de salle Combat');
 avancementPartie := avancementPartie+1;
 ClearScreen;
 SDL_RenderClear(sdlRenderer);
+writeln('choix des ennemis...');
 choisirEnnemis;
 SceneActive := 'Jeu';
 indiceMusiqueJouee:=random(4)+2;
@@ -137,6 +138,7 @@ begin
     setlength(ennemis,3);
     ennemis[2]:=templatesEnnemis[10];
     ennemis[1]:=templatesEnnemis[12];
+    writeln('ennemis choisis (boss)')
 end;
 
 procedure LancementSalleMarchand;

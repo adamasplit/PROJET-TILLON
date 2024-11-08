@@ -23,7 +23,7 @@ procedure CreerBoule(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Re
 procedure updateBoule(var proj:TObjet);
 procedure multiProjs(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,w,h,vitesse,nb,range,angleDepart:Integer;nom:PChar);
 procedure multiLasers(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,w,vitesse,nb,range,angleDepart,duree,delai:Integer;nom:PChar);
-procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,w,xdest,ydest,vitRotation,dureeVie,delai:Integer;nom:PChar;var rayon:TObjet);
+procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,w,xdest,ydest:Integer;vitRotation:Real;dureeVie,delai:Integer;nom:PChar;var rayon:TObjet);
 procedure updateRayon(var rayon:TObjet);
 procedure UpdateJustice(var justice:TObjet);
 procedure renderAvecAngle(objet:TObjet);
@@ -179,7 +179,7 @@ begin
   obj.stats.fixeJoueur:=fixeJoueur;
 end;
 
-procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,w,xdest,ydest,vitRotation,dureeVie,delai:Integer;nom:PChar;var rayon:TObjet);
+procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,w,xdest,ydest:Integer;vitRotation:Real;dureeVie,delai:Integer;nom:PChar;var rayon:TObjet);
 var norme:Real;destination,distance:array['X'..'Y'] of Integer;
 begin
     //Initialisation des caractéristiques
@@ -268,7 +268,7 @@ begin
             CreateRawImage(rayon.image,rayon.image.rect.x,rayon.image.rect.y,1200,rayon.image.rect.h,getFramePath(rayon.anim))
             end
     else
-        if ((rayon.stats.dureeVie>4) and (rayon.anim.currentFrame<4-(rayon.stats.dureeVie div (rayon.stats.dureeVieInit div 4)))) or (rayon.stats.dureeVie<0) then
+        if ((rayon.stats.dureeVie>5) and (rayon.anim.currentFrame<5-(rayon.stats.dureeVie div (rayon.stats.dureeVieInit div 5)))) or (rayon.stats.dureeVie<0) then
             updateAnimation(rayon.anim,rayon.image);
     if (rayon.stats.delai<0) and not (leMonde) then 
         rayon.stats.dureeVie:=rayon.stats.dureeVie-1;
@@ -499,7 +499,7 @@ begin
         victime.image.rect.y:=victime.image.rect.y+knockbackY;
         if victime.stats.genre=TypeObjet(0) then
             initAnimation(victime.anim,victime.anim.objectname,'degats',4,False);
-        if victime.stats.genre=TypeObjet(1) then
+        if (victime.stats.genre=TypeObjet(1)) and (victime.anim.etat='chase') then
             victime.stats.compteurAction:=victime.stats.compteurAction+1;
     end;
 end;

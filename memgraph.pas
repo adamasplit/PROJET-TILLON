@@ -240,6 +240,7 @@ begin
   // Convertion surface --> texture
   image.imgTexture := SDL_CreateTextureFromSurface(sdlRenderer, image.imgSurface);
   if image.imgTexture = nil then begin WriteLn(SDL_GetError); HALT end;
+  //SDL_DestroyTexture(image.imgtexture);
   
 end;
 
