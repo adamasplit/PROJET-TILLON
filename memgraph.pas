@@ -96,7 +96,7 @@ procedure RenderDialogueText(var Box: TDialogueBox);
 
 
 procedure ClearScreen;
-procedure StringToPChar(s:String) : PChar;
+function StringToPChar(s : string) : Pchar;
 {Debug}
 procedure OnButtonClickDebug;
 
