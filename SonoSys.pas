@@ -134,12 +134,12 @@ Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT,
     defMus(3,'OST/C2.wav','W-O-A-Y V2',48);
     defMus(4,'OST/C3.wav','',104);
     defMus(5,'OST/C4.wav','',96);
-    defMus(6,'OST/Boss1.wav','',120);
-    defMus(7,'OST/Boss2.wav','',116);
-    defMus(8,'OST/Boss3.wav','',149);
-    defMus(9,'OST/Boss4.wav','',133);
-    defMus(10,'OST/Map.wav','',163);
-    defMus(11,'OST/Event.wav','',58);
-    defMus(12,'OST/C5.wav','With or Against You',113);
+    defMus(6,'OST/C5.wav','With Or Against You',113);
+    defMus(7,'OST/Boss1.wav','',120);
+    defMus(8,'OST/Boss2.wav','',116);
+    defMus(9,'OST/Boss3.wav','',149);
+    defMus(10,'OST/Boss4.wav','',133);
+    defMus(11,'OST/Map.wav','',163);
+    defMus(12,'OST/Event.wav','',49);
 end.
 

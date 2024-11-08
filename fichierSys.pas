@@ -44,14 +44,14 @@ begin
     charTemp:=' ';
     codeTrouve:=False;
     repeat
-        while charTemp<>'<' do
+        while (charTemp<>'<') and not (eof(fichier)) do
             begin
             read(fichier,charTemp);
             //if charTemp<>' ' then
                 //writeln(charTemp);
             end;
         balise:='';
-        while charTemp<>'>' do
+        while (charTemp<>'>') and not (eof(fichier)) do
             begin
             read(fichier,charTemp);
             if charTemp<>'>' then
@@ -67,6 +67,8 @@ begin
                 extractionTexte:=extractionTexte+charTemp;
             end;
     close(fichier);
+    if extractionTexte='' then
+        extractionTexte:=code+'(non défini)';
 end;
 
 

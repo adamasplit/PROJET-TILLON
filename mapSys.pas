@@ -61,9 +61,17 @@ end;
 procedure choisirEnnemis;
 var j,alea : integer;
 begin
+    if high(ennemis)>0 then
+        repeat
+            sdl_freeSurface(ennemis[high(ennemis)].image.imgSurface);
+            SDL_DestroyTexture(ennemis[high(ennemis)].image.imgTexture);
+            setlength(ennemis,high(ennemis));
+        until high(ennemis)=0;
+    writeln('liste ennemis vide');
     initStatsCombat(statsJoueur,LObjets[0].stats);
     if high(LOBjets)>0 then repeat supprimeObjet(LObjets[1]) until high(LObjets)=0;
     setlength(ennemis,avancementPartie+1);
+    writeln('LObjets vidée');
     vagueFinie:=True;
     combatFini:=False;
     randomize;
@@ -71,9 +79,10 @@ begin
         begin
         alea:=random(9)+1;
         ennemis[j]:=templatesEnnemis[alea];
-        writeln('correspondant à ',templatesEnnemis[alea].image.directory);
+        //writeln('correspondant à ',templatesEnnemis[alea].image.directory);
         writeln('élément ',j,' de ennemis: ',ennemis[j].anim.objectName);
-        analyseObjet(ennemis[j]);
+        //analyseObjet(ennemis[j]);
+        sdl_delay(20);
         end;
     writeln('ennemis choisis');
 

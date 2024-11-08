@@ -52,8 +52,12 @@ begin
     vagueFinie:=False;
     taille:=high(ennemis);
     fini:=False;
-    if (high(LObjets)<TAILLE_VAGUE) then
-    setlength(LObjets,TAILLE_VAGUE+1);
+    writeln(taille,',',high(lobjets));
+    if (high(LObjets)<taille) and (taille>TAILLE_VAGUE) then
+      setlength(LObjets,TAILLE_VAGUE+1);
+    if (high(LObjets)<taille) and (taille<=TAILLE_VAGUE) then
+      setlength(LObjets,taille+1);
+    writeln(taille,',',high(lobjets));
     for i:=1 to TAILLE_VAGUE do
       if not fini then
       begin

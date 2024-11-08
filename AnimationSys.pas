@@ -66,36 +66,37 @@ procedure UpdateAnimation(var anim: TAnimation; var image: TImage);
 var
   currentTime: UInt32;
 begin
-  if (anim.etat<>'') and (anim.currentFrame<>0) and (anim.objectName<>'') then
+  if ((anim.etat<>'') and (anim.currentFrame<>0) and (anim.objectName<>'')) and not ((anim.currentFrame=anim.totalFrames) and (not anim.isLooping)) then
   begin
-  currentTime := SDL_GetTicks();
+    currentTime := SDL_GetTicks();
 
-  // Vérifier si le temps écoulé est suffisant pour passer à la prochaine frame
-  if (currentTime - anim.LastUpdateTime >= FRAME_DURATION) then
-  begin
-    // Passer à la prochaine frame
-    anim.CurrentFrame := anim.CurrentFrame + 1;
-
-    // Si on dépasse le nombre de frames, revenir à la première si boucle
-    if (anim.CurrentFrame > anim.TotalFrames) then
+    // Vérifier si le temps écoulé est suffisant pour passer à la prochaine frame
+    if (currentTime - anim.LastUpdateTime >= FRAME_DURATION) then
     begin
-      if anim.IsLooping then
-        anim.CurrentFrame := 1  // Reboucler
-      else
-        anim.CurrentFrame := anim.TotalFrames;  // Garder la dernière frame si non bouclant
+      // Passer à la prochaine frame
+      anim.CurrentFrame := anim.CurrentFrame + 1;
+
+      // Si on dépasse le nombre de frames, revenir à la première si boucle
+      if (anim.CurrentFrame > anim.TotalFrames) then
+      begin
+        if anim.IsLooping then
+          anim.CurrentFrame := 1  // Reboucler
+        else
+          anim.CurrentFrame := anim.TotalFrames;  // Garder la dernière frame si non bouclant
+      end;
+
+      // Mettre à jour le répertoire de l'image pour charger la nouvelle frame
+      image.directory := GetFramePath(anim);
+      sdl_freeSurface(image.imgSurface);
+      SDL_DestroyTexture(image.imgtexture);
+      // Mettre à jour l'image avec la nouvelle frame
+      {WriteLn('Animation : Changing directory to : ',image.directory);
+      WriteLn(anim.isLooping);}
+      CreateRawImage(image, image.rect.x, image.rect.y, image.rect.w, image.rect.h, image.directory);
+
+      // Mettre à jour le temps de la dernière mise à jour
+      anim.LastUpdateTime := currentTime;
     end;
-
-    // Mettre à jour le répertoire de l'image pour charger la nouvelle frame
-    image.directory := GetFramePath(anim);
-
-    // Mettre à jour l'image avec la nouvelle frame
-    {WriteLn('Animation : Changing directory to : ',image.directory);
-    WriteLn(anim.isLooping);}
-    CreateRawImage(image, image.rect.x, image.rect.y, image.rect.w, image.rect.h, image.directory);
-
-    // Mettre à jour le temps de la dernière mise à jour
-    anim.LastUpdateTime := currentTime;
-  end;
   end;
 end;
 
