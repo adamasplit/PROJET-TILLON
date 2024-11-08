@@ -92,7 +92,6 @@ begin
         //writeln('correspondant à ',templatesEnnemis[alea].image.directory);
         writeln('élément ',j,' de ennemis: ',ennemis[j].anim.objectName);
         //analyseObjet(ennemis[j]);
-        drawrect(whiteCol,255,round((j/avancementPartie)*windowWidth),300,windowWidth div avancementPartie,100)
         end;
     writeln('ennemis choisis');
 

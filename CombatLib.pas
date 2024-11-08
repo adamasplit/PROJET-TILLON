@@ -326,7 +326,7 @@ begin
         else
             InitAnimation(proj.anim,nom,'active',8,true);
         proj.anim.estActif:=True;
-        CreateRawImage(proj.image,x,y,w,h,getFramePath(proj.anim));
+        CreateRawImage(proj.image,x-25,y-25,w,h,getFramePath(proj.anim));
 
         //Initialisation de la boîte de collisions
 
@@ -481,6 +481,7 @@ end;
 
 procedure subirDegats(var victime:TObjet;degats,knockbackX,knockbackY:Integer);
 begin
+    if (victime.anim.etat<>'degats') then begin
     if (victime.stats.genre=joueur) and (victime.stats.leFou) then
         victime.stats.leFou:=False
     else
@@ -493,7 +494,7 @@ begin
         knockbackX:=max(min(knockbackX*2,5),-5);
         knockbackY:=max(min(knockbackY*2,5),-5);
         end;
-    if (victime.anim.etat<>'degats') then begin 
+     
         victime.stats.etatPrec:=victime.anim;
         victime.image.rect.x:=victime.image.rect.x+knockbackX;
         victime.image.rect.y:=victime.image.rect.y+knockbackY;
