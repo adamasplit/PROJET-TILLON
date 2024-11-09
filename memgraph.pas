@@ -389,8 +389,8 @@ begin
   SDL_freesurface(box.BackgroundImage.imgsurface);
   SDL_DestroyTexture(box.portrait.imgtexture);
   SDL_freeSurface(box.portrait.imgsurface);
-  CreateRawImage(Box.BackgroundImage, X, Y, W, H, ImgPath);
-  CreateRawImage(Box.portrait, X, Y, W div 4, W div 4, portraitPath);
+  if ImgPath <> nil then CreateRawImage(Box.BackgroundImage, X, Y, W, H, ImgPath) else begin Box.BackgroundImage.rect.x := X; Box.BackgroundImage.rect.y := Y end;
+  if portraitPath <> nil then CreateRawImage(Box.portrait, X, Y, W div 4, W div 4, portraitPath);
   Box.RemainingText := DialogueText;
   Box.DisplayedLetters := 0;
   Box.CurrentLine := 1;
@@ -400,7 +400,6 @@ begin
 
   // Charger les premières lignes
   FillDialogueLines(Box);
-  writeln('INIT OK');
 end;
 
 
@@ -418,8 +417,8 @@ begin
   
   if Box.Complete then RenderDialogueText(box);
   
-  RenderRawImage(Box.BackgroundImage, 255, False);
-  RenderRawImage(Box.portrait, 255, False);
+  if Box.BackgroundImage.imgTexture <> nil then RenderRawImage(Box.BackgroundImage, 255, False);
+  if Box.portrait.imgTexture <> nil then RenderRawImage(Box.portrait, 255, False);
 
   TimeDiff := CurrentTime - Box.LastUpdateTime;
   delay:=box.letterdelay;
@@ -442,7 +441,6 @@ begin
       end
     else
     begin
-      //writeln('2');
       Inc(Box.DisplayedLetters);
       Box.LastUpdateTime := CurrentTime;
     end;
@@ -484,7 +482,6 @@ begin
 
   if (Box.Lines[Box.CurrentLine+1] <> '') and (Box.DisplayedLetters = Length(Box.Lines[Box.CurrentLine])) and (Box.CurrentLine < 6) then
   begin
-    writeln('1');
     Inc(Box.CurrentLine);
     Box.DisplayedLetters := 0;
   end

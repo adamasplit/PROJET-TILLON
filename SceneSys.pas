@@ -44,7 +44,7 @@ var	text1 : TText;
 	text_s5: TText;
 	text_n5: TText;
 
-	box1,box2 : TDialogueBox;
+	dialogues : Array [1..100] of TDialogueBox;
 
 //Image
 	var combat_bg,menuBook,bgImage,characterImage,cardsImage : TImage;
@@ -62,6 +62,7 @@ var Joueur : TObjet;
 	leaderboard : ButtonProcedure;
     PopenSettings : ButtonProcedure;
     PgoSeekHelp : ButtonProcedure;
+	PNouvellePartieIntro : ButtonProcedure;
 
 //Variables de Debug
 	var LastUpdateTime2:UInt32;
@@ -120,6 +121,17 @@ begin
     CreateRawImage(combat_bg,88,-80,900,900,StringToPChar('Sprites/Game/floor/Floor'+ IntToStr(Random(4)+1) +'.bmp'));
 end;
 
+procedure InitDialogues;
+begin
+  	InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',0,-100,windowWidth,400,extractionTexte('DIALOGUE_BOSS_1'),100);
+	InitDialogueBox(dialogues[1],'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',0,-100,windowWidth,400,extractionTexte('DIALOGUE_BOSS_2'),100);
+	InitDialogueBox(dialogues[3],nil,nil,-50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('TXT_INTRO1'),100);
+	InitDialogueBox(dialogues[4],nil,nil,-50,windowHeight div 3 - 100 ,windowWidth,400,extractionTexte('TXT_INTRO2'),100);
+	InitDialogueBox(dialogues[5],nil,nil,-50,windowHeight div 3 - 100 ,windowWidth,400,extractionTexte('TXT_INTRO3'),100);
+	InitDialogueBox(dialogues[6],nil,nil,-50,windowHeight div 3 - 100 ,windowWidth,400,extractionTexte('TXT_INTRO4'),100);
+	InitDialogueBox(dialogues[7],nil,nil,-50,windowHeight div 3 - 100 ,windowWidth,400,extractionTexte('TXT_INTRO5'),100);
+end;
+
 procedure AfficherTout();
 var i : Integer;
 begin
@@ -153,6 +165,7 @@ begin
 	EffetDeFondu
 	
 end;
+
 
 // Updates des Scenes
 
@@ -288,8 +301,6 @@ procedure jouer;
 		
 		button_deck.estVisible := False;
 		button_bestiaire.estVisible := False;
-		InitDialogueBox(box2,'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',0,-100,windowWidth,400,extractionTexte('DIALOGUE_BOSS_1'),100);
-		InitDialogueBox(box1,'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',000,-100,windowWidth,400,extractionTexte('DIALOGUE_BOSS_2'),100);
 
         //Objets de Scene
 		ActualiserJeu;
@@ -329,6 +340,57 @@ procedure lead;
 		OnMouseHover(button_retour_menu,GetMouseX,GetMouseY);
 		RenderButtonGroup(button_retour_menu);
 		SDL_RenderPresent(sdlRenderer);
+end;
+
+function NextOrSkipDialogue(i : Integer) : Boolean;
+begin
+	NextOrSkipDialogue:=False;
+  	  while (SDL_PollEvent( EventSystem ) = 1) do
+      			case EventSystem^.type_ of
+					SDL_mousebuttondown:if dialogues[i].letterdelay=0 then NextOrSkipDialogue:=True else dialogues[i].LetterDelay:=0;
+	end;
+end;
+
+procedure NouvellePartieIntro;
+begin
+	jouerMus(12);
+	ClearScreen;
+	SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
+	black_color.r := 255; black_color.g := 255; black_color.b := 255;
+	repeat
+	UpdateDialogueBox(dialogues[3]);
+	SDL_RenderPresent(sdlRenderer);
+	SDL_Delay(10);
+	until NextOrSkipDialogue(3);
+
+	ClearScreen;
+  	SDL_Delay(300);  
+
+	repeat
+	UpdateDialogueBox(dialogues[4]);
+	SDL_RenderPresent(sdlRenderer);
+	until NextOrSkipDialogue(4);
+	ClearScreen;
+
+	repeat
+	UpdateDialogueBox(dialogues[5]);
+	SDL_RenderPresent(sdlRenderer);
+	until NextOrSkipDialogue(5);
+	ClearScreen;
+
+	repeat
+	UpdateDialogueBox(dialogues[6]);
+	SDL_RenderPresent(sdlRenderer);
+	until NextOrSkipDialogue(6);
+	ClearScreen;
+
+	repeat
+	UpdateDialogueBox(dialogues[7]);
+	SDL_RenderPresent(sdlRenderer);
+	until NextOrSkipDialogue(7);
+	ClearScreen;
+	black_color.r := 0; black_color.g := 0; black_color.b := 0;
+	jouer;
 end;
 
 
@@ -456,13 +518,14 @@ begin
     retour_menu:=@direction_menu;
     PopenSettings := @openSettings;
     PgoSeekHelp := @goSeekHelp;
+	PNouvellePartieIntro := @NouvellePartieIntro;
     
 	//Menu Principal
     // Game icon (𓈒⟡₊⋆∘ Wowie 𓈒⟡₊⋆∘)
     CreateText(text1, windowWidth div 2-150, 20, 300, 250, 'Les Cartes du Destin',Fantasy30, whiteCol);
 	// Initialisation des boutons principaux (à gauche)
 	InitButtonGroup(button_continue, 100, windowHeight div 5, 350, 80, 'Sprites\Menu\Button1.bmp', 'Continuer', Pjouer);
-    InitButtonGroup(button_new_game, 100, (windowHeight div 5) + 100, 350, 80, 'Sprites\Menu\Button1.bmp', 'Nouvelle Partie', Pjouer);
+    InitButtonGroup(button_new_game, 100, (windowHeight div 5) + 100, 350, 80, 'Sprites\Menu\Button1.bmp', 'Nouvelle Partie', PNouvellePartieIntro);
     InitButtonGroup(button_leaderboard, 100, (windowHeight div 5) + 200, 350, 80, 'Sprites\Menu\Button1.bmp', 'Leaderboard', leaderboard);
     InitButtonGroup(button_quit, 100, (windowHeight div 5) + 300, 350, 80, 'Sprites\Menu\Button1.bmp', 'Quitter', quitter);
 
@@ -507,24 +570,26 @@ begin
   begin
   autoMusique();
     //Mouvement Joueur
-  if SceneActive='Jeu' then 
+	case SceneActive of
+  		'Jeu': 
   		begin
 		ActualiserJeu;
 		MouvementJoueur(LObjets[0]);
 		end;
-  if SceneActive='MenuEnJeu' then 
+  		'MenuEnJeu': 
   		begin
 		ActualiserMenuEnJeu;
 		end;
-  if SceneActive='Menu' then 
+  		'Menu': 
   		begin
 		direction_menu;
 		end;
-  if sceneActive='Cutscene' then
+		'NouvellePartieIntro': NouvellePartieIntro;
+  		'Cutscene':
 		begin
 		sdl_renderclear(sdlrenderer);
 		affichertout;
-		UpdateDialogueBox(box2);
+		UpdateDialogueBox(dialogues[2]);
 		updateanimation(LObjets[0].anim,LObjets[0].image);
 		updateanimation(LObjets[1].anim,LObjets[1].image);
 		sdl_renderpresent(sdlrenderer);
@@ -536,15 +601,15 @@ begin
 		while (SDL_PollEvent( EventSystem ) = 1) do
     		begin
       			case EventSystem^.type_ of
-					SDL_mousebuttondown:if box2.letterdelay=0 then sceneActive:='Jeu' else box2.LetterDelay:=0;
+					SDL_mousebuttondown:if dialogues[2].letterdelay=0 then sceneActive:='Jeu' else dialogues[2].LetterDelay:=0;
 				end
 			end
 		end;
-	if sceneActive='Behemoth_Mort' then
+		'Behemoth_Mort':
 		begin
 		sdl_renderclear(sdlrenderer);
 		affichertout;
-		UpdateDialogueBox(box1);
+		UpdateDialogueBox(dialogues[1]);
 		updateanimation(LObjets[0].anim,LObjets[0].image);
 		updateanimation(LObjets[1].anim,LObjets[1].image);
 		sdl_renderpresent(sdlrenderer);
@@ -555,17 +620,17 @@ begin
 		while (SDL_PollEvent( EventSystem ) = 1) do
     		begin
       			case EventSystem^.type_ of
-					SDL_mousebuttondown:if box1.letterdelay=0 then begin 
+					SDL_mousebuttondown:if dialogues[1].letterdelay=0 then begin 
 						InitAnimation(LObjets[1].anim,LObjets[1].anim.objectName,'mort',LObjets[1].stats.nbFramesMort,False);
 						sceneActive:='Jeu';
 						end
 						else
-							box1.LetterDelay:=0;
+							dialogues[1].LetterDelay:=0;
 				end
 			end
 		end;
     
-
+	end;
     while SDL_PollEvent( EventSystem ) = 1 do
     begin
       case EventSystem^.type_ of
@@ -654,6 +719,7 @@ begin
     InitLeaderboard;
 	initUICombat;
 	initDecor;
+	InitDialogues;
 	setlength(LObjets,1);
 	initjoueur;
 	writeln('essai d''actualisation...');
