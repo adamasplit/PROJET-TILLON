@@ -83,5 +83,10 @@
 <COMM_ENN_19>Ce symbole! Il doit donc s'agir d'un genre de pacte. Mais pourquoi aller aussi loin pour le pouvoir? Suis-je une telle menace?;
 <COMM_ENN_20>Dans nos légendes, les dragons sont réputés pour leur sagesse... Qu'a-t'il pu bien se passer pour en arriver là? Dans tous les cas, le seul moyen de le renvoyer dans la mort est de tuer son réceptacle.;
 <DESC_REL_1>Un recueil de techniques ancestrales;
+<TXT_INTRO1>Il fait si froid...;
+<TXT_INTRO2>Tout est noir. Aucun son, aucune lumière.;
+<TXT_INTRO3>Une sensation étrange… Comme un rêve dont on peine à sortir.;
+<TXT_INTRO3>Peu à peu, une douleur sourde traverse ton esprit… \n L'air est glacial, et ton souffle devient peu à peu audible dans cette obscurité.;
+<TXT_INTRO4>Tu te souviens vaguement de fragments… Des cartes, des signes, un destin oublié. \n Les cartes guideront ton destin, ou te condamneront…;
 <DIALOGUE_BOSS_1>Longtemps, j'ai attendu ce moment. L'humanité connaîtra mon courroux pour ces siècles de souffrance...;
 <DIALOGUE_BOSS_2>Non... Emprisonné à nouveau? Vous ne perdez rien pour attendre, humains!;

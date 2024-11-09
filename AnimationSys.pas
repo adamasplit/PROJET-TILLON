@@ -3,17 +3,21 @@ unit AnimationSys;
 interface
 
 uses
+  coeur,
+  math,
   memgraph,
   SDL2,
-  math,
-  SysUtils,
   sonoSys,
-  coeur;
+  SysUtils;
 
 const
   FRAME_DURATION = 90;  // Durée en ms pour 30 FPS
 
-  
+var
+  fonduActif: Boolean;
+  fonduEntrant: Boolean;
+  dureeFondu: Integer;  // Durée en millisecondes
+  timeDebutFondu : Uint32;
 
 // Initialiser l'animation pour un objet
 procedure InitAnimation(var anim: TAnimation; objectName, etat: PChar; totalFrames: Integer; isLooping: Boolean);
@@ -31,6 +35,10 @@ procedure RenderButtonGroup(var btnGroup: TButtonGroup);
 // Gestion des événements OnHover et OnClick
 procedure OnMouseHover(var btnGroup: TButtonGroup; x,y : Integer);
 procedure OnMouseClick(var btnGroup: TButtonGroup; x, y: Integer);
+
+//Gestion due fondu
+procedure DeclencherFondu(isFonduEntrant: Boolean; duree: Integer);
+procedure EffetDeFondu;
 
 
 
@@ -119,66 +127,48 @@ begin
   SDL_SetTextureAlphaMod(btnGroup.image.imgTexture, 150);  
 end;
 
-procedure FonduNoir(activation: Boolean; duree: Integer);
-var
-  startTime, currentTime, elapsedTime: UInt32;
-  alphaStep, alpha: Integer;
-  isFadingIn: Boolean;
-  bgColor: TSDL_Color;
+// Procédure pour déclencher un effet de fondu
+procedure DeclencherFondu(isFonduEntrant: Boolean; duree: Integer);
 begin
-  // Couleur de fond noir
-  bgColor.r := 0;
-  bgColor.g := 0;
-  bgColor.b := 0;
-  
-  // Est-ce un fondu vers noir (activation) ou un rétablissement (désactivation) ?
-  if activation then
+  fonduActif := True;
+  fonduEntrant := isFonduEntrant;
+  dureeFondu := duree;
+  TimeDebutFondu := SDL_GetTicks();  // Initialise l'heure de début du fondu
+end;
+
+// Procédure de l'effet de fondu sans boucle (à appeler dans AfficherTout)
+procedure EffetDeFondu;
+var
+  tempsEcoule: UInt32;
+  progression: Real;
+  alpha: Integer;
+begin
+  if not fonduActif then Exit;
+
+  // Calcul du temps écoulé depuis le début du fondu
+  tempsEcoule := SDL_GetTicks() - TimeDebutFondu;
+
+  // Vérification si la durée du fondu est écoulée
+  if tempsEcoule >= dureeFondu then
   begin
-    alpha := 0;  // On commence transparent
-    isFadingIn := True;
+    fonduActif := False;
+    if fonduEntrant then
+      alpha := 255   // Fin du fondu entrant, opacité maximale
+    else
+      alpha := 0;    // Fin du fondu sortant, opacité nulle
   end
   else
   begin
-    alpha := 255;  // On commence complètement opaque
-    isFadingIn := False;
-  end;
-
-  // Temps initial et durée
-  startTime := SDL_GetTicks();
-  elapsedTime := 0;
-  
-  // Calcul du pas d'alpha pour chaque frame (ajusté à ~60 FPS, soit 16 ms par frame)
-  alphaStep := 255 * 16 div duree;  // Chaque frame, on ajuste l'alpha
-
-  while elapsedTime < duree do
-  begin
-    // Temps écoulé depuis le début du fondu
-    currentTime := SDL_GetTicks();
-    elapsedTime := currentTime - startTime;
-
-    // Ajuster l'alpha en fonction du temps écoulé
-    if isFadingIn then
-      alpha := Min(255, alpha + alphaStep)  // Vers le noir
+    // Calcul de l'interpolation naturelle (ease-in-out) pour une transition fluide
+    progression := tempsEcoule / dureeFondu;
+    if fonduEntrant then
+      alpha := Round(255 * (1 - (cos(progression * PI) * 0.5 + 0.5)))  // Interpolation pour le fondu entrant (avec geogebra sa mère)
     else
-      alpha := Max(0, alpha - alphaStep);  // Retour à transparent
-    DrawRect(bgColor, alpha, 0, 0, windowWidth, windowHeight);
-    SDL_RenderPresent(sdlRenderer);
+      alpha := Round(255 * (cos(progression * PI) * 0.5 + 0.5));       // Interpolation pour le fondu sortant
 
-    SDL_Delay(10);
+    SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, alpha);
+    SDL_RenderFillRect(sdlRenderer, nil);
   end;
-
-  // S'assurer que l'alpha soit exactement 255 (si activation) ou 0 (si désactivation)
-  if isFadingIn then
-    alpha := 255
-  else
-    alpha := 0;
-
-  // Dessiner la frame finale
-  DrawRect(bgColor, alpha, 0, 0, windowWidth, windowHeight);
-  SDL_RenderPresent(sdlRenderer);
-
-  // Dernière pause pour laisser le temps de voir le résultat final (facultatif)
-  SDL_Delay(16);
 end;
 
 
@@ -242,5 +232,9 @@ begin
   jouerSon('SFX\Button_click.wav');
   end;
 end;
-
+begin
+  fonduActif := False;
+  fonduEntrant := True;
+  dureeFondu := 0;
+  WriteLn('AnimationSys ready ⋆｡°✩');
 end.

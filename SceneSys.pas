@@ -2,20 +2,20 @@ unit Scenesys;
 
 interface
 uses
-    AnimationSys,
-    coeur,
-    CollisionSys,
-    combatLib,
-    enemyLib,
-    eventsys,
-    fichierSys,
-    MapSys,
-    memgraph,
-    SDL2,
-    SDL2_mixer,
-    SDL2_ttf,
-    sonoSys,
-    SysUtils;
+	AnimationSys,
+	coeur,
+	CollisionSys,
+	combatLib,
+	enemyLib,
+	eventsys,
+	fichierSys,
+	MapSys,
+	memgraph,
+	SDL2,
+	SDL2_mixer,
+	SDL2_ttf,
+	sonoSys,
+	SysUtils;
 
 // Bouttons
 var button_new_game: TButtonGroup;
@@ -150,7 +150,7 @@ begin
 			else
 				RenderRawImage(LObjets[0].image,255, LObjets[0].anim.isFliped);
 		end;
-	
+	EffetDeFondu
 	
 end;
 
@@ -277,6 +277,7 @@ procedure jouer;
 		SceneActive := 'Jeu';
 		ClearScreen;
 		SDL_RenderClear(sdlRenderer);
+		DeclencherFondu(False, 3000);
 
 		//Objets dissimulés
 		button_leaderboard.button.estVisible := false;
@@ -367,6 +368,7 @@ begin
     RenderButtonGroup(button_settings);
     RenderButtonGroup(button_help);
     RenderButtonGroup(button_home);
+	EffetDeFondu;
 
     // Afficher le texte et autres éléments si nécessaire
     RenderText(text1);
@@ -655,6 +657,7 @@ begin
 	setlength(LObjets,1);
 	initjoueur;
 	writeln('essai d''actualisation...');
+	DeclencherFondu(False, 5000);
     GameUpdate;
 end;
 
