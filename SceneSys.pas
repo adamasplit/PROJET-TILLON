@@ -44,7 +44,7 @@ var	text1 : TText;
 	text_s5: TText;
 	text_n5: TText;
 
-	box,box2 : TDialogueBox;
+	box1,box2 : TDialogueBox;
 
 //Image
 	var combat_bg,menuBook,bgImage,characterImage,cardsImage : TImage;
@@ -114,6 +114,12 @@ for i:=2 to High(LObjets) do
 		end
 end;
 
+procedure InitDecor;
+begin
+    randomize;
+    CreateRawImage(combat_bg,88,-80,900,900,StringToPChar('Sprites/Game/floor/Floor'+ IntToStr(Random(4)+1) +'.bmp'));
+end;
+
 procedure AfficherTout();
 var i : Integer;
 begin
@@ -154,6 +160,7 @@ procedure ActualiserJeu;
 var i:Integer;
 	begin
 		randomize();
+		//writeln('actualiserJeu, taille de LObjets:',high(lobjets));
 		SDL_RenderClear(sdlRenderer);
 		SDL_PumpEvents;
 		sdl_delay(10);
@@ -280,7 +287,8 @@ procedure jouer;
 		
 		button_deck.estVisible := False;
 		button_bestiaire.estVisible := False;
-		InitDialogueBox(box2,'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',000,000,windowWidth,400,extractionTexte('DIALOGUE_BOSS_1'),100);
+		InitDialogueBox(box2,'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',0,-100,windowWidth,400,extractionTexte('DIALOGUE_BOSS_1'),100);
+		InitDialogueBox(box1,'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',000,-100,windowWidth,400,extractionTexte('DIALOGUE_BOSS_2'),100);
 
         //Objets de Scene
 		ActualiserJeu;
@@ -387,6 +395,7 @@ procedure InitJoueur;
 var j : Integer;
 begin
     // Initialisation du joueur
+	
     joueur.col.isTrigger := False;
     joueur.col.estActif := True;
     joueur.col.dimensions.w := 50;
@@ -407,20 +416,16 @@ begin
     statsJoueur.vie:=100;statsJoueur.vieMax:=100;
     initStatsCombat(statsJoueur,LObjets[0].stats);
     iCarteChoisie:=8;
-    CreateRawImage(LObjets[0].image, windowWidth div 2, windowHeight div 2, 100, 100, 'Sprites\Game\Joueur\Joueur_idle_1.bmp');
+    CreateRawImage(LObjets[0].image, windowWidth div 2-windowWidth div 4, windowHeight div 2, 100, 100, 'Sprites\Game\Joueur\Joueur_idle_1.bmp');
     CreateRawImage(menuBook,0,0,windowWidth,windowHeight,'Sprites\Game\Book\Book_Opening_1.bmp');
 end;
 
-procedure InitDecor;
-begin
-    randomize;
-    CreateRawImage(combat_bg,88,-80,900,900,StringToPChar('Sprites/Game/floor/Floor'+ IntToStr(Random(4)+1) +'.bmp'));
-end;
+
 
 procedure ParallaxMenuInit;
 begin
-  CreateRawImage(bgImage,0 , 0,windowWidth ,windowHeight ,'Sprites\Menu\parallax_bg.bmp');
-  CreateRawImage(characterImage,0 , 0,windowWidth ,windowHeight ,'Sprites\Menu\parallax_player.bmp');
+  CreateRawImage(bgImage,0 , 10,windowWidth ,windowHeight ,'Sprites\Menu\parallax_bg.bmp');
+  CreateRawImage(characterImage,0 , 8,windowWidth ,windowHeight ,'Sprites\Menu\parallax_player.bmp');
   CreateRawImage(cardsImage,0 , 0,windowWidth ,windowHeight ,'Sprites\Menu\parallax_cards.bmp');
 end;
 
@@ -452,7 +457,7 @@ begin
     
 	//Menu Principal
     // Game icon (𓈒⟡₊⋆∘ Wowie 𓈒⟡₊⋆∘)
-    CreateText(text1, windowWidth div 2-150, 20, 300, 250, 'Les Cartes du Destin',Fantasy30, black_color);
+    CreateText(text1, windowWidth div 2-150, 20, 300, 250, 'Les Cartes du Destin',Fantasy30, whiteCol);
 	// Initialisation des boutons principaux (à gauche)
 	InitButtonGroup(button_continue, 100, windowHeight div 5, 350, 80, 'Sprites\Menu\Button1.bmp', 'Continuer', Pjouer);
     InitButtonGroup(button_new_game, 100, (windowHeight div 5) + 100, 350, 80, 'Sprites\Menu\Button1.bmp', 'Nouvelle Partie', Pjouer);
@@ -521,10 +526,39 @@ begin
 		updateanimation(LObjets[0].anim,LObjets[0].image);
 		updateanimation(LObjets[1].anim,LObjets[1].image);
 		sdl_renderpresent(sdlrenderer);
+		if sdl_getTicks mod 200 = 0 then 
+			begin
+			combat_bg.rect.x:=combat_bg.rect.x-4+random(9);
+			combat_bg.rect.y:=combat_bg.rect.y-4+random(9);
+			end;
 		while (SDL_PollEvent( EventSystem ) = 1) do
     		begin
       			case EventSystem^.type_ of
-					SDL_mousebuttondown:sceneActive:='Jeu';
+					SDL_mousebuttondown:if box2.letterdelay=0 then sceneActive:='Jeu' else box2.LetterDelay:=0;
+				end
+			end
+		end;
+	if sceneActive='Behemoth_Mort' then
+		begin
+		sdl_renderclear(sdlrenderer);
+		affichertout;
+		UpdateDialogueBox(box1);
+		updateanimation(LObjets[0].anim,LObjets[0].image);
+		updateanimation(LObjets[1].anim,LObjets[1].image);
+		sdl_renderpresent(sdlrenderer);
+		if sdl_getTicks mod 1 = 0 then 
+			begin
+			combat_bg.rect.x:=88+random(9);
+			end;
+		while (SDL_PollEvent( EventSystem ) = 1) do
+    		begin
+      			case EventSystem^.type_ of
+					SDL_mousebuttondown:if box1.letterdelay=0 then begin 
+						InitAnimation(LObjets[1].anim,LObjets[1].anim.objectName,'mort',LObjets[1].stats.nbFramesMort,False);
+						sceneActive:='Jeu';
+						end
+						else
+							box1.LetterDelay:=0;
 				end
 			end
 		end;
@@ -616,6 +650,11 @@ begin
     InitMenuPrincipal;
     InitMenuEnJeu;
     InitLeaderboard;
+	initUICombat;
+	initDecor;
+	setlength(LObjets,1);
+	initjoueur;
+	writeln('essai d''actualisation...');
     GameUpdate;
 end;
 

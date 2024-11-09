@@ -140,7 +140,7 @@ var
 begin
   
   for i := 0 to High(LObjets) do
-  if (i<=High(LObjets)) then
+  if (i<=High(LObjets)) and not (leMonde and (i<>0)) then
   begin
     // Si l'objet est actif pour les collisions
     if LObjets[i].col.estActif then

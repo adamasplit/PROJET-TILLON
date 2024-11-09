@@ -1,11 +1,10 @@
 program testUI;
-uses SDL2,AnimationSys,memgraph,SysUtils;
+uses sceneSys;
 
 
-var animUI:TObjet;
 
 begin
-initAnimation(UI,'interface','idle',);
-
-annihiler();
+StartGame;
+while True do begin
+end;
 end.

@@ -634,12 +634,20 @@ begin
       else if ennemi.stats.vie<=0 then
       begin
       if not (ennemi.anim.objectName='Béhémoth') then
-        ennemi.anim.isFliped:=(joueur.image.rect.x>ennemi.image.rect.x);
-			if not (ennemi.anim.etat='mort') then 
         begin
-        InitAnimation(ennemi.anim,ennemi.anim.objectName,'mort',ennemi.stats.nbFramesMort,False);
-        ennemi.col.estActif:=False
-        end;
+        ennemi.anim.isFliped:=(joueur.image.rect.x>ennemi.image.rect.x);
+        if not (ennemi.anim.etat='mort') then 
+          begin
+          InitAnimation(ennemi.anim,ennemi.anim.objectName,'mort',ennemi.stats.nbFramesMort,False);
+          ennemi.col.estActif:=False
+          end;
+        end
+      else
+        if (ennemi.anim.etat<>'mortRep') and (ennemi.anim.etat<>'mort') then
+          begin
+          initAnimation(ennemi.anim,ennemi.anim.objectName,'mortRep',ennemi.stats.nbframes3,True);
+          sceneActive:='Behemoth_Mort';
+          end;
     end
 end;
 
@@ -657,7 +665,7 @@ initStatEnnemi('UNKNOWN',4,150,2,0,-20,0,128,128,8,12,8,4,8,TemplatesEnnemis[8],
 initStatEnnemi('armure',7,400,0,0,10,0,384,256,7,2,13,9,16,TemplatesEnnemis[9],192,192,96,64,'justice');
 initStatEnnemi('dracomage',2,100,2,5,6,1,192,192,34,12,8,8,13,TemplatesEnnemis[10],128,164,32,28,'eclairR');
 initStatEnnemi('grenouille',8,20,1,0,2,0,90,90,7,6,4,4,7,templatesEnnemis[11],54,90,5,0,'boule');
-initStatEnnemi('Béhémoth',10,15000,20,10,10,5,463,614,12,32,40,0,12,templatesEnnemis[12],400,307,63,307,'rayonRykor')
+initStatEnnemi('Béhémoth',10,15000,20,10,10,5,463,614,12,32,40,12,39,templatesEnnemis[12],400,307,63,307,'rayonRykor')
 
 
 end.

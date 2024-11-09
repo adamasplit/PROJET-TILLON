@@ -18,7 +18,7 @@
 <DESC_CAR_18>;
 <DESC_CAR_19>Le soleil darde le mal de ses rayons et protège ceux qui marchent dans la lumière.;
 <DESC_CAR_20>L'ange passe son jugement et donne son aide à ceux qu'il en juge dignes.;
-<DESC_CAR_21>;
+<DESC_CAR_21>La carte du Monde donne à l'utilisateur l'autorité sur le temps.;
 <DESC_CAR_22>;
 <COMM_CAR_1>Il faut bien commencer quelque part. J'accepte l'aide que les cartes m'accorderont.;
 <COMM_CAR_2>;
@@ -83,4 +83,5 @@
 <COMM_ENN_19>Ce symbole! Il doit donc s'agir d'un genre de pacte. Mais pourquoi aller aussi loin pour le pouvoir? Suis-je une telle menace?;
 <COMM_ENN_20>Dans nos légendes, les dragons sont réputés pour leur sagesse... Qu'a-t'il pu bien se passer pour en arriver là? Dans tous les cas, le seul moyen de le renvoyer dans la mort est de tuer son réceptacle.;
 <DESC_REL_1>Un recueil de techniques ancestrales;
-<DIALOGUE_BOSS_1>Longtemps j'ai attendu ce moment. L'humanité connaîtra mon courroux.;
+<DIALOGUE_BOSS_1>Longtemps, j'ai attendu ce moment. L'humanité connaîtra mon courroux pour ces siècles de souffrance...;
+<DIALOGUE_BOSS_2>Non... Emprisonné à nouveau? Vous ne perdez rien pour attendre, humains!;

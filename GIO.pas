@@ -45,7 +45,7 @@ var	text1 : TText;
 	text_s5: TText;
 	text_n5: TText;
 
-	box,box2 : TDialogueBox;
+	box1,box2 : TDialogueBox;
 
 //Image
 	var menu_bg,combat_bg,menuBook : TImage;
@@ -175,10 +175,10 @@ procedure ActualiserJeu;
 		SDL_RenderClear(sdlRenderer);
 		SDL_PumpEvents;
 		sdl_delay(10);
-		afficherTout;
+		//afficherTout;
 		//UpdateDialogueBox(box);
-		UpdateCollisions();
-		UpdateAnimations();
+		//UpdateCollisions();
+		//UpdateAnimations();
 		if LObjets[0].stats.vie>LObjets[0].stats.vieMax then LObjets[0].stats.vie:=LObjets[0].stats.vieMax;
 		if LObjets[0].stats.vie<0 then LObjets[0].stats.vie:=0;
 		if leMonde and (sdl_getTicks-UpdateTimeMonde>LObjets[0].stats.compteurLeMonde*1000) then
@@ -220,6 +220,7 @@ procedure jouer;
 		button_bestiaire.estVisible := False;
 		//InitDialogueBox(box,'Sprites\Menu\Button1.bmp',000,000,windowWidth,400,'',30);
 		InitDialogueBox(box2,'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',000,000,windowWidth,400,extractionTexte('DIALOGUE_BOSS_1'),100);
+		InitDialogueBox(box1,'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',000,000,windowWidth,400,extractionTexte('DIALOGUE_BOSS_2'),100);
 
         //Objets de Scene
 		ActualiserJeu;

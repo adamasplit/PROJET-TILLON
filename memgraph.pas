@@ -531,7 +531,7 @@ BEGIN
 
   // activation de l'opacité
   SDL_SetRenderDrawBlendMode(sdlRenderer, SDL_BLENDMODE_BLEND);
-  
+  writeln(windowwidth,windowHeight);
   TTF_SetFontStyle(Fantasy40, TTF_STYLE_NORMAL);
   TTF_SetFontOutline(Fantasy40, 1);
   TTF_SetFontHinting(Fantasy40, TTF_HINTING_NORMAL);
