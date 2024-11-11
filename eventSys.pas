@@ -145,12 +145,12 @@ begin
     RenderRawImage(combatUI[7],255,false);RenderRawImage(combatUI[8],255,false);RenderRawImage(combatUI[9],255,false);
     end;
     //Reste du deck
-    if high(stats.deck^)>3 then begin
+    if high(stats.deck^)>=3 then begin
         drawRect(black_color,100,935,560,133,158);
-        for i:=min(7,high(stats.deck^)) downto 3 do begin
+        for i:=min(7,high(stats.deck^)+1) downto 3 do begin
             SDL_FreeSurface(CombatUI[7+i].imgSurface);
             SDL_DestroyTexture(CombatUI[7+i].imgTexture);
-            createRawImage(CombatUI[7+i],920+4*i,600-i*5,128,128,stats.deck^[i].dir);
+            createRawImage(CombatUI[7+i],920+4*i,600-i*5,128,128,stats.deck^[i-1].dir);
             renderRawImage(CombatUI[7+i],255,False);
             end;
             end;

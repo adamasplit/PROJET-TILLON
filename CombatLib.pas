@@ -31,6 +31,7 @@ procedure creerEffet(x,y,w,h,frames:Integer;nom:PCHar;fixeJoueur:Boolean;var obj
 procedure InitJustice(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,xCible,yCible,vitesse,delai:Integer);
 procedure subirDegats(var victime:TObjet;degats,knockbackX,knockbackY:Integer);
 procedure JouerCarte(var stats:TStats;x,y,i:Integer); 
+procedure InitAngle(vectX,vectY:Real;var angle:Real);
 
 
 
@@ -47,6 +48,8 @@ begin
             angle:=-pi/2
     else
         angle:=arctan(vectY/vectX);
+    //writeln('X:',vectX,',Y:',vectY);
+    //writeln('angle:',angle);
 end;
 
 //Fonction de calcul des dégats
@@ -155,6 +158,7 @@ end;
 procedure initStatsCombat(statsPerm:TStats;var statsTemp:TStats);
 //var i:Integer;
 begin
+    initAnimation(LObjets[0].anim,LObjets[0].anim.objectName,'idle',12,True);
     //Création de la copie
     statsTemp:=statsPerm;
     creerDeckCombat(statsTemp,Pdeck);
@@ -268,7 +272,7 @@ begin
             CreateRawImage(rayon.image,rayon.image.rect.x,rayon.image.rect.y,1200,rayon.image.rect.h,getFramePath(rayon.anim))
             end
     else
-        if ((rayon.stats.dureeVie>5) and (rayon.anim.currentFrame<5-(rayon.stats.dureeVie div (rayon.stats.dureeVieInit div 5)))) or (rayon.stats.dureeVie<0) then
+        if (not leMonde) and (((rayon.stats.dureeVie>5) and (rayon.anim.currentFrame<5-(rayon.stats.dureeVie div (rayon.stats.dureeVieInit div 5)))) or (rayon.stats.dureeVie<0)) then
             updateAnimation(rayon.anim,rayon.image);
     if (rayon.stats.delai<0) and not (leMonde) then 
         rayon.stats.dureeVie:=rayon.stats.dureeVie-1;
@@ -522,7 +526,7 @@ end;
     procedure II(s : TStats ; x,y : integer);
     var proj : TObjet;
     begin
-        CreerRayon(joueur , 2 , s.force , s.multiplicateurDegat , x,y,120, getmouseX,getmouseY,{vitRotation}0,{dureeVie}30,{delai}1, 'rayon', proj);
+        CreerRayon(joueur , 2 , s.force , s.multiplicateurDegat , x,y,120, getmouseX,getmouseY,{vitRotation}1,{dureeVie}30,{delai}1, 'rayon', proj);
         ajoutObjet(proj);
     end;
 

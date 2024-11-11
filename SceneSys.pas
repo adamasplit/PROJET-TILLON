@@ -467,6 +467,7 @@ begin
     joueur.col.offset.x := 25;
     joueur.col.offset.y := 15;
     joueur.col.nom := 'Joueur';
+	joueur.stats.angle:=0;
     Joueur.anim.estActif := True;
     LObjets[0] := Joueur;
     LObjets[0].image.rect.x := windowWidth div 2;
@@ -479,7 +480,7 @@ begin
         statsJoueur.collection[j]:=Cartes[j];
     statsJoueur.vie:=100;statsJoueur.vieMax:=100;
     initStatsCombat(statsJoueur,LObjets[0].stats);
-    iCarteChoisie:=8;
+    iCarteChoisie:=1;
     CreateRawImage(LObjets[0].image, windowWidth div 2-windowWidth div 4, windowHeight div 2, 100, 100, 'Sprites\Game\Joueur\Joueur_idle_1.bmp');
     CreateRawImage(menuBook,0,0,windowWidth,windowHeight,'Sprites\Game\Book\Book_Opening_1.bmp');
 end;

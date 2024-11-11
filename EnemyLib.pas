@@ -17,7 +17,7 @@ const TAILLE_VAGUE=3;
 var EnemyBasik : TObjet;
 var templatesEnnemis:array[1..MAXENNEMIS] of TObjet;
     ennemis:Array of TOBjet;
-procedure initStatEnnemi(nom:PChar;typeIA_MVT,vie,att,dmg,def,vitesse,w,h,framesA,frames1,frames2,frames3,framesM:Integer;var ennemi:TObjet;wcol,hcol,offx,offy:Integer;nomAttaques:PChar);
+//procedure initStatEnnemi(nom:PChar;typeIA_MVT,vie,att,dmg,def,vitesse,w,h,framesA,frames1,frames2,frames3,framesM:Integer;var ennemi:TObjet;wcol,hcol,offx,offy:Integer;nomAttaques:PChar);
 procedure IAEnnemi(var ennemi:TObjet;joueur:TObjet);
 procedure ajoutVague();
 
@@ -87,7 +87,8 @@ begin
     writeln('vague ajoutée');
 end;
 
-procedure initStatEnnemi(nom:PChar;typeIA_MVT,vie,att,dmg,def,vitesse,w,h,framesA,frames1,frames2,frames3,framesM:Integer;var ennemi:TObjet;wcol,hcol,offx,offy:Integer;nomAttaques:PChar);
+procedure initStatEnnemi(num:Integer;nom:PChar;typeIA_MVT,vie,att,dmg,def,vitesse,w,h,framesA,frames1,frames2,frames3,framesM:Integer;wcol,hcol,offx,offy:Integer;nomAttaques:PChar);
+var ennemi:TObjet;
 begin
 
     //Initialisation de l'affichage
@@ -96,6 +97,7 @@ begin
     ennemi.stats.nbframes3:=frames3;
     ennemi.stats.nbFramesApparition:=framesA;
     ennemi.stats.nbframesMort:=framesM;
+    ennemi.stats.angle:=0;
     InitAnimation(ennemi.anim,nom,'apparition', ennemi.stats.nbFramesApparition,False);
     //writeln('accès au fichier ',getframePath(ennemi.anim));
     CreateRawImage(ennemi.image,(random(20)+5)*20,0,w,h,getFramePath(ennemi.anim));
@@ -127,6 +129,8 @@ begin
     ennemi.col.nom := nom;
     ennemi.anim.estActif := True;
     ennemi.stats.inamovible:=(ennemi.anim.objectname='Béhémoth');
+    ennemi.stats.numero:=num;
+    templatesEnnemis[num]:=ennemi;
 end;
 
 procedure AIWarp(var ennemi:TObjet;targetx,targety:Integer);
@@ -652,20 +656,20 @@ begin
 end;
 
 begin
-// !!format : nom,mvt,vie,att,dmg,def,vit,w,h,nbFrames(apparition,chase,action1,action2,mort),(résultat),collisions(w,h,offsetX,offsetY),nom de l'attaque
+// !!format : numéro dans TemplatesEnnemis, nom,mvt,vie,att,dmg,def,vit,w,h,nbFrames(apparition,chase,action1,action2,mort),collisions(w,h,offsetX,offsetY),nom de l'attaque
 //(mvt: type de mouvement, dmg: dégâts au contact)
-initStatEnnemi('undrixel',3,50,5,2,0,1,288,192,4,10,4,0,10,TemplatesEnnemis[1],200,128,10,40,'eclairR');
-initStatEnnemi('Archimage',4,100,2,0,6,0,128,128,10,6,6,6,4,TemplatesEnnemis[2],70,100,24,14,'projectile');
-initStatEnnemi('liche',5,50,2,0,4,1,128,128,9,6,5,16,10,TemplatesEnnemis[3],70,110,19,7,'rayonMort');
-initStatEnnemi('chevalier',5,10,10,0,1,3,90,90,5,6,3,10,5,TemplatesEnnemis[4],54,90,5,0,'rayonAbysse');
-initStatEnnemi('expurgateur',6,20,3,1,1,0,128,128,13,12,0,0,7,TemplatesEnnemis[5],128,104,0,24,'eclairR');
-initStatEnnemi('altegh',1,50,2,0,4,3,192,192,3,6,4,0,14,TemplatesEnnemis[6],160,96,16,96,'rayonAL');
-initStatEnnemi('Akr',4,150,2,0,-20,1,384,256,14,9,9,8,16,TemplatesEnnemis[7],200,96,80,150,'kamui');
-initStatEnnemi('UNKNOWN',4,150,2,0,-20,0,128,128,8,12,8,4,8,TemplatesEnnemis[8],64,114,32,14,'Roue');
-initStatEnnemi('armure',7,400,0,0,10,0,384,256,7,2,13,9,16,TemplatesEnnemis[9],192,192,96,64,'justice');
-initStatEnnemi('dracomage',2,100,2,5,6,1,192,192,34,12,8,8,13,TemplatesEnnemis[10],128,164,32,28,'eclairR');
-initStatEnnemi('grenouille',8,20,1,0,2,0,90,90,7,6,4,4,7,templatesEnnemis[11],54,90,5,0,'boule');
-initStatEnnemi('Béhémoth',10,15000,20,10,10,5,463,614,12,32,40,12,39,templatesEnnemis[12],400,307,63,307,'rayonRykor')
+initStatEnnemi(1,'undrixel',3,50,5,2,0,1,288,192,4,10,4,0,10,200,128,10,40,'eclairR');
+initStatEnnemi(2,'Archimage',4,100,2,0,6,0,128,128,10,6,6,6,4,70,100,24,14,'projectile');
+initStatEnnemi(3,'liche',5,50,2,0,4,1,128,128,9,6,5,16,10,70,110,19,7,'rayonMort');
+initStatEnnemi(4,'chevalier',5,10,10,0,1,3,90,90,5,6,3,10,5,54,90,5,0,'rayonAbysse');
+initStatEnnemi(5,'expurgateur',6,20,3,1,1,0,128,128,13,12,0,0,7,128,104,0,24,'eclairR');
+initStatEnnemi(6,'altegh',1,50,2,0,4,3,192,192,3,6,4,0,14,160,96,16,96,'rayonAL');
+initStatEnnemi(7,'Akr',4,150,2,0,-20,1,384,256,14,9,9,8,16,200,96,80,150,'kamui');
+initStatEnnemi(8,'UNKNOWN',4,150,2,0,-20,0,128,128,8,12,8,4,8,64,114,32,14,'Roue');
+initStatEnnemi(9,'armure',7,400,0,0,10,0,384,256,7,2,13,9,16,192,192,96,64,'justice');
+initStatEnnemi(10,'dracomage',2,100,2,5,6,1,192,192,34,12,8,8,13,128,164,32,28,'eclairR');
+initStatEnnemi(11,'grenouille',8,20,1,0,2,0,90,90,7,6,4,4,7,54,90,5,0,'boule');
+initStatEnnemi(12,'Béhémoth',10,15000,20,10,10,5,463,614,12,32,40,12,39,400,307,63,307,'rayonRykor')
 
 
 end.

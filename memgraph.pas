@@ -517,6 +517,7 @@ BEGIN
   sdlRenderer := SDL_CreateRenderer(sdlWindow1, -1, SDL_RENDERER_ACCELERATED);
   if sdlRenderer = nil then HALT;
 
+
   // Initialisation de la police [DayDream] et chargement de la police
   if TTF_Init = -1 then HALT;
   Fantasy40 := TTF_OpenFont(FantasyFontDirectory, 40);

@@ -13,7 +13,7 @@ const MAXSALLES=40; //nombre de salles total pour finir le jeu
   MAXENNEMIS=15; //nombre d'ennemis ayant une entrée dans le bestiaire
   MAXCARTES=60; //taille max du deck
 
-var whiteCol,b_color,bf_color,f_color,navy_color,red_color: TSDL_Color;
+var whiteCol,b_color,bf_color,f_color,navy_color,red_color,black_col: TSDL_Color;
 
 
 type evenements=(combat,marchand,hasard,camp,rien,boss);
@@ -54,7 +54,7 @@ type TStats=record //(version variable)
     defense:Integer;
     vie:Integer;
     vieMax:Integer;
-    xreel,yreel:Real;
+    xreel,yreel,angle:Real;
     etatPrec:TANimation; //dans le cas où l'objet est interrompu (par des dégâts par exemple) 
     inamovible:Boolean;
     case genre:typeObjet of 
@@ -74,22 +74,27 @@ type TStats=record //(version variable)
           nbJustice : Integer);
         
         ennemi:(
-          xcible,
-          ycible,
-          compteurAction,
+          xcible,ycible, //position de la cible du déplacement de l'ennemi (souvent celle du joueur)
+          compteurAction, //sert à temporiser les actions des ennemis
           nbFrames1,
           nbFrames2,
           nbFrames3,
-          nbFramesMort,
+          nbFramesMort, //nombre de frames : 1->chase, 2->action1, 3->action2
           nbFramesApparition:Integer;
-          typeIA_MVT:Byte;
-          degatsContact:Integer;
-          cooldown:Byte;
-          vitessePoursuite:Integer;
-          nomAttaque:PCHar);
-        
-        projectile,laser,epee:(degats:Integer;origine:typeObjet;vectX,vectY,angle,vitRotation:Real;dureeVie,dureeVieInit,delai,delaiInit:Integer);
-        effet:(fixeJoueur:Boolean);
+          typeIA_MVT:Byte; //détermine la façon dont l'ennemi se déplace et agit
+          degatsContact:Integer; //permet d'infliger des dégâts au contact avec le joueur
+          cooldown:Byte; //limite les dégâts au contact par le temps
+          vitessePoursuite:Integer; //indique la vitesse où l'ennemi peut suivre le joueur
+          nomAttaque:PCHar;//pour le sprite utilisé par le projectile ou rayon
+          numero:Integer); 
+
+        projectile,laser,epee:(degats:Integer;
+        origine:typeObjet;
+        vectX,vectY,vitRotation:Real;
+        dureeVie,dureeVieInit,delai,delaiInit:Integer;
+        collisionsFaites:array[0..3] of Boolean);
+
+        effet:(fixeJoueur:Boolean);//si l'effet suit le joueur ou non
 end;
 
 var Cartes:Array[1..22] of TCarte; //preset pour les cartes
@@ -100,6 +105,7 @@ type  TCol = record
     estActif: Boolean;      // Si vrai, l'objet est actif pour les collisions
     dimensions: TSDL_Rect;  // Boîte de collision (dimensions w et h)
     offset: TSDL_Point;     // Décalage par rapport à la position de l'objet
+    hasCollided:Boolean;
     nom: PChar;             // Nom de l'objet (facultatif)
   end;
 
@@ -179,6 +185,7 @@ begin
   f_color.r :=58; f_color.g :=190; f_color.b :=249;
   navy_color.r :=53; navy_color.g :=114; navy_color.b :=239;
   red_color.r := 255; red_color.g := 0; red_color.b := 50;
+  black_col.r:=0;black_col.g:=0;black_col.b:=0;
 
 
 
