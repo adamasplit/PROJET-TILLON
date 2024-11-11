@@ -86,6 +86,7 @@ begin
     vagueFinie:=True;
     combatFini:=False;
     randomize;
+    indiceMusiqueJouee:=random(9)+2;
     for j:=1 to avancementPartie do
         begin
         alea:=random(9)+1;
@@ -107,7 +108,7 @@ SDL_RenderClear(sdlRenderer);
 writeln('choix des ennemis...');
 choisirEnnemis;
 SceneActive := 'Jeu';
-indiceMusiqueJouee:=random(4)+2;
+//indiceMusiqueJouee:=random(4)+2;
 end;
 
 procedure LancementSalleHasard;
@@ -206,57 +207,21 @@ begin
 end;
 
 procedure choixSalle();
-var
-    salle1, salle2, salle3: TSalle;
+    
 begin
     combatFini:=false;
     sdl_renderclear(sdlrenderer);
     SceneActive := 'map';
     writeln('Initializing rooms...');
     
-    generationChoix(salle1, salle2, salle3);
+    generationChoix(salles[1], salles[2], salles[3]);
     writeln('Displaying rooms');
-    affichageSalles(salle1, salle2, salle3);
+    affichageSalles(salles[1], salles[2], salles[3]);
     
     writeln('Room choice started');
     SDL_RenderPresent(sdlRenderer);
     new(EventSystem);
     
-    while SceneActive = 'map' do 
-    begin
-        SDL_PumpEvents();
-        SDL_Delay(10);
-        //OnMouseHover(salle1.image,EventSystem^.motion.x, EventSystem^.motion.y);
-        //OnMouseHover(salle2.image,EventSystem^.motion.x, EventSystem^.motion.y);
-        //OnMouseHover(salle3.image,EventSystem^.motion.x, EventSystem^.motion.y);
-        //renderrawimage(map_bg,false);
-        RenderButtonGroup(salle1.image);
-        RenderButtonGroup(salle2.image);
-        RenderButtonGroup(salle3.image);
-        SDL_RenderPresent(sdlRenderer);
-        while SDL_PollEvent(EventSystem) = 1 do
-        begin
-            case EventSystem^.type_ of
-                SDL_KEYDOWN:
-                    case EventSystem^.key.keysym.sym of
-                        SDLK_ESCAPE: 
-                            // Un Gwo pwoblem wai
-                    end;
-
-                SDL_MOUSEBUTTONDOWN:
-                    begin
-                        writeln('Mouse button pressed at (', EventSystem^.motion.x, ',', EventSystem^.motion.y, ')');
-                        writeln(salle1.image.button.rect.x);
-                        OnMouseClick(salle1.image, EventSystem^.motion.x, EventSystem^.motion.y);
-                        OnMouseClick(salle2.image, EventSystem^.motion.x, EventSystem^.motion.y);
-                        OnMouseClick(salle3.image, EventSystem^.motion.x, EventSystem^.motion.y);
-                        HandleButtonClick(salle1.image.button, EventSystem^.motion.x, EventSystem^.motion.y);
-                        HandleButtonClick(salle2.image.button, EventSystem^.motion.x, EventSystem^.motion.y);
-                        HandleButtonClick(salle3.image.button, EventSystem^.motion.x, EventSystem^.motion.y);
-                    end;
-            end;
-        end;
-    end;
 end;
 
 begin

@@ -140,6 +140,49 @@ var LObjets: ListeObjets; //Liste universelle des objets présents
 combatFini,vagueFinie,leMonde:Boolean;
 statsJoueur: TStats;
 PDeck:TDeck; //deck pointé par les stats du joueur
+ 
+// Boutons
+  button_new_game: TButtonGroup;
+	button_continue : TButtonGroup;
+	button_leaderboard : TButtonGroup;
+	button_quit : TButtonGroup;
+	button_settings : TButtonGroup;
+	button_help : TButtonGroup;
+	button_home : TButtonGroup;
+  btnCartes:array[1..3] of TButtonGroup;
+  salles: array[1..3] of TSalle;
+	button_retour_menu : TButtonGroup;
+	button_deck : TButton;
+	button_bestiaire: TButton;
+
+// Textes
+	text1 : TText;
+	titre_lead : TText;
+	text_score_seize : TText;
+	text_score_trente : TText;
+	text_nom_seize : TText;
+	text_nom_trente : TText;
+	text_s3: TText;
+	text_n3 : TText;
+	text_s4 : TText;
+	text_n4: TText;
+	text_s5: TText;
+	text_n5: TText;
+
+	dialogues : Array [1..100] of TDialogueBox;
+
+
+
+//procedures
+	btnProc : ButtonProcedure;
+	quitter : ButtonProcedure;
+	retour_menu : ButtonProcedure;
+	Pjouer : ButtonProcedure;
+	leaderboard : ButtonProcedure;
+  PopenSettings : ButtonProcedure;
+  PgoSeekHelp : ButtonProcedure;
+	PNouvellePartieIntro : ButtonProcedure;
+
 
 //Procédures de gestion de LObjets
 

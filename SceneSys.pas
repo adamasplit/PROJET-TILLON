@@ -18,50 +18,6 @@ uses
 	sonoSys,
 	SysUtils;
 
-// Bouttons
-var button_new_game: TButtonGroup;
-	button_continue : TButtonGroup;
-	button_leaderboard : TButtonGroup;
-	button_quit : TButtonGroup;
-	button_settings : TButtonGroup;
-	button_help : TButtonGroup;
-	button_home : TButtonGroup;
-
-	button_retour_menu : TButtonGroup;
-	button_deck : TButton;
-	button_bestiaire: TButton;
-
-// Textes
-var	text1 : TText;
-	titre_lead : TText;
-	text_score_seize : TText;
-	text_score_trente : TText;
-	text_nom_seize : TText;
-	text_nom_trente : TText;
-	text_s3: TText;
-	text_n3 : TText;
-	text_s4 : TText;
-	text_n4: TText;
-	text_s5: TText;
-	text_n5: TText;
-
-	dialogues : Array [1..100] of TDialogueBox;
-
-
-
-//procedures
-	btnProc : ButtonProcedure;
-	quitter : ButtonProcedure;
-	retour_menu : ButtonProcedure;
-	Pjouer : ButtonProcedure;
-	leaderboard : ButtonProcedure;
-    PopenSettings : ButtonProcedure;
-    PgoSeekHelp : ButtonProcedure;
-	PNouvellePartieIntro : ButtonProcedure;
-
-//GameObjects
-	var Joueur : TObjet;
-
 procedure StartGame;
 
 implementation
@@ -167,191 +123,6 @@ procedure ActualiserMenuEnJeu;
 		SDL_RenderPresent(sdlRenderer);
 	end;
 
-
-    //Scenes
-
-procedure openSettings;
-begin
-  
-end;
-
-procedure goSeekHelp;
-begin
-  
-end;
-procedure jouer;
-	begin
-		SceneActive := 'Jeu';
-		ClearScreen;
-		SDL_RenderClear(sdlRenderer);
-		DeclencherFondu(False, 3000);
-
-		//Objets dissimulés
-		button_leaderboard.button.estVisible := false;
-        button_continue.button.estVisible := false;
-		button_quit.button.estVisible := false;
-		button_new_game.button.estVisible := false;
-		button_retour_menu.button.estVisible :=false;
-		
-		button_deck.estVisible := False;
-		button_bestiaire.estVisible := False;
-
-        //Objets de Scene
-		ActualiserJeu;
-end;
-
-procedure lead;
-	begin
-
-		SceneActive := 'Leaderboard';
-
-		ClearScreen;
-		SDL_RenderClear(sdlRenderer);
-
-		
-		
-		button_leaderboard.button.estVisible := false;
-		button_quit.button.estVisible := false;
-        button_continue.button.estVisible := false;
-		button_new_game.button.estVisible := false;
-
-		RenderParallaxMenu(bgImage,characterImage,cardsImage);
-		//RenderRawImage(vague);
-		RenderText(text1);
-		RenderText(titre_lead);
-		RenderText(text_score_seize);
-		RenderText(text_score_trente);
-		RenderText(text_nom_seize);
-		RenderText(text_nom_trente);
-		RenderText(text_n3);
-		RenderText(text_s3);
-		RenderText(text_n4);
-		RenderText(text_s4);
-		RenderText(text_n5);
-		RenderText(text_s5);
-
-
-		OnMouseHover(button_retour_menu,GetMouseX,GetMouseY);
-		RenderButtonGroup(button_retour_menu);
-		SDL_RenderPresent(sdlRenderer);
-end;
-
-function NextOrSkipDialogue(i : Integer) : Boolean;
-begin
-	NextOrSkipDialogue:=False;
-  	  while (SDL_PollEvent( EventSystem ) = 1) do
-      			case EventSystem^.type_ of
-					SDL_mousebuttondown:if dialogues[i].letterdelay=0 then NextOrSkipDialogue:=True else dialogues[i].LetterDelay:=0;
-	end;
-end;
-
-procedure NouvellePartieIntro;
-begin
-	indiceMusiqueJouee:=11;
-	ClearScreen;
-	SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
-	black_color.r := 255; black_color.g := 255; black_color.b := 255;
-	repeat
-	UpdateDialogueBox(dialogues[3]);
-	SDL_RenderPresent(sdlRenderer);
-	SDL_Delay(10);
-	autoMusique;
-	until NextOrSkipDialogue(3);
-
-	ClearScreen;
-  	SDL_Delay(300);  
-
-	repeat
-	UpdateDialogueBox(dialogues[4]);
-	SDL_RenderPresent(sdlRenderer);
-	autoMusique;
-	until NextOrSkipDialogue(4);
-	ClearScreen;
-
-	repeat
-	UpdateDialogueBox(dialogues[5]);
-	SDL_RenderPresent(sdlRenderer);
-	autoMusique;
-	until NextOrSkipDialogue(5);
-	ClearScreen;
-
-	repeat
-	UpdateDialogueBox(dialogues[6]);
-	SDL_RenderPresent(sdlRenderer);
-	autoMusique;
-	until NextOrSkipDialogue(6);
-	ClearScreen;
-
-	repeat
-	UpdateDialogueBox(dialogues[7]);
-	SDL_RenderPresent(sdlRenderer);
-	autoMusique;
-	until NextOrSkipDialogue(7);
-	ClearScreen;
-	black_color.r := 0; black_color.g := 0; black_color.b := 0;
-	jouer;
-end;
-
-
-
-procedure direction_menu;
-begin
-    SceneActive := 'Menu';
-
-    // Activer les boutons du menu principal
-    button_continue.button.estVisible := true;
-    button_new_game.button.estVisible := true;
-    button_leaderboard.button.estVisible := true;
-    button_quit.button.estVisible := true;
-    button_settings.button.estVisible := true;
-    button_help.button.estVisible := true;
-    button_home.button.estVisible := true;
-    
-    // Rendre l'image de fond
-    RenderParallaxMenu(bgImage,characterImage,cardsImage);
-
-    // Rendre les boutons principaux
-    OnMouseHover(button_continue, GetMouseX, GetMouseY);
-    OnMouseHover(button_new_game, GetMouseX, GetMouseY);
-    OnMouseHover(button_leaderboard, GetMouseX, GetMouseY);
-    OnMouseHover(button_quit, GetMouseX, GetMouseY);
-
-    RenderButtonGroup(button_continue);
-    RenderButtonGroup(button_new_game);
-    RenderButtonGroup(button_leaderboard);
-    RenderButtonGroup(button_quit);
-
-    // Rendre les icônes en bas
-    OnMouseHover(button_settings, GetMouseX, GetMouseY);
-    OnMouseHover(button_help, GetMouseX, GetMouseY);
-    OnMouseHover(button_home, GetMouseX, GetMouseY);
-
-    RenderButtonGroup(button_settings);
-    RenderButtonGroup(button_help);
-    RenderButtonGroup(button_home);
-	EffetDeFondu;
-
-    // Afficher le texte et autres éléments si nécessaire
-    RenderText(text1);
-    SDL_RenderPresent(sdlRenderer);
-end;
-
-procedure menuEnJeu;
-	begin
-		if (SceneActive = 'MenuEnJeu') then jouer
-		else
-		begin
-			SceneActive := 'MenuEnJeu';
-
-			button_deck.estVisible :=True;
-			button_bestiaire.estVisible := True;
-			jouerSon('SFX\Pausemenu_appear.wav');
-			DrawRect(black_color,50, 0, 0, windowWidth,windowHeight);
-			InitAnimation(menuBookAnim,'Book','Opening',5,False);
-
-		end;
-end;
-
 //Initialisations
 
 procedure InitJoueur;
@@ -359,20 +130,19 @@ var j : Integer;
 begin
     // Initialisation du joueur
 	
-    joueur.col.isTrigger := False;
-    joueur.col.estActif := True;
-    joueur.col.dimensions.w := 50;
-    joueur.col.dimensions.h := 85;
-    joueur.col.offset.x := 25;
-    joueur.col.offset.y := 15;
-    joueur.col.nom := 'Joueur';
-	joueur.stats.angle:=0;
-    Joueur.anim.estActif := True;
-    LObjets[0] := Joueur;
+    LObjets[0].col.isTrigger := False;
+    LObjets[0].col.estActif := True;
+    LObjets[0].col.dimensions.w := 50;
+    LObjets[0].col.dimensions.h := 85;
+    LObjets[0].col.offset.x := 25;
+    LObjets[0].col.offset.y := 15;
+    LObjets[0].col.nom := 'Joueur';
+	LObjets[0].stats.angle:=0;
+    LObjets[0].anim.estActif := True;
     LObjets[0].image.rect.x := windowWidth div 2;
     LObjets[0].image.rect.y := windowHeight div 2;
 	LObjets[0].stats.lastUpdateTimeMana:=SDL_GetTicks;
-    statsJoueur.tailleCollection:=22;
+    statsJoueur.tailleCollection:=3;
     statsJoueur.Vitesse:=5;
     statsJoueur.multiplicateurMana:=1;
     statsJoueur.multiplicateurDegat:=1;
@@ -383,88 +153,24 @@ begin
     iCarteChoisie:=1;
     CreateRawImage(LObjets[0].image, windowWidth div 2-windowWidth div 4, windowHeight div 2, 100, 100, 'Sprites\Game\Joueur\Joueur_idle_1.bmp');
     CreateRawImage(menuBook,0,0,windowWidth,windowHeight,'Sprites\Game\Book\Book_Opening_1.bmp');
+	initAnimation(LObjets[0].anim,'Joueur','idle',12,True);
 end;
 
-
-
-procedure ParallaxMenuInit;
+procedure HandleButtonClickCarte(var button: TButtonGroup; x, y: Integer;carte:TCarte;var stats:TStats);
 begin
-  CreateRawImage(bgImage,0 , 10,windowWidth ,windowHeight ,'Sprites\Menu\parallax_bg.bmp');
-  CreateRawImage(characterImage,0 , 8,windowWidth ,windowHeight ,'Sprites\Menu\parallax_player.bmp');
-  CreateRawImage(cardsImage,0 , 0,windowWidth ,windowHeight ,'Sprites\Menu\parallax_cards.bmp');
+  if (x >= button.image.rect.x) and (x <= button.image.rect.x + button.image.rect.w) and
+     (y >= button.image.rect.y) and (y <= button.image.rect.y + button.image.rect.h) then
+  begin
+    if Assigned(button.procCarte) then
+    begin
+        writeln('procédure spéciale en cours');
+		button.procCarte(carte,stats);
+    end;
+  end;
 end;
-
-
-
-procedure annihiler();
-begin
-  // Nettoyage de Ram (DETRUIRE IMPERATIVEMENT TOUTES LES TEXTURES UTILISEES SOUS PEINE DE FUITE DE RAM !!!!)
-  TTF_CloseFont(Fantasy30);
-  TTF_Quit;
-  
-  SDL_DestroyRenderer(sdlRenderer);
-  SDL_DestroyWindow(sdlWindow1);
-
-  // Shutting down video subsystem (A laisser imperativement)
-  SDL_Quit;
-end;
-
-procedure InitMenuPrincipal;
-begin
-    // Créer des boutons
-    btnProc := @OnButtonClickDebug;
-    quitter:=@annihiler;
-    Pjouer:=@jouer;
-    leaderboard:=@lead;
-    retour_menu:=@direction_menu;
-    PopenSettings := @openSettings;
-    PgoSeekHelp := @goSeekHelp;
-	PNouvellePartieIntro := @NouvellePartieIntro;
-    
-	//Menu Principal
-    // Game icon (𓈒⟡₊⋆∘ Wowie 𓈒⟡₊⋆∘)
-    CreateText(text1, windowWidth div 2-150, 20, 300, 250, 'Les Cartes du Destin',Fantasy30, whiteCol);
-	// Initialisation des boutons principaux (à gauche)
-	InitButtonGroup(button_continue, 100, windowHeight div 5, 350, 80, 'Sprites\Menu\Button1.bmp', 'Continuer', Pjouer);
-    InitButtonGroup(button_new_game, 100, (windowHeight div 5) + 100, 350, 80, 'Sprites\Menu\Button1.bmp', 'Nouvelle Partie', PNouvellePartieIntro);
-    InitButtonGroup(button_leaderboard, 100, (windowHeight div 5) + 200, 350, 80, 'Sprites\Menu\Button1.bmp', 'Leaderboard', leaderboard);
-    InitButtonGroup(button_quit, 100, (windowHeight div 5) + 300, 350, 80, 'Sprites\Menu\Button1.bmp', 'Quitter', quitter);
-
-	// Initialisation des icônes en bas
-	InitButtonGroup(button_settings, windowWidth div 2 - 300, windowHeight - 100, 100, 100, 'Sprites\Menu\Icon_Settings.bmp', ' ', PopenSettings);
-	InitButtonGroup(button_help, windowWidth div 2, windowHeight - 100, 100, 100, 'Sprites\Menu\Icon_Help.bmp', ' ', PgoSeekHelp);
-	InitButtonGroup(button_home, windowWidth div 2 + 300, windowHeight - 100, 100, 100, 'Sprites\Menu\Icon_Help.bmp', ' ', btnProc);
-
-    ParallaxMenuInit;
-    
-end;
-
-procedure InitMenuEnJeu;
-begin
-  //Menu en Jeu
-	CreateButton(button_deck, 210, 320, 240, 50,'Deck',b_color, bf_color,Fantasy30,btnProc);
-	CreateButton(button_bestiaire, 210, 390, 240, 50,'Bestiaire',b_color, bf_color,Fantasy30,btnProc);
-end;
-
-procedure InitLeaderboard;
-begin
-    CreateText(titre_lead, windowWidth div 2-210, 90, 300, 250, 'Leaderboard',Fantasy40, navy_color);
-	CreateText(text_score_seize, 40, 200, 150, 125, '1> Score  :',dayDream20, bf_color);
-	CreateText(text_nom_seize, 40, 225, 250, 125, 'Nom partie :',dayDream20, bf_color);
-	CreateText(text_score_trente, 40, 275, 150, 125, '2> Score :',dayDream20, bf_color);
-	CreateText(text_nom_trente, 40, 300, 150, 125,'Nom partie :',dayDream20, bf_color);
-	CreateText(text_n3, 40, 350, 150, 125, '3> Score :',dayDream20, bf_color);
-	CreateText(text_s3, 40, 375, 150, 125, 'Nom partie :',dayDream20, bf_color);
-	CreateText(text_n4, 40, 425, 150, 125, '4> Score :',dayDream20, bf_color);
-	CreateText(text_s4, 40, 450, 150, 125, 'Nom partie :',dayDream20, bf_color);
-	CreateText(text_n5, 40, 500, 150, 125, '5> Score :',dayDream20, bf_color);
-	CreateText(text_s5, 40, 525, 150, 125, 'Arrive prochainement !',dayDream20, bf_color);
-	InitButtonGroup(button_retour_menu, 850, 625, 200, 75,'Sprites\Menu\Button1.bmp','Menu',retour_menu);
-end;
-
-
 
 procedure GameUpdate;
+var i:Integer;
 begin
   new(EventSystem);
    while True do
@@ -485,7 +191,60 @@ begin
   		begin
 		direction_menu;
 		end;
+		'map':
+		begin
+        SDL_PumpEvents();
+        SDL_Delay(10);
+        //OnMouseHover(salle1.image,EventSystem^.motion.x, EventSystem^.motion.y);
+        //OnMouseHover(salle2.image,EventSystem^.motion.x, EventSystem^.motion.y);
+        //OnMouseHover(salle3.image,EventSystem^.motion.x, EventSystem^.motion.y);
+        //renderrawimage(map_bg,false);
+        RenderButtonGroup(salles[1].image);
+        RenderButtonGroup(salles[2].image);
+        RenderButtonGroup(salles[3].image);
+        SDL_RenderPresent(sdlRenderer);
+        while SDL_PollEvent(EventSystem) = 1 do
+        	begin
+            case EventSystem^.type_ of
+                SDL_KEYDOWN:
+                    case EventSystem^.key.keysym.sym of
+                        SDLK_ESCAPE: 
+                            // Un Gwo pwoblem wai
+                    end;
+
+                SDL_MOUSEBUTTONDOWN:
+                    begin
+                        writeln('Mouse button pressed at (', EventSystem^.motion.x, ',', EventSystem^.motion.y, ')');
+                        writeln(salles[1].image.button.rect.x);
+                        OnMouseClick(salles[1].image, EventSystem^.motion.x, EventSystem^.motion.y);
+                        OnMouseClick(salles[2].image, EventSystem^.motion.x, EventSystem^.motion.y);
+                        OnMouseClick(salles[3].image, EventSystem^.motion.x, EventSystem^.motion.y);
+                        HandleButtonClick(salles[1].image.button, EventSystem^.motion.x, EventSystem^.motion.y);
+                        HandleButtonClick(salles[2].image.button, EventSystem^.motion.x, EventSystem^.motion.y);
+                        HandleButtonClick(salles[3].image.button, EventSystem^.motion.x, EventSystem^.motion.y);
+                    end;
+            end;
+        	end;
+    	end;
 		'NouvellePartieIntro': NouvellePartieIntro;
+		'victoire':
+			begin
+			SDL_delay(10);
+			for i:=1 to 3 do
+				RenderButtonGroup(btnCartes[i]);
+			SDL_RenderPresent(sdlRenderer);
+			while SDL_PollEvent(EventSystem) = 1 do
+				begin
+				case EventSystem^.type_ of
+				SDL_MOUSEBUTTONDOWN:
+				for i:=1 to 3 do
+					begin
+					OnMouseClick(btnCartes[i], EventSystem^.motion.x, EventSystem^.motion.y);
+					HandleButtonClickCarte(btnCartes[i], EventSystem^.motion.x, EventSystem^.motion.y,btnCartes[i].carte,statsJoueur);
+					end;
+				end;
+				end;
+			end;
   		'Cutscene':
 		begin
 		sdl_renderclear(sdlrenderer);
@@ -496,8 +255,7 @@ begin
 		sdl_renderpresent(sdlrenderer);
 		if sdl_getTicks mod 200 = 0 then 
 			begin
-			combat_bg.rect.x:=combat_bg.rect.x-4+random(9);
-			combat_bg.rect.y:=combat_bg.rect.y-4+random(9);
+			combat_bg.rect.x:=88-4+random(9);
 			end;
 		while (SDL_PollEvent( EventSystem ) = 1) do
     		begin
@@ -549,6 +307,10 @@ begin
 						end;
 					SDLK_O:LOBjets[0].stats.multiplicateurMana:=10;
 					SDLK_H : choixSalle();
+					SDLK_F2:begin
+						statsJoueur.force:=statsJoueur.force+1;
+						LObjets[0].stats.force:=LObjets[0].stats.force+1;
+						end;
 					SDLK_F3:modeDebug:=not(modeDebug);
         		end;
       		end;

@@ -77,7 +77,7 @@ begin
             end;
           if LObjets[i].anim.objectName='Béhémoth' then
             begin
-            indiceMusiqueJouee:=7;
+            indiceMusiqueJouee:=8;
             fini:=True;
             end;
           end;

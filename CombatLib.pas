@@ -116,15 +116,22 @@ procedure cycle (var deck : TDeck ; i: Integer); // i = indice de la carte joué
 var j : Integer;
     mem : TCarte;
 begin
+
+    if high(deck)>2 then
+    begin
     mem := deck[i];
     deck[i] := deck[3];
 
-    for j:= 4 to High(deck)-1 do
-        deck[j-1] := deck[j];
+    if high(deck)=3 then
+        j:=3
+    else
+        for j:= 3 to High(deck)-1 do
+            deck[j] := deck[j+1];
 
     deck[j] := mem ;
     deck[j].active:=False;
     deck[j].charges:=deck[j].chargesMax;
+    end;
 end;
 
 // retire la dernière carte du paquet
@@ -185,7 +192,7 @@ begin
 end;
 
 procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,w,xdest,ydest:Integer;vitRotation:Real;dureeVie,delai:Integer;nom:PChar;var rayon:TObjet);
-var norme:Real;destination,distance:array['X'..'Y'] of Integer;
+var norme:Real;destination,distance:array['X'..'Y'] of Integer;i:Integer;
 begin
     //Initialisation des caractéristiques
 
@@ -217,6 +224,8 @@ begin
     rayon.col.offset.x := 10;
     rayon.col.offset.y := w div 4;
     rayon.col.nom := 'rayon';
+    for i:=0 to 3 do
+        rayon.col.collisionsFaites[i]:=False;
 
     destination['X']:=xdest;
     destination['Y']:=ydest;

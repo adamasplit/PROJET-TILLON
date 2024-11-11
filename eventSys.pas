@@ -93,8 +93,10 @@ procedure UpdateUICombat(icarteChoisie:Integer;x,y:Integer;stats:TStats);
 var i:Integer;
 begin
     //Carte-curseur
+    //if sdl_getTicks mod 150 <10 then writeln('mise à jour de l''UI,indice:',icarteChoisie);
     SDL_FreeSurface(CombatUI[3].imgSurface);
     SDL_DestroyTexture(CombatUI[3].imgTexture);
+    if (icarteChoisie>2) or (icarteChoisie<0) then writeln(icarteChoisie);
     CreateRawImage(CombatUI[3],min(820,max(GetMouseX-20,140)),GetMouseY-5,64,64,stats.deck^[icarteChoisie].dir);
     if (LObjets[0].stats.mana<LObjets[0].stats.deck^[iCarteChoisie].cout) and not (LObjets[0].stats.deck^[iCarteChoisie].active) then
       begin
@@ -124,7 +126,7 @@ begin
     RenderRawImage(CombatUI[4],255,False);
     RenderRawImage(CombatUI[5],255,False);
     //3 cartes disponibles
-    if  high(stats.deck^)>=3 then 
+    if  high(stats.deck^)>=2 then 
       begin
         case icarteChoisie of //mettre une des cartes en surbrillance selon celle choisie
         0:drawRect(red_color,160,933,68,135,132);
@@ -137,7 +139,6 @@ begin
       SDL_DestroyTexture(CombatUI[6+i].imgTexture);
       if (LObjets[0].stats.deck^[i-1].active) then
         drawRect(black_color,round(180*(LObjets[0].stats.deck^[i-1].charges)/(LObjets[0].stats.deck^[i-1].chargesMax)),933,68+150*(i-1),135,132);
-        
       end;
     createRawImage(CombatUI[7],940,70,128,128,stats.deck^[0].dir);
     createRawImage(CombatUI[8],940,220,128,128,stats.deck^[1].dir);
@@ -147,7 +148,7 @@ begin
     //Reste du deck
     if high(stats.deck^)>=3 then begin
         drawRect(black_color,100,935,560,133,158);
-        for i:=min(7,high(stats.deck^)+1) downto 3 do begin
+        for i:=min(7,high(stats.deck^)+1) downto 4 do begin
             SDL_FreeSurface(CombatUI[7+i].imgSurface);
             SDL_DestroyTexture(CombatUI[7+i].imgTexture);
             createRawImage(CombatUI[7+i],920+4*i,600-i*5,128,128,stats.deck^[i-1].dir);

@@ -2,9 +2,9 @@ unit SonoSys;
 interface
 uses SDL2, SDL2_mixer,SysUtils,coeur; //télécharger SDL2_mixer au préalable
 
-const TAILLE_OST=15;
-        VOLUME_MUSIQUE=20;
-        VOLUME_SON=20;
+const TAILLE_OST=31;
+        VOLUME_MUSIQUE=40;
+        VOLUME_SON=40;
 type TMus=record
     musique:PMix_Music;
     duree:Integer;
@@ -83,15 +83,17 @@ begin
                 indiceMusiquePrec:=indiceMusiqueJouee;
                 updatetimemusique:=sdl_getticks;
                 enFondu:=True;
-                mix_fadeoutmusic(1000)
+                //mix_fadeoutmusic(1000)
                 end;
-        if enFondu and (sdl_getTicks-updateTimeMusique>500) then
+        if enFondu and (sdl_getTicks-updateTimeMusique>0) then
             begin
             mix_playMusic(OST[IndiceMusiqueJouee].musique,0);
             enFondu:=False;
             end;
         if (SDL_GetTicks()-UpdateTimeMusique)>(OST[indiceMusiqueJouee].duree)*1000 then //vérifier si le morceau est fini ou non
             begin
+            if (indiceMusiqueJouee>12) and (indiceMusiqueJouee<22) then
+                indiceMusiqueJouee:=indiceMusiqueJouee+10; 
             mix_rewindMusic();
             updatetimeMusique := SDL_GetTicks();
             end;
@@ -142,5 +144,25 @@ Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT,
     defMus(10,'OST/Boss4.wav','',133);
     defMus(11,'OST/Map.wav','',163);
     defMus(12,'OST/Event.wav','',49);
+
+    defMus(13,'OST/C1_VictoireIntro.wav','W-O-A-Y v0',5);
+    defMus(14,'OST/C2_VictoireIntro.wav','W-O-A-Y V2',5);
+    defMus(15,'OST/C3_VictoireIntro.wav','',5);
+    defMus(16,'OST/C4_VictoireIntro.wav','',3);
+    defMus(17,'OST/C5_VictoireIntro.wav','With Or Against You',5);
+    defMus(18,'OST/Boss1_VictoireIntro.wav','',5);
+    defMus(19,'OST/Boss2_VictoireIntro.wav','',5);
+    defMus(20,'OST/Boss3_VictoireIntro.wav','',5);
+    defMus(21,'OST/Boss4_VictoireIntro.wav','',5);
+
+    defMus(23,'OST/C1_VictoireRep.wav','',6);
+    defMus(24,'OST/C2_VictoireRep.wav','',11);
+    defMus(25,'OST/C3_VictoireRep.wav','',23);
+    defMus(26,'OST/C4_VictoireRep.wav','',12);
+    defMus(27,'OST/C5_VictoireRep.wav','',19);
+    defMus(28,'OST/Boss1_VictoireRep.wav','',81);
+    defMus(29,'OST/Boss2_VictoireRep.wav','',81);
+    defMus(20,'OST/Boss3_VictoireRep.wav','',50);
+    defMus(21,'OST/Boss4_VictoireRep.wav','',32);
 end.
 
