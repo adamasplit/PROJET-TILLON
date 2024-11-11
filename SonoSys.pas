@@ -79,12 +79,13 @@ begin
                 end
             else
                 begin
+                //writeln('changing music...');
                 indiceMusiquePrec:=indiceMusiqueJouee;
                 updatetimemusique:=sdl_getticks;
                 enFondu:=True;
-                //mix_fadeoutmusic(3000)
+                mix_fadeoutmusic(1000)
                 end;
-        if enFondu and (sdl_getTicks-updateTimeMusique>0) then
+        if enFondu and (sdl_getTicks-updateTimeMusique>500) then
             begin
             mix_playMusic(OST[IndiceMusiqueJouee].musique,0);
             enFondu:=False;

@@ -60,6 +60,7 @@ type TStats=record //(version variable)
     case genre:typeObjet of 
         joueur:(mana:Integer;
           manaMax:Integer;
+          lastUpdateTimeMana:UInt32;
           avancement:Integer;
           multiplicateurMana:Real;
           Vitesse:Integer;
@@ -91,8 +92,7 @@ type TStats=record //(version variable)
         projectile,laser,epee:(degats:Integer;
         origine:typeObjet;
         vectX,vectY,vitRotation:Real;
-        dureeVie,dureeVieInit,delai,delaiInit:Integer;
-        collisionsFaites:array[0..3] of Boolean);
+        dureeVie,dureeVieInit,delai,delaiInit:Integer);
 
         effet:(fixeJoueur:Boolean);//si l'effet suit le joueur ou non
 end;
@@ -105,7 +105,8 @@ type  TCol = record
     estActif: Boolean;      // Si vrai, l'objet est actif pour les collisions
     dimensions: TSDL_Rect;  // Boîte de collision (dimensions w et h)
     offset: TSDL_Point;     // Décalage par rapport à la position de l'objet
-    hasCollided:Boolean;
+    hasCollided:Boolean;    // pour l'affichage de la boîte de collisions
+    collisionsFaites:array[0..3] of Boolean; //l'objet mémorise ceux avec qui il est déjà en collision 
     nom: PChar;             // Nom de l'objet (facultatif)
   end;
 
@@ -124,7 +125,10 @@ type
     image: TImage;         // Image de fond animée (taille et alpha)
     hoverSoundPlayed: Boolean;  // Pour suivre le premier survol de la souris
     originalWidth, originalHeight: Integer; 
-  end;
+    case parametresSpeciaux:Integer of 
+      1:(procCarte:procedure(carte:TCarte;var stats:TStats);carte:TCarte);
+      2:(procSalle:procedure(evenement:evenements));
+    end;
 type TSalle=record
     evenement:evenements;
     image:TButtonGroup;

@@ -233,11 +233,13 @@ begin
 
     end;
 
-  if (CheckCollision) and not (isAttack(obj2) and obj2.stats.collisionsFaites[obj1.stats.indice]) then
+  if (CheckCollision) and not (isAttack(obj2) and obj2.col.collisionsFaites[obj1.stats.indice]) then
   begin
+    //sert uniquement à l'affichage
     obj1.col.hasCollided:=True;
-    obj2.col.hasCOllided:=True;
-    if isAttack(obj2) then obj2.stats.collisionsFaites[obj1.stats.indice]:=True;
+    obj2.col.hasCollided:=True;
+    //pour savoir avec quels objets il est déjà en collision
+    if isAttack(obj2) then obj2.col.collisionsFaites[obj1.stats.indice]:=True;
     // Si l'un des deux objets est un trigger, on appelle OnTriggerEnter
     if obj1.col.isTrigger or obj2.col.isTrigger then
     begin
@@ -278,7 +280,7 @@ begin
   end
     else
       if (not checkCollision) and isAttack(obj2) then
-        obj2.stats.collisionsFaites[obj1.stats.indice]:=False;
+        obj2.col.collisionsFaites[obj1.stats.indice]:=False;
 end;
 
 function collisionValide(stats1,stats2:TStats):Boolean;

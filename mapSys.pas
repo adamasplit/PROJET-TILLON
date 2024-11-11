@@ -14,6 +14,7 @@ uses
     SysUtils;
 var imgs0,imgs1,imgs2,imgs3:TButtonGroup;
 var salleChoisie:TSalle;
+var map_bg:TImage;
 CONST 
 windowHeight=720;windowWidth=1080;
       Y1=(windowHeight div 2)+(windowHeight div 4)-64;           
@@ -228,6 +229,7 @@ begin
         //OnMouseHover(salle1.image,EventSystem^.motion.x, EventSystem^.motion.y);
         //OnMouseHover(salle2.image,EventSystem^.motion.x, EventSystem^.motion.y);
         //OnMouseHover(salle3.image,EventSystem^.motion.x, EventSystem^.motion.y);
+        //renderrawimage(map_bg,false);
         RenderButtonGroup(salle1.image);
         RenderButtonGroup(salle2.image);
         RenderButtonGroup(salle3.image);
@@ -259,5 +261,6 @@ end;
 
 begin
 avancementPartie:=1;
+//
 writeln('MapSys ready')
 end.

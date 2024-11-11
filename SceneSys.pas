@@ -11,6 +11,7 @@ uses
 	fichierSys,
 	MapSys,
 	memgraph,
+	menuSys,
 	SDL2,
 	SDL2_mixer,
 	SDL2_ttf,
@@ -46,13 +47,7 @@ var	text1 : TText;
 
 	dialogues : Array [1..100] of TDialogueBox;
 
-//Image
-	var combat_bg,menuBook,bgImage,characterImage,cardsImage : TImage;
-	menuBookAnim : TAnimation;
 
-//GameObjects
-
-var Joueur : TObjet;
 
 //procedures
 	btnProc : ButtonProcedure;
@@ -64,8 +59,8 @@ var Joueur : TObjet;
     PgoSeekHelp : ButtonProcedure;
 	PNouvellePartieIntro : ButtonProcedure;
 
-//Variables de Debug
-	var LastUpdateTime2:UInt32;
+//GameObjects
+	var Joueur : TObjet;
 
 procedure StartGame;
 
@@ -74,11 +69,12 @@ implementation
 procedure UpdateAnimations();
 var i:Integer;
 begin
-for i:=0 to High(LObjets) do 
+	for i:=0 to High(LObjets) do 
 		if (i<=High(LObjets)) then
 			begin
-			//writeln('objet actuel : ',Lobjets[i].stats.genre,' ',lobjets[i].anim.objectName);
+			//ajuste l'indice de l'objet à sa position dans LObjets
 			LObjets[i].stats.indice:=i;
+
 			if LObjets[i].anim.estActif then 
 				begin
 				if (LObjets[i].anim.etat='degats') then
@@ -95,25 +91,9 @@ for i:=0 to High(LObjets) do
 					end
 				end
 			end;
-for i:=2 to High(LObjets) do
-      if (i<=High(LObjets)) then
-	  	begin
-			case LObjets[i].stats.genre of 
-        	projectile:begin
-        		if i<>LObjets[i].stats.indice then writeln('conflit à l"indice',i);
-				LObjets[i].stats.indice:=i;
-        		updateBoule(LObjets[i]);
-        		end;
-			laser:updateRayon(LObjets[i]);
-			epee:UpdateJustice(LObjets[i]);
-			effet:if (LObjets[i].stats.fixeJoueur) and (not (leMonde) or (LObjets[i].anim.objectName='monde')) then 
-				begin
-				LObjets[i].image.rect.x:=LObjets[0].image.rect.x+50-(LObjets[i].image.rect.w div 2);
-				LObjets[i].image.rect.y:=LObjets[0].image.rect.y+50-(LObjets[i].image.rect.h div 2);
-				end;
-			end;
-		end
 end;
+
+
 
 procedure InitDecor;
 begin
@@ -132,41 +112,6 @@ begin
 	InitDialogueBox(dialogues[7],nil,nil,-50,windowHeight div 3 - 100 ,windowWidth,400,extractionTexte('TXT_INTRO5'),100);
 end;
 
-procedure AfficherTout();
-var i : Integer;
-begin
-	renderRawImage(combat_bg,255,False);
-	if LObjets[0].stats.pendu then
-			if LObjets[0].anim.isFliped then
-				SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
-			else
-				SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
-			else
-				RenderRawImage(LObjets[0].image,255, LObjets[0].anim.isFliped);
-
-	for i:=1 to high(LObjets) do
-		case LOBjets[i].stats.genre of
-			TypeObjet(2),TypeObjet(3),TypeObjet(4):RenderAvecAngle(LObjets[i])
-			else
-				RenderRawImage(LObjets[i].image,255, LObjets[i].anim.isFliped);
-		end;
-	UpdateUICombat(icarteChoisie,400,400,LObjets[0].stats);
-	if leMonde then 
-		begin
-		drawrect(black_color,50,0,0,windowWidth,windowHeight);
-		if LObjets[0].stats.pendu then
-			if LObjets[0].anim.isFliped then
-				SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
-			else
-				SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
-			else
-				RenderRawImage(LObjets[0].image,255, LObjets[0].anim.isFliped);
-		end;
-	EffetDeFondu
-	
-end;
-
-
 // Updates des Scenes
 
 procedure ActualiserJeu;
@@ -181,6 +126,7 @@ var i:Integer;
 		//UpdateDialogueBox(box);
 		UpdateCollisions();
 		UpdateAnimations();
+		UpdateAttaques();
 		if LObjets[0].stats.vie>LObjets[0].stats.vieMax then LObjets[0].stats.vie:=LObjets[0].stats.vieMax;
 		if LObjets[0].stats.vie<0 then LObjets[0].stats.vie:=0;
 		if leMonde and (sdl_getTicks-UpdateTimeMonde>LObjets[0].stats.compteurLeMonde*1000) then
@@ -190,7 +136,7 @@ var i:Integer;
 			end;
 		if LObjets[0].stats.laMort and (sdl_getTicks-updateTimeMort>5000) then
 			LObjets[0].stats.laMort:=False;
-		RegenMana(LastUpdateTime2,LObjets[0].stats.mana,LObjets[0].stats.manaMax,LObjets[0].stats.multiplicateurMana);
+		RegenMana(LObjets[0].stats.lastUpdateTimeMana,LObjets[0].stats.mana,LObjets[0].stats.manaMax,LObjets[0].stats.multiplicateurMana);
 		for i:=1 to High(LObjets) do
 			if (i<=High(LObjets)) and not leMonde then
 			begin
@@ -202,7 +148,7 @@ var i:Integer;
 			end;
 		SDL_RenderPresent(sdlRenderer);
 		if vagueFinie then ajoutVague;
-		if combatFini then choixSalle;
+		if combatFini then victoire(statsJoueur);
 	end;
 
 procedure ActualiserMenuEnJeu;
@@ -221,6 +167,7 @@ procedure ActualiserMenuEnJeu;
 		SDL_RenderPresent(sdlRenderer);
 	end;
 
+
     //Scenes
 
 procedure openSettings;
@@ -231,59 +178,6 @@ end;
 procedure goSeekHelp;
 begin
   
-end;
-
-procedure RenderParallaxMenu(bgImage,characterImage,cardsImage : TImage);
-var
-  mouseX, mouseY: Integer;
-  targetX_bg, targetY_bg, offsetX_bg, offsetY_bg: Integer;
-  targetX_character, targetY_character, offsetX_character, offsetY_character: Integer;
-  targetX_cards, targetY_cards, offsetX_cards, offsetY_cards: Integer;
-
-const
-  SmoothFactor = 0.1; // Facteur de smothiessage pour un resultat plus clean
-
-begin
-  // Obtenir la position de la souris
-  mouseX := GetMouseX;
-  mouseY := GetMouseY;
-
-  // Calculer les cibles en fonction de la position de la souris et des facteurs de vitesse
-  // Arrière-plan
-  targetX_bg := -Round(mouseX * 0.05);
-  targetY_bg := -Round(mouseY * 0.05);
-
-  // Personnage
-  targetX_character := -Round(mouseX * 0.1);
-  targetY_character := -Round(mouseY * 0.1);
-
-  // Carte 1
-  targetX_cards := -Round(mouseX * 0.2);
-  targetY_cards := -Round(mouseY * 0.2);
-
-  // Appliquer l'effet de lissage en rapprochant la position actuelle de la cible progressivement
-  // Arrière-plan
-  offsetX_bg := Round(SmoothFactor * (targetX_bg - bgImage.rect.x));
-  offsetY_bg := Round(SmoothFactor * (targetY_bg - bgImage.rect.y));
-  bgImage.rect.x := bgImage.rect.x + offsetX_bg;
-  bgImage.rect.y := bgImage.rect.y + offsetY_bg;
-
-  // Personnage
-  offsetX_character := Round(SmoothFactor * (targetX_character - characterImage.rect.x));
-  offsetY_character := Round(SmoothFactor * (targetY_character - characterImage.rect.y));
-  characterImage.rect.x := characterImage.rect.x + offsetX_character;
-  characterImage.rect.y := characterImage.rect.y + offsetY_character;
-
-  // Cartes
-  offsetX_cards := Round(SmoothFactor * (targetX_cards - cardsImage.rect.x));
-  offsetY_cards := Round(SmoothFactor * (targetY_cards - cardsImage.rect.y));
-  cardsImage.rect.x := cardsImage.rect.x + offsetX_cards;
-  cardsImage.rect.y := cardsImage.rect.y + offsetY_cards;
-
-  // Rendre chaque élément avec sa position mise à jour
-  RenderRawImage(bgImage, False);
-  RenderRawImage(characterImage, False);
-  RenderRawImage(cardsImage, False);
 end;
 procedure jouer;
 	begin
@@ -353,7 +247,7 @@ end;
 
 procedure NouvellePartieIntro;
 begin
-	jouerMus(12);
+	indiceMusiqueJouee:=11;
 	ClearScreen;
 	SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
 	black_color.r := 255; black_color.g := 255; black_color.b := 255;
@@ -361,6 +255,7 @@ begin
 	UpdateDialogueBox(dialogues[3]);
 	SDL_RenderPresent(sdlRenderer);
 	SDL_Delay(10);
+	autoMusique;
 	until NextOrSkipDialogue(3);
 
 	ClearScreen;
@@ -369,24 +264,28 @@ begin
 	repeat
 	UpdateDialogueBox(dialogues[4]);
 	SDL_RenderPresent(sdlRenderer);
+	autoMusique;
 	until NextOrSkipDialogue(4);
 	ClearScreen;
 
 	repeat
 	UpdateDialogueBox(dialogues[5]);
 	SDL_RenderPresent(sdlRenderer);
+	autoMusique;
 	until NextOrSkipDialogue(5);
 	ClearScreen;
 
 	repeat
 	UpdateDialogueBox(dialogues[6]);
 	SDL_RenderPresent(sdlRenderer);
+	autoMusique;
 	until NextOrSkipDialogue(6);
 	ClearScreen;
 
 	repeat
 	UpdateDialogueBox(dialogues[7]);
 	SDL_RenderPresent(sdlRenderer);
+	autoMusique;
 	until NextOrSkipDialogue(7);
 	ClearScreen;
 	black_color.r := 0; black_color.g := 0; black_color.b := 0;
@@ -472,6 +371,7 @@ begin
     LObjets[0] := Joueur;
     LObjets[0].image.rect.x := windowWidth div 2;
     LObjets[0].image.rect.y := windowHeight div 2;
+	LObjets[0].stats.lastUpdateTimeMana:=SDL_GetTicks;
     statsJoueur.tailleCollection:=22;
     statsJoueur.Vitesse:=5;
     statsJoueur.multiplicateurMana:=1;
@@ -714,7 +614,6 @@ begin
     Mix_VolumeMusic(VOLUME_MUSIQUE);
     SceneActive := 'Menu';
 	sdlKeyboardState := SDL_GetKeyboardState(nil);
-    lastUpdateTime2:=SDL_GetTicks;
     InitMenuPrincipal;
     InitMenuEnJeu;
     InitLeaderboard;

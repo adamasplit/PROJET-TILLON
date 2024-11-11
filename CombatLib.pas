@@ -26,6 +26,7 @@ procedure multiLasers(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,w,vit
 procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,w,xdest,ydest:Integer;vitRotation:Real;dureeVie,delai:Integer;nom:PChar;var rayon:TObjet);
 procedure updateRayon(var rayon:TObjet);
 procedure UpdateJustice(var justice:TObjet);
+procedure updateAttaques();
 procedure renderAvecAngle(objet:TObjet);
 procedure creerEffet(x,y,w,h,frames:Integer;nom:PCHar;fixeJoueur:Boolean;var obj:TObjet);
 procedure InitJustice(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,xCible,yCible,vitesse,delai:Integer);
@@ -481,6 +482,29 @@ begin
         supprimeObjet(justice);
         end
     
+end;
+
+procedure updateAttaques();
+var i:Integer;
+begin
+for i:=2 to High(LObjets) do
+      if (i<=High(LObjets)) then
+	  	begin
+			case LObjets[i].stats.genre of 
+        	projectile:begin
+        		if i<>LObjets[i].stats.indice then writeln('conflit à l"indice',i);
+				LObjets[i].stats.indice:=i;
+        		updateBoule(LObjets[i]);
+        		end;
+			laser:updateRayon(LObjets[i]);
+			epee:UpdateJustice(LObjets[i]);
+			effet:if (LObjets[i].stats.fixeJoueur) and (not (leMonde) or (LObjets[i].anim.objectName='monde')) then 
+				begin
+				LObjets[i].image.rect.x:=LObjets[0].image.rect.x+50-(LObjets[i].image.rect.w div 2);
+				LObjets[i].image.rect.y:=LObjets[0].image.rect.y+50-(LObjets[i].image.rect.h div 2);
+				end;
+			end;
+		end
 end;
 
 procedure subirDegats(var victime:TObjet;degats,knockbackX,knockbackY:Integer);
