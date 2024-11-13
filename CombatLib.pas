@@ -23,7 +23,7 @@ procedure CreerBoule(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Re
 procedure updateBoule(var proj:TObjet);
 procedure multiProjs(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,w,h,vitesse,nb,range,angleDepart:Integer;nom:PChar);
 procedure multiLasers(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,w,vitesse,nb,range,angleDepart,duree,delai:Integer;nom:PChar);
-procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,w,xdest,ydest:Integer;vitRotation:Real;dureeVie,delai:Integer;nom:PChar;var rayon:TObjet);
+procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,l,w,xdest,ydest:Integer;vitRotation:Real;dureeVie,delai:Integer;nom:PChar;var rayon:TObjet);
 procedure updateRayon(var rayon:TObjet);
 procedure UpdateJustice(var justice:TObjet);
 procedure updateAttaques();
@@ -191,7 +191,7 @@ begin
   obj.stats.fixeJoueur:=fixeJoueur;
 end;
 
-procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,w,xdest,ydest:Integer;vitRotation:Real;dureeVie,delai:Integer;nom:PChar;var rayon:TObjet);
+procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,l,w,xdest,ydest:Integer;vitRotation:Real;dureeVie,delai:Integer;nom:PChar;var rayon:TObjet);
 var norme:Real;destination,distance:array['X'..'Y'] of Integer;i:Integer;
 begin
     //Initialisation des caractéristiques
@@ -212,7 +212,7 @@ begin
     //Initialisation de l'affichage
     InitAnimation(rayon.anim,nom,'start',5,False);
     rayon.anim.estActif:=True;
-    CreateRawImage(rayon.image,x-600,y-64,1200,w,getFramePath(rayon.anim));
+    CreateRawImage(rayon.image,x-600,y-64,l,w,getFramePath(rayon.anim));
     
 
     //Initialisation de la boîte de collisions
@@ -245,13 +245,13 @@ begin
     //rayon.stats.vectY:=sin(arctan(rayon.stats.vectY/rayon.stats.vectX)-(40/180));
     if rayon.stats.vectX<0 then
         begin
-        rayon.image.rect.x:=round(rayon.image.rect.x+rayon.stats.vectX*600);
-        rayon.image.rect.y:=round(rayon.image.rect.y+rayon.stats.vecty*600);
+        rayon.image.rect.x:=round(rayon.image.rect.x+rayon.stats.vectX*(rayon.image.rect.w div 2));
+        rayon.image.rect.y:=round(rayon.image.rect.y+rayon.stats.vecty*(rayon.image.rect.w div 2));
         end
     else
         begin
-        rayon.image.rect.x:=round(rayon.image.rect.x+rayon.stats.vectX*600);
-        rayon.image.rect.y:=round(rayon.image.rect.y+rayon.stats.vecty*600);
+        rayon.image.rect.x:=round(rayon.image.rect.x+rayon.stats.vectX*(rayon.image.rect.w div 2));
+        rayon.image.rect.y:=round(rayon.image.rect.y+rayon.stats.vecty*(rayon.image.rect.w div 2));
         end;
     initAngle(rayon.stats.vectX,rayon.stats.vectY,rayon.stats.angle);
     //sdl_settexturealphamod(rayon.image.imgtexture,0);
@@ -279,7 +279,7 @@ begin
             rayon.anim.estActif:=True;
             rayon.stats.delai:=-1;
             SDL_DestroyTexture(rayon.image.imgTexture);SDL_freeSurface(rayon.image.imgSurface);
-            CreateRawImage(rayon.image,rayon.image.rect.x,rayon.image.rect.y,1200,rayon.image.rect.h,getFramePath(rayon.anim))
+            CreateRawImage(rayon.image,rayon.image.rect.x,rayon.image.rect.y,rayon.image.rect.w,rayon.image.rect.h,getFramePath(rayon.anim))
             end
     else
         if (not leMonde) and (((rayon.stats.dureeVie>5) and (rayon.anim.currentFrame<5-(rayon.stats.dureeVie div (rayon.stats.dureeVieInit div 5)))) or (rayon.stats.dureeVie<0)) then
@@ -297,8 +297,8 @@ begin
                 //mise à jour du vecteur de direction
                 rayon.stats.vectX:=cos(rayon.stats.angle+(rayon.stats.vitRotation/180));
                 rayon.stats.vectY:=sin(rayon.stats.angle+(rayon.stats.vitRotation/180)); 
-                rayon.image.rect.x:=round(rayon.stats.xreel+rayon.stats.vectX*600);
-                rayon.image.rect.y:=round(rayon.stats.yreel+rayon.stats.vecty*600);
+                rayon.image.rect.x:=round(rayon.stats.xreel+rayon.stats.vectX*(rayon.image.rect.w div 2));
+                rayon.image.rect.y:=round(rayon.stats.yreel+rayon.stats.vecty*(rayon.image.rect.w div 2));
                 end
             end
         else if (rayon.stats.vectX<>0) then //render du rayon du côté gauche
@@ -308,8 +308,8 @@ begin
                 //mise à jour du vecteur de direction
                 rayon.stats.vectX:=-cos(rayon.stats.angle+(rayon.stats.vitRotation/180));
                 rayon.stats.vectY:=-sin(rayon.stats.angle+(rayon.stats.vitRotation/180)); 
-                rayon.image.rect.x:=round(rayon.stats.xreel+rayon.stats.vectX*600);
-                rayon.image.rect.y:=round(rayon.stats.yreel+rayon.stats.vecty*600);
+                rayon.image.rect.x:=round(rayon.stats.xreel+rayon.stats.vectX*(rayon.image.rect.w div 2));
+                rayon.image.rect.y:=round(rayon.stats.yreel+rayon.stats.vecty*(rayon.image.rect.w div 2));
                 end
             end;
         end;
@@ -411,7 +411,7 @@ var rayon:TObjet;i:Integer;
 begin
     for i:=0 to nb-1 do
         begin
-        CreerRayon(origine,degats,force,mult,x,y,w,x+round(100*cos((i*2*pi+(angleDepart*pi/180))/((nb)*360/range))),y+round(100*sin((i*2*pi+(angleDepart*pi/180))/((nb)*360/range))),vitesse,duree,delai,nom,rayon);
+        CreerRayon(origine,degats,force,mult,x,y,1200,w,x+round(100*cos((i*2*pi+(angleDepart*pi/180))/((nb)*360/range))),y+round(100*sin((i*2*pi+(angleDepart*pi/180))/((nb)*360/range))),vitesse,duree,delai,nom,rayon);
         ajoutObjet(rayon);
         end;
 end;
@@ -559,7 +559,7 @@ end;
     procedure II(s : TStats ; x,y : integer);
     var proj : TObjet;
     begin
-        CreerRayon(joueur , 2 , s.force , s.multiplicateurDegat , x,y,120, getmouseX,getmouseY,{vitRotation}1,{dureeVie}30,{delai}1, 'rayon', proj);
+        CreerRayon(joueur , 2 , s.force , s.multiplicateurDegat , x,y,1200,120, getmouseX,getmouseY,{vitRotation}1,{dureeVie}30,{delai}1, 'rayon', proj);
         ajoutObjet(proj);
     end;
 
@@ -567,7 +567,7 @@ end;
     procedure III(s : TStats ; x,y : integer);
     var proj : TObjet;
     begin
-        CreerRayon(joueur , 3 , s.force , s.multiplicateurDegat , x,y,150, getmouseX,getmouseY,{vitRotation}0,{dureeVie}50,{delai}1, 'rayon', proj);
+        CreerRayon(joueur , 3 , s.force , s.multiplicateurDegat , x,y,1200,150, getmouseX,getmouseY,{vitRotation}0,{dureeVie}50,{delai}1, 'rayon', proj);
         ajoutObjet(proj);
     end;
 

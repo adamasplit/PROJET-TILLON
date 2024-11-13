@@ -79,7 +79,7 @@ begin
                 end
             else
                 begin
-                //writeln('changing music...');
+                writeln('changing music from ',indiceMusiquePrec,' to ',indiceMusiqueJouee);
                 indiceMusiquePrec:=indiceMusiqueJouee;
                 updatetimemusique:=sdl_getticks;
                 enFondu:=True;
@@ -93,11 +93,12 @@ begin
         if (SDL_GetTicks()-UpdateTimeMusique)>(OST[indiceMusiqueJouee].duree)*1000 then //vérifier si le morceau est fini ou non
             begin
             if (indiceMusiqueJouee>12) and (indiceMusiqueJouee<22) then
-                indiceMusiqueJouee:=indiceMusiqueJouee+10; 
-            mix_rewindMusic();
+                indiceMusiqueJouee:=indiceMusiqueJouee+10
+            else
+                mix_rewindMusic();
             updatetimeMusique := SDL_GetTicks();
             end;
-        if leMonde and (tempsTemp=0) and not(enFondu) then
+        {if leMonde and (tempsTemp=0) and not(enFondu) then
             begin
             mix_pauseMusic;
             tempsTemp:=sdl_getticks;
@@ -107,7 +108,7 @@ begin
             mix_resumeMusic;
             updateTimeMusique:=updateTimeMusique+(sdl_getTicks-tempsTemp);
             tempsTemp:=0;
-            end;
+            end;}
 end;
 
 procedure arretMus(duree:Integer);
@@ -132,37 +133,44 @@ indiceMusiquePrec:=0;
 tempsTemp:=0;
 Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT,
     MIX_DEFAULT_CHANNELS, 4096);
+
+    //Ecran titre
     defMus(1,'OST/Project_TITLE.wav','Cards of Fortune',102);
+    //Combats normaux
     defMus(2,'OST/C1.ogg','W-O-A-Y v0',51);
     defMus(3,'OST/C2.wav','W-O-A-Y V2',48);
     defMus(4,'OST/C3.wav','',104);
     defMus(5,'OST/C4.wav','',96);
     defMus(6,'OST/C5.wav','With Or Against You',113);
+    //Boss
     defMus(7,'OST/Boss1.wav','',120);
     defMus(8,'OST/Boss2.wav','',116);
     defMus(9,'OST/Boss3.wav','',149);
     defMus(10,'OST/Boss4.wav','',133);
+    //Map/évènements
     defMus(11,'OST/Map.wav','',163);
     defMus(12,'OST/Event.wav','',49);
-
-    defMus(13,'OST/C1_VictoireIntro.wav','W-O-A-Y v0',5);
-    defMus(14,'OST/C2_VictoireIntro.wav','W-O-A-Y V2',5);
+    //Fanfares de victoire
+    defMus(13,'OST/C1_VictoireIntro.wav','',5);
+    defMus(14,'OST/C2_VictoireIntro.wav','',5);
     defMus(15,'OST/C3_VictoireIntro.wav','',5);
     defMus(16,'OST/C4_VictoireIntro.wav','',3);
-    defMus(17,'OST/C5_VictoireIntro.wav','With Or Against You',5);
+    defMus(17,'OST/C5_VictoireIntro.wav','',5);
     defMus(18,'OST/Boss1_VictoireIntro.wav','',5);
-    defMus(19,'OST/Boss2_VictoireIntro.wav','',5);
+    defMus(19,'OST/Boss2_VictoireIntro.wav','',7);
     defMus(20,'OST/Boss3_VictoireIntro.wav','',5);
     defMus(21,'OST/Boss4_VictoireIntro.wav','',5);
-
+    //Thèmes de victoire/map
     defMus(23,'OST/C1_VictoireRep.wav','',6);
     defMus(24,'OST/C2_VictoireRep.wav','',11);
     defMus(25,'OST/C3_VictoireRep.wav','',23);
     defMus(26,'OST/C4_VictoireRep.wav','',12);
-    defMus(27,'OST/C5_VictoireRep.wav','',19);
+    defMus(27,'OST/C5_VictoireRep.wav','',15);
     defMus(28,'OST/Boss1_VictoireRep.wav','',81);
     defMus(29,'OST/Boss2_VictoireRep.wav','',81);
-    defMus(20,'OST/Boss3_VictoireRep.wav','',50);
-    defMus(21,'OST/Boss4_VictoireRep.wav','',32);
+    defMus(30,'OST/Boss3_VictoireRep.wav','',50);
+    defMus(31,'OST/Boss4_VictoireRep.wav','',27);
+
+
 end.
 

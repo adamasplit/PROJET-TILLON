@@ -142,7 +142,7 @@ begin
     LObjets[0].image.rect.x := windowWidth div 2;
     LObjets[0].image.rect.y := windowHeight div 2;
 	LObjets[0].stats.lastUpdateTimeMana:=SDL_GetTicks;
-    statsJoueur.tailleCollection:=3;
+    statsJoueur.tailleCollection:=22;
     statsJoueur.Vitesse:=5;
     statsJoueur.multiplicateurMana:=1;
     statsJoueur.multiplicateurDegat:=1;
@@ -203,7 +203,7 @@ begin
         RenderButtonGroup(salles[2].image);
         RenderButtonGroup(salles[3].image);
         SDL_RenderPresent(sdlRenderer);
-        while SDL_PollEvent(EventSystem) = 1 do
+        {while SDL_PollEvent(EventSystem) = 1 do
         	begin
             case EventSystem^.type_ of
                 SDL_KEYDOWN:
@@ -214,17 +214,10 @@ begin
 
                 SDL_MOUSEBUTTONDOWN:
                     begin
-                        writeln('Mouse button pressed at (', EventSystem^.motion.x, ',', EventSystem^.motion.y, ')');
-                        writeln(salles[1].image.button.rect.x);
-                        OnMouseClick(salles[1].image, EventSystem^.motion.x, EventSystem^.motion.y);
-                        OnMouseClick(salles[2].image, EventSystem^.motion.x, EventSystem^.motion.y);
-                        OnMouseClick(salles[3].image, EventSystem^.motion.x, EventSystem^.motion.y);
-                        HandleButtonClick(salles[1].image.button, EventSystem^.motion.x, EventSystem^.motion.y);
-                        HandleButtonClick(salles[2].image.button, EventSystem^.motion.x, EventSystem^.motion.y);
-                        HandleButtonClick(salles[3].image.button, EventSystem^.motion.x, EventSystem^.motion.y);
+                        
                     end;
             end;
-        	end;
+        	end;}
     	end;
 		'NouvellePartieIntro': NouvellePartieIntro;
 		'victoire':
@@ -233,17 +226,6 @@ begin
 			for i:=1 to 3 do
 				RenderButtonGroup(btnCartes[i]);
 			SDL_RenderPresent(sdlRenderer);
-			while SDL_PollEvent(EventSystem) = 1 do
-				begin
-				case EventSystem^.type_ of
-				SDL_MOUSEBUTTONDOWN:
-				for i:=1 to 3 do
-					begin
-					OnMouseClick(btnCartes[i], EventSystem^.motion.x, EventSystem^.motion.y);
-					HandleButtonClickCarte(btnCartes[i], EventSystem^.motion.x, EventSystem^.motion.y,btnCartes[i].carte,statsJoueur);
-					end;
-				end;
-				end;
 			end;
   		'Cutscene':
 		begin
@@ -252,15 +234,17 @@ begin
 		UpdateDialogueBox(dialogues[2]);
 		updateanimation(LObjets[0].anim,LObjets[0].image);
 		updateanimation(LObjets[1].anim,LObjets[1].image);
-		sdl_renderpresent(sdlrenderer);
-		if sdl_getTicks mod 200 = 0 then 
-			begin
-			combat_bg.rect.x:=88-4+random(9);
-			end;
+		sdl_renderpresent(sdlrenderer); 
+		
+		combat_bg.rect.x:=88-4+random(9);
 		while (SDL_PollEvent( EventSystem ) = 1) do
     		begin
       			case EventSystem^.type_ of
-					SDL_mousebuttondown:if dialogues[2].letterdelay=0 then sceneActive:='Jeu' else dialogues[2].LetterDelay:=0;
+					SDL_mousebuttondown:if dialogues[2].letterdelay=0 then begin
+						sceneActive:='Jeu';
+						indiceMusiqueJouee:=8;
+						end
+						 else dialogues[2].LetterDelay:=0;
 				end
 			end
 		end;
@@ -321,7 +305,24 @@ begin
 				end;
 			SDL_mousebuttondown : 
 				begin 
-				if sceneActive='Jeu' then jouerCarte(LObjets[0].stats,LObjets[0].image.rect.x+(LObjets[0].image.rect.w div 2),LObjets[0].image.rect.y+(LObjets[0].image.rect.h div 2),iCarteChoisie);
+				case sceneActive of
+				'Jeu': jouerCarte(LObjets[0].stats,LObjets[0].image.rect.x+(LObjets[0].image.rect.w div 2),LObjets[0].image.rect.y+(LObjets[0].image.rect.h div 2),iCarteChoisie);
+
+				'map':begin 
+					writeln('Mouse button pressed at (', EventSystem^.motion.x, ',', EventSystem^.motion.y, ')');
+                    writeln(salles[1].image.button.rect.x);
+					for i:=1 to 3 do
+						begin
+                        OnMouseClick(salles[i].image, EventSystem^.motion.x, EventSystem^.motion.y);
+                        HandleButtonClick(salles[i].image.button, EventSystem^.motion.x, EventSystem^.motion.y);
+						end
+					end;
+				'victoire':for i:=1 to 3 do
+					begin
+					OnMouseClick(btnCartes[i], EventSystem^.motion.x, EventSystem^.motion.y);
+					HandleButtonClickCarte(btnCartes[i], EventSystem^.motion.x, EventSystem^.motion.y,btnCartes[i].carte,statsJoueur);
+					end;
+				end;
    				if button_continue.button.estVisible then
 				begin
 				OnMouseClick(button_continue,EventSystem^.motion.x,EventSystem^.motion.y);

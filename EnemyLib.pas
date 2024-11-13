@@ -77,7 +77,7 @@ begin
             end;
           if LObjets[i].anim.objectName='Béhémoth' then
             begin
-            indiceMusiqueJouee:=8;
+            mix_pauseMusic;
             fini:=True;
             end;
           end;
@@ -319,9 +319,9 @@ begin
   if (ennemi.anim.etat='shoot') and (ennemi.stats.compteurAction>10) and (ennemi.stats.compteurAction<15) then
     begin
       if (ennemi.image.rect.x<ennemi.stats.xcible) then
-              CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+110,ennemi.image.rect.y+130,80,ennemi.image.rect.x+150,ennemi.image.rect.y+130,(random(5)-3)*3,10,100,ennemi.stats.nomAttaque,obj)
+              CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+110,ennemi.image.rect.y+130,1200,80,ennemi.image.rect.x+150,ennemi.image.rect.y+130,(random(5)-3)*3,10,100,ennemi.stats.nomAttaque,obj)
             else
-              CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+60,ennemi.image.rect.y+130,80,ennemi.image.rect.x-60,ennemi.image.rect.y+130,(random(5)-3)*3,10,100,ennemi.stats.nomAttaque,obj);
+              CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+60,ennemi.image.rect.y+130,1200,80,ennemi.image.rect.x-60,ennemi.image.rect.y+130,(random(5)-3)*3,10,100,ennemi.stats.nomAttaque,obj);
             ajoutObjet(obj);
     end;
   case ennemi.stats.typeIA_MVT of
@@ -345,9 +345,9 @@ begin
       if (ennemi.anim.currentFrame=6) and (sdl_getTicks-ennemi.anim.lastUpdateTime<15) then
         begin
         if (ennemi.image.rect.x<ennemi.stats.xcible) then
-          CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+40,ennemi.image.rect.y+50,100,ennemi.image.rect.x+60,ennemi.image.rect.y+50,0,10,ennemi.stats.vie,ennemi.stats.nomAttaque,obj)
+          CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+40,ennemi.image.rect.y+50,1200,100,ennemi.image.rect.x+60,ennemi.image.rect.y+50,0,10,ennemi.stats.vie,ennemi.stats.nomAttaque,obj)
         else
-          CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+40,ennemi.image.rect.y+50,100,ennemi.image.rect.x-60,ennemi.image.rect.y+50,0,10,ennemi.stats.vie,ennemi.stats.nomAttaque,obj);
+          CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+40,ennemi.image.rect.y+50,1200,100,ennemi.image.rect.x-60,ennemi.image.rect.y+50,0,10,ennemi.stats.vie,ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj);
         end;
       end;
@@ -373,7 +373,7 @@ begin
     10:begin
         if (ennemi.anim.etat='tir') and (ennemi.anim.currentFrame=20) and (ennemi.stats.compteurAction<=601) then
         begin
-        CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+250,ennemi.image.rect.y+350,300,ennemi.image.rect.x-60,ennemi.image.rect.y+350,-(y-(ennemi.image.rect.y+350))/280,80,50,ennemi.stats.nomAttaque,obj);
+        CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+250,ennemi.image.rect.y+350,1200,300,ennemi.image.rect.x-60,ennemi.image.rect.y+350,-(y-(ennemi.image.rect.y+350))/280,80,50,ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj)
         end;
         if (ennemi.anim.etat='chase') and (ennemi.anim.currentFrame mod 5 =2) and (ennemi.anim.currentFrame<>2) then
@@ -667,7 +667,7 @@ initStatEnnemi(6,'altegh',1,50,2,0,4,3,192,192,3,6,4,0,14,160,96,16,96,'rayonAL'
 initStatEnnemi(7,'Akr',4,150,2,0,-20,1,384,256,14,9,9,8,16,200,96,80,150,'kamui');
 initStatEnnemi(8,'UNKNOWN',4,150,2,0,-20,0,128,128,8,12,8,4,8,64,114,32,14,'Roue');
 initStatEnnemi(9,'armure',7,400,0,0,10,0,384,256,7,2,13,9,16,192,192,96,64,'justice');
-initStatEnnemi(10,'dracomage',2,100,2,5,6,1,192,192,34,12,8,8,13,128,164,32,28,'eclairR');
+initStatEnnemi(10,'dracomage',2,100,2,5,6,1,192,192,34,12,8,8,26,128,164,32,28,'eclairR');
 initStatEnnemi(11,'grenouille',8,20,1,0,2,0,90,90,7,6,4,4,7,54,90,5,0,'boule');
 initStatEnnemi(12,'Béhémoth',10,15000,20,10,10,5,463,614,12,32,40,12,39,400,307,63,307,'rayonRykor')
 
