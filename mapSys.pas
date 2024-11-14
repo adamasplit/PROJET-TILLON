@@ -89,8 +89,8 @@ begin
     indiceMusiqueJouee:=random(9)+2;
     for j:=1 to avancementPartie do
         begin
-        alea:=random(9)+1;
-        ennemis[j]:=templatesEnnemis[alea];
+        alea:=random(6)+13;
+        ennemis[j]:=templatesEnnemis[18];
         //writeln('correspondant à ',templatesEnnemis[alea].image.directory);
         writeln('élément ',j,' de ennemis: ',ennemis[j].anim.objectName);
         //analyseObjet(ennemis[j]);

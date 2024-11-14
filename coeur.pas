@@ -10,7 +10,7 @@ uses
 
 
 const MAXSALLES=40; //nombre de salles total pour finir le jeu
-  MAXENNEMIS=15; //nombre d'ennemis ayant une entrée dans le bestiaire
+  MAXENNEMIS=25; //nombre d'ennemis ayant une entrée dans le bestiaire
   MAXCARTES=60; //taille max du deck
 
 var whiteCol,b_color,bf_color,f_color,navy_color,red_color,black_col: TSDL_Color;
@@ -137,6 +137,7 @@ end;
 
 type ListeObjets = Array of TObjet; 
 var LObjets: ListeObjets; //Liste universelle des objets présents
+murs:array[1..4] of TCol;
 combatFini,vagueFinie,leMonde:Boolean;
 statsJoueur: TStats;
 PDeck:TDeck; //deck pointé par les stats du joueur
