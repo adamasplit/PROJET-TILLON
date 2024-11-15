@@ -144,14 +144,20 @@ begin
     writeln('ennemis choisis (boss)')
 end;
 
-procedure LancementSalleMarchand;
+procedure LancementSalleMarchand; //###
 begin
 writeln('Lancement de salle Marchand');
-choisirEnnemis;
 statsJoueur.avancement := statsJoueur.avancement+1;
-SceneActive := 'Jeu';
+InitButtonGroup(var btnechange: TButtonGroup;  x, y, w, h: Integer; imgPath: PChar;labelText: PAnsiChar;onClick: ButtonProcedure);
+
+SceneActive := 'MenuShop';
 ClearScreen;
 SDL_RenderClear(sdlRenderer);
+
+end;
+
+procedure MenuShop;
+begin
 
 end;
 
