@@ -23,8 +23,6 @@ windowHeight=720;windowWidth=1080;
       X1=(windowWidth  div 2) - (windowWidth div 2)+128;
       X2=(windowWidth  div 2) + (windowWidth div 4);
 
-var avancementPartie : Integer;
-
 procedure generationChoix(var salle1,salle2,salle3:TSalle);
 procedure affichageSalles(var salle1,salle2,salle3:TSalle);
 procedure choixSalle();
@@ -39,8 +37,8 @@ implementation
 procedure generationChoix(var salle1,salle2,salle3:TSalle);
 var alea:Integer;
 begin
-    writeln('Actuellement en salle : ',avancementPartie);
-    if ((avancementPartie mod 5) = 0) then 
+    writeln('Actuellement en salle : ',statsJoueur.avancement);
+    if ((statsJoueur.avancement mod 5) = 0) then 
         begin
             salle1.evenement:=rien;
             salle2.evenement:=boss;
@@ -81,16 +79,18 @@ begin
     writeln('liste ennemis vide');
     initStatsCombat(statsJoueur,LObjets[0].stats);
     if high(LOBjets)>0 then repeat supprimeObjet(LObjets[1]) until high(LObjets)=0;
-    setlength(ennemis,avancementPartie+1);
     writeln('LObjets vidée');
     vagueFinie:=True;
     combatFini:=False;
     randomize;
     indiceMusiqueJouee:=random(9)+2;
-    for j:=1 to avancementPartie do
+
+    //###partie à modifier : choix des ennemis et de leur nombre
+    setlength(ennemis,statsJoueur.avancement+1);
+    for j:=1 to statsJoueur.avancement do
         begin
-        alea:=random(6)+13;
-        ennemis[j]:=templatesEnnemis[18];
+        alea:=random(20)+1;
+        ennemis[j]:=templatesEnnemis[20];
         //writeln('correspondant à ',templatesEnnemis[alea].image.directory);
         writeln('élément ',j,' de ennemis: ',ennemis[j].anim.objectName);
         //analyseObjet(ennemis[j]);
@@ -102,11 +102,12 @@ end;
 procedure LancementSalleCombat();
 begin
 writeln('Lancement de salle Combat');
-avancementPartie := avancementPartie+1;
+choisirEnnemis;
+statsJoueur.avancement := statsJoueur.avancement+1;
 ClearScreen;
 SDL_RenderClear(sdlRenderer);
 writeln('choix des ennemis...');
-choisirEnnemis;
+
 SceneActive := 'Jeu';
 //indiceMusiqueJouee:=random(4)+2;
 end;
@@ -114,18 +115,19 @@ end;
 procedure LancementSalleHasard;
 begin
 writeln('Lancement de salle Hasard');
-avancementPartie := avancementPartie+1;
+choisirEnnemis;
+statsJoueur.avancement := statsJoueur.avancement+1;
 ClearScreen;
 SDL_RenderClear(sdlRenderer);
 SceneActive := 'Jeu';
-choisirEnnemis;
+
 end;
 
 procedure LancementSalleBoss;
 var j : integer;
 begin
     writeln('Lancement de salle Boss');
-    avancementPartie := avancementPartie+1;
+    statsJoueur.avancement := statsJoueur.avancement+1;
     ClearScreen;
     SDL_RenderClear(sdlRenderer);
     SceneActive := 'Jeu';
@@ -145,17 +147,18 @@ end;
 procedure LancementSalleMarchand;
 begin
 writeln('Lancement de salle Marchand');
-avancementPartie := avancementPartie+1;
+choisirEnnemis;
+statsJoueur.avancement := statsJoueur.avancement+1;
 SceneActive := 'Jeu';
 ClearScreen;
 SDL_RenderClear(sdlRenderer);
-choisirEnnemis;
+
 end;
 
 procedure LancementSalleCamp;
 begin
 writeln('Lancement de salle Camp');
-avancementPartie := avancementPartie+1;
+statsJoueur.avancement := statsJoueur.avancement+1;
 ClearScreen;
 SDL_RenderClear(sdlRenderer);
 SceneActive := 'Jeu';
@@ -225,7 +228,7 @@ begin
 end;
 
 begin
-avancementPartie:=1;
+statsJoueur.avancement:=1;
 //
 writeln('MapSys ready')
 end.

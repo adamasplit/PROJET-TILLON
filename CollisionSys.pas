@@ -15,7 +15,8 @@ uses
   // Vérifie automatiquement les collisions entre tous les objets actifs
   procedure UpdateCollisions();
   function GetCollisionRect(var obj: TObjet): TSDL_Rect;
-
+  function CheckAABB(rect1, rect2: TSDL_Rect): Boolean;
+  function isAttack(obj:TObjet):Boolean;
   // Fonction de vérification manuelle des collisions entre deux objets
   function CheckCollision(var obj1, obj2: TObjet): Boolean;
 

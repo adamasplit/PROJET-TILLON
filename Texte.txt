@@ -81,7 +81,7 @@
 <COMM_ENN_17>;
 <COMM_ENN_18>;
 <COMM_ENN_19>Ce symbole! Il doit donc s'agir d'un genre de pacte. Mais pourquoi aller aussi loin pour le pouvoir? Suis-je une telle menace?;
-<COMM_ENN_20>Dans nos légendes, les dragons sont réputés pour leur sagesse... Qu'a-t'il pu bien se passer pour en arriver là? Dans tous les cas, le seul moyen de le renvoyer dans la mort est de tuer son réceptacle.;
+<COMM_ENN_20>Dans nos légendes, les dragons sont réputés pour leur hargne, mais... Qu'a-t'il pu bien se passer pour en arriver là? Dans tous les cas, le seul moyen de le renvoyer dans la mort est de tuer son réceptacle.;
 <DESC_REL_1>Un recueil de techniques ancestrales;
 <TXT_INTRO1>Il fait si froid...;
 <TXT_INTRO2>Tout est noir. Aucun son, aucune lumière.;
@@ -90,7 +90,7 @@
  L'air est glacial, et ton souffle devient peu à peu audible dans cette obscurité.;
 <TXT_INTRO5>Tu te souviens vaguement de fragments... Des cartes, des signes, un destin oublié.
  Les cartes guideront ton destin, ou te condamneront…;
-<COMM_ENN_20>Dans nos légendes, les dragons sont réputés pour leur hargne, mais... Qu'a-t'il pu bien se passer pour en arriver là? Dans tous les cas, le seul moyen de le renvoyer dans la mort est de tuer son réceptacle.;
+
 <DESC_REL_1>;
 <DESC_REL_2>;
 <DESC_REL_3>;
@@ -99,5 +99,6 @@
 <COMM_REL_2>;
 <COMM_REL_3>;
 <COMM_REL_4>;
-<DIALOGUE_BOSS_1>Longtemps, j'ai attendu ce moment. L'humanité connaîtra mon courroux pour ces siècles de souffrance...;
+<DIALOGUE_BOSS_1>Longtemps, j'ai attendu ce moment. L'humanité connaîtra mon courroux pour ces millénaires de souffrance...;
 <DIALOGUE_BOSS_2>Non... Emprisonné à nouveau? Vous ne perdez rien pour attendre, humains!;
+<DIALOGUE_EVENT_BOSS_1>

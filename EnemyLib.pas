@@ -7,6 +7,7 @@ uses
     memgraph,
     SDL2,sdl2_mixer,
     animationSys,
+    collisionSys,
     combatLib,
     sonoSys,
     eventsys,
@@ -377,10 +378,32 @@ begin
         creerRayon(typeObjet(1),100,ennemi.stats.force,ennemi.stats.multiplicateurDegat,x+alea1,y+alea2-100,400,200,x+alea1,y+alea2,0,50,100,ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj)
         end;
+    13:begin
+      if (ennemi.anim.etat='charge') and (ennemi.stats.compteurAction mod 30=0) then 
+        begin
+        alea1:=random(180);
+        creerRayon(typeObjet(1),1,ennemi.stats.force,ennemi.stats.multiplicateurDegat,round(x+cos(alea1)*100)+400,50+round(y+sin(alea1)*100),400,200,350+round(x-cos(alea1)*100),round(y-sin(alea1)*100),0,50,50,ennemi.stats.nomAttaque,obj);
+        sdl_settexturecolormod(obj.image.imgtexture,255,0,0);
+        ajoutObjet(obj)
+        end;
+        if ((ennemi.anim.etat='strike') and (ennemi.stats.compteurAction<15)) then//or ((ennemi.anim.etat='dodge') and (ennemi.stats.compteurAction>40)) then
+          begin 
+          creerRayon(typeObjet(1),1,ennemi.stats.force,ennemi.stats.multiplicateurDegat,ennemi.image.rect.x+(ennemi.image.rect.w div 2),ennemi.image.rect.y+(ennemi.image.rect.h div 2),1200,200,x,y,0,10,100-ennemi.anim.currentFrame*10,'rayonLeo',obj);
+          ajoutObjet(obj);
+          end;
+        end;
+    14:begin
+    if (random(30)=0) and (ennemi.anim.etat='rage') then begin
+        alea1:=random(100)*10+200;alea2:=random(100)*10;
+        creerRayon(typeObjet(1),100,ennemi.stats.force,ennemi.stats.multiplicateurDegat,alea1,alea2,400,200,alea1,alea2-100,0,100,100,ennemi.stats.nomAttaque,obj);
+        ajoutObjet(obj)
+        end;
+      end;
     end;
 end;
 
 procedure DeplacementEnnemi(var ennemi:TObjet;joueur:TObjet); //déplace un ennemi 
+var i,alea:Integer;rect1,rect2:TSDL_REct;
 begin
 
   case ennemi.stats.typeIA_MVT of
@@ -597,6 +620,82 @@ begin
           ennemi.stats.compteurAction:=0;
           end
         end;
+      13:begin //pour Leo
+        ennemi.anim.isFliped:=(ennemi.stats.xcible>ennemi.image.rect.x);
+        if ennemi.anim.etat='chase' then
+          begin
+          ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
+          ennemi.anim.isFliped:=(joueur.image.rect.x>ennemi.image.rect.x);
+          if ennemi.stats.compteurAction>250 then
+            initAnimation(ennemi.anim,ennemi.anim.objectName,'charge',7,True);
+          if ennemi.stats.compteurAction mod 10=0 then
+            begin
+            rect1.x:=ennemi.image.rect.x-50;
+            rect1.y:=ennemi.image.rect.y;
+            rect1.w:=ennemi.image.rect.w+100;
+            rect1.h:=ennemi.image.rect.h+50;
+            for i:=0 to high(LObjets) do
+              begin
+              rect2:=getcollisionrect(LObjets[i]);
+              if isAttack(LObjets[i]) and (LObjets[i].stats.origine=TypeObjet(0)) and CheckAABB(rect1,rect2) then
+                begin
+                initAnimation(ennemi.anim,ennemi.anim.objectName,'dodge',4,True);
+                ennemi.stats.compteurAction:=0;
+                ennemi.stats.xcible:=ennemi.image.rect.x+round(300*sin(LObjets[i].stats.angle));
+                ennemi.stats.ycible:=ennemi.image.rect.y+round(300*cos(LObjets[i].stats.angle));
+                end;
+              end;
+            end;
+          end;
+        if ennemi.anim.etat='dodge' then
+          begin
+          
+          flyUpdate(ennemi,4);
+          ennemi.col.estActif:=False;
+          ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
+          if ennemi.stats.compteurAction=10 then
+            begin
+            initAnimation(ennemi.anim,ennemi.anim.objectName,'strike',10,False)
+            end;
+          if ennemi.stats.compteurAction>50 then
+            initAnimation(ennemi.anim,ennemi.anim.objectName,'land',3,False)
+          end
+        else ennemi.col.estActif:=True;
+        if (ennemi.anim.etat='strike') and (ennemi.stats.compteurAction<15) then
+          begin
+          ennemi.stats.ycible:=ennemi.image.rect.y+round(1.5*(joueur.image.rect.y-(ennemi.image.rect.y+ennemi.col.offset.y+(ennemi.col.dimensions.h div 2))));
+          ennemi.stats.xcible:=ennemi.image.rect.x+round(1.5*(joueur.image.rect.x-(ennemi.image.rect.x+ennemi.col.offset.x+(ennemi.col.dimensions.w div 2))));
+          ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
+          end;
+        if (ennemi.anim.etat='strike') and animFinie(ennemi.anim) then
+          begin
+          initAnimation(ennemi.anim,ennemi.anim.objectName,'dodge',4,True);
+          ennemi.stats.compteurAction:=15
+          end;
+
+        if (ennemi.anim.etat='charge') then
+          begin
+          ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
+          if (ennemi.stats.compteurAction>300) then
+            begin
+            initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
+            ennemi.stats.compteurAction:=0;
+            end;
+          end;
+        if (ennemi.anim.etat='land') and animFinie(ennemi.anim) then
+          begin
+          //writeln('landing');
+          initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
+          ennemi.stats.compteurAction:=0;
+          end;
+        end;
+      14:begin //Leo en transe
+        if (ennemi.anim.etat='chase') and (animFinie(ennemi.anim)) and (random(10)=0) then
+          initAnimation(ennemi.anim,ennemi.anim.objectName,'rage',ennemi.stats.nbFrames2,True);
+        if (ennemi.anim.etat='rage') and (animFinie(ennemi.anim)) and (random(10)=0) then
+          initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
+          
+        end;
 
     end
 end;
@@ -636,6 +735,7 @@ begin
     end
 		else
       if (animFinie(ennemi.anim)) and (ennemi.anim.etat='mort') then
+        if (ennemi.anim.objectName<>'Leo') then
           begin
           //writeln(ennemi.anim.objectname,' détruit')
           supprimeObjet(ennemi);
@@ -646,6 +746,8 @@ begin
               vagueFinie:=False;
               end;
           end
+        else
+          ennemi:=templatesEnnemis[21]
           
       else if ennemi.stats.vie<=0 then
       begin
@@ -689,6 +791,8 @@ InitstatEnnemi(16,'vestige',11,1000,3,0,5,1,400,400,10,16,0,0,7,250,400,75,0,'ge
 initStatEnnemi(17,'livre',12,20,1,0,2,1,180,90,7,12,4,0,12,60,90,60,0,'eclair');
 initStatEnnemi(18,'feu_follet',6,20,3,1,1,0,100,100,7,9,0,0,6,70,70,15,15,'flamme');
 initStatEnnemi(19,'chaos',12,60,1,3,5,2,200,200,9,11,6,0,6,100,200,50,0,'rayonAbysse');
+InitstatEnnemi(20,'Leo',13,150,8,2,5,0,300,300,14,8,7,10,8,100,150,100,150,'eclairL');
+InitstatEnnemi(21,'Leo_Transe',14,50,20,5,0,0,300,300,13,16,6,0,10,200,250,50,25,'geyser_feu');
 
 
 end.
