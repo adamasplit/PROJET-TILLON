@@ -211,7 +211,6 @@ begin
     end;
 end;
 
-
 // Vérifie la collision entre deux objets et gère les conséquences (repoussement ou trigger)
 function CheckCollision(var obj1, obj2: TObjet): Boolean;
 var
@@ -336,6 +335,8 @@ begin
     // Si l'objet est actif pour les collisions
     if LObjets[i].col.estActif then
     begin
+      for j:=1 to 4 do
+        checkCollision(LObjets[i],murs[j]);
       for j := i + 1 to High(LObjets) do
       begin
         // Si l'autre objet est aussi actif pour les collisions

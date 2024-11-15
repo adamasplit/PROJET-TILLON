@@ -321,7 +321,7 @@ end;
 
 procedure acquisitionCarte(carte:TCarte;var stats:TStats);
 begin
-    writeln('tentative d''ajout d''une carte');
+    //writeln('tentative d''ajout d''une carte');
     stats.tailleCollection:=stats.tailleCollection+1;
     stats.collection[stats.tailleCollection]:=carte;
     choixSalle;

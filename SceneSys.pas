@@ -193,32 +193,12 @@ begin
 		end;
 		'map':
 		begin
-        SDL_PumpEvents();
-        SDL_Delay(10);
-        //OnMouseHover(salle1.image,EventSystem^.motion.x, EventSystem^.motion.y);
-        //OnMouseHover(salle2.image,EventSystem^.motion.x, EventSystem^.motion.y);
-        //OnMouseHover(salle3.image,EventSystem^.motion.x, EventSystem^.motion.y);
-        //renderrawimage(map_bg,false);
-        RenderButtonGroup(salles[1].image);
-        RenderButtonGroup(salles[2].image);
-        RenderButtonGroup(salles[3].image);
-        SDL_RenderPresent(sdlRenderer);
-        {while SDL_PollEvent(EventSystem) = 1 do
-        	begin
-            case EventSystem^.type_ of
-                SDL_KEYDOWN:
-                    case EventSystem^.key.keysym.sym of
-                        SDLK_ESCAPE: 
-                            // Un Gwo pwoblem wai
-                    end;
-
-                SDL_MOUSEBUTTONDOWN:
-                    begin
-                        
-                    end;
-            end;
-        	end;}
+        actualiserMap;
     	end;
+		'marchand':
+		begin
+		actualiserMarchand;
+		end;
 		'NouvellePartieIntro': NouvellePartieIntro;
 		'victoire':
 			begin
