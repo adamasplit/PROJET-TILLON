@@ -26,6 +26,8 @@ windowHeight=720;windowWidth=1080;
 procedure generationChoix(var salle1,salle2,salle3:TSalle);
 procedure affichageSalles(var salle1,salle2,salle3:TSalle);
 procedure choixSalle();
+procedure actualiserMap();
+procedure actualiserMarchand();
 procedure choisirEnnemis;
 procedure LancementSalleHasard;
 procedure LancementSalleBoss;
@@ -90,7 +92,7 @@ begin
     for j:=1 to statsJoueur.avancement do
         begin
         alea:=random(20)+1;
-        ennemis[j]:=templatesEnnemis[20];
+        ennemis[j]:=templatesEnnemis[alea];
         //writeln('correspondant à ',templatesEnnemis[alea].image.directory);
         writeln('élément ',j,' de ennemis: ',ennemis[j].anim.objectName);
         //analyseObjet(ennemis[j]);
@@ -144,22 +146,42 @@ begin
     writeln('ennemis choisis (boss)')
 end;
 
-procedure LancementSalleMarchand; //###
+procedure marchandage;
 begin
-writeln('Lancement de salle Marchand');
-statsJoueur.avancement := statsJoueur.avancement+1;
-InitButtonGroup(var btnechange: TButtonGroup;  x, y, w, h: Integer; imgPath: PChar;labelText: PAnsiChar;onClick: ButtonProcedure);
-
 SceneActive := 'MenuShop';
 ClearScreen;
 SDL_RenderClear(sdlRenderer);
-
 end;
 
-procedure MenuShop;
+procedure LancementSalleMarchand; //###
 begin
-
+    sceneActive := 'marchand';
+    indiceMusiqueJouee:=12;
+    writeln('Lancement de salle Marchand');
+    statsJoueur.avancement := statsJoueur.avancement+1;
+    InitButtonGroup(btnEchange,  415, 100, 250, 100, 'Sprites/Menu/button1.bmp','Marchandage',btnProc);
+    InitButtonGroup(btnDiscussion,  440, 200, 200, 100, 'Sprites/Menu/button1.bmp','Discussion',btnproc);
+    InitButtonGroup(btnQuitterMarchand,  465, 300, 150, 100, 'Sprites/Menu/button1.bmp','Partir',btnProc);
+    initDialogueBox(dialogues[10],'Sprites/Menu/button1.bmp',nil,0,600,1080,120,'aaa',10);
+    
+    
 end;
+
+procedure actualiserMarchand();
+begin
+    sdl_delay(10);
+    sdl_renderclear(sdlrenderer);
+    OnMouseHover(btnEchange,getMouseX,getMouseY);
+    renderButtonGroup(btnEchange);
+    UpdateDialogueBox(dialogues[10]);
+    OnMouseHover(btnDiscussion,getMouseX,getMouseY);
+    renderButtonGroup(btnDiscussion);
+    OnMouseHover(btnQuitterMarchand,getMouseX,getMouseY);
+    renderButtonGroup(btnQuitterMarchand);
+    sdl_renderpresent(sdlrenderer);
+end;
+
+
 
 procedure LancementSalleCamp;
 begin
@@ -231,6 +253,16 @@ begin
     SDL_RenderPresent(sdlRenderer);
     new(EventSystem);
     
+end;
+
+procedure actualiserMap();
+begin
+    SDL_PumpEvents();
+    SDL_Delay(10);
+    RenderButtonGroup(salles[1].image);
+    RenderButtonGroup(salles[2].image);
+    RenderButtonGroup(salles[3].image);
+    SDL_RenderPresent(sdlRenderer);
 end;
 
 begin

@@ -129,6 +129,7 @@ type
       1:(procCarte:procedure(carte:TCarte;var stats:TStats);carte:TCarte);
       2:(procSalle:procedure(evenement:evenements));
     end;
+
 type TSalle=record
     evenement:evenements;
     image:TButtonGroup;
@@ -137,7 +138,7 @@ end;
 
 type ListeObjets = Array of TObjet; 
 var LObjets: ListeObjets; //Liste universelle des objets présents
-murs:array[1..4] of TCol;
+murs:array[1..4] of TObjet;
 combatFini,vagueFinie,leMonde:Boolean;
 statsJoueur: TStats;
 PDeck:TDeck; //deck pointé par les stats du joueur
@@ -150,6 +151,9 @@ PDeck:TDeck; //deck pointé par les stats du joueur
 	button_settings : TButtonGroup;
 	button_help : TButtonGroup;
 	button_home : TButtonGroup;
+  btnEchange:TButtonGroup;
+  btnDiscussion:TButtonGroup;
+  btnQuitterMarchand:TButtonGroup;
   btnCartes:array[1..3] of TButtonGroup;
   salles: array[1..3] of TSalle;
 	button_retour_menu : TButtonGroup;
@@ -235,7 +239,28 @@ begin
   red_color.r := 255; red_color.g := 0; red_color.b := 50;
   black_col.r:=0;black_col.g:=0;black_col.b:=0;
 
-
+  murs[1].image.rect.x:=0;
+  murs[1].image.rect.y:=-300;
+  murs[1].col.dimensions.w:=1080;
+  murs[1].col.dimensions.h:=300;
+  murs[2].image.rect.x:=-200;
+  murs[2].image.rect.y:=0;
+  murs[2].col.dimensions.w:=380;
+  murs[2].col.dimensions.h:=720;
+  murs[3].image.rect.x:=0;
+  murs[3].image.rect.y:=700;
+  murs[3].col.dimensions.w:=1080;
+  murs[3].col.dimensions.h:=400;
+  murs[4].image.rect.x:=880;
+  murs[4].image.rect.y:=0;
+  murs[4].col.dimensions.w:=400;
+  murs[4].col.dimensions.h:=720;
+  for i:=1 to 4 do
+    begin
+    murs[i].col.estActif:=True;
+    murs[i].col.offset.x:=0;
+    murs[i].col.offset.y:=0;
+    end;
 
   statsJoueur.genre:=joueur;
   statsJoueur.vieMax:=100;
