@@ -5,6 +5,7 @@ uses
     coeur,
     math,
     memgraph,
+    fichierSys,
     SDL2,sdl2_mixer,
     animationSys,
     collisionSys,
@@ -162,6 +163,8 @@ end;
 
 procedure AIReWarp(var ennemi:TObjet);
 begin
+    if ennemi.anim.objectName='Akr' then ennemi.anim.objectName:='Akr2'
+    else if ennemi.anim.objectName='Akr2' then ennemi.anim.objectName:='Akr';
     InitAnimation(ennemi.anim,ennemi.anim.ObjectName,'rewarp', ennemi.stats.nbframes3,False);
     ennemi.image.rect.x:=ennemi.stats.xcible;ennemi.image.rect.y:=ennemi.stats.ycible;
     ennemi.col.estActif:=True;
@@ -247,6 +250,7 @@ begin
   distX:=ennemi.stats.xcible-ennemi.image.rect.x;
   distY:=ennemi.stats.ycible-ennemi.image.rect.y;
   ennemi.anim.isFliped:=(distX>0);
+  begin
   if distX=0 then
     if distY>0 then
       angle:=pi/2
@@ -281,6 +285,7 @@ begin
     end;
   ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
   //drawRect(black_color,120,ennemi.stats.xcible-8,ennemi.stats.ycible-8,16,16);
+  end;
 end;
 
 procedure AIPathFollow(var ennemi: TObjet; target: TObjet;vitesse:Integer;deplaceX,deplaceY:Boolean);
@@ -398,6 +403,10 @@ begin
         creerRayon(typeObjet(1),100,ennemi.stats.force,ennemi.stats.multiplicateurDegat,alea1,alea2,400,200,alea1,alea2-100,0,100,100,ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj)
         end;
+    if (ennemi.anim.etat='cast') and (ennemi.anim.currentFrame=2) and (ennemi.stats.compteurAction<3) then
+      begin
+      XXIII(typeObjet(1),ennemi.stats,ennemi.image.rect.x,ennemi.image.rect.y,x,y,110);
+      end;
       end;
     end;
 end;
@@ -622,10 +631,11 @@ begin
         end;
       13:begin //pour Leo
         ennemi.anim.isFliped:=(ennemi.stats.xcible>ennemi.image.rect.x);
+        if (ennemi.anim.etat='chase') or (ennemi.anim.etat='charge') then
+          ennemi.anim.isFliped:=(joueur.image.rect.x>ennemi.image.rect.x);
         if ennemi.anim.etat='chase' then
           begin
           ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
-          ennemi.anim.isFliped:=(joueur.image.rect.x>ennemi.image.rect.x);
           if ennemi.stats.compteurAction>250 then
             initAnimation(ennemi.anim,ennemi.anim.objectName,'charge',7,True);
           if ennemi.stats.compteurAction mod 10=0 then
@@ -690,10 +700,29 @@ begin
           end;
         end;
       14:begin //Leo en transe
-        if (ennemi.anim.etat='chase') and (animFinie(ennemi.anim)) and (random(10)=0) then
+        ennemi.anim.isFliped:=(ennemi.stats.xcible>ennemi.image.rect.x);
+        if (ennemi.anim.etat='cast') and (ennemi.anim.currentFrame=2) and (ennemi.stats.compteurAction<3) then
+          ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
+        if ennemi.anim.etat='chase' then 
+          begin
+          AIPathFollow(ennemi,joueur,ennemi.stats.vitessePoursuite,True,True);
+          ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
+          end;
+        if (ennemi.anim.etat='chase') and (random((150+ennemi.stats.vie))=0) then
           initAnimation(ennemi.anim,ennemi.anim.objectName,'rage',ennemi.stats.nbFrames2,True);
         if (ennemi.anim.etat='rage') and (animFinie(ennemi.anim)) and (random(10)=0) then
+          begin
           initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
+          flyUpdate(ennemi,4);
+          end;
+        if ennemi.stats.compteurAction>200 then
+          begin
+          initAnimation(ennemi.anim,ennemi.anim.objectName,'cast',ennemi.stats.nbFrames3,False);
+          ennemi.stats.compteurAction:=1
+          end;
+        if (ennemi.anim.etat='cast') and (animFinie(ennemi.anim)) then
+          initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
+
           
         end;
 
@@ -701,7 +730,7 @@ begin
 end;
 
 procedure IAEnnemi(var ennemi:TObjet;joueur:TObjet);
-var i:Integer;
+var i,x,y:Integer;
 begin
   if animFinie(ennemi.anim) and (ennemi.anim.etat='apparition') then
     begin
@@ -714,6 +743,7 @@ begin
     end;
   if (ennemi.anim.etat='apparition') and (ennemi.anim.objectName='Béhémoth') and (ennemi.stats.compteurAction=0) then
     begin
+	    InitDialogueBox(dialogues[1],'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',0,-100,windowWidth,400,extractionTexte('DIALOGUE_BOSS_1'),100);
       sceneActive:='Cutscene';
       ennemi.stats.compteurAction:=1;
     end;
@@ -747,7 +777,15 @@ begin
               end;
           end
         else
-          ennemi:=templatesEnnemis[21]
+          begin
+          x:=ennemi.image.rect.x;
+          y:=ennemi.image.rect.y;
+          InitDialogueBox(dialogues[1],'Sprites\Menu\Button1.bmp','Sprites\Menu\portrait_Leo7.bmp',0,-100,windowWidth,400,extractionTexte('DIALOGUE_EVENT_BOSS_2'),100);
+          sceneActive:='Cutscene';
+          ennemi:=templatesEnnemis[21];
+          ennemi.image.rect.x:=x;
+          ennemi.image.rect.y:=y;
+          end
           
       else if ennemi.stats.vie<=0 then
       begin
@@ -757,13 +795,15 @@ begin
         if not (ennemi.anim.etat='mort') then 
           begin
           InitAnimation(ennemi.anim,ennemi.anim.objectName,'mort',ennemi.stats.nbFramesMort,False);
-          ennemi.col.estActif:=False
+          ennemi.col.estActif:=False;
+          statsJoueur.bestiaire[ennemi.stats.numero]:=True;
           end;
         end
       else
         if (ennemi.anim.etat<>'mortRep') and (ennemi.anim.etat<>'mort') then
           begin
           initAnimation(ennemi.anim,ennemi.anim.objectName,'mortRep',ennemi.stats.nbframes3,True);
+          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',0,-100,windowWidth,400,extractionTexte('DIALOGUE_BOSS_2'),100);
           sceneActive:='Behemoth_Mort';
           end;
     end
@@ -792,7 +832,7 @@ initStatEnnemi(17,'livre',12,20,1,0,2,1,180,90,7,12,4,0,12,60,90,60,0,'eclair');
 initStatEnnemi(18,'feu_follet',6,20,3,1,1,0,100,100,7,9,0,0,6,70,70,15,15,'flamme');
 initStatEnnemi(19,'chaos',12,60,1,3,5,2,200,200,9,11,6,0,6,100,200,50,0,'rayonAbysse');
 InitstatEnnemi(20,'Leo',13,150,8,2,5,0,300,300,14,8,7,10,8,100,150,100,150,'eclairL');
-InitstatEnnemi(21,'Leo_Transe',14,50,20,5,0,0,300,300,13,16,6,0,10,200,250,50,25,'geyser_feu');
+InitstatEnnemi(21,'Leo_Transe',14,50,20,5,0,1,300,300,13,16,6,22,10,200,250,50,25,'geyser_feu');
 
 
 end.

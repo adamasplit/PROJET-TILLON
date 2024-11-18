@@ -20,6 +20,7 @@
 <DESC_CAR_20>L'ange passe son jugement et donne son aide à ceux qu'il en juge dignes.;
 <DESC_CAR_21>La carte du Monde donne à l'utilisateur l'autorité sur le temps.;
 <DESC_CAR_22>;
+<DESC_CAR_23>Cette carte porte le symbole du Lion. Elle appelle la puissance de son épée flamboyante.;
 <COMM_CAR_1>Il faut bien commencer quelque part. J'accepte l'aide que les cartes m'accorderont.;
 <COMM_CAR_2>;
 <COMM_CAR_3>;
@@ -42,6 +43,7 @@
 <COMM_CAR_20>En suis-je vraiment digne? Peu importe. J'ai été appelée dans cet endroit.;
 <COMM_CAR_21>Mon voyage n'en est pas encore à son terme. Mais cette carte me rappelle l'harmonie que j'ai connue autrefois. Elle me guidera vers le succès.;
 <COMM_CAR_22>Au fond, je suis libre de mes actions. Mais cela n'implique pas d'être imprudente.;
+<COMM_CAR_23>Quelle étrange carte... Mais après tout, lire l'avenir dans les étoiles ou dans les cartes, cela revient au même.;
 <DESC_ENN_1>;
 <DESC_ENN_2>;
 <DESC_ENN_3>;
@@ -101,4 +103,5 @@
 <COMM_REL_4>;
 <DIALOGUE_BOSS_1>Longtemps, j'ai attendu ce moment. L'humanité connaîtra mon courroux pour ces millénaires de souffrance...;
 <DIALOGUE_BOSS_2>Non... Emprisonné à nouveau? Vous ne perdez rien pour attendre, humains!;
-<DIALOGUE_EVENT_BOSS_1>
+<DIALOGUE_EVENT_BOSS_1>;
+<DIALOGUE_EVENT_BOSS_2>Il y a bien longtemps que je n'ai pas eu autant de difficultés... Il est temps de se battre à pleine puissance!;

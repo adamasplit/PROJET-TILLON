@@ -91,8 +91,11 @@ begin
     setlength(ennemis,statsJoueur.avancement+1);
     for j:=1 to statsJoueur.avancement do
         begin
-        alea:=random(20)+1;
-        ennemis[j]:=templatesEnnemis[alea];
+        alea:=random(19)+1;
+        if alea=12 then
+            ennemis[j]:=templatesEnnemis[20]
+        else
+            ennemis[j]:=templatesEnnemis[alea];
         //writeln('correspondant à ',templatesEnnemis[alea].image.directory);
         writeln('élément ',j,' de ennemis: ',ennemis[j].anim.objectName);
         //analyseObjet(ennemis[j]);
@@ -162,23 +165,20 @@ begin
     InitButtonGroup(btnEchange,  415, 100, 250, 100, 'Sprites/Menu/button1.bmp','Marchandage',btnProc);
     InitButtonGroup(btnDiscussion,  440, 200, 200, 100, 'Sprites/Menu/button1.bmp','Discussion',btnproc);
     InitButtonGroup(btnQuitterMarchand,  465, 300, 150, 100, 'Sprites/Menu/button1.bmp','Partir',btnProc);
-    initDialogueBox(dialogues[10],'Sprites/Menu/button1.bmp',nil,0,600,1080,120,'aaa',10);
+    initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp',nil,0,600,1080,120,'aaa',10);
     
     
 end;
 
 procedure actualiserMarchand();
 begin
-    sdl_delay(10);
-    sdl_renderclear(sdlrenderer);
     OnMouseHover(btnEchange,getMouseX,getMouseY);
     renderButtonGroup(btnEchange);
-    UpdateDialogueBox(dialogues[10]);
+    UpdateDialogueBox(dialogues[2]);
     OnMouseHover(btnDiscussion,getMouseX,getMouseY);
     renderButtonGroup(btnDiscussion);
     OnMouseHover(btnQuitterMarchand,getMouseX,getMouseY);
     renderButtonGroup(btnQuitterMarchand);
-    sdl_renderpresent(sdlrenderer);
 end;
 
 
@@ -250,7 +250,6 @@ begin
     affichageSalles(salles[1], salles[2], salles[3]);
     
     writeln('Room choice started');
-    SDL_RenderPresent(sdlRenderer);
     new(EventSystem);
     
 end;
@@ -258,11 +257,15 @@ end;
 procedure actualiserMap();
 begin
     SDL_PumpEvents();
-    SDL_Delay(10);
     RenderButtonGroup(salles[1].image);
     RenderButtonGroup(salles[2].image);
     RenderButtonGroup(salles[3].image);
-    SDL_RenderPresent(sdlRenderer);
+    RenderButtonGroup(salles[1].image);
+    RenderButtonGroup(salles[2].image);
+    RenderButtonGroup(salles[3].image);
+    RenderButtonGroup(salles[1].image);
+    RenderButtonGroup(salles[2].image);
+    RenderButtonGroup(salles[3].image);
 end;
 
 begin

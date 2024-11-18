@@ -3,7 +3,7 @@ unit MenuSys;
 
 interface
 
-uses SDL2,coeur,eventsys,memgraph,animationSys,combatlib,mapsys,SDL2_ttf,sonoSys;
+uses SDL2,coeur,eventsys,memgraph,animationSys,combatlib,sysutils,mapsys,SDL2_ttf,sonoSys,fichierSys,enemyLib;
 
 //Image
 	var combat_bg,menuBook,bgImage,characterImage,cardsImage : TImage;
@@ -27,16 +27,24 @@ procedure lead;
 procedure NouvellePartieIntro;
 procedure menuEnJeu;
 function NextOrSkipDialogue(i : Integer) : Boolean;
+procedure actualiserDeck();
+procedure scrollDeck();
+procedure actualiserBestiaire();
+procedure scrollBestiaire();
 
 implementation
+
+var iDeck,iEnn:Integer;carteDeck:TImage;ennAff:TObjet;
 
 function NextOrSkipDialogue(i : Integer) : Boolean;
 begin
 	NextOrSkipDialogue:=False;
+	if dialogues[i].letterdelay<>0 then writeln(dialogues[i].letterdelay);
   	  while (SDL_PollEvent( EventSystem ) = 1) do
       			case EventSystem^.type_ of
 					SDL_mousebuttondown:if dialogues[i].letterdelay=0 then NextOrSkipDialogue:=True else dialogues[i].LetterDelay:=0;
-	end;
+				end;
+	if NextOrSkipDialogue then writeln('next');
 end;
 
 procedure menuEnJeu;
@@ -134,42 +142,51 @@ begin
 	ClearScreen;
 	SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
 	black_color.r := 255; black_color.g := 255; black_color.b := 255;
+	
+	InitDialogueBox(dialogues[1],nil,nil,-50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('TXT_INTRO1'),100);
 	repeat
-	UpdateDialogueBox(dialogues[3]);
+	UpdateDialogueBox(dialogues[1]);
 	SDL_RenderPresent(sdlRenderer);
 	SDL_Delay(10);
 	autoMusique;
-	until NextOrSkipDialogue(3);
+	until NextOrSkipDialogue(1);
 
+	
 	ClearScreen;
   	SDL_Delay(300);  
+	
+	InitDialogueBox(dialogues[1],nil,nil,-50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('TXT_INTRO2'),100);
 
 	repeat
-	UpdateDialogueBox(dialogues[4]);
+	UpdateDialogueBox(dialogues[1]);
 	SDL_RenderPresent(sdlRenderer);
 	autoMusique;
-	until NextOrSkipDialogue(4);
+	until NextOrSkipDialogue(1);
 	ClearScreen;
 
+	InitDialogueBox(dialogues[1],nil,nil,-50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('TXT_INTRO3'),100);
 	repeat
-	UpdateDialogueBox(dialogues[5]);
+	UpdateDialogueBox(dialogues[1]);
 	SDL_RenderPresent(sdlRenderer);
 	autoMusique;
-	until NextOrSkipDialogue(5);
+	until NextOrSkipDialogue(1);
+	ClearScreen;
+	
+	InitDialogueBox(dialogues[1],nil,nil,-50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('TXT_INTRO4'),100);
+	dialogues[1].letterdelay:=10;
+	repeat
+	UpdateDialogueBox(dialogues[1]);
+	SDL_RenderPresent(sdlRenderer);
+	autoMusique;
+	until NextOrSkipDialogue(1);
 	ClearScreen;
 
+	InitDialogueBox(dialogues[1],nil,nil,-50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('TXT_INTRO5'),100);
 	repeat
-	UpdateDialogueBox(dialogues[6]);
+	UpdateDialogueBox(dialogues[1]);
 	SDL_RenderPresent(sdlRenderer);
 	autoMusique;
-	until NextOrSkipDialogue(6);
-	ClearScreen;
-
-	repeat
-	UpdateDialogueBox(dialogues[7]);
-	SDL_RenderPresent(sdlRenderer);
-	autoMusique;
-	until NextOrSkipDialogue(7);
+	until NextOrSkipDialogue(1);
 	ClearScreen;
 	black_color.r := 0; black_color.g := 0; black_color.b := 0;
 	jouer;
@@ -262,11 +279,110 @@ begin
     
 end;
 
+procedure reactualiserDeck();
+begin
+	createRawImage(carteDeck,200,200,300,300,statsJoueur.collection[iDeck].dir);
+	initDialogueBox(dialogues[1],nil,nil,460,100,350,600,extractionTexte('DESC_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),0);
+	initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),0);
+end;
+
+procedure ouvrirDeck();
+
+begin
+	writeln('ouverture du deck');
+	sceneActive:='Deck';
+	button_deck.estVisible:=False;
+	button_bestiaire.estVisible:=False;
+	iDeck:=1;
+	reactualiserDeck;
+end;
+
+procedure actualiserDeck();
+
+begin
+	renderRawImage(carteDeck,False);
+	UpdateDialogueBox(dialogues[1]);
+	UpdateDialogueBox(dialogues[2]);
+end;
+
+procedure scrollDeck();
+
+begin
+	if EventSystem^.wheel.y<0 then
+		if iDeck>=statsJoueur.tailleCollection then
+			iDeck:=1
+		else
+			iDeck:=iDeck+1
+	else
+		if iDeck<=1 then
+			iDeck:=statsJoueur.tailleCollection
+		else
+			iDeck:=iDeck-1;
+	sdl_destroytexture(carteDeck.imgTexture);
+	sdl_freeSurface(carteDeck.imgSurface);
+	reactualiserDeck;
+end;
+
+procedure reactualiserBestiaire();
+var prop:Real;
+begin
+	ennAff:=templatesEnnemis[Ienn];
+	prop:=ennAff.image.rect.h/ennAff.image.rect.w;
+	ennAff.image.rect.x:=150;
+	ennAff.image.rect.y:=200;
+	ennAff.image.rect.w:=300;
+	ennAff.image.rect.h:=round(ennaff.image.rect.w*prop);
+	initDialogueBox(dialogues[1],nil,nil,460,100,350,600,extractionTexte('DESC_ENN_'+intToStr(ienn)),0);
+	initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,400,1080,400,extractionTexte('COMM_ENN_'+intToStr(ienn)),0);
+end;
+
+procedure ouvrirBestiaire();
+
+begin
+	writeln('ouverture du deck');
+	sceneActive:='Bestiaire';
+	button_deck.estVisible:=False;
+	button_bestiaire.estVisible:=False;
+	iEnn:=1;
+	reactualiserBestiaire;
+end;
+
+procedure actualiserBestiaire();
+
+begin
+	renderRawImage(ennAff.image,False);
+	UpdateDialogueBox(dialogues[1]);
+	UpdateDialogueBox(dialogues[2]);
+	updateAnimation(ennAff.anim,ennAff.image);
+	if animFinie(ennAff.anim) and (ennAff.anim.etat='apparition') then
+		initAnimation(ennAff.anim,ennAff.anim.objectName,'chase',ennAff.stats.nbFrames1,True);
+end;
+
+procedure scrollBestiaire();
+
+begin
+	if EventSystem^.wheel.y<0 then
+		repeat
+			if iEnn>=MAXENNEMIS then
+				iEnn:=1
+			else
+				iEnn:=iEnn+1
+		until statsJoueur.bestiaire[iEnn]
+	else
+		repeat
+			if iEnn>=MAXENNEMIS then
+				iEnn:=1
+			else
+				iEnn:=iEnn+1
+		until statsJoueur.bestiaire[iEnn];
+	reactualiserBestiaire;
+end;
+
 procedure InitMenuEnJeu;
 begin
   //Menu en Jeu
-	CreateButton(button_deck, 210, 320, 240, 50,'Deck',b_color, bf_color,Fantasy30,btnProc);
-	CreateButton(button_bestiaire, 210, 390, 240, 50,'Bestiaire',b_color, bf_color,Fantasy30,btnProc);
+	CreateButton(button_deck, 210, 320, 240, 50,'Deck',b_color, bf_color,Fantasy30,@ouvrirDeck);
+	CreateButton(button_bestiaire, 210, 390, 240, 50,'Bestiaire',b_color, bf_color,Fantasy30,@ouvrirBestiaire);
 end;
 
 procedure InitLeaderboard;

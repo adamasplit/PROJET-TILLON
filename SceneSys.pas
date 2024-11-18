@@ -59,13 +59,8 @@ end;
 
 procedure InitDialogues;
 begin
-  	InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',0,-100,windowWidth,400,extractionTexte('DIALOGUE_BOSS_1'),100);
-	InitDialogueBox(dialogues[1],'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',0,-100,windowWidth,400,extractionTexte('DIALOGUE_BOSS_2'),100);
-	InitDialogueBox(dialogues[3],nil,nil,-50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('TXT_INTRO1'),100);
-	InitDialogueBox(dialogues[4],nil,nil,-50,windowHeight div 3 - 100 ,windowWidth,400,extractionTexte('TXT_INTRO2'),100);
-	InitDialogueBox(dialogues[5],nil,nil,-50,windowHeight div 3 - 100 ,windowWidth,400,extractionTexte('TXT_INTRO3'),100);
-	InitDialogueBox(dialogues[6],nil,nil,-50,windowHeight div 3 - 100 ,windowWidth,400,extractionTexte('TXT_INTRO4'),100);
-	InitDialogueBox(dialogues[7],nil,nil,-50,windowHeight div 3 - 100 ,windowWidth,400,extractionTexte('TXT_INTRO5'),100);
+
+	
 end;
 
 // Updates des Scenes
@@ -75,9 +70,7 @@ var i:Integer;
 	begin
 		randomize();
 		//writeln('actualiserJeu, taille de LObjets:',high(lobjets));
-		SDL_RenderClear(sdlRenderer);
 		SDL_PumpEvents;
-		sdl_delay(10);
 		afficherTout;
 		//UpdateDialogueBox(box);
 		UpdateCollisions();
@@ -102,14 +95,12 @@ var i:Integer;
 					IAEnnemi(LObjets[i],LObjets[0]);
 					end;
 			end;
-		SDL_RenderPresent(sdlRenderer);
 		if vagueFinie then ajoutVague;
 		if combatFini then victoire(statsJoueur);
 	end;
 
 procedure ActualiserMenuEnJeu;
 	begin
-		SDL_RenderClear(sdlrenderer);
 		affichertout();
 		UpdateAnimation(menuBookAnim,menuBook);
 		RenderRawImage(menuBook,False);
@@ -118,9 +109,6 @@ procedure ActualiserMenuEnJeu;
 			RenderButton(button_deck);
 			RenderButton(button_bestiaire);
 			end;
-		
-
-		SDL_RenderPresent(sdlRenderer);
 	end;
 
 //Initialisations
@@ -142,11 +130,11 @@ begin
     LObjets[0].image.rect.x := windowWidth div 2;
     LObjets[0].image.rect.y := windowHeight div 2;
 	LObjets[0].stats.lastUpdateTimeMana:=SDL_GetTicks;
-    statsJoueur.tailleCollection:=22;
+    statsJoueur.tailleCollection:=23;
     statsJoueur.Vitesse:=5;
     statsJoueur.multiplicateurMana:=1;
     statsJoueur.multiplicateurDegat:=1;
-    for j:=1 to 22 do 
+    for j:=1 to 23 do 
         statsJoueur.collection[j]:=Cartes[j];
     statsJoueur.vie:=100;statsJoueur.vieMax:=100;
     initStatsCombat(statsJoueur,LObjets[0].stats);
@@ -175,9 +163,21 @@ begin
   new(EventSystem);
    while True do
   begin
+  sdl_delay(10);
+  sdl_renderclear(sdlRenderer);
   autoMusique();
     //Mouvement Joueur
 	case SceneActive of
+		'Deck':
+		begin
+		actualiserMenuEnJeu;
+		actualiserDeck;
+		end;
+		'Bestiaire':
+		begin
+		actualiserMenuEnJeu;
+		actualiserBestiaire;
+		end;
   		'Jeu': 
   		begin
 		ActualiserJeu;
@@ -202,40 +202,36 @@ begin
 		'NouvellePartieIntro': NouvellePartieIntro;
 		'victoire':
 			begin
-			SDL_delay(10);
+			affichertout;
 			for i:=1 to 3 do
 				RenderButtonGroup(btnCartes[i]);
-			SDL_RenderPresent(sdlRenderer);
 			end;
   		'Cutscene':
 		begin
-		sdl_renderclear(sdlrenderer);
 		affichertout;
-		UpdateDialogueBox(dialogues[2]);
+		UpdateDialogueBox(dialogues[1]);
 		updateanimation(LObjets[0].anim,LObjets[0].image);
+		if LObjets[1].anim.objectName<>'Leo_Transe' then
 		updateanimation(LObjets[1].anim,LObjets[1].image);
-		sdl_renderpresent(sdlrenderer); 
 		
 		combat_bg.rect.x:=88-4+random(9);
 		while (SDL_PollEvent( EventSystem ) = 1) do
     		begin
       			case EventSystem^.type_ of
-					SDL_mousebuttondown:if dialogues[2].letterdelay=0 then begin
+					SDL_mousebuttondown:if dialogues[1].letterdelay=0 then begin
 						sceneActive:='Jeu';
 						indiceMusiqueJouee:=8;
 						end
-						 else dialogues[2].LetterDelay:=0;
+						 else dialogues[1].LetterDelay:=0;
 				end
 			end
 		end;
 		'Behemoth_Mort':
 		begin
-		sdl_renderclear(sdlrenderer);
 		affichertout;
 		UpdateDialogueBox(dialogues[1]);
 		updateanimation(LObjets[0].anim,LObjets[0].image);
 		updateanimation(LObjets[1].anim,LObjets[1].image);
-		sdl_renderpresent(sdlrenderer);
 		if sdl_getTicks mod 1 = 0 then 
 			begin
 			combat_bg.rect.x:=88+random(9);
@@ -342,13 +338,24 @@ begin
 				end;
 				end;
 			SDL_MOUSEWHEEL:begin
-  				if EventSystem^.wheel.y < 0 then icarteChoisie:=(isuiv(iCarteChoisie))
-  				else icarteChoisie:=(iprec(iCarteChoisie));
-				end;
-				
+				if sceneActive='Jeu' then 
+					begin
+  					if EventSystem^.wheel.y < 0 then icarteChoisie:=(isuiv(iCarteChoisie))
+  					else icarteChoisie:=(iprec(iCarteChoisie));
+					end;
+				if sceneActive='Deck' then
+					begin
+					scrollDeck;
+					end;
+				if sceneActive='Bestiaire' then
+					begin
+					scrollBestiaire;
+					end;
 				end;
 			end;
-  end;
+		end;
+		sdl_renderpresent(sdlrenderer);
+	end;
 end;
 
 procedure StartGame;

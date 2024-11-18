@@ -211,6 +211,23 @@ begin
     end;
 end;
 
+procedure PseudoColMurs(var obj:TObjet);
+var colx1,colx2,coly1,coly2:Integer; //4 coins de l'objet
+begin
+  colx1:=obj.image.rect.x+obj.col.offset.x;
+  colx2:=obj.image.rect.x+obj.col.offset.x+obj.col.dimensions.w;
+  coly1:=obj.image.rect.y+obj.col.offset.y;
+  coly2:=obj.image.rect.y+obj.col.offset.y+obj.col.dimensions.h;
+  if colx1<(murs[2].image.rect.x+murs[2].col.dimensions.w) then
+    obj.image.rect.x:=murs[2].image.rect.x+murs[2].col.dimensions.w-obj.col.offset.x;
+  if colx2>(murs[4].image.rect.x) then
+    obj.image.rect.x:=murs[4].image.rect.x-obj.col.offset.x-obj.col.dimensions.w;
+  if coly1<(murs[1].image.rect.y+murs[1].col.dimensions.h) then
+    obj.image.rect.y:=murs[1].image.rect.y+murs[1].col.dimensions.h-obj.col.offset.y;
+  if coly2>(murs[3].image.rect.y) then
+    obj.image.rect.y:=murs[3].image.rect.y-obj.col.offset.y-obj.col.dimensions.h;
+end;
+
 // Vérifie la collision entre deux objets et gère les conséquences (repoussement ou trigger)
 function CheckCollision(var obj1, obj2: TObjet): Boolean;
 var
@@ -256,7 +273,7 @@ begin
       // Si le chevauchement est plus grand en X, on repousse en X
       if overlapX < overlapY then
         begin
-        if rect1.x < rect2.x then
+        if (rect1.x+(rect1.w div 2)) < (rect2.x+(rect2.w div 2)) then
           obj1.image.rect.x := obj1.image.rect.x - overlapX  // Repousser vers la gauche
         else
           obj1.image.rect.x := obj1.image.rect.x + overlapX;  // Repousser vers la droite
@@ -264,7 +281,7 @@ begin
       else
         begin
         // Sinon, on repousse en Y
-        if rect1.y < rect2.y then
+        if (rect1.y+(rect1.h div 2)) < (rect2.y+(rect2.h div 2)) then
           obj1.image.rect.y := obj1.image.rect.y - overlapY  // Repousser vers le haut
         else
           obj1.image.rect.y := obj1.image.rect.y + overlapY;  // Repousser vers le bas
@@ -315,7 +332,7 @@ begin
         else
           begin
           subirDegats(obj1,degat(obj2.stats.degats,obj2.stats.force,obj1.stats.defense,obj2.stats.multiplicateurDegat),0,0);
-          creerEffet(obj1.image.rect.x,obj1.image.rect.y,64,64,6,'impact',False,eff);
+          creerEffet(obj2.image.rect.x,obj2.image.rect.y,64,64,6,'impact',False,eff);
           ajoutobjet(eff);
           end
       end
@@ -332,11 +349,13 @@ begin
   if (i<=High(LObjets)) and not (leMonde and (i<>0)) then
   begin
     LObjets[i].col.hasCollided:=False;
+    //Limite la position d'un objet aux murs
+    if (LObjets[i].stats.genre=ennemi) or (LObjets[i].stats.genre=joueur) then
+         PseudoColMurs(LObjets[i]);
     // Si l'objet est actif pour les collisions
     if LObjets[i].col.estActif then
     begin
-      for j:=1 to 4 do
-        checkCollision(LObjets[i],murs[j]);
+      
       for j := i + 1 to High(LObjets) do
       begin
         // Si l'autre objet est aussi actif pour les collisions

@@ -41,6 +41,7 @@ type TCarte=record
     image:TImage;
     charges,chargesMax:Integer;
     active:Boolean;
+    discard:Boolean;
 end;
 var iCarteChoisie:Integer;
 
@@ -97,7 +98,7 @@ type TStats=record //(version variable)
         effet:(fixeJoueur:Boolean);//si l'effet suit le joueur ou non
 end;
 
-var Cartes:Array[1..22] of TCarte; //preset pour les cartes
+var Cartes:Array[1..23] of TCarte; //preset pour les cartes
 
 // Structure TCol pour la gestion des collisions
 type  TCol = record
@@ -174,7 +175,7 @@ PDeck:TDeck; //deck pointé par les stats du joueur
 	text_s5: TText;
 	text_n5: TText;
 
-	dialogues : Array [1..100] of TDialogueBox;
+	dialogues : Array [1..2] of TDialogueBox;
 
 
 
@@ -229,6 +230,9 @@ begin
   writeln(obj.image.directory);
 end;
 var i:Integer;
+
+const TAILLE_MUR = 4000;
+
 begin
    // Définir les couleurs de base
   whiteCol.r := 255; whiteCol.g := 255; whiteCol.b := 255;
@@ -239,22 +243,24 @@ begin
   red_color.r := 255; red_color.g := 0; red_color.b := 50;
   black_col.r:=0;black_col.g:=0;black_col.b:=0;
 
+
+  //initialisation des murs
   murs[1].image.rect.x:=0;
-  murs[1].image.rect.y:=-300;
+  murs[1].image.rect.y:=-TAILLE_MUR;
   murs[1].col.dimensions.w:=1080;
-  murs[1].col.dimensions.h:=300;
-  murs[2].image.rect.x:=-200;
-  murs[2].image.rect.y:=0;
-  murs[2].col.dimensions.w:=380;
-  murs[2].col.dimensions.h:=720;
+  murs[1].col.dimensions.h:=TAILLE_MUR;
+  murs[2].image.rect.x:=-TAILLE_MUR;
+  murs[2].image.rect.y:=-TAILLE_MUR;
+  murs[2].col.dimensions.w:=180+TAILLE_MUR;
+  murs[2].col.dimensions.h:=TAILLE_MUR*2;
   murs[3].image.rect.x:=0;
-  murs[3].image.rect.y:=700;
+  murs[3].image.rect.y:=720;
   murs[3].col.dimensions.w:=1080;
-  murs[3].col.dimensions.h:=400;
+  murs[3].col.dimensions.h:=TAILLE_MUR;
   murs[4].image.rect.x:=880;
-  murs[4].image.rect.y:=0;
-  murs[4].col.dimensions.w:=400;
-  murs[4].col.dimensions.h:=720;
+  murs[4].image.rect.y:=-TAILLE_MUR;
+  murs[4].col.dimensions.w:=TAILLE_MUR;
+  murs[4].col.dimensions.h:=TAILLE_MUR*2;
   for i:=1 to 4 do
     begin
     murs[i].col.estActif:=True;
@@ -272,7 +278,7 @@ begin
   statsJoueur.multiplicateurMana:=1;
   statsJoueur.nbJustice:=0;
 
-  for i:=1 to 22 do begin
+  for i:=1 to 23 do begin
     cartes[i].numero:=i;
     case i of 
       1:cartes[i].nom:='bateleur';
@@ -297,16 +303,17 @@ begin
       20:cartes[i].nom:='ange';
       21:cartes[i].nom:='monde';
       22:cartes[i].nom:='fou';
+      23:cartes[i].nom:='lion';
       end;
     case i of
       1,2,3,4,5,10:cartes[i].rarete:=commune;
       6,7,8,9,11,16,19:cartes[i].rarete:=rare;
       12,14,17,18,20,22:cartes[i].rarete:=epique;
-      13,15,21:cartes[i].rarete:=legendaire;
+      13,15,21,23:cartes[i].rarete:=legendaire;
       end;
     case i of
       1,6:cartes[i].cout:=1;
-      10,13,17:cartes[i].cout:=0;
+      10,13,17,23:cartes[i].cout:=0;
       2,5,16,18,22:cartes[i].cout:=2;
       3,4,12,14,19:cartes[i].cout:=3;
       11,20:cartes[i].cout:=4;
@@ -336,6 +343,12 @@ begin
     20:cartes[i].dir:='Sprites/Cartes/carte20.bmp';
     21:cartes[i].dir:='Sprites/Cartes/carte21.bmp';
     22:cartes[i].dir:='Sprites/Cartes/carte22.bmp';
+    23:cartes[i].dir:='Sprites/Cartes/carte23.bmp';
+    end;
+    case i of
+      7,9,13,15:cartes[i].discard:=True
+    else
+      cartes[i].discard:=False;
     end;
     cartes[i].chargesMax:=1;
     end;

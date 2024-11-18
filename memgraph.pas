@@ -51,7 +51,7 @@ type
     BackgroundImage: TImage; 
     Lines: array[1..6] of string;  
     RemainingText: string;       
-    DisplayedLetters: Integer;   
+    DisplayedLetters,w: Integer;   
     CurrentLine: Integer;      
     LastUpdateTime: UInt32;       
     LetterDelay: UInt32;            // Délai entre l'affichage de chaque lettre C UN PUTAIN DE UINT32 MA GUEULE
@@ -240,9 +240,11 @@ begin
   image.imgSurface := SDL_LoadBMP(image.directory);
   if image.imgSurface = nil then begin WriteLn('Error in Surface load : ',image.directory);Write(SDL_GetError); HALT end;
   // Convertion surface --> texture
+  //if image.imgtexture<>nil then SDL_DestroyTexture(image.imgtexture);
   image.imgTexture := SDL_CreateTextureFromSurface(sdlRenderer, image.imgSurface);
+  //SDL_freeSurface(image.imgsurface);
   if image.imgTexture = nil then begin WriteLn(SDL_GetError); HALT end;
-  //SDL_DestroyTexture(image.imgtexture);
+  
   
 end;
 
@@ -343,7 +345,7 @@ StringToPChar := StrAlloc(Length(s)+1);
 StrPCopy(StringToPChar, s);
 end;
 
-function WidthBasedLineLength(Font: PTTF_Font; const Text: string): Integer;
+function WidthBasedLineLength(Font: PTTF_Font; const Text: string;width:Integer): Integer;
 var
   LineWidth, i: Integer;
   TempText: string;
@@ -354,16 +356,16 @@ begin
   begin
     LineWidth:= Length(TempText);
     TempText := TempText + Text[i];
-    if (LineWidth >= 40) and (text[i]=' ')  then
+    if (LineWidth >= width div 25) and (text[i]=' ')  then
       Exit(i - 1);
   end;
   WidthBasedLineLength := Length(Text);
 end;
-function ExtractNextLine(var Text: string): string;
+function ExtractNextLine(var Text: string;width:Integer): string;
 var
   LineEnd: Integer;
 begin
-  LineEnd := Min(WidthBasedLineLength(Fantasy30, Text), Length(Text));
+  LineEnd := Min(WidthBasedLineLength(Fantasy30, Text,width), Length(Text));
   ExtractNextLine := Copy(Text, 1, LineEnd);
   Delete(Text, 1, LineEnd);
 end;
@@ -377,7 +379,7 @@ begin
     if Box.RemainingText = '' then
       Box.Lines[i] := ''
     else
-      Box.Lines[i] := ExtractNextLine(Box.RemainingText);
+      Box.Lines[i] := ExtractNextLine(Box.RemainingText,box.w);
   end;
 end;
 
@@ -385,12 +387,13 @@ end;
 
 procedure InitDialogueBox(var Box: TDialogueBox; ImgPath,portraitPath: PChar; X, Y, W, H: Integer; const DialogueText: string; Delay: UInt32);
 begin
-  SDL_DestroyTexture(box.BackgroundImage.imgtexture);
-  SDL_freesurface(box.BackgroundImage.imgsurface);
-  SDL_DestroyTexture(box.portrait.imgtexture);
-  SDL_freeSurface(box.portrait.imgsurface);
+  sdl_destroytexture(box.BackgroundImage.imgtexture);
+  sdl_destroytexture(box.portrait.imgtexture);
+  
   if ImgPath <> nil then CreateRawImage(Box.BackgroundImage, X, Y, W, H, ImgPath) else begin Box.BackgroundImage.rect.x := X; Box.BackgroundImage.rect.y := Y end;
   if portraitPath <> nil then CreateRawImage(Box.portrait, X, Y, W div 4, W div 4, portraitPath);
+  
+  box.w:=W;
   Box.RemainingText := DialogueText;
   Box.DisplayedLetters := 0;
   Box.CurrentLine := 1;
@@ -448,7 +451,7 @@ begin
   if box.displayedLetters<>0 then RenderDialogueText(Box);
 end;
 
-procedure RenderTextLine(const Text: string; x, y: Integer);
+procedure RenderTextLine(const Text: string; x, y,offsetX,offsetY: Integer);
 var
   Surface: PSDL_Surface;
   Texture: PSDL_Texture;
@@ -456,8 +459,8 @@ var
 begin
   Surface := TTF_RenderUTF8_Blended(Fantasy30, StringToPChar(Text), black_color);
   Texture := SDL_CreateTextureFromSurface(sdlRenderer, Surface);
-  Rect.x := x+300;
-  Rect.y := y+100;
+  Rect.x :=x+offsetX;
+  Rect.y := y+offsetY;
   Rect.w := Surface^.w;
   Rect.h := Surface^.h;
   SDL_RenderCopy(sdlRenderer, Texture, nil, @Rect);
@@ -477,7 +480,10 @@ begin
     else
       DisplayedText := Box.Lines[i];
 
-    RenderTextLine(DisplayedText, Box.BackgroundImage.rect.x, Box.BackgroundImage.rect.y + (i - 1) * 40);
+    if box.portrait.imgTexture<>nil then
+      RenderTextLine(DisplayedText, Box.BackgroundImage.rect.x, Box.BackgroundImage.rect.y + (i - 1) * 40,250,100)
+    else
+      RenderTextLine(DisplayedText, Box.BackgroundImage.rect.x, Box.BackgroundImage.rect.y + (i - 1) * 40,100,100);
   end;
 
   if (Box.Lines[Box.CurrentLine+1] <> '') and (Box.DisplayedLetters = Length(Box.Lines[Box.CurrentLine])) and (Box.CurrentLine < 6) then

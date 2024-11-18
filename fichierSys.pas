@@ -68,7 +68,7 @@ begin
             end;
     close(fichier);
     if extractionTexte='' then
-        extractionTexte:=code+'(non défini)';
+        extractionTexte:=code;
 end;
 
 
