@@ -235,7 +235,7 @@ begin
   image.rect.x := x;
   image.rect.y := y;
   image.directory := directory;
-
+  if directory = nil then Exit;
    // Rendering text --> surface
   image.imgSurface := SDL_LoadBMP(image.directory);
   if image.imgSurface = nil then begin WriteLn('Error in Surface load : ',image.directory);Write(SDL_GetError); HALT end;

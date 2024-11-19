@@ -3,7 +3,19 @@ unit MenuSys;
 
 interface
 
-uses SDL2,coeur,eventsys,memgraph,animationSys,combatlib,sysutils,mapsys,SDL2_ttf,sonoSys,fichierSys,enemyLib;
+uses
+	animationSys,
+	coeur,
+	combatlib,
+	enemyLib,
+	eventsys,
+	fichierSys,
+	mapsys,
+	memgraph,
+	SDL2,
+	SDL2_ttf,
+	sonoSys,
+	sysutils;
 
 //Image
 	var combat_bg,menuBook,bgImage,characterImage,cardsImage : TImage;
@@ -55,8 +67,8 @@ procedure menuEnJeu;
 			scenePrec:=sceneActive;
 			SceneActive := 'MenuEnJeu';
 
-			button_deck.estVisible :=True;
-			button_bestiaire.estVisible := True;
+			button_deck.button.estVisible :=True;
+			button_bestiaire.button.estVisible := True;
 			jouerSon('SFX\Pausemenu_appear.wav');
 			DrawRect(black_color,50, 0, 0, windowWidth,windowHeight);
 			InitAnimation(menuBookAnim,'Book','Opening',5,False);
@@ -79,7 +91,7 @@ procedure jouer;
 		ClearScreen;
 		SDL_RenderClear(sdlRenderer);
 		if not (scenePrec='Jeu') then
-			DeclencherFondu(False, 3000);
+			DeclencherFondu(False, 1000);
 
 		//Objets dissimulés
 		button_leaderboard.button.estVisible := false;
@@ -88,8 +100,8 @@ procedure jouer;
 		button_new_game.button.estVisible := false;
 		button_retour_menu.button.estVisible :=false;
 		
-		button_deck.estVisible := False;
-		button_bestiaire.estVisible := False;
+		button_deck.button.estVisible := False;
+		button_bestiaire.button.estVisible := False;
 
         //Objets de Scene
 		//ActualiserJeu;
@@ -386,6 +398,9 @@ end;
 procedure InitMenuEnJeu;
 begin
   //Menu en Jeu
+	InitButtonGroup(button_deck, 975, 275, 70, 30,nil,'Deck',btnProc);
+	InitButtonGroup(button_bestiaire, 650, 390, 240, 40,nil,'Bestiaire',btnProc);
+	
 	CreateButton(button_deck, 210, 320, 240, 50,'Deck',b_color, bf_color,Fantasy30,@ouvrirDeck);
 	CreateButton(button_bestiaire, 210, 390, 240, 50,'Bestiaire',b_color, bf_color,Fantasy30,@ouvrirBestiaire);
 end;
