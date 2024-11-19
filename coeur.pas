@@ -152,8 +152,8 @@ PDeck:TDeck; //deck pointé par les stats du joueur
   btnCartes:array[1..3] of TButtonGroup;
   salles: array[1..3] of TSalle;
 	button_retour_menu : TButtonGroup;
-	button_deck : TButton;
-	button_bestiaire: TButton;
+	button_deck : TButtonGroup;
+	button_bestiaire: TButtonGroup;
 
 // Textes
 	text1 : TText;

@@ -115,8 +115,8 @@ procedure ActualiserMenuEnJeu;
 		RenderRawImage(menuBook,False);
 		if animFinie(menuBookAnim) then
 			begin
-			RenderButton(button_deck);
-			RenderButton(button_bestiaire);
+			RenderButtonGroup(button_deck);
+			RenderButtonGroup(button_bestiaire);
 			end;
 		
 
@@ -351,14 +351,14 @@ begin
 				HandleButtonClick(button_retour_menu.button,EventSystem^.motion.x,EventSystem^.motion.y);
 				//continue;
 				end;
-				if button_deck.estVisible then
+				if button_deck.button.estVisible then
 				begin
-				HandleButtonClick(button_deck,EventSystem^.motion.x,EventSystem^.motion.y);
+				HandleButtonClick(button_deck.button,EventSystem^.motion.x,EventSystem^.motion.y);
 				//continue;
 				end;
-				if button_bestiaire.estVisible then
+				if button_bestiaire.button.estVisible then
 				begin
-				HandleButtonClick(button_bestiaire,EventSystem^.motion.x,EventSystem^.motion.y);
+				HandleButtonClick(button_bestiaire.button,EventSystem^.motion.x,EventSystem^.motion.y);
 				end;
 				end;
 			SDL_MOUSEWHEEL:begin
