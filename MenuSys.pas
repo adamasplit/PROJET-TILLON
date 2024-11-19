@@ -308,8 +308,6 @@ procedure ouvrirDeck();
 begin
 	writeln('ouverture du deck');
 	sceneActive:='Deck';
-	button_deck.estVisible:=False;
-	button_bestiaire.estVisible:=False;
 	iDeck:=1;
 	reactualiserDeck;
 end;
@@ -358,8 +356,6 @@ procedure ouvrirBestiaire();
 begin
 	writeln('ouverture du deck');
 	sceneActive:='Bestiaire';
-	button_deck.estVisible:=False;
-	button_bestiaire.estVisible:=False;
 	iEnn:=1;
 	reactualiserBestiaire;
 end;
