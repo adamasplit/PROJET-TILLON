@@ -49,7 +49,7 @@ type
 type
   TDialogueBox = record
     BackgroundImage: TImage; 
-    Lines: array[1..6] of string;  
+    Lines: array[1..7] of string;  
     RemainingText: string;       
     DisplayedLetters,w: Integer;   
     CurrentLine: Integer;      
@@ -374,7 +374,7 @@ procedure FillDialogueLines(var Box: TDialogueBox);
 var
   i: Integer;
 begin
-  for i := 1 to 6 do
+  for i := 1 to 7 do
   begin
     if Box.RemainingText = '' then
       Box.Lines[i] := ''
@@ -481,17 +481,17 @@ begin
       DisplayedText := Box.Lines[i];
 
     if box.portrait.imgTexture<>nil then
-      RenderTextLine(DisplayedText, Box.BackgroundImage.rect.x, Box.BackgroundImage.rect.y + (i - 1) * 40,250,100)
+      RenderTextLine(DisplayedText, Box.BackgroundImage.rect.x, Box.BackgroundImage.rect.y + (i - 1) * 40,250,60)
     else
-      RenderTextLine(DisplayedText, Box.BackgroundImage.rect.x, Box.BackgroundImage.rect.y + (i - 1) * 40,100,100);
+      RenderTextLine(DisplayedText, Box.BackgroundImage.rect.x, Box.BackgroundImage.rect.y + (i - 1) * 40,100,60);
   end;
 
-  if (Box.Lines[Box.CurrentLine+1] <> '') and (Box.DisplayedLetters = Length(Box.Lines[Box.CurrentLine])) and (Box.CurrentLine < 6) then
+  if (Box.Lines[Box.CurrentLine+1] <> '') and (Box.DisplayedLetters = Length(Box.Lines[Box.CurrentLine])) and (Box.CurrentLine < 7) then
   begin
     Inc(Box.CurrentLine);
     Box.DisplayedLetters := 0;
   end
-  else if (Box.CurrentLine = 6) and (Box.DisplayedLetters = Length(Box.Lines[6])) then
+  else if (Box.CurrentLine = 7) and (Box.DisplayedLetters = Length(Box.Lines[6])) then
   begin
     Box.Complete := True;
   end;

@@ -13,7 +13,7 @@ CombatUI:Array[1..15] of TImage;
 	sdlKeyboardState: PUInt8;
   lastMouseX,lastMouseY:Integer;
 EventSystem:PSDL_Event;
-SceneActive : String;
+SceneActive,ScenePrec : String;
 
 
 function GetMouseX():Integer;

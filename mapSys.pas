@@ -85,20 +85,18 @@ begin
     vagueFinie:=True;
     combatFini:=False;
     randomize;
-    indiceMusiqueJouee:=random(9)+2;
+    indiceMusiqueJouee:=random(statsJoueur.avancement div 2)+2;
 
     //###partie à modifier : choix des ennemis et de leur nombre
     setlength(ennemis,statsJoueur.avancement+1);
     for j:=1 to statsJoueur.avancement do
         begin
-        alea:=random(19)+1;
+        alea:=random(2)+22;
         if alea=12 then
-            ennemis[j]:=templatesEnnemis[20]
+            ennemis[j]:=templatesEnnemis[22]
         else
             ennemis[j]:=templatesEnnemis[alea];
-        //writeln('correspondant à ',templatesEnnemis[alea].image.directory);
         writeln('élément ',j,' de ennemis: ',ennemis[j].anim.objectName);
-        //analyseObjet(ennemis[j]);
         end;
     writeln('ennemis choisis');
 
@@ -165,7 +163,7 @@ begin
     InitButtonGroup(btnEchange,  415, 100, 250, 100, 'Sprites/Menu/button1.bmp','Marchandage',btnProc);
     InitButtonGroup(btnDiscussion,  440, 200, 200, 100, 'Sprites/Menu/button1.bmp','Discussion',btnproc);
     InitButtonGroup(btnQuitterMarchand,  465, 300, 150, 100, 'Sprites/Menu/button1.bmp','Partir',btnProc);
-    initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp',nil,0,600,1080,120,'aaa',10);
+    initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp',nil,0,450,1080,300,'aaa',10);
     
     
 end;
@@ -243,6 +241,7 @@ begin
     combatFini:=false;
     sdl_renderclear(sdlrenderer);
     SceneActive := 'map';
+    ScenePrec:='map';
     writeln('Initializing rooms...');
     
     generationChoix(salles[1], salles[2], salles[3]);

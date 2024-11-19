@@ -14,7 +14,7 @@ uses
     eventsys,
     SysUtils;
 
-const TAILLE_VAGUE=3;
+const TAILLE_VAGUE=5;
 
 var EnemyBasik : TObjet;
 var templatesEnnemis:array[1..MAXENNEMIS] of TObjet;
@@ -25,6 +25,8 @@ procedure ajoutVague();
 
 implementation
 
+
+//pour déterminer la position du centre d'une boîte de collisions d'un objet
 function getCenterX(var obj:TObjet):Integer;
 begin
   getCenterX:=obj.image.rect.x+obj.col.offset.x+(obj.col.dimensions.w div 2);
@@ -35,6 +37,7 @@ begin
   getCentery:=obj.image.rect.y+obj.col.offset.y+(obj.col.dimensions.h div 2);
 end;
 
+//supprime un ennemi de la liste
 procedure supprimeEnn(var enn:TObjet;j:integer);
 var taille,i:Integer;
 begin
@@ -52,6 +55,7 @@ begin
     end
 end;
 
+//rajoute une 'vague' d'ennemis à LObjets
 procedure ajoutVague();
 var i,taille:Integer;
 var fini:Boolean;
@@ -99,6 +103,8 @@ begin
     writeln('vague ajoutée');
 end;
 
+// initialise un ennemi dans TemplatesEnnemis
+
 procedure initStatEnnemi(num:Integer;nom:PChar;typeIA_MVT,vie,att,dmg,def,vitesse,w,h,framesA,frames1,frames2,frames3,framesM:Integer;wcol,hcol,offx,offy:Integer;nomAttaques:PChar);
 var ennemi:TObjet;
 begin
@@ -145,11 +151,13 @@ begin
     templatesEnnemis[num]:=ennemi;
 end;
 
+//permet à un ennemi de se téléporter au hasard
 procedure AIWarp(var ennemi:TObjet;targetx,targety:Integer);
 var xdest,ydest:Integer;
 begin
   randomize();
   ennemi.col.estActif:=False;
+  //endroit choisi entre certaines bornes et pas trop près du joueur
   repeat
     xdest:=random(10)*100;
   until (xdest<=800) and (xdest>=200) and (abs(xdest-targetx)>100) and (abs(xdest-ennemi.image.rect.x)>100);
@@ -162,9 +170,18 @@ begin
 end;
 
 procedure AIReWarp(var ennemi:TObjet);
+var alea:Integer;
 begin
-    if ennemi.anim.objectName='Akr' then ennemi.anim.objectName:='Akr2'
-    else if ennemi.anim.objectName='Akr2' then ennemi.anim.objectName:='Akr';
+    //réapparaît à l'endroit cible (change de forme si l'ennemi en question est Akrojs)
+    if (ennemi.anim.objectName='Akr') or (ennemi.anim.objectName='Akr2') or (ennemi.anim.objectName='Akr3') then
+      begin
+      alea:=random(3);
+      case alea of
+        1:ennemi.anim.objectName:='Akr';
+        2:ennemi.anim.objectName:='Akr2';
+        0:ennemi.anim.objectName:='Akr3';
+        end;
+      end;
     InitAnimation(ennemi.anim,ennemi.anim.ObjectName,'rewarp', ennemi.stats.nbframes3,False);
     ennemi.image.rect.x:=ennemi.stats.xcible;ennemi.image.rect.y:=ennemi.stats.ycible;
     ennemi.col.estActif:=True;
@@ -173,6 +190,7 @@ end;
 procedure AIFly(var ennemi:TObjet;targetx,targety:Integer);
 var xdest,ydest:Integer;
 begin
+  //fonctionne de façon similaire à AIWarp, sans initialiser l'animation de téléportation
   repeat
   xdest:=random(10)*100;
   until (xdest<=800) and (xdest>=200) and (abs(xdest-targetx)>100) and (abs(xdest-ennemi.image.rect.x)>100);
@@ -185,16 +203,17 @@ end;
 procedure FlyUpdate(var ennemi:TObjet;vit:Integer);
 var distx,disty:Integer;
 begin
+  //l'ennemi se déplace vers sa cible, à une vitesse proportionnelle à la distance
   distx:=-(ennemi.image.rect.x-ennemi.stats.xcible);disty:=-(ennemi.image.rect.y-ennemi.stats.ycible);
   ennemi.image.rect.x:=ennemi.image.rect.x + (distx div vit);
   ennemi.image.rect.y:=ennemi.image.rect.y + (disty div vit);
-  //writeln('x : ',ennemi.image.rect.x,', y : ',ennemi.image.rect.y);
   ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
 end;
 
 procedure AIDodge(var ennemi:TObjet;target:TObjet);
 var distx:Integer;
 begin
+  //l'ennemi se décale vers un mur, selon sa position initiale, pour esquiver
   distx:=(ennemi.image.rect.x-target.image.rect.x);
   InitAnimation(ennemi.anim,ennemi.anim.ObjectName,'dodge', ennemi.stats.nbframes2,False);
   if distx>=0 then
@@ -208,10 +227,9 @@ end;
 procedure DodgeUpdate(var ennemi:TObjet);
 var distx:Integer;
 begin
+  //l'ennemi poursuit sa riposte, voire initie une contre-attaque
   distx:=-(ennemi.image.rect.x-ennemi.stats.xcible);
-  //writeln(ennemi.stats.xcible);
   ennemi.image.rect.x:=ennemi.image.rect.x + (distx div 10);
-  //writeln('x : ',ennemi.image.rect.x,', y : ',ennemi.image.rect.y);
   ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
   if ennemi.stats.compteurAction>20 then
     initAnimation(ennemi.anim,ennemi.anim.objectName,'strike',ennemi.stats.nbframes3,false);
@@ -220,6 +238,7 @@ end;
 procedure CrossMoveInit(var ennemi:TObjet;x,y:Integer);
 var distx,disty:Integer;
 begin
+  //choisit un endroit où l'ennemi peut se déplacer en ligne droite (tour aux échecs)
   distx:=-(ennemi.image.rect.x-x);disty:=-(ennemi.image.rect.y-y);
   if sqrt(distx**2+disty**2)>100 then
   if abs(distx)>abs(disty) then
@@ -235,6 +254,7 @@ end;
 
 procedure dashInit(var ennemi:TObjet);
 begin
+  //permet à un ennemi de foncer de l'autre côté de la salle
   if ennemi.image.rect.x>500 then
     ennemi.stats.xcible:=150
   else
@@ -247,6 +267,7 @@ procedure MoveToTarget(var ennemi:TObjet;vitesse:Integer);
 var angle:Real;
   distX,distY,y:Integer;
 begin
+  //l'ennemi se déplace vers sa position cible
   distX:=ennemi.stats.xcible-ennemi.image.rect.x;
   distY:=ennemi.stats.ycible-ennemi.image.rect.y;
   ennemi.anim.isFliped:=(distX>0);
@@ -261,7 +282,6 @@ begin
       angle:=arctan(distY/distX)
     else
       angle:=-arctan(distY/distX);
-  //writeln(distX,' ',distY,' ',angle);
   if abs(distX)>(vitesse) then
     if distX>0 then
       ennemi.image.rect.x:=ennemi.image.rect.x+round(vitesse*cos(angle))
@@ -276,7 +296,6 @@ begin
     begin
     distY:=ennemi.stats.ycible-y;
     if abs(distY+(ennemi.col.dimensions.h div 2))<(vitesse) then
-      //drawrect(red_color,200,ennemi.stats.xcible,y,10,5)
     end;
   if (abs(distX)<=vitesse) and (abs(distY)<=vitesse) then
     begin
@@ -284,12 +303,12 @@ begin
     ennemi.image.rect.y:=ennemi.stats.ycible;
     end;
   ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
-  //drawRect(black_color,120,ennemi.stats.xcible-8,ennemi.stats.ycible-8,16,16);
   end;
 end;
 
 procedure AIPathFollow(var ennemi: TObjet; target: TObjet;vitesse:Integer;deplaceX,deplaceY:Boolean);
 begin
+  //l'ennemi suit le joueur, pas forcément dans toutes les directions
   if deplaceX then
     ennemi.stats.xcible:=target.image.rect.x
   else 
@@ -329,7 +348,13 @@ begin
       multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+64,ennemi.image.rect.y+64,100,100,5,4,360,(ennemi.stats.xcible-ennemi.image.rect.x) div 2,'kamui');
       end;
     4:if (ennemi.anim.etat='warp') and (ennemi.stats.compteurAction=1) then 
-      multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+(ennemi.image.rect.w div 2),ennemi.image.rect.y+(ennemi.image.rect.h div 2),100,100,5,3,360,random(18)*10,ennemi.stats.nomAttaque);
+      if ennemi.anim.objectName='elementaire_spectral' then
+        begin
+        CreerRayon(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,getCenterX(ennemi),getCenterY(ennemi),1200,200,x,y,0,50,100,ennemi.stats.nomAttaque,obj);
+        ajoutObjet(obj);
+        end
+      else
+        multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+(ennemi.image.rect.w div 2),ennemi.image.rect.y+(ennemi.image.rect.h div 2),100,100,5,3,360,random(18)*10,ennemi.stats.nomAttaque);
     5: if (ennemi.anim.etat='strike')then
       begin
       ennemi.anim.isFliped:=(ennemi.stats.xcible>ennemi.image.rect.x);
@@ -408,11 +433,18 @@ begin
       XXIII(typeObjet(1),ennemi.stats,ennemi.image.rect.x,ennemi.image.rect.y,x,y,110);
       end;
       end;
+    15:begin
+      if (ennemi.anim.etat='float') and (ennemi.stats.compteurAction mod 20=0) then
+        begin
+        CreerRayon(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,getCenterX(ennemi),getCenterY(ennemi),1200,100,x,y,0,10,100,ennemi.stats.nomAttaque,obj);
+        ajoutObjet(obj);
+        end;
+      end;
     end;
 end;
 
 procedure DeplacementEnnemi(var ennemi:TObjet;joueur:TObjet); //déplace un ennemi 
-var i,alea:Integer;rect1,rect2:TSDL_REct;
+var i,alea:Integer;rect1,rect2:TSDL_REct;trouve:Boolean;
 begin
 
   case ennemi.stats.typeIA_MVT of
@@ -629,7 +661,7 @@ begin
           ennemi.stats.compteurAction:=0;
           end
         end;
-      13:begin //pour Leo
+      13:begin //pour Leo (qui peut esquiver+contrer, ou charger une attaque)
         ennemi.anim.isFliped:=(ennemi.stats.xcible>ennemi.image.rect.x);
         if (ennemi.anim.etat='chase') or (ennemi.anim.etat='charge') then
           ennemi.anim.isFliped:=(joueur.image.rect.x>ennemi.image.rect.x);
@@ -694,7 +726,6 @@ begin
           end;
         if (ennemi.anim.etat='land') and animFinie(ennemi.anim) then
           begin
-          //writeln('landing');
           initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
           ennemi.stats.compteurAction:=0;
           end;
@@ -722,9 +753,49 @@ begin
           end;
         if (ennemi.anim.etat='cast') and (animFinie(ennemi.anim)) then
           initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
-
-          
         end;
+        15:begin //ennemi qui soigne ses alliés, puis se bat s'il est seul
+          if (ennemi.anim.etat='float') then
+            begin
+            AIPathFollow(ennemi,joueur,ennemi.stats.vitessePoursuite,True,True);
+            ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
+            end;
+          if (ennemi.anim.etat='chase') then
+            begin
+            ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
+            if (ennemi.stats.compteurAction>250) then
+              begin
+              initAnimation(ennemi.anim,ennemi.anim.objectName,'heal',ennemi.stats.nbFrames2,True);
+              ennemi.stats.compteurAction:=0;
+              end;
+            end;
+          if (ennemi.anim.etat='heal') and (ennemi.stats.compteurAction<50) then
+            begin
+            ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
+            if ennemi.stats.compteurAction mod 20 = 0 then
+            begin
+              trouve:=False;
+              //s'il ne reste aucun allié à soigner, l'ennemi change de comportement
+              for i:=1 to high(lobjets) do
+                if lobjets[i].stats.genre=typeObjet(1) then
+                  begin
+                  SDL_setRenderDrawColor(sdlRenderer,0,255,0,255);
+                  sdl_renderdrawline(sdlRenderer,getcenterx(ennemi),getCenterY(ennemi),getcenterx(LObjets[i]),getCenterY(LObjets[i]));
+                  if LObjets[i].stats.vie<LObjets[i].stats.vieMax then
+                    lObjets[i].stats.vie:=LObjets[i].stats.vie+ennemi.stats.force;
+                  if (LObjets[i].stats.indice<>ennemi.stats.indice) then trouve:=True;
+                  end;
+              if not trouve then
+                initAnimation(ennemi.anim,ennemi.anim.objectName,'float',ennemi.stats.nbframes3,True);
+              end;
+            end
+          else
+            if ennemi.anim.etat='heal' then
+              begin
+              initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
+              ennemi.stats.compteurAction:=0;
+              end;
+          end;
 
     end
 end;
@@ -743,7 +814,7 @@ begin
     end;
   if (ennemi.anim.etat='apparition') and (ennemi.anim.objectName='Béhémoth') and (ennemi.stats.compteurAction=0) then
     begin
-	    InitDialogueBox(dialogues[1],'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',0,-100,windowWidth,400,extractionTexte('DIALOGUE_BOSS_1'),100);
+	    InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',0,-100,windowWidth,400,extractionTexte('DIALOGUE_BOSS_1'),100);
       sceneActive:='Cutscene';
       ennemi.stats.compteurAction:=1;
     end;
@@ -767,7 +838,8 @@ begin
       if (animFinie(ennemi.anim)) and (ennemi.anim.etat='mort') then
         if (ennemi.anim.objectName<>'Leo') then
           begin
-          //writeln(ennemi.anim.objectname,' détruit')
+          if ennemi.anim.objectName='elementaire_temps' then
+            LObjets[0].stats.vitesse:=statsJoueur.vitesse;
           supprimeObjet(ennemi);
           vagueFinie:=True;
           for i:=1 to High(LObjets) do
@@ -780,7 +852,7 @@ begin
           begin
           x:=ennemi.image.rect.x;
           y:=ennemi.image.rect.y;
-          InitDialogueBox(dialogues[1],'Sprites\Menu\Button1.bmp','Sprites\Menu\portrait_Leo7.bmp',0,-100,windowWidth,400,extractionTexte('DIALOGUE_EVENT_BOSS_2'),100);
+          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portrait_Leo7.bmp',0,-100,windowWidth,400,extractionTexte('DIALOGUE_EVENT_BOSS_2'),100);
           sceneActive:='Cutscene';
           ennemi:=templatesEnnemis[21];
           ennemi.image.rect.x:=x;
@@ -832,7 +904,10 @@ initStatEnnemi(17,'livre',12,20,1,0,2,1,180,90,7,12,4,0,12,60,90,60,0,'eclair');
 initStatEnnemi(18,'feu_follet',6,20,3,1,1,0,100,100,7,9,0,0,6,70,70,15,15,'flamme');
 initStatEnnemi(19,'chaos',12,60,1,3,5,2,200,200,9,11,6,0,6,100,200,50,0,'rayonAbysse');
 InitstatEnnemi(20,'Leo',13,150,8,2,5,0,300,300,14,8,7,10,8,100,150,100,150,'eclairL');
-InitstatEnnemi(21,'Leo_Transe',14,50,20,5,0,1,300,300,13,16,6,22,10,200,250,50,25,'geyser_feu');
+InitstatEnnemi(21,'Leo_Transe',14,150,20,5,2,1,300,300,13,16,6,22,10,200,250,50,25,'geyser_feu');
+initStatEnnemi(22,'mage_blanc',15,40,10,0,0,1,100,120,18,12,3,5,14,60,90,20,30,'rayon');
+initStatEnnemi(23,'elementaire_spectral',4,20,2,0,0,0,100,100,8,7,13,13,8,80,80,10,10,'rayon_spectral');
+//initStatEnnemi(24,'mage_rouge',8,50,2,0,2,0,100,100,6,8,3,4,4,60,90,20,30,'rayon_rouge');
 
 
 end.

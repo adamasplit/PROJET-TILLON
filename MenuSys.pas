@@ -49,7 +49,7 @@ end;
 
 procedure menuEnJeu;
 	begin
-		if (SceneActive = 'MenuEnJeu') then jouer
+		if (SceneActive = 'MenuEnJeu') or (SceneActive='Deck') or (SceneActive='Bestiaire') then jouer
 		else
 		begin
 			SceneActive := 'MenuEnJeu';
@@ -77,7 +77,8 @@ procedure jouer;
 		SceneActive := 'Jeu';
 		ClearScreen;
 		SDL_RenderClear(sdlRenderer);
-		DeclencherFondu(False, 3000);
+		if not (scenePrec='Jeu') then
+			DeclencherFondu(False, 3000);
 
 		//Objets dissimulés
 		button_leaderboard.button.estVisible := false;
@@ -281,8 +282,9 @@ end;
 
 procedure reactualiserDeck();
 begin
+	writeln(ideck);
 	createRawImage(carteDeck,200,200,300,300,statsJoueur.collection[iDeck].dir);
-	initDialogueBox(dialogues[1],nil,nil,460,100,350,600,extractionTexte('DESC_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),0);
+	initDialogueBox(dialogues[1],nil,nil,460,120,350,600,extractionTexte('DESC_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),0);
 	initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),0);
 end;
 
@@ -309,12 +311,12 @@ procedure scrollDeck();
 
 begin
 	if EventSystem^.wheel.y<0 then
-		if iDeck>=statsJoueur.tailleCollection then
+		if iDeck>=statsJoueur.tailleCollection-1 then
 			iDeck:=1
 		else
 			iDeck:=iDeck+1
 	else
-		if iDeck<=1 then
+		if iDeck<=2 then
 			iDeck:=statsJoueur.tailleCollection
 		else
 			iDeck:=iDeck-1;
@@ -332,8 +334,8 @@ begin
 	ennAff.image.rect.y:=200;
 	ennAff.image.rect.w:=300;
 	ennAff.image.rect.h:=round(ennaff.image.rect.w*prop);
-	initDialogueBox(dialogues[1],nil,nil,460,100,350,600,extractionTexte('DESC_ENN_'+intToStr(ienn)),0);
-	initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,400,1080,400,extractionTexte('COMM_ENN_'+intToStr(ienn)),0);
+	initDialogueBox(dialogues[1],nil,nil,460,120,350,600,extractionTexte('DESC_ENN_'+intToStr(ienn)),0);
+	initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_ENN_'+intToStr(ienn)),0);
 end;
 
 procedure ouvrirBestiaire();
@@ -404,34 +406,37 @@ end;
 procedure AfficherTout(); //affiche tout (en combat)
 var i : Integer;
 begin
-	renderRawImage(combat_bg,255,False);
-	if LObjets[0].stats.pendu then
-			if LObjets[0].anim.isFliped then
-				SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
-			else
-				SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
-			else
-				RenderRawImage(LObjets[0].image,255, LObjets[0].anim.isFliped);
-
-	for i:=1 to high(LObjets) do
-		case LOBjets[i].stats.genre of
-			TypeObjet(2),TypeObjet(3),TypeObjet(4):RenderAvecAngle(LObjets[i])
-			else
-				RenderRawImage(LObjets[i].image,255, LObjets[i].anim.isFliped);
-		end;
-	UpdateUICombat(icarteChoisie,400,400,LObjets[0].stats);
-	if leMonde then 
+	if scenePrec='Jeu' then
 		begin
-		drawrect(black_color,50,0,0,windowWidth,windowHeight);
+		renderRawImage(combat_bg,255,False);
 		if LObjets[0].stats.pendu then
-			if LObjets[0].anim.isFliped then
-				SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
-			else
-				SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
-			else
-				RenderRawImage(LObjets[0].image,255, LObjets[0].anim.isFliped);
+				if LObjets[0].anim.isFliped then
+					SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
+				else
+					SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
+				else
+					RenderRawImage(LObjets[0].image,255, LObjets[0].anim.isFliped);
+
+		for i:=1 to high(LObjets) do
+			case LOBjets[i].stats.genre of
+				TypeObjet(2),TypeObjet(3),TypeObjet(4):RenderAvecAngle(LObjets[i])
+				else
+					RenderRawImage(LObjets[i].image,255, LObjets[i].anim.isFliped);
+			end;
+		UpdateUICombat(icarteChoisie,400,400,LObjets[0].stats);
+		if leMonde then 
+			begin
+			drawrect(black_color,50,0,0,windowWidth,windowHeight);
+			if LObjets[0].stats.pendu then
+				if LObjets[0].anim.isFliped then
+					SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
+				else
+					SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
+				else
+					RenderRawImage(LObjets[0].image,255, LObjets[0].anim.isFliped);
+			end;
+		EffetDeFondu;
 		end;
-	EffetDeFondu
 	
 end;
 

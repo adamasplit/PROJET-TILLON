@@ -69,6 +69,7 @@ procedure ActualiserJeu;
 var i:Integer;
 	begin
 		randomize();
+		scenePrec:='Jeu';
 		//writeln('actualiserJeu, taille de LObjets:',high(lobjets));
 		SDL_PumpEvents;
 		afficherTout;
@@ -104,7 +105,7 @@ procedure ActualiserMenuEnJeu;
 		affichertout();
 		UpdateAnimation(menuBookAnim,menuBook);
 		RenderRawImage(menuBook,False);
-		if animFinie(menuBookAnim) then
+		if (animFinie(menuBookAnim)) and (sceneActive='MenuEnJeu') then
 			begin
 			RenderButton(button_deck);
 			RenderButton(button_bestiaire);
@@ -209,7 +210,7 @@ begin
   		'Cutscene':
 		begin
 		affichertout;
-		UpdateDialogueBox(dialogues[1]);
+		UpdateDialogueBox(dialogues[2]);
 		updateanimation(LObjets[0].anim,LObjets[0].image);
 		if LObjets[1].anim.objectName<>'Leo_Transe' then
 		updateanimation(LObjets[1].anim,LObjets[1].image);
@@ -229,7 +230,7 @@ begin
 		'Behemoth_Mort':
 		begin
 		affichertout;
-		UpdateDialogueBox(dialogues[1]);
+		UpdateDialogueBox(dialogues[2]);
 		updateanimation(LObjets[0].anim,LObjets[0].image);
 		updateanimation(LObjets[1].anim,LObjets[1].image);
 		if sdl_getTicks mod 1 = 0 then 
