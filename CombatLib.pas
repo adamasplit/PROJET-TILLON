@@ -27,9 +27,10 @@ procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Re
 procedure updateRayon(var rayon:TObjet);
 procedure UpdateJustice(var justice:TObjet);
 procedure updateAttaques();
+procedure XXIII(origine:typeObjet;s:TStats;x,y,xcible,ycible,delai:Integer);
 procedure renderAvecAngle(objet:TObjet);
 procedure creerEffet(x,y,w,h,frames:Integer;nom:PCHar;fixeJoueur:Boolean;var obj:TObjet);
-procedure InitJustice(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,xCible,yCible,vitesse,delai:Integer);
+procedure InitJustice(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,xCible,yCible,vitesse,delai:Integer;dir:PChar);
 procedure subirDegats(var victime:TObjet;degats,knockbackX,knockbackY:Integer);
 procedure JouerCarte(var stats:TStats;x,y,i:Integer); 
 procedure InitAngle(vectX,vectY:Real;var angle:Real);
@@ -111,12 +112,40 @@ begin
     end;
 end;
 
+// retire la dernière carte du paquet
+procedure circoncision  (var deck : Tdeck);
+begin
+    sdl_destroytexture(deck[high(deck)].image.imgTexture);
+    sdl_freeSurface(deck[high(deck)].image.imgsurface);
+    setLength (deck , High(deck));
+end;
+
+//supprimer une carte de la collection
+procedure supprimerCarte(var  stats : TStats; num : integer); // num : numéro de la carte
+var i,j: integer;
+begin
+    i := 1 ;
+    while (stats.collection[i].numero <> num) and (i <= stats.tailleCollection) do // trouve la carte num
+        begin
+        i := i + 1;
+        end;
+    if (i <= stats.tailleCollection) then  // si trouvé alors supprimé et taille réduite
+        for j:=i to stats.tailleCollection-1 do 
+        begin
+            stats.collection[j] := stats.collection[j+1];
+        end;
+    stats.tailleCollection := stats.tailleCollection -1;
+end;
+
 // place la carte jouée au fond du paquet // prend en entrée un POINTEUR deck^
 procedure cycle (var deck : TDeck ; i: Integer); // i = indice de la carte jouée
 var j : Integer;
     mem : TCarte;
 begin
-
+    if (deck[i].numero=13) or (deck[i].numero=15) then
+        begin
+        supprimerCarte(statsJoueur,deck[i].numero);
+        end;
     if high(deck)>2 then
     begin
     mem := deck[i];
@@ -128,32 +157,20 @@ begin
         for j:= 3 to High(deck)-1 do
             deck[j] := deck[j+1];
 
-    deck[j] := mem ;
-    deck[j].active:=False;
-    deck[j].charges:=deck[j].chargesMax;
+    if mem.discard then
+        begin
+        circoncision(deck);
+        end
+    else
+        begin
+        deck[j] := mem ;
+        deck[j].active:=False;
+        deck[j].charges:=deck[j].chargesMax;
+        end
     end;
 end;
 
-// retire la dernière carte du paquet
-procedure circoncision  (var deck : Tdeck);
-begin
-    setLength (deck , High(deck));
-end;
 
-//supprimer une carte de la collection
-procedure supprimerCarte(var  stats : TStats; num : integer); // num : numéro de la carte
-var i,j: integer;
-begin
-    i := 1 ;
-    while (stats.collection[i].numero <> num) OR (i <= stats.tailleCollection) do // trouve la carte num
-        i := i + 1;
-    if (i <= stats.tailleCollection) then  // si trouvé alors supprimé et taille réduite
-        for j:=i to stats.tailleCollection-1 do 
-        begin
-            stats.collection[j] := stats.collection[j+1];
-            stats.tailleCollection := stats.tailleCollection -1;
-        end;
-end;
 
 //Ajoute carte à la fin de la collection
 procedure ajouterCarte(var stats : TStats ; num : integer); 
@@ -416,10 +433,10 @@ begin
         end;
 end;
 
-procedure InitJustice(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,xCible,yCible,vitesse,delai:Integer);
+procedure InitJustice(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,xCible,yCible,vitesse,delai:Integer;dir:PChar);
 var justice:TObjet;
 begin
-    creerBoule(typeobjet(1),degats,force,mult,x,y,200,100,vitesse,xCible,yCible,'justice',justice);
+    creerBoule(origine,degats,force,mult,x,y,200,100,vitesse,xCible,yCible,dir,justice);
     InitAnimation(justice.anim,justice.anim.objectname,'start',9,False);
     justice.anim.estActif:=True;
     justice.anim.currentFrame:=2;
@@ -435,8 +452,9 @@ begin
     justice.stats.xreel:=x;
     justice.stats.yreel:=y;
     justice.stats.genre:=epee;
-    justice.stats.origine:=joueur;
+    justice.stats.origine:=origine;
     justice.stats.delai:=delai;
+    justice.stats.delaiInit:=delai;
     ajoutObjet(justice);
 end;
 
@@ -454,7 +472,7 @@ begin
     if justice.stats.delai>0 then 
         begin
         initAngle(justice.stats.vectX,justice.stats.vectY,angleDepart);
-        justice.stats.angle:=angleDepart-2*pi*sqrt(1-((justice.stats.delai)/51)**3);
+        justice.stats.angle:=angleDepart-2*pi*sqrt(1-((justice.stats.delai)/(justice.stats.delaiInit+1))**3);
         justice.image.rect.x:=round(justice.stats.xreel+justice.stats.vectX*(justice.stats.angle-angleDepart));
         justice.image.rect.y:=round(justice.stats.yreel+justice.stats.vecty*(justice.stats.angle-angleDepart));
         justice.stats.delai:=justice.stats.delai-1;
@@ -469,7 +487,7 @@ begin
         justice.stats.yreel:=justice.image.rect.y;
         justice.stats.delai:=-1;
         justice.col.estActif:=True;
-        InitAnimation(justice.anim,'justice','active',10,false);
+        InitAnimation(justice.anim,justice.anim.objectName,'active',10,false);
         justice.anim.currentFrame:=1;
         justice.col.estActif:=True;
         initAngle(justice.stats.vectX,justice.stats.vectY,justice.stats.angle);
@@ -620,7 +638,7 @@ end;
             sPerm.nbJustice := sPerm.nbJustice + 1;
             sCombat.nbJustice := sCombat.nbJustice + 1;   //### à initialiser à 0 en débur de partie 
             end;
-        initJustice(typeObjet(0),scombat.nbjustice,scombat.force,sCombat.multiplicateurDegat,x,y,getmousex,getmousey,28,50);
+        initJustice(typeObjet(0),scombat.nbjustice,scombat.force,sCombat.multiplicateurDegat,x,y,getmousex,getmousey,28,50,'justice');
     end;
     
     //9 L'ermite
@@ -794,6 +812,18 @@ end;
         creerEffet(0,0,100,100,25,'fou',True,eff);
         ajoutObjet(eff);
     end;
+
+    procedure XXIII(origine:typeObjet;s:TStats;x,y,xcible,ycible,delai:Integer);
+    var distX,distY:Integer;
+    begin
+        distX:=xcible-x;
+        distY:=ycible-y;
+        initJustice(origine,5,s.force,s.multiplicateurDegat,xcible,ycible,xcible-distx,ycible-disty,18,delai,'Lionheart');
+        initJustice(origine,5,s.force,s.multiplicateurDegat,xcible,ycible,xcible+distx,ycible+disty,18,delai,'Lionheart');
+        initJustice(origine,5,s.force,s.multiplicateurDegat,xcible,ycible,xcible+disty,ycible-distx,18,delai,'Lionheart');
+        initJustice(origine,5,s.force,s.multiplicateurDegat,xcible,ycible,xcible-disty,ycible+distx,18,delai,'Lionheart');
+    end;
+
 //end
 
 //###"La procédure ultime. On raconte que son accomplissement entraîne la fin de l'univers."
@@ -842,6 +872,7 @@ begin
             20: XX(stats);
             21: XXI(stats);
             22: __(stats);
+            23: XXIII(joueur,stats,x,y,getmouseX,getmousey,60);
             else 
             writeln('???')
             end;

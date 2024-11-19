@@ -23,11 +23,11 @@ windowHeight=720;windowWidth=1080;
       X1=(windowWidth  div 2) - (windowWidth div 2)+128;
       X2=(windowWidth  div 2) + (windowWidth div 4);
 
-var avancementPartie : Integer;
-
 procedure generationChoix(var salle1,salle2,salle3:TSalle);
 procedure affichageSalles(var salle1,salle2,salle3:TSalle);
 procedure choixSalle();
+procedure actualiserMap();
+procedure actualiserMarchand();
 procedure choisirEnnemis;
 procedure LancementSalleHasard;
 procedure LancementSalleBoss;
@@ -39,8 +39,8 @@ implementation
 procedure generationChoix(var salle1,salle2,salle3:TSalle);
 var alea:Integer;
 begin
-    writeln('Actuellement en salle : ',avancementPartie);
-    if ((avancementPartie mod 5) = 0) then 
+    writeln('Actuellement en salle : ',statsJoueur.avancement);
+    if ((statsJoueur.avancement mod 5) = 0) then 
         begin
             salle1.evenement:=rien;
             salle2.evenement:=boss;
@@ -81,19 +81,22 @@ begin
     writeln('liste ennemis vide');
     initStatsCombat(statsJoueur,LObjets[0].stats);
     if high(LOBjets)>0 then repeat supprimeObjet(LObjets[1]) until high(LObjets)=0;
-    setlength(ennemis,avancementPartie+1);
     writeln('LObjets vidée');
     vagueFinie:=True;
     combatFini:=False;
     randomize;
-    indiceMusiqueJouee:=random(9)+2;
-    for j:=1 to avancementPartie do
+    indiceMusiqueJouee:=random(statsJoueur.avancement div 2)+2;
+
+    //###partie à modifier : choix des ennemis et de leur nombre
+    setlength(ennemis,statsJoueur.avancement+1);
+    for j:=1 to statsJoueur.avancement do
         begin
-        alea:=random(9)+1;
-        ennemis[j]:=templatesEnnemis[alea];
-        //writeln('correspondant à ',templatesEnnemis[alea].image.directory);
+        alea:=random(2)+22;
+        if alea=12 then
+            ennemis[j]:=templatesEnnemis[22]
+        else
+            ennemis[j]:=templatesEnnemis[alea];
         writeln('élément ',j,' de ennemis: ',ennemis[j].anim.objectName);
-        //analyseObjet(ennemis[j]);
         end;
     writeln('ennemis choisis');
 
@@ -102,11 +105,12 @@ end;
 procedure LancementSalleCombat();
 begin
 writeln('Lancement de salle Combat');
-avancementPartie := avancementPartie+1;
+choisirEnnemis;
+statsJoueur.avancement := statsJoueur.avancement+1;
 ClearScreen;
 SDL_RenderClear(sdlRenderer);
 writeln('choix des ennemis...');
-choisirEnnemis;
+
 SceneActive := 'Jeu';
 //indiceMusiqueJouee:=random(4)+2;
 end;
@@ -114,18 +118,19 @@ end;
 procedure LancementSalleHasard;
 begin
 writeln('Lancement de salle Hasard');
-avancementPartie := avancementPartie+1;
+choisirEnnemis;
+statsJoueur.avancement := statsJoueur.avancement+1;
 ClearScreen;
 SDL_RenderClear(sdlRenderer);
 SceneActive := 'Jeu';
-choisirEnnemis;
+
 end;
 
 procedure LancementSalleBoss;
 var j : integer;
 begin
     writeln('Lancement de salle Boss');
-    avancementPartie := avancementPartie+1;
+    statsJoueur.avancement := statsJoueur.avancement+1;
     ClearScreen;
     SDL_RenderClear(sdlRenderer);
     SceneActive := 'Jeu';
@@ -142,20 +147,44 @@ begin
     writeln('ennemis choisis (boss)')
 end;
 
-procedure LancementSalleMarchand;
+procedure marchandage;
 begin
-writeln('Lancement de salle Marchand');
-avancementPartie := avancementPartie+1;
-SceneActive := 'Jeu';
+SceneActive := 'MenuShop';
 ClearScreen;
 SDL_RenderClear(sdlRenderer);
-choisirEnnemis;
 end;
+
+procedure LancementSalleMarchand; //###
+begin
+    sceneActive := 'marchand';
+    indiceMusiqueJouee:=12;
+    writeln('Lancement de salle Marchand');
+    statsJoueur.avancement := statsJoueur.avancement+1;
+    InitButtonGroup(btnEchange,  415, 100, 250, 100, 'Sprites/Menu/button1.bmp','Marchandage',btnProc);
+    InitButtonGroup(btnDiscussion,  440, 200, 200, 100, 'Sprites/Menu/button1.bmp','Discussion',btnproc);
+    InitButtonGroup(btnQuitterMarchand,  465, 300, 150, 100, 'Sprites/Menu/button1.bmp','Partir',btnProc);
+    initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp',nil,0,450,1080,300,'aaa',10);
+    
+    
+end;
+
+procedure actualiserMarchand();
+begin
+    OnMouseHover(btnEchange,getMouseX,getMouseY);
+    renderButtonGroup(btnEchange);
+    UpdateDialogueBox(dialogues[2]);
+    OnMouseHover(btnDiscussion,getMouseX,getMouseY);
+    renderButtonGroup(btnDiscussion);
+    OnMouseHover(btnQuitterMarchand,getMouseX,getMouseY);
+    renderButtonGroup(btnQuitterMarchand);
+end;
+
+
 
 procedure LancementSalleCamp;
 begin
 writeln('Lancement de salle Camp');
-avancementPartie := avancementPartie+1;
+statsJoueur.avancement := statsJoueur.avancement+1;
 ClearScreen;
 SDL_RenderClear(sdlRenderer);
 SceneActive := 'Jeu';
@@ -212,6 +241,7 @@ begin
     combatFini:=false;
     sdl_renderclear(sdlrenderer);
     SceneActive := 'map';
+    ScenePrec:='map';
     writeln('Initializing rooms...');
     
     generationChoix(salles[1], salles[2], salles[3]);
@@ -219,13 +249,26 @@ begin
     affichageSalles(salles[1], salles[2], salles[3]);
     
     writeln('Room choice started');
-    SDL_RenderPresent(sdlRenderer);
     new(EventSystem);
     
 end;
 
+procedure actualiserMap();
 begin
-avancementPartie:=1;
+    SDL_PumpEvents();
+    RenderButtonGroup(salles[1].image);
+    RenderButtonGroup(salles[2].image);
+    RenderButtonGroup(salles[3].image);
+    RenderButtonGroup(salles[1].image);
+    RenderButtonGroup(salles[2].image);
+    RenderButtonGroup(salles[3].image);
+    RenderButtonGroup(salles[1].image);
+    RenderButtonGroup(salles[2].image);
+    RenderButtonGroup(salles[3].image);
+end;
+
+begin
+statsJoueur.avancement:=1;
 //
 writeln('MapSys ready')
 end.

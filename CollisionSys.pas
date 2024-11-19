@@ -15,7 +15,8 @@ uses
   // Vérifie automatiquement les collisions entre tous les objets actifs
   procedure UpdateCollisions();
   function GetCollisionRect(var obj: TObjet): TSDL_Rect;
-
+  function CheckAABB(rect1, rect2: TSDL_Rect): Boolean;
+  function isAttack(obj:TObjet):Boolean;
   // Fonction de vérification manuelle des collisions entre deux objets
   function CheckCollision(var obj1, obj2: TObjet): Boolean;
 
@@ -210,6 +211,36 @@ begin
     end;
 end;
 
+//simule une collision avec tous les murs (différente de CheckCollision)
+function PseudoColMurs(var obj:TObjet):Boolean;
+var colx1,colx2,coly1,coly2:Integer; //4 coins de l'objet
+begin
+  colx1:=obj.image.rect.x+obj.col.offset.x;
+  colx2:=obj.image.rect.x+obj.col.offset.x+obj.col.dimensions.w;
+  coly1:=obj.image.rect.y+obj.col.offset.y;
+  coly2:=obj.image.rect.y+obj.col.offset.y+obj.col.dimensions.h;
+  PseudoColMurs:=False;
+  if colx1<(murs[2].image.rect.x+murs[2].col.dimensions.w) then
+    begin
+    obj.image.rect.x:=murs[2].image.rect.x+murs[2].col.dimensions.w-obj.col.offset.x;
+    pseudoColMurs:=True;
+    end;
+  if colx2>(murs[4].image.rect.x) then
+    begin
+    obj.image.rect.x:=murs[4].image.rect.x-obj.col.offset.x-obj.col.dimensions.w;
+    pseudoColMurs:=True;
+    end;
+  if coly1<(murs[1].image.rect.y+murs[1].col.dimensions.h) then
+    begin
+    obj.image.rect.y:=murs[1].image.rect.y+murs[1].col.dimensions.h-obj.col.offset.y;
+    pseudoColMurs:=True;
+    end;
+  if coly2>(murs[3].image.rect.y) then
+    begin
+    obj.image.rect.y:=murs[3].image.rect.y-obj.col.offset.y-obj.col.dimensions.h;
+    pseudoColMurs:=True;
+    end;
+end;
 
 // Vérifie la collision entre deux objets et gère les conséquences (repoussement ou trigger)
 function CheckCollision(var obj1, obj2: TObjet): Boolean;
@@ -256,7 +287,7 @@ begin
       // Si le chevauchement est plus grand en X, on repousse en X
       if overlapX < overlapY then
         begin
-        if rect1.x < rect2.x then
+        if (rect1.x+(rect1.w div 2)) < (rect2.x+(rect2.w div 2)) then
           obj1.image.rect.x := obj1.image.rect.x - overlapX  // Repousser vers la gauche
         else
           obj1.image.rect.x := obj1.image.rect.x + overlapX;  // Repousser vers la droite
@@ -264,7 +295,7 @@ begin
       else
         begin
         // Sinon, on repousse en Y
-        if rect1.y < rect2.y then
+        if (rect1.y+(rect1.h div 2)) < (rect2.y+(rect2.h div 2)) then
           obj1.image.rect.y := obj1.image.rect.y - overlapY  // Repousser vers le haut
         else
           obj1.image.rect.y := obj1.image.rect.y + overlapY;  // Repousser vers le bas
@@ -299,7 +330,7 @@ end;
 procedure OnTriggerEnter(var obj1, obj2: TObjet);
 var eff:TObjet;
 begin
-  // Exemple de gestion du trigger : ici, tu peux ajouter des actions spécifiques
+  // Exemple de gestion du trigger : ici, on peut ajouter des actions spécifiques
   if (not (obj1.col.nom='Dummy')) then
   begin
     if (obj1.stats.genre=projectile) and (obj1.stats.origine<>obj2.stats.genre) then
@@ -315,7 +346,7 @@ begin
         else
           begin
           subirDegats(obj1,degat(obj2.stats.degats,obj2.stats.force,obj1.stats.defense,obj2.stats.multiplicateurDegat),0,0);
-          creerEffet(obj1.image.rect.x,obj1.image.rect.y,64,64,6,'impact',False,eff);
+          creerEffet(obj2.image.rect.x,obj2.image.rect.y,64,64,6,'impact',False,eff);
           ajoutobjet(eff);
           end
       end
@@ -332,16 +363,23 @@ begin
   if (i<=High(LObjets)) and not (leMonde and (i<>0)) then
   begin
     LObjets[i].col.hasCollided:=False;
+    //Limite la position d'un objet aux murs
+    if (LObjets[i].stats.genre=ennemi) or (LObjets[i].stats.genre=joueur) then
+         PseudoColMurs(LObjets[i]);
     // Si l'objet est actif pour les collisions
     if LObjets[i].col.estActif then
     begin
+      
       for j := i + 1 to High(LObjets) do
       begin
         // Si l'autre objet est aussi actif pour les collisions
         if (LObjets[j].col.estActif) and collisionValide(LObjets[i].stats,LObjets[j].stats) then
         begin
           // Vérifier les collisions entre obj[i] et obj[j]
-          CheckCollision(LObjets[i], LObjets[j]);
+          if pseudoColMurs(LObjets[i]) then //si un objet est dans un mur, il a alors la 'priorité' pour le repoussement
+            CheckCollision(LObjets[j], LObjets[i])
+          else
+            CheckCollision(LObjets[i], LObjets[j]);
         end;
       end;
     end;

@@ -163,12 +163,12 @@ Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT,
     //Thèmes de victoire/map
     defMus(23,'OST/C1_VictoireRep.wav','',6);
     defMus(24,'OST/C2_VictoireRep.wav','',11);
-    defMus(25,'OST/C3_VictoireRep.wav','',23);
-    defMus(26,'OST/C4_VictoireRep.wav','',12);
-    defMus(27,'OST/C5_VictoireRep.wav','',15);
+    defMus(25,'OST/C3_VictoireRep.wav','',33);
+    defMus(26,'OST/C4_VictoireRep.wav','',36);
+    defMus(27,'OST/C5_VictoireRep.wav','',18);
     defMus(28,'OST/Boss1_VictoireRep.wav','',81);
     defMus(29,'OST/Boss2_VictoireRep.wav','',81);
-    defMus(30,'OST/Boss3_VictoireRep.wav','',50);
+    defMus(30,'OST/Boss3_VictoireRep.wav','',74);
     defMus(31,'OST/Boss4_VictoireRep.wav','',27);
 
 
