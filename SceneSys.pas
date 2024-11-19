@@ -131,11 +131,11 @@ begin
     LObjets[0].image.rect.x := windowWidth div 2;
     LObjets[0].image.rect.y := windowHeight div 2;
 	LObjets[0].stats.lastUpdateTimeMana:=SDL_GetTicks;
-    statsJoueur.tailleCollection:=23;
+    statsJoueur.tailleCollection:=24;
     statsJoueur.Vitesse:=5;
     statsJoueur.multiplicateurMana:=1;
     statsJoueur.multiplicateurDegat:=1;
-    for j:=1 to 23 do 
+    for j:=1 to 24 do 
         statsJoueur.collection[j]:=Cartes[j];
     statsJoueur.vie:=100;statsJoueur.vieMax:=100;
     initStatsCombat(statsJoueur,LObjets[0].stats);

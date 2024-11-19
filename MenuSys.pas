@@ -49,9 +49,10 @@ end;
 
 procedure menuEnJeu;
 	begin
-		if (SceneActive = 'MenuEnJeu') or (SceneActive='Deck') or (SceneActive='Bestiaire') then jouer
+		if (SceneActive = 'MenuEnJeu') or (SceneActive='Deck') or (SceneActive='Bestiaire') then sceneActive:=scenePrec
 		else
 		begin
+			scenePrec:=sceneActive;
 			SceneActive := 'MenuEnJeu';
 
 			button_deck.estVisible :=True;
@@ -197,7 +198,9 @@ end;
 
 procedure direction_menu;
 begin
+	
     SceneActive := 'Menu';
+	
 
     // Activer les boutons du menu principal
     button_continue.button.estVisible := true;

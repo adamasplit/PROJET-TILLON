@@ -25,18 +25,6 @@ procedure ajoutVague();
 
 implementation
 
-
-//pour déterminer la position du centre d'une boîte de collisions d'un objet
-function getCenterX(var obj:TObjet):Integer;
-begin
-  getCenterX:=obj.image.rect.x+obj.col.offset.x+(obj.col.dimensions.w div 2);
-end;
-
-function getCentery(var obj:TObjet):Integer;
-begin
-  getCentery:=obj.image.rect.y+obj.col.offset.y+(obj.col.dimensions.h div 2);
-end;
-
 //supprime un ennemi de la liste
 procedure supprimeEnn(var enn:TObjet;j:integer);
 var taille,i:Integer;
@@ -382,10 +370,19 @@ begin
         ajoutObjet(obj)
         end;
     8:if (ennemi.anim.etat='cast') and (random(6)=1) then
-      begin
-      creerBoule(typeobjet(1),0,ennemi.stats.force,ennemi.stats.multiplicateurDegat,getCenterX(ennemi),getCenterY(ennemi),60,60,3,x-128+random(64)*4,y-128+random(64)*4,ennemi.stats.nomAttaque,obj);
-      ajoutObjet(obj)
-      end;
+      if (ennemi.anim.objectName='mage_rouge') then
+        begin
+        if (ennemi.anim.currentFrame>6) then
+          begin
+          CreerRayon(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,getCenterX(ennemi)+60,getCenterY(ennemi),1000,200,x-100+random(20)*10,y,0,10,50,ennemi.stats.nomAttaque,obj);
+          ajoutObjet(obj);
+          end
+        end
+      else
+        begin
+        creerBoule(typeobjet(1),0,ennemi.stats.force,ennemi.stats.multiplicateurDegat,getCenterX(ennemi),getCenterY(ennemi),60,60,3,x-128+random(64)*4,y-128+random(64)*4,ennemi.stats.nomAttaque,obj);
+        ajoutObjet(obj)
+        end;
     10:begin
         if (ennemi.anim.etat='tir') and (ennemi.anim.currentFrame=20) and (ennemi.stats.compteurAction<=601) then
         begin
@@ -613,10 +610,13 @@ begin
           ennemi.stats.ycible:=ennemi.image.rect.y+12*(random(20)-10);
           end;
         if ennemi.anim.etat='jump' then
+          begin
+          //ennemi.anim.isFliped:=(ennemi.stats.xcible<ennemi.image.rect.x);
           if ennemi.stats.compteurAction mod 100=50 then
             initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,true)
           else
             flyUpdate(ennemi,20);
+          end;
         if (ennemi.stats.compteurAction>300) and not (ennemi.anim.etat='cast') then
           initAnimation(ennemi.anim,ennemi.anim.objectName,'cast',ennemi.stats.nbFrames3,true);
         if (ennemi.anim.etat='cast') and (animFinie(ennemi.anim)) and (random(2)=0) then
@@ -624,6 +624,7 @@ begin
           ennemi.stats.compteurAction:=0;
           initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
           end;
+          ennemi.anim.isFliped:=(joueur.image.rect.x>ennemi.image.rect.x);
         end;
       10:begin
         if ennemi.anim.etat='chase' then
@@ -907,7 +908,7 @@ InitstatEnnemi(20,'Leo',13,150,8,2,5,0,300,300,14,8,7,10,8,100,150,100,150,'ecla
 InitstatEnnemi(21,'Leo_Transe',14,150,20,5,2,1,300,300,13,16,6,22,10,200,250,50,25,'geyser_feu');
 initStatEnnemi(22,'mage_blanc',15,40,10,0,0,1,100,120,18,12,3,5,14,60,90,20,30,'rayon');
 initStatEnnemi(23,'elementaire_spectral',4,20,2,0,0,0,100,100,8,7,13,13,8,80,80,10,10,'rayon_spectral');
-//initStatEnnemi(24,'mage_rouge',8,50,2,0,2,0,100,100,6,8,3,4,4,60,90,20,30,'rayon_rouge');
+initStatEnnemi(24,'mage_rouge',8,50,2,0,2,0,100,200,11,6,4,9,5,60,90,20,110,'rayon_rouge');
 
 
 end.

@@ -91,9 +91,9 @@ begin
     setlength(ennemis,statsJoueur.avancement+1);
     for j:=1 to statsJoueur.avancement do
         begin
-        alea:=random(2)+22;
-        if alea=12 then
-            ennemis[j]:=templatesEnnemis[22]
+        alea:=random(23)+1;
+        if (alea=12) or (alea=21) then
+            ennemis[j]:=templatesEnnemis[24]
         else
             ennemis[j]:=templatesEnnemis[alea];
         writeln('élément ',j,' de ennemis: ',ennemis[j].anim.objectName);

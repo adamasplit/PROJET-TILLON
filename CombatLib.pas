@@ -824,6 +824,13 @@ end;
         initJustice(origine,5,s.force,s.multiplicateurDegat,xcible,ycible,xcible-disty,ycible+distx,18,delai,'Lionheart');
     end;
 
+    procedure XXIV(s:TStats;x,y:Integer);
+    var angle:Real;
+    begin
+        initAngle(getmouseX-x,getMouseY-y,angle);
+        multiprojs(joueur, 10 ,s.force , s.multiplicateurDegat , x,y ,100,100, 0,2 ,360 ,round(angle*360),'Roue');
+    end;
+
 //end
 
 //###"La procédure ultime. On raconte que son accomplissement entraîne la fin de l'univers."
@@ -873,6 +880,7 @@ begin
             21: XXI(stats);
             22: __(stats);
             23: XXIII(joueur,stats,x,y,getmouseX,getmousey,60);
+            24: XXIV(stats,x,y);
             else 
             writeln('???')
             end;

@@ -23,7 +23,22 @@ uses
   // Fonction OnTriggerEnter déclenchée lors d'une collision (si IsTrigger est vrai)
   procedure OnTriggerEnter(var obj1, obj2: TObjet);
 
+function getCenterX(var obj:TObjet):Integer;
+function getCentery(var obj:TObjet):Integer;
+
 implementation
+
+
+//pour déterminer la position du centre d'une boîte de collisions d'un objet
+function getCenterX(var obj:TObjet):Integer;
+begin
+  getCenterX:=obj.image.rect.x+obj.col.offset.x+(obj.col.dimensions.w div 2);
+end;
+
+function getCentery(var obj:TObjet):Integer;
+begin
+  getCentery:=obj.image.rect.y+obj.col.offset.y+(obj.col.dimensions.h div 2);
+end;
 
 type ligne=record
   x,y:real;
@@ -165,7 +180,6 @@ begin
     end
 
 end;
-
 function collisionAngle(obj1,obj2:TObjet):Boolean;
 
 var coins1,coins2:coins;axes1,axes2:axes;pointeurPoint:PSDL_Point;
@@ -277,7 +291,7 @@ begin
       OnTriggerEnter(obj1, obj2);
     end
     else
-      if not (obj2.stats.inamovible) then
+      if not (obj1.stats.inamovible) then
       begin
       // Si aucun des deux objets n'est un trigger, on les repousse pour éviter le chevauchement
       overlapX := Min(rect1.x + rect1.w, rect2.x + rect2.w) - Max(rect1.x, rect2.x);
@@ -346,13 +360,22 @@ begin
         else
           begin
           subirDegats(obj1,degat(obj2.stats.degats,obj2.stats.force,obj1.stats.defense,obj2.stats.multiplicateurDegat),0,0);
-          creerEffet(obj2.image.rect.x,obj2.image.rect.y,64,64,6,'impact',False,eff);
+          creerEffet(getcenterx(obj1),getcentery(obj1),64,64,6,'impact',False,eff);
           ajoutobjet(eff);
           end
       end
   end
 end;
 
+procedure conditionUnique(var obj1,obj2:TObjet);
+begin
+  if isAttack(obj2) and (obj1.stats.origine<>obj2.stats.origine) then
+    if collisionAngle(obj1,obj2) then
+      begin
+      supprimeObjet(obj2);
+      supprimeObjet(obj1);
+      end;
+end;
 // Met à jour les collisions entre tous les objets actifs
 procedure UpdateCollisions();
 var
@@ -371,15 +394,22 @@ begin
     begin
       
       for j := i + 1 to High(LObjets) do
+      if j<=High(LObjets) then
       begin
-        // Si l'autre objet est aussi actif pour les collisions
-        if (LObjets[j].col.estActif) and collisionValide(LObjets[i].stats,LObjets[j].stats) then
-        begin
-          // Vérifier les collisions entre obj[i] et obj[j]
-          if pseudoColMurs(LObjets[i]) then //si un objet est dans un mur, il a alors la 'priorité' pour le repoussement
-            CheckCollision(LObjets[j], LObjets[i])
-          else
-            CheckCollision(LObjets[i], LObjets[j]);
+        if (LObjets[i].anim.objectName='Roue') and (LObjets[i].stats.origine=joueur) then
+          conditionUnique(LObjets[i],LObjets[j])
+        else
+        if (LObjets[j].anim.objectName='Roue') and (LObjets[j].stats.origine=joueur) then
+          conditionUnique(LObjets[j],LObjets[i])
+        else
+          // Si l'autre objet est aussi actif pour les collisions
+          if (LObjets[j].col.estActif) and collisionValide(LObjets[i].stats,LObjets[j].stats) then
+          begin
+            // Vérifier les collisions entre obj[i] et obj[j]
+            if pseudoColMurs(LObjets[i]) then //si un objet est dans un mur, il a alors la 'priorité' pour le repoussement
+              CheckCollision(LObjets[j], LObjets[i])
+            else
+              CheckCollision(LObjets[i], LObjets[j]);
         end;
       end;
     end;
