@@ -13,9 +13,9 @@ const MAXSALLES=40; //nombre de salles total pour finir le jeu
   MAXENNEMIS=30; //nombre d'ennemis ayant une entrée dans le bestiaire
   MAXCARTES=60; //taille max du deck
 
-var whiteCol,b_color,bf_color,f_color,navy_color,red_color,black_col: TSDL_Color;
+var whiteCol,b_color,bf_color,f_color,navy_color,red_color,black_col,yellowCol: TSDL_Color;
 
-
+type TRarete=(commune,rare,epique,legendaire);
 type evenements=(combat,marchand,hasard,camp,rien,boss);
 type typeObjet=(joueur,ennemi,projectile,laser,epee,effet,autre);
 
@@ -34,7 +34,7 @@ type
 type TCarte=record
     nom:pchar;
     cout:Integer; //Coût en mana
-    rarete:(commune,rare,epique,legendaire);
+    rarete:TRarete;
     numero:integer;
     description:String; //Description dans le menu
     dir:PChar;
@@ -152,14 +152,11 @@ PDeck:TDeck; //deck pointé par les stats du joueur
 	button_settings : TButtonGroup;
 	button_help : TButtonGroup;
 	button_home : TButtonGroup;
-  btnEchange:TButtonGroup;
-  btnDiscussion:TButtonGroup;
-  btnQuitterMarchand:TButtonGroup;
   btnCartes:array[1..3] of TButtonGroup;
   salles: array[1..3] of TSalle;
 	button_retour_menu : TButtonGroup;
-	button_deck : TButtonGroup;
-	button_bestiaire: TButtonGroup;
+
+  boutons:array[1..9] of TButtonGroup;
 
 // Textes
 	text1 : TText;
@@ -175,6 +172,7 @@ PDeck:TDeck; //deck pointé par les stats du joueur
 	text_s5: TText;
 	text_n5: TText;
 
+  var fond:TImage;
 	dialogues : Array [1..2] of TDialogueBox;
 
 
@@ -235,6 +233,7 @@ const TAILLE_MUR = 4000;
 
 begin
    // Définir les couleurs de base
+   yellowCol.r:=255;yellowCol.g:=255;yellowCol.b:=0;
   whiteCol.r := 255; whiteCol.g := 255; whiteCol.b := 255;
   bf_color.r :=5; bf_color.g :=12; bf_color.b :=156;
   b_color.r :=167; b_color.g :=230; b_color.b :=255;

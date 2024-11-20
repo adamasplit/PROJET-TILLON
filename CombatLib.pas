@@ -581,7 +581,7 @@ end;
         ajoutObjet(proj);
     end;
 
-    //3 L'impératrice
+    //3 L'impératrice ### ne soigne pas encore pour l'instant
     procedure III(s : TStats ; x,y : integer);
     var proj : TObjet;
     begin
@@ -880,7 +880,7 @@ begin
             21: XXI(stats);
             22: __(stats);
             23: XXIII(joueur,stats,x,y,getmouseX,getmousey,60);
-            24: XXIV(stats,x,y);
+            24: XXIV(stats,getmouseX,getmouseY);
             else 
             writeln('???')
             end;

@@ -14,7 +14,7 @@ uses
     eventsys,
     SysUtils;
 
-const TAILLE_VAGUE=5;
+const TAILLE_VAGUE=3;
 
 var EnemyBasik : TObjet;
 var templatesEnnemis:array[1..MAXENNEMIS] of TObjet;
@@ -69,12 +69,10 @@ begin
           begin
           //writeln('tentative d"ajout d"un ennemi');
           LObjets[i]:=ennemis[taille];
-          //analyseObjet(ennemis[taille]);
           supprimeEnn(ennemis[taille],taille);
           taille:=taille-1;
-          LObjets[i].image.rect.x:=i*200+100;
+          LObjets[i].image.rect.x:=(i-1)*round(600/TAILLE_VAGUE)+180;
           LObjets[i].image.rect.y:=50;
-          //writeln('ennemi n°',i,' placé à ',LOBjets[i].image.rect.x);
           if LObjets[i].anim.objectName='dracomage' then
             begin
             fini:=True;
@@ -148,10 +146,10 @@ begin
   //endroit choisi entre certaines bornes et pas trop près du joueur
   repeat
     xdest:=random(10)*100;
-  until (xdest<=800) and (xdest>=200) and (abs(xdest-targetx)>100) and (abs(xdest-ennemi.image.rect.x)>100);
+  until (xdest<=800) and (xdest>=200) and (abs(xdest-targetx)>60) and (abs(xdest-ennemi.image.rect.x)>60);
   repeat
     ydest:=random(10)*100;
-  until (ydest<700) and (ydest>0) and (abs(ydest-targety)>100) and (abs(ydest-ennemi.image.rect.y)>100);
+  until (ydest<700) and (ydest>0) and (abs(ydest-targety)>60) and (abs(ydest-ennemi.image.rect.y)>60);
   InitAnimation(ennemi.anim,ennemi.anim.ObjectName,'warp', ennemi.stats.nbframes2,False);
   ennemi.stats.xcible:=xdest;ennemi.stats.ycible:=ydest;
   ennemi.stats.compteurAction:=0;
@@ -314,14 +312,22 @@ end;
 procedure ActionEnnemi(ennemi:TObjet;x,y:Integer); //permet à un ennemi d'agir (donc d'attaquer)
 var obj:TObjet;alea1,alea2:Integer;
 begin
-  if (ennemi.anim.etat='shoot') and (ennemi.stats.compteurAction>10) and (ennemi.stats.compteurAction<15) then
-    begin
+  if (ennemi.anim.etat='shoot') then
+    if (ennemi.anim.objectName='elementaire_eclipse') and (ennemi.stats.compteurAction<20) then
+      begin
       if (ennemi.image.rect.x<ennemi.stats.xcible) then
-              CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+110,ennemi.image.rect.y+130,1200,80,ennemi.image.rect.x+150,ennemi.image.rect.y+130,(random(5)-3)*3,10,100,ennemi.stats.nomAttaque,obj)
-            else
-              CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+60,ennemi.image.rect.y+130,1200,80,ennemi.image.rect.x-60,ennemi.image.rect.y+130,(random(5)-3)*3,10,100,ennemi.stats.nomAttaque,obj);
-            ajoutObjet(obj);
-    end;
+        initJustice(typeObjet(1),1,ennemi.stats.force,ennemi.stats.multiplicateurDegat,200,random(20)*35,x,y,20,150-ennemi.stats.compteurAction,ennemi.stats.nomAttaque )
+      else
+        initJustice(typeObjet(1),1,ennemi.stats.force,ennemi.stats.multiplicateurDegat,750,random(20)*35,x,y,20,150-ennemi.stats.compteurAction,ennemi.stats.nomAttaque )
+      end
+    else if (ennemi.stats.compteurAction>10) and (ennemi.stats.compteurAction<15) then 
+      begin
+        if (ennemi.image.rect.x<ennemi.stats.xcible) then
+                CreerRayon(typeobjet(1),2,ennemi.stats.force,1,getcenterx(ennemi),getCenterY(ennemi),1200,80,ennemi.image.rect.x+400,getCenterY(ennemi),(random(5)-3)*3,10,100,ennemi.stats.nomAttaque,obj)
+              else
+                CreerRayon(typeobjet(1),2,ennemi.stats.force,1,getcenterx(ennemi),getCenterY(ennemi),1200,80,ennemi.image.rect.x-400,getCenterY(ennemi),(random(5)-3)*3,10,100,ennemi.stats.nomAttaque,obj);
+              ajoutObjet(obj);
+      end;
   case ennemi.stats.typeIA_MVT of
     0: if(ennemi.stats.compteurAction mod 100 = 50) then
       begin
@@ -329,7 +335,7 @@ begin
       end;
     2: if (ennemi.anim.currentFrame=4) and (ennemi.anim.etat='cast') then
       multiProjs(typeObjet(1),1,1,1,ennemi.image.rect.x+96,ennemi.image.rect.y+96,100,100,3,10,360,0,ennemi.stats.nomAttaque);
-    3: if (ennemi.anim.etat='dash') and (ennemi.stats.compteurAction>50) and (ennemi.stats.compteurAction mod 45=0) then
+    3: if (ennemi.anim.etat='dash') and (ennemi.stats.compteurAction>50) and (ennemi.stats.compteurAction mod 45=0) and (ennemi.anim.objectName='undrixel') then
       begin
       //multiLasers(TypeObjet(1),1,1,1,ennemi.image.rect.x+50,ennemi.image.rect.y+50,0,10,360,0,10,80,'rayon');
       multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+64,ennemi.image.rect.y+64,100,100,5,4,360,(ennemi.stats.xcible-ennemi.image.rect.x),ennemi.stats.nomAttaque);
@@ -369,16 +375,17 @@ begin
         creerBoule(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,ennemi.image.rect.x+96+random(192),ennemi.image.rect.y+64+random(128),200,100,4,x,y,ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj)
         end;
-    8:if (ennemi.anim.etat='cast') and (random(6)=1) then
+    8:if (ennemi.anim.etat='cast') then
       if (ennemi.anim.objectName='mage_rouge') then
         begin
-        if (ennemi.anim.currentFrame>6) then
+          if (ennemi.stats.compteurAction mod 50 = 0) then
           begin
           CreerRayon(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,getCenterX(ennemi)+60,getCenterY(ennemi),1000,200,x-100+random(20)*10,y,0,10,50,ennemi.stats.nomAttaque,obj);
           ajoutObjet(obj);
           end
         end
       else
+        if (ennemi.stats.compteurAction <320) and (ennemi.stats.compteurAction mod 4 = 0) then
         begin
         creerBoule(typeobjet(1),0,ennemi.stats.force,ennemi.stats.multiplicateurDegat,getCenterX(ennemi),getCenterY(ennemi),60,60,3,x-128+random(64)*4,y-128+random(64)*4,ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj)
@@ -441,7 +448,7 @@ begin
 end;
 
 procedure DeplacementEnnemi(var ennemi:TObjet;joueur:TObjet); //déplace un ennemi 
-var i,alea:Integer;rect1,rect2:TSDL_REct;trouve:Boolean;
+var i:Integer;rect1,rect2:TSDL_REct;trouve:Boolean;
 begin
 
   case ennemi.stats.typeIA_MVT of
@@ -500,7 +507,7 @@ begin
         if (ennemi.anim.etat='chase') then
           begin
           //ennemi.anim.isFliped:=(joueur.image.rect.x>ennemi.image.rect.x);
-          AIPathFollow(ennemi,joueur,ennemi.stats.vitessePoursuite,true,true);
+          AIPathFollow(ennemi,joueur,ennemi.stats.vitessePoursuite,false,true);
           if abs((joueur.image.rect.y+64)-(ennemi.image.rect.y+(ennemi.col.dimensions.h div 2)))<50 then
             begin
             dashInit(ennemi);
@@ -515,7 +522,7 @@ begin
         if (ennemi.anim.etat='dash') then
           begin
           moveToTarget(ennemi,10);
-          if ennemi.stats.compteurAction>100 then
+          if (ennemi.stats.compteurAction>100) and (ennemi.anim.objectName='undrixel') then
             begin
             initAnimation(ennemi.anim,ennemi.anim.objectName,'superdash',2,true);
             ennemi.col.estActif:=False
@@ -815,7 +822,7 @@ begin
     end;
   if (ennemi.anim.etat='apparition') and (ennemi.anim.objectName='Béhémoth') and (ennemi.stats.compteurAction=0) then
     begin
-	    InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',0,-100,windowWidth,400,extractionTexte('DIALOGUE_BOSS_1'),100);
+	    InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',0,0,windowWidth,400,extractionTexte('DIALOGUE_BOSS_1'),100);
       sceneActive:='Cutscene';
       ennemi.stats.compteurAction:=1;
     end;
@@ -853,7 +860,7 @@ begin
           begin
           x:=ennemi.image.rect.x;
           y:=ennemi.image.rect.y;
-          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portrait_Leo7.bmp',0,-100,windowWidth,400,extractionTexte('DIALOGUE_EVENT_BOSS_2'),100);
+          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portrait_Leo7.bmp',0,0,windowWidth,400,extractionTexte('DIALOGUE_EVENT_BOSS_2'),100);
           sceneActive:='Cutscene';
           ennemi:=templatesEnnemis[21];
           ennemi.image.rect.x:=x;
@@ -875,8 +882,9 @@ begin
       else
         if (ennemi.anim.etat<>'mortRep') and (ennemi.anim.etat<>'mort') then
           begin
+          statsJoueur.bestiaire[ennemi.stats.numero]:=True;
           initAnimation(ennemi.anim,ennemi.anim.objectName,'mortRep',ennemi.stats.nbframes3,True);
-          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',0,-100,windowWidth,400,extractionTexte('DIALOGUE_BOSS_2'),100);
+          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',0,0,windowWidth,400,extractionTexte('DIALOGUE_BOSS_2'),100);
           sceneActive:='Behemoth_Mort';
           end;
     end
@@ -885,30 +893,38 @@ end;
 begin
 // !!format : numéro dans TemplatesEnnemis, nom,mvt,vie,att,dmg,def,vit,w,h,nbFrames(apparition,chase,action1,action2,mort),collisions(w,h,offsetX,offsetY),nom de l'attaque
 //(mvt: type de mouvement, dmg: dégâts au contact)
-initStatEnnemi(1,'undrixel',3,50,5,2,0,1,288,192,4,10,4,0,10,200,128,10,40,'eclairR');
+
+//***le numéro peut être changé selon la convénience, sans répercussions importantes
+initStatEnnemi(1,'chaos',12,60,1,3,5,2,200,200,9,11,6,0,6,100,200,50,0,'rayonAbysse');
 initStatEnnemi(2,'Archimage',4,100,2,0,6,0,128,128,10,6,6,6,4,70,100,24,14,'projectile');
 initStatEnnemi(3,'liche',5,50,2,0,4,1,128,128,9,6,5,16,10,70,110,19,7,'rayonMort');
 initStatEnnemi(4,'chevalier',5,10,10,0,1,3,90,90,5,6,3,10,5,54,90,5,0,'rayonAbysse');
 initStatEnnemi(5,'expurgateur',6,20,3,1,1,0,128,128,13,12,0,0,7,128,104,0,24,'eclairR');
-initStatEnnemi(6,'altegh',1,50,2,0,4,3,192,192,3,6,4,0,14,160,96,16,96,'rayonAL');
+initStatEnnemi(6,'grenouille',8,20,1,0,2,0,90,90,7,6,4,4,7,54,90,5,0,'boule');
 initStatEnnemi(7,'Akr',4,150,2,0,-20,1,384,256,14,9,9,8,16,200,96,80,150,'kamui');
 initStatEnnemi(8,'UNKNOWN',4,150,2,0,-20,0,128,128,8,12,8,4,8,64,114,32,14,'Roue');
 initStatEnnemi(9,'armure',7,400,0,0,10,0,384,256,7,2,13,9,16,192,192,96,64,'justice');
-initStatEnnemi(10,'dracomage',2,100,2,5,6,1,192,192,34,12,8,8,26,128,164,32,28,'eclairR');
-initStatEnnemi(11,'grenouille',8,20,1,0,2,0,90,90,7,6,4,4,7,54,90,5,0,'boule');
-initStatEnnemi(12,'Béhémoth',10,15000,20,10,10,5,463,614,12,32,40,12,39,400,307,63,307,'rayonRykor');
+initStatEnnemi(10,'undrixel',3,50,5,2,0,1,288,192,4,10,4,0,10,200,128,10,40,'eclairR');
+initStatEnnemi(11,'altegh',1,50,2,0,4,3,192,192,3,6,4,0,14,160,96,16,96,'rayonAL');
+InitstatEnnemi(12,'Leo',13,150,8,2,5,0,300,300,14,8,7,10,8,100,150,100,150,'eclairL');
 initStatEnnemi(13,'elementaire_astral',4,20,2,0,1,1,100,100,9,12,5,6,7,80,80,10,10,'etoile');
 initStatEnnemi(14,'elementaire_temps',0,20,2,5,1,1,100,100,18,12,0,0,6,80,80,10,10,'');
 initStatEnnemi(15,'slime',8,10,1,0,0,0,90,90,6,8,3,4,4,90,45,5,40,'boule');
 InitstatEnnemi(16,'vestige',11,1000,3,0,5,1,400,400,10,16,0,0,7,250,400,75,0,'geyser_lumiere');
 initStatEnnemi(17,'livre',12,20,1,0,2,1,180,90,7,12,4,0,12,60,90,60,0,'eclair');
 initStatEnnemi(18,'feu_follet',6,20,3,1,1,0,100,100,7,9,0,0,6,70,70,15,15,'flamme');
-initStatEnnemi(19,'chaos',12,60,1,3,5,2,200,200,9,11,6,0,6,100,200,50,0,'rayonAbysse');
-InitstatEnnemi(20,'Leo',13,150,8,2,5,0,300,300,14,8,7,10,8,100,150,100,150,'eclairL');
+initStatEnnemi(19,'dracomage',2,100,2,5,6,1,192,192,34,12,8,8,26,128,164,32,28,'eclairR');
+initStatEnnemi(20,'Béhémoth',10,15000,20,10,10,5,463,614,12,32,40,12,39,400,307,63,307,'rayonRykor');
 InitstatEnnemi(21,'Leo_Transe',14,150,20,5,2,1,300,300,13,16,6,22,10,200,250,50,25,'geyser_feu');
-initStatEnnemi(22,'mage_blanc',15,40,10,0,0,1,100,120,18,12,3,5,14,60,90,20,30,'rayon');
+initStatEnnemi(22,'mage_blanc',15,40,2,0,0,1,100,120,18,12,3,5,14,60,90,20,30,'rayon');
 initStatEnnemi(23,'elementaire_spectral',4,20,2,0,0,0,100,100,8,7,13,13,8,80,80,10,10,'rayon_spectral');
 initStatEnnemi(24,'mage_rouge',8,50,2,0,2,0,100,200,11,6,4,9,5,60,90,20,110,'rayon_rouge');
+initStatEnnemi(25,'main',3,50,0,5,0,1,150,150,8,16,8,0,15,150,150,0,0,'');
+initStatEnnemi(26,'elementaire_lumiere',1,50,2,0,4,3,300,300,12,11,6,0,8,60,60,120,120,'rayon');
+initStatEnnemi(27,'elementaire_ombre',1,50,2,0,4,3,300,300,11,12,9,0,10,60,60,120,120,'rayon_spectral');
+initStatEnnemi(28,'elementaire_tempete',3,50,0,5,0,2,150,150,10,8,4,0,10,100,150,25,0,'');
+initStatEnnemi(29,'elementaire_eclipse',1,250,2,0,4,3,400,400,19,12,7,0,9,60,60,160,160,'eclipse');
+
 
 
 end.

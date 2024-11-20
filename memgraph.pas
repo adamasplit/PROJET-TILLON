@@ -56,6 +56,8 @@ type
     LastUpdateTime: UInt32;       
     LetterDelay: UInt32;            // Délai entre l'affichage de chaque lettre C UN PUTAIN DE UINT32 MA GUEULE
     portrait:TImage;
+    font:PTTF_Font;
+    fontsize:Integer;
     Complete: Boolean;              
   end;
   
@@ -64,7 +66,7 @@ var
   FantasyFontDirectory : PChar;
   Fantasy40 : PTTF_Font;
   Fantasy30 : PTTF_Font;
-  dayDream20 : PTTF_Font;
+  Fantasy20 : PTTF_Font;
   black_color: TSDL_Color;
   sdlWindow1 : PSDL_Window;
   sdlRenderer : PSDL_Renderer;
@@ -92,7 +94,8 @@ procedure CreateInteractableImage(var image : TIntImage; x, y, w, h: Integer; di
 procedure RenderIntImage(var image : TIntImage);
 procedure HandleImageClick(var image: TIntImage; x, y: Integer);
 
-procedure InitDialogueBox(var Box: TDialogueBox; ImgPath,portraitPath: PChar; X, Y, W, H: Integer; const DialogueText: string; Delay: UInt32);
+procedure InitDialogueBox(var Box: TDialogueBox; ImgPath,portraitPath: PChar; X, Y, W, H: Integer; const DialogueText: string; Delay: UInt32);overload;
+procedure InitDialogueBox(var Box: TDialogueBox; ImgPath,portraitPath: PChar; X, Y, W, H: Integer; const DialogueText: string; Delay: UInt32;font:PTTF_Font;fontsize:Integer);overload;
 procedure UpdateDialogueBox(var Box: TDialogueBox);
 procedure RenderDialogueText(var Box: TDialogueBox);
 
@@ -345,7 +348,7 @@ StringToPChar := StrAlloc(Length(s)+1);
 StrPCopy(StringToPChar, s);
 end;
 
-function WidthBasedLineLength(Font: PTTF_Font; const Text: string;width:Integer): Integer;
+function WidthBasedLineLength(Font: PTTF_Font;size:Integer; const Text: string;width:Integer): Integer;
 var
   LineWidth, i: Integer;
   TempText: string;
@@ -356,16 +359,16 @@ begin
   begin
     LineWidth:= Length(TempText);
     TempText := TempText + Text[i];
-    if (LineWidth >= width div 25) and (text[i]=' ')  then
+    if (LineWidth >= width*30 div (size*25)) and (text[i]=' ')  then
       Exit(i - 1);
   end;
   WidthBasedLineLength := Length(Text);
 end;
-function ExtractNextLine(var Text: string;width:Integer): string;
+function ExtractNextLine(var Text: string;width:Integer;font:PTTF_Font;size:Integer): string;
 var
   LineEnd: Integer;
 begin
-  LineEnd := Min(WidthBasedLineLength(Fantasy30, Text,width), Length(Text));
+  LineEnd := Min(WidthBasedLineLength(font,size, Text,width), Length(Text));
   ExtractNextLine := Copy(Text, 1, LineEnd);
   Delete(Text, 1, LineEnd);
 end;
@@ -379,7 +382,7 @@ begin
     if Box.RemainingText = '' then
       Box.Lines[i] := ''
     else
-      Box.Lines[i] := ExtractNextLine(Box.RemainingText,box.w);
+      Box.Lines[i] := ExtractNextLine(Box.RemainingText,box.w,box.font,box.fontsize);
   end;
 end;
 
@@ -397,8 +400,32 @@ begin
   Box.RemainingText := DialogueText;
   Box.DisplayedLetters := 0;
   Box.CurrentLine := 1;
+  Box.Font:=Fantasy30;
+  Box.FontSize:=30;
   Box.LastUpdateTime := SDL_GetTicks();
   Box.LetterDelay := Delay;
+  Box.Complete := False;
+
+  // Charger les premières lignes
+  FillDialogueLines(Box);
+end;
+
+procedure InitDialogueBox(var Box: TDialogueBox; ImgPath,portraitPath: PChar; X, Y, W, H: Integer; const DialogueText: string; Delay: UInt32;font:PTTF_Font;fontsize:Integer);
+begin
+  sdl_destroytexture(box.BackgroundImage.imgtexture);
+  sdl_destroytexture(box.portrait.imgtexture);
+  
+  if ImgPath <> nil then CreateRawImage(Box.BackgroundImage, X, Y, W, H, ImgPath) else begin Box.BackgroundImage.rect.x := X; Box.BackgroundImage.rect.y := Y end;
+  if portraitPath <> nil then CreateRawImage(Box.portrait, X, Y, W div 4, W div 4, portraitPath);
+  
+  box.w:=W;
+  Box.RemainingText := DialogueText;
+  Box.DisplayedLetters := 0;
+  Box.CurrentLine := 1;
+  Box.LastUpdateTime := SDL_GetTicks();
+  Box.LetterDelay := Delay;
+  Box.Font:=Font;
+  box.fontsize:=fontsize;
   Box.Complete := False;
 
   // Charger les premières lignes
@@ -426,14 +453,6 @@ begin
   TimeDiff := CurrentTime - Box.LastUpdateTime;
   delay:=box.letterdelay;
   test:=timediff>box.letterdelay;
-  {WriteLn('CurrentLine: ', Box.CurrentLine);
-  WriteLn('DisplayedLetters: ', Box.DisplayedLetters);
-  WriteLn('Lines[CurrentLine]: ', Box.Lines[Box.CurrentLine]);
-  WriteLn('LetterDelay: ', Box.LetterDelay);
-  WriteLn('LastUpdateTime: ', Box.LastUpdateTime);
-  WriteLn('TimeDiff: ', TimeDiff);
-  writeln('timediff>box.letterdelay:',timediff>box.letterdelay);
-  writeln(box.displayedLetters,'<',length(box.lines[box.currentline]),':',(Box.DisplayedLetters < Length(Box.Lines[Box.CurrentLine])));}
 
   if (Box.DisplayedLetters < Length(Box.Lines[Box.CurrentLine])) then
   begin
@@ -451,13 +470,13 @@ begin
   if box.displayedLetters<>0 then RenderDialogueText(Box);
 end;
 
-procedure RenderTextLine(const Text: string; x, y,offsetX,offsetY: Integer);
+procedure RenderTextLine(const Text: string; x, y,offsetX,offsetY: Integer;Font:PTTF_Font);
 var
   Surface: PSDL_Surface;
   Texture: PSDL_Texture;
   Rect: TSDL_Rect;
 begin
-  Surface := TTF_RenderUTF8_Blended(Fantasy30, StringToPChar(Text), black_color);
+  Surface := TTF_RenderUTF8_Blended(font, StringToPChar(Text), black_color);
   Texture := SDL_CreateTextureFromSurface(sdlRenderer, Surface);
   Rect.x :=x+offsetX;
   Rect.y := y+offsetY;
@@ -481,9 +500,9 @@ begin
       DisplayedText := Box.Lines[i];
 
     if box.portrait.imgTexture<>nil then
-      RenderTextLine(DisplayedText, Box.BackgroundImage.rect.x, Box.BackgroundImage.rect.y + (i - 1) * 40,250,60)
+      RenderTextLine(DisplayedText, Box.BackgroundImage.rect.x, Box.BackgroundImage.rect.y + (i - 1) * 40,250,60,box.font)
     else
-      RenderTextLine(DisplayedText, Box.BackgroundImage.rect.x, Box.BackgroundImage.rect.y + (i - 1) * 40,100,60);
+      RenderTextLine(DisplayedText, Box.BackgroundImage.rect.x, Box.BackgroundImage.rect.y + (i - 1) * 40,100,60,box.font);
   end;
 
   if (Box.Lines[Box.CurrentLine+1] <> '') and (Box.DisplayedLetters = Length(Box.Lines[Box.CurrentLine])) and (Box.CurrentLine < 7) then
@@ -530,8 +549,8 @@ BEGIN
   if Fantasy40 = nil then HALT;
   Fantasy30 := TTF_OpenFont(FantasyFontDirectory, 30);
   if Fantasy30 = nil then HALT;
-  dayDream20 := TTF_OpenFont(FantasyFontDirectory, 20);
-  if dayDream20 = nil then HALT;
+  Fantasy20 := TTF_OpenFont(FantasyFontDirectory, 20);
+  if Fantasy20 = nil then HALT;
 
   // activation de l'opacité
   SDL_SetRenderDrawBlendMode(sdlRenderer, SDL_BLENDMODE_BLEND);

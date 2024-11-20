@@ -54,7 +54,9 @@ end;
 procedure InitDecor;
 begin
     randomize;
-    CreateRawImage(combat_bg,88,-80,900,900,StringToPChar('Sprites/Game/floor/Floor'+ IntToStr(Random(4)+1) +'.bmp'));
+	sdl_freesurface(fond.imgSurface);
+	sdl_destroytexture(fond.imgTexture);
+    CreateRawImage(fond,88,-80,900,900,StringToPChar('Sprites/Game/floor/Floor'+ IntToStr(Random(4)+1) +'.bmp'));
 end;
 
 procedure InitDialogues;
@@ -93,7 +95,11 @@ var i:Integer;
 				if LObjets[i].stats.genre=TypeObjet(1) then
 					begin
 					vagueFinie:=False;
+					if not (LObjets[i].anim.etat='dodge') then
+						LObjets[i].col.estActif:=True;
 					IAEnnemi(LObjets[i],LObjets[0]);
+
+
 					end;
 			end;
 		if vagueFinie then ajoutVague;
@@ -107,8 +113,8 @@ procedure ActualiserMenuEnJeu;
 		RenderRawImage(menuBook,False);
 		if (animFinie(menuBookAnim)) and (sceneActive='MenuEnJeu') then
 			begin
-			RenderButtonGroup(button_deck);
-			RenderButtonGroup(button_bestiaire);
+			RenderButtonGroup(boutons[8]);
+			RenderButtonGroup(boutons[9]);
 			end;
 	end;
 
@@ -200,6 +206,10 @@ begin
 		begin
 		actualiserMarchand;
 		end;
+		'MenuShop':
+		begin
+		actualiserEchange;
+		end;
 		'NouvellePartieIntro': NouvellePartieIntro;
 		'victoire':
 			begin
@@ -215,7 +225,7 @@ begin
 		if LObjets[1].anim.objectName<>'Leo_Transe' then
 		updateanimation(LObjets[1].anim,LObjets[1].image);
 		
-		combat_bg.rect.x:=88-4+random(9);
+		fond.rect.x:=88-4+random(9);
 		while (SDL_PollEvent( EventSystem ) = 1) do
     		begin
       			case EventSystem^.type_ of
@@ -235,7 +245,7 @@ begin
 		updateanimation(LObjets[1].anim,LObjets[1].image);
 		if sdl_getTicks mod 1 = 0 then 
 			begin
-			combat_bg.rect.x:=88+random(9);
+			fond.rect.x:=88+random(9);
 			end;
 		while (SDL_PollEvent( EventSystem ) = 1) do
     		begin
@@ -273,6 +283,8 @@ begin
 						LObjets[0].stats.force:=LObjets[0].stats.force+1;
 						end;
 					SDLK_F3:modeDebug:=not(modeDebug);
+					SDLK_F4:for i:=1 to MAXENNEMIS do
+						statsJoueur.bestiaire[i]:=True;
         		end;
       		end;
 			
@@ -298,6 +310,19 @@ begin
 					begin
 					OnMouseClick(btnCartes[i], EventSystem^.motion.x, EventSystem^.motion.y);
 					HandleButtonClickCarte(btnCartes[i], EventSystem^.motion.x, EventSystem^.motion.y,btnCartes[i].carte,statsJoueur);
+					end;
+				'marchand':for i:=1 to 3 do
+					begin
+					OnMouseClick(boutons[i], EventSystem^.motion.x, EventSystem^.motion.y);
+					HandleButtonClick(boutons[i].button, EventSystem^.motion.x, EventSystem^.motion.y);
+					end;
+				'MenuShop':begin
+					highlight(boutons[2],getmousex,getmousey);
+					for i:=1 to 4 do
+					begin
+					OnMouseClick(boutons[i], EventSystem^.motion.x, EventSystem^.motion.y);
+					HandleButtonClick(boutons[i].button, EventSystem^.motion.x, EventSystem^.motion.y);
+					end;
 					end;
 				end;
    				if button_continue.button.estVisible then
@@ -328,14 +353,12 @@ begin
 				HandleButtonClick(button_retour_menu.button,EventSystem^.motion.x,EventSystem^.motion.y);
 				//continue;
 				end;
-				if button_deck.button.estVisible then
+				if sceneActive='MenuEnJeu' then
 				begin
-				HandleButtonClick(button_deck.button,EventSystem^.motion.x,EventSystem^.motion.y);
-				//continue;
-				end;
-				if button_bestiaire.button.estVisible then
-				begin
-				HandleButtonClick(button_bestiaire.button,EventSystem^.motion.x,EventSystem^.motion.y);
+				if boutons[8].button.estVisible then
+					HandleButtonClick(boutons[8].button,EventSystem^.motion.x,EventSystem^.motion.y);
+				if boutons[9].button.estVisible then
+					HandleButtonClick(boutons[9].button,EventSystem^.motion.x,EventSystem^.motion.y);
 				end;
 				end;
 			SDL_MOUSEWHEEL:begin
@@ -344,13 +367,18 @@ begin
   					if EventSystem^.wheel.y < 0 then icarteChoisie:=(isuiv(iCarteChoisie))
   					else icarteChoisie:=(iprec(iCarteChoisie));
 					end;
-				if sceneActive='Deck' then
+				if (sceneActive='Deck') then
 					begin
-					scrollDeck;
+					scrollDeck(ideck);
 					end;
 				if sceneActive='Bestiaire' then
 					begin
 					scrollBestiaire;
+					end;
+				if sceneActive='MenuShop' then
+					begin
+					if not etatChoix then scrolldeck(iChoix1)
+					else scrollDeck(iChoix2)
 					end;
 				end;
 			end;

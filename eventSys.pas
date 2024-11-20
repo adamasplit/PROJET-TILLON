@@ -7,9 +7,8 @@ uses
   math,
   memgraph,
   SDL2;
-        
-var Boutons:array[1..20] of TButton;
-CombatUI:Array[1..15] of TImage;
+
+var CombatUI:Array[1..15] of TImage;
 	sdlKeyboardState: PUInt8;
   lastMouseX,lastMouseY:Integer;
 EventSystem:PSDL_Event;

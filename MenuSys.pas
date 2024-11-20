@@ -18,13 +18,13 @@ uses
 	sysutils;
 
 //Image
-	var combat_bg,menuBook,bgImage,characterImage,cardsImage : TImage;
+	var fond,menuBook,bgImage,characterImage,cardsImage : TImage;
 	menuBookAnim : TAnimation;
 
+var iEnn,ideckprec:Integer;carteDeck,ennAff:TImage;
+
 procedure AfficherTout();
-
 procedure victoire(var statsJ:TStats);
-
 procedure RenderParallaxMenu(bgImage,characterImage,cardsImage : TImage);
 procedure InitLeaderboard;
 procedure ParallaxMenuInit;
@@ -40,13 +40,12 @@ procedure NouvellePartieIntro;
 procedure menuEnJeu;
 function NextOrSkipDialogue(i : Integer) : Boolean;
 procedure actualiserDeck();
-procedure scrollDeck();
 procedure actualiserBestiaire();
 procedure scrollBestiaire();
 
 implementation
 
-var iDeck,iEnn:Integer;carteDeck:TImage;ennAff:TObjet;
+
 
 function NextOrSkipDialogue(i : Integer) : Boolean;
 begin
@@ -67,8 +66,8 @@ procedure menuEnJeu;
 			scenePrec:=sceneActive;
 			SceneActive := 'MenuEnJeu';
 
-			button_deck.button.estVisible :=True;
-			button_bestiaire.button.estVisible := True;
+			boutons[8].button.estVisible :=True;
+			boutons[9].button.estVisible := True;
 			jouerSon('SFX\Pausemenu_appear.wav');
 			DrawRect(black_color,50, 0, 0, windowWidth,windowHeight);
 			InitAnimation(menuBookAnim,'Book','Opening',5,False);
@@ -100,8 +99,8 @@ procedure jouer;
 		button_new_game.button.estVisible := false;
 		button_retour_menu.button.estVisible :=false;
 		
-		button_deck.button.estVisible := False;
-		button_bestiaire.button.estVisible := False;
+		boutons[8].button.estVisible := False;
+		boutons[9].button.estVisible := False;
 
         //Objets de Scene
 		//ActualiserJeu;
@@ -299,7 +298,7 @@ procedure reactualiserDeck();
 begin
 	writeln(ideck);
 	createRawImage(carteDeck,200,200,300,300,statsJoueur.collection[iDeck].dir);
-	initDialogueBox(dialogues[1],nil,nil,460,120,350,600,extractionTexte('DESC_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),0);
+	initDialogueBox(dialogues[1],nil,nil,460,120,380,600,extractionTexte('DESC_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),0,Fantasy20,20);
 	initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),0);
 end;
 
@@ -309,45 +308,32 @@ begin
 	writeln('ouverture du deck');
 	sceneActive:='Deck';
 	iDeck:=1;
+	iDeckPrec:=1;
 	reactualiserDeck;
 end;
 
 procedure actualiserDeck();
 
 begin
+	if iDeck<>iDeckPrec then 
+		begin
+		sdl_destroytexture(carteDeck.imgTexture);
+		sdl_freeSurface(carteDeck.imgSurface);
+		reactualiserDeck;
+		iDeckPrec:=iDeck;
+		end;
+	
 	renderRawImage(carteDeck,False);
 	UpdateDialogueBox(dialogues[1]);
 	UpdateDialogueBox(dialogues[2]);
 end;
 
-procedure scrollDeck();
 
-begin
-	if EventSystem^.wheel.y<0 then
-		if iDeck>=statsJoueur.tailleCollection-1 then
-			iDeck:=1
-		else
-			iDeck:=iDeck+1
-	else
-		if iDeck<=2 then
-			iDeck:=statsJoueur.tailleCollection
-		else
-			iDeck:=iDeck-1;
-	sdl_destroytexture(carteDeck.imgTexture);
-	sdl_freeSurface(carteDeck.imgSurface);
-	reactualiserDeck;
-end;
 
 procedure reactualiserBestiaire();
-var prop:Real;
 begin
-	ennAff:=templatesEnnemis[Ienn];
-	prop:=ennAff.image.rect.h/ennAff.image.rect.w;
-	ennAff.image.rect.x:=150;
-	ennAff.image.rect.y:=200;
-	ennAff.image.rect.w:=300;
-	ennAff.image.rect.h:=round(ennaff.image.rect.w*prop);
-	initDialogueBox(dialogues[1],nil,nil,460,120,350,600,extractionTexte('DESC_ENN_'+intToStr(ienn)),0);
+	createRawImage(ennAff,200,200,300,300,StringToPChar('Sprites/Bestiaire/illustrations_bestiaire_'+intToStr(ienn)+'.bmp'));
+	initDialogueBox(dialogues[1],nil,nil,460,120,380,600,extractionTexte('DESC_ENN_'+intToStr(ienn)),0,Fantasy20,20);
 	initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_ENN_'+intToStr(ienn)),0);
 end;
 
@@ -363,12 +349,9 @@ end;
 procedure actualiserBestiaire();
 
 begin
-	renderRawImage(ennAff.image,False);
 	UpdateDialogueBox(dialogues[1]);
 	UpdateDialogueBox(dialogues[2]);
-	updateAnimation(ennAff.anim,ennAff.image);
-	if animFinie(ennAff.anim) and (ennAff.anim.etat='apparition') then
-		initAnimation(ennAff.anim,ennAff.anim.objectName,'chase',ennAff.stats.nbFrames1,True);
+	renderRawImage(ennAff,False);
 end;
 
 procedure scrollBestiaire();
@@ -383,10 +366,10 @@ begin
 		until statsJoueur.bestiaire[iEnn]
 	else
 		repeat
-			if iEnn>=MAXENNEMIS then
-				iEnn:=1
+			if iEnn<=1 then
+				iEnn:=MAXENNEMIS
 			else
-				iEnn:=iEnn+1
+				iEnn:=iEnn-1
 		until statsJoueur.bestiaire[iEnn];
 	reactualiserBestiaire;
 end;
@@ -394,26 +377,23 @@ end;
 procedure InitMenuEnJeu;
 begin
   //Menu en Jeu
-	InitButtonGroup(button_deck, 975, 275, 70, 30,nil,'Deck',btnProc);
-	InitButtonGroup(button_bestiaire, 650, 390, 240, 40,nil,'Bestiaire',btnProc);
-	
-	CreateButton(button_deck, 210, 320, 240, 50,'Deck',b_color, bf_color,Fantasy30,@ouvrirDeck);
-	CreateButton(button_bestiaire, 210, 390, 240, 50,'Bestiaire',b_color, bf_color,Fantasy30,@ouvrirBestiaire);
+	InitButtonGroup(boutons[8], 210, 320, 240, 50,nil,'Deck',@ouvrirDeck);
+	InitButtonGroup(boutons[9], 210, 390, 240, 50,nil,'Bestiaire',@ouvrirBestiaire);
 end;
 
 procedure InitLeaderboard;
 begin
     CreateText(titre_lead, windowWidth div 2-210, 90, 300, 250, 'Leaderboard',Fantasy40, navy_color);
-	CreateText(text_score_seize, 40, 200, 150, 125, '1> Score  :',dayDream20, bf_color);
-	CreateText(text_nom_seize, 40, 225, 250, 125, 'Nom partie :',dayDream20, bf_color);
-	CreateText(text_score_trente, 40, 275, 150, 125, '2> Score :',dayDream20, bf_color);
-	CreateText(text_nom_trente, 40, 300, 150, 125,'Nom partie :',dayDream20, bf_color);
-	CreateText(text_n3, 40, 350, 150, 125, '3> Score :',dayDream20, bf_color);
-	CreateText(text_s3, 40, 375, 150, 125, 'Nom partie :',dayDream20, bf_color);
-	CreateText(text_n4, 40, 425, 150, 125, '4> Score :',dayDream20, bf_color);
-	CreateText(text_s4, 40, 450, 150, 125, 'Nom partie :',dayDream20, bf_color);
-	CreateText(text_n5, 40, 500, 150, 125, '5> Score :',dayDream20, bf_color);
-	CreateText(text_s5, 40, 525, 150, 125, 'Arrive prochainement !',dayDream20, bf_color);
+	CreateText(text_score_seize, 40, 200, 150, 125, '1> Score  :',Fantasy20, bf_color);
+	CreateText(text_nom_seize, 40, 225, 250, 125, 'Nom partie :',Fantasy20, bf_color);
+	CreateText(text_score_trente, 40, 275, 150, 125, '2> Score :',Fantasy20, bf_color);
+	CreateText(text_nom_trente, 40, 300, 150, 125,'Nom partie :',Fantasy20, bf_color);
+	CreateText(text_n3, 40, 350, 150, 125, '3> Score :',Fantasy20, bf_color);
+	CreateText(text_s3, 40, 375, 150, 125, 'Nom partie :',Fantasy20, bf_color);
+	CreateText(text_n4, 40, 425, 150, 125, '4> Score :',Fantasy20, bf_color);
+	CreateText(text_s4, 40, 450, 150, 125, 'Nom partie :',Fantasy20, bf_color);
+	CreateText(text_n5, 40, 500, 150, 125, '5> Score :',Fantasy20, bf_color);
+	CreateText(text_s5, 40, 525, 150, 125, 'Arrive prochainement !',Fantasy20, bf_color);
 	InitButtonGroup(button_retour_menu, 850, 625, 200, 75,'Sprites\Menu\Button1.bmp','Menu',retour_menu);
 end;
 
@@ -422,7 +402,7 @@ var i : Integer;
 begin
 	if scenePrec='Jeu' then
 		begin
-		renderRawImage(combat_bg,255,False);
+		renderRawImage(fond,255,False);
 		if LObjets[0].stats.pendu then
 				if LObjets[0].anim.isFliped then
 					SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
@@ -465,7 +445,7 @@ end;
 procedure victoire(var statsJ:TStats); //censé contenir le choix+obtention d'une carte après un combat (voire d'une relique, pour plus tard)
 var i:Integer;
 begin
-	indiceMusiqueJouee:=indiceMusiqueJouee+11;
+	if indiceMusiqueJouee<>11 then indiceMusiqueJouee:=indiceMusiqueJouee+11;
     sceneActive:='victoire';
     for i:=1 to 3 do
         begin

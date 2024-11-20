@@ -373,9 +373,10 @@ begin
     if collisionAngle(obj1,obj2) then
       begin
       supprimeObjet(obj2);
-      supprimeObjet(obj1);
+      creerEffet(obj1.image.rect.x,obj1.image.rect.y,100,100,5,'roue_impact',False,obj1);
       end;
 end;
+
 // Met à jour les collisions entre tous les objets actifs
 procedure UpdateCollisions();
 var
@@ -406,8 +407,10 @@ begin
           if (LObjets[j].col.estActif) and collisionValide(LObjets[i].stats,LObjets[j].stats) then
           begin
             // Vérifier les collisions entre obj[i] et obj[j]
-            if pseudoColMurs(LObjets[i]) then //si un objet est dans un mur, il a alors la 'priorité' pour le repoussement
+            if pseudoColMurs(LObjets[i]) and not pseudoColMurs(LObjets[j]) then //si un objet est dans un mur, il a alors la 'priorité' pour le repoussement
+              begin
               CheckCollision(LObjets[j], LObjets[i])
+              end
             else
               CheckCollision(LObjets[i], LObjets[j]);
         end;
