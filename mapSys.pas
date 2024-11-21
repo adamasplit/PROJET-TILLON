@@ -16,6 +16,8 @@ var imgs0,imgs1,imgs2,imgs3:TButtonGroup;
 var salleChoisie:TSalle;
 var iDeck,iChoix1,iChoix2:Integer;
 var etatChoix:Boolean;
+echangeFait:Boolean;
+
 CONST 
 windowHeight=720;windowWidth=1080;
       Y1=(windowHeight div 2)+(windowHeight div 4)-64;           
@@ -36,10 +38,11 @@ procedure LancementSalleBoss;
 procedure LancementSalleMarchand;
 procedure LancementSalleCamp;
 procedure scrollDeck(var i:Integer);
+procedure HandleButtonClickEch(var button: TButtonGroup; x, y: Integer;carte1,carte2:TCarte;var stats:TStats);
 function Highlight(var btnGroup: TButtonGroup; x, y: Integer):Boolean;
 implementation
 
-var entree,echangeFait:Boolean;
+var entree:Boolean;
 var imgCar1,imgCar2:TImage;
 
 procedure generationChoix(var salle1,salle2,salle3:TSalle);
@@ -153,16 +156,205 @@ begin
     writeln('ennemis choisis (boss)')
 end;
 
-procedure annuler();
+procedure ajouterCarteAleatoireRarete(rarete : Trarete ; var stats : Tstats);
+var rdm : integer;
 begin
+    randomize;
+    case rarete of 
+    commune :  
+    begin
+        rdm := 1 + random(6);
 
+        case rdm of
+        1: ajouterCarte(stats , 1);
+        2: ajouterCarte(stats , 2);
+        3: ajouterCarte(stats , 3);
+        4: ajouterCarte(stats , 4);
+        5: ajouterCarte(stats , 5);
+        6: ajouterCarte(stats , 10);
+        end;
+    end;
+
+    rare :
+    begin
+         rdm := 1 + random(7);
+
+        case rdm of
+        1: ajouterCarte(stats , 6);
+        2: ajouterCarte(stats , 7);
+        3: ajouterCarte(stats , 8);
+        4: ajouterCarte(stats ,9);
+        5: ajouterCarte(stats , 11);
+        6: ajouterCarte(stats , 16);
+        7: ajouterCarte(stats , 19);
+        end;
+    end;
+
+    epique :
+    begin
+         rdm := 1 + random(6);
+
+        case rdm of
+        1: ajouterCarte(stats , 12);
+        2: ajouterCarte(stats , 14);
+        3: ajouterCarte(stats , 17);
+        4: ajouterCarte(stats , 18);
+        5: ajouterCarte(stats , 20);
+        6: ajouterCarte(stats , 22);
+        end;
+    
+    end;
+
+    legendaire :
+    begin
+         rdm := 1 + random(3);
+
+        case rdm of
+        1: ajouterCarte(stats , 13);
+        2: ajouterCarte(stats , 15);
+        3: ajouterCarte(stats , 21);
+        end;
+    end;
+    end;
+end;
+
+
+procedure trade(carte1, carte2 : TCarte ; Var stats : Tstats); //#### table de proba à finir
+var rdm : Integer;
+begin
+    randomize;
+    //C-C -> Commune:93% Rare:5% Epique:1% Legendaire:1%
+    if (carte1.rarete = commune) AND (carte2.rarete = commune) then
+    begin
+        rdm := 1 + random(100);
+        case rdm of 
+            1..93: ajouterCarteAleatoireRarete(commune, stats);
+            94..98: ajouterCarteAleatoireRarete(rare, stats);
+            99: ajouterCarteAleatoireRarete(epique, stats);
+            100: ajouterCarteAleatoireRarete(legendaire, stats);
+        end;
+    end
+
+    //R-R -> Commune:1% Rare:93% Epique:5% Legendaire:1%
+    else if (carte1.rarete = rare) AND (carte2.rarete = rare) then
+    begin
+        rdm := 1 + random(100);
+        case rdm of 
+            1: ajouterCarteAleatoireRarete(commune, stats);
+            2..94: ajouterCarteAleatoireRarete(rare, stats);
+            95..99: ajouterCarteAleatoireRarete(epique, stats);
+            100: ajouterCarteAleatoireRarete(legendaire, stats);
+        end;
+    end
+
+    //E-E -> Commune:1% Rare:1% Epique:93% Legendaire:5%
+    else if (carte1.rarete = epique) AND (carte2.rarete = epique) then
+    begin
+        rdm := 1 + random(100);
+        case rdm of 
+            1: ajouterCarteAleatoireRarete(commune, stats);
+            2: ajouterCarteAleatoireRarete(rare, stats);
+            3..95: ajouterCarteAleatoireRarete(epique, stats);
+            96..100: ajouterCarteAleatoireRarete(legendaire, stats);
+        end;
+    end
+
+    //L-L -> Commune:1% Rare:1% Epique:1% Legendaire:97%
+    else if (carte1.rarete = legendaire) AND (carte2.rarete = legendaire) then
+    begin
+        rdm := 1 + random(100);
+        case rdm of 
+            1: ajouterCarteAleatoireRarete(commune, stats);
+            2: ajouterCarteAleatoireRarete(rare, stats);
+            3: ajouterCarteAleatoireRarete(epique, stats);
+            4..100: ajouterCarteAleatoireRarete(legendaire, stats);
+        end;
+    end
+
+    //C-R
+    else if ((carte1.rarete = commune) AND (carte2.rarete = rare) OR (carte1.rarete = rare) AND (carte2.rarete = commune)) then
+    begin
+        rdm := 1 + random(100);
+        case rdm of 
+            1..60 : ajouterCarteAleatoireRarete(commune, stats);
+            61..98: ajouterCarteAleatoireRarete(rare, stats);
+            99: ajouterCarteAleatoireRarete(epique, stats);
+            100: ajouterCarteAleatoireRarete(legendaire, stats);
+        end;
+    end
+
+    //C-E
+    else if ((carte1.rarete = commune) AND (carte2.rarete = epique) OR (carte1.rarete = epique) AND (carte2.rarete = commune)) then
+    begin
+        rdm := 1 + random(100);
+        case rdm of 
+            1..50: ajouterCarteAleatoireRarete(commune, stats);
+            51..79: ajouterCarteAleatoireRarete(rare, stats);
+            80..99: ajouterCarteAleatoireRarete(epique, stats);
+            100: ajouterCarteAleatoireRarete(legendaire, stats);
+        end;
+    end
+
+    //C-L
+    else if ((carte1.rarete = commune) AND (carte2.rarete = legendaire) OR (carte1.rarete = legendaire) AND (carte2.rarete = commune)) then
+    begin
+        rdm := 1 + random(100);
+        case rdm of 
+            1..20: ajouterCarteAleatoireRarete(commune, stats);
+            21..79: ajouterCarteAleatoireRarete(rare, stats);
+            80..99: ajouterCarteAleatoireRarete(epique, stats);
+            100: ajouterCarteAleatoireRarete(legendaire, stats);
+        end;
+    end
+
+    //R-E
+    else if ((carte1.rarete = rare) AND (carte2.rarete = epique) OR (carte1.rarete = epique) AND (carte2.rarete = rare)) then
+    begin
+        rdm := 1 + random(100);
+        case rdm of 
+            1..20: ajouterCarteAleatoireRarete(commune, stats);
+            21..79: ajouterCarteAleatoireRarete(rare, stats);
+            80..99: ajouterCarteAleatoireRarete(epique, stats);
+            100: ajouterCarteAleatoireRarete(legendaire, stats);
+        end;
+    end
+
+    //R-L
+    else if ((carte1.rarete = rare) AND (carte2.rarete = legendaire) OR (carte1.rarete = legendaire) AND (carte2.rarete = rare)) then
+    begin
+        rdm := 1 + random(100);
+        case rdm of 
+            1..20: ajouterCarteAleatoireRarete(commune, stats);
+            21..79: ajouterCarteAleatoireRarete(rare, stats);
+            80..99: ajouterCarteAleatoireRarete(epique, stats);
+            100: ajouterCarteAleatoireRarete(legendaire, stats);
+        end;
+    end
+
+    //E-L
+    else if ((carte1.rarete = epique) AND (carte2.rarete = legendaire) OR (carte1.rarete = legendaire) AND (carte2.rarete = epique)) then
+    begin
+        rdm := 1 + random(100);
+        case rdm of 
+            1..20: ajouterCarteAleatoireRarete(commune, stats);
+            21..79: ajouterCarteAleatoireRarete(rare, stats);
+            80..99: ajouterCarteAleatoireRarete(epique, stats);
+            100: ajouterCarteAleatoireRarete(legendaire, stats);
+        end;
+    end;
+
+    
+    supprimerCarte(stats,carte1.numero);
+    supprimerCarte(stats,carte2.numero);
+    echangeFait:=True;
+    LancementSalleMarchand;
 end;
 
 procedure scrollDeck(var i:Integer);
 
 begin
 	if EventSystem^.wheel.y<0 then
-		if i>=statsJoueur.tailleCollection-1 then
+		if i>=statsJoueur.tailleCollection then
 			i:=1
 		else
 			i:=i+1
@@ -187,6 +379,19 @@ begin
 
 end;
 
+procedure HandleButtonClickEch(var button: TButtonGroup; x, y: Integer;carte1,carte2:TCarte;var stats:TStats);
+begin
+  if (x >= button.image.rect.x) and (x <= button.image.rect.x + button.image.rect.w) and
+     (y >= button.image.rect.y) and (y <= button.image.rect.y + button.image.rect.h) then
+  begin
+    if Assigned(button.procEch) then
+    begin
+        writeln('procédure spéciale en cours');
+		button.procEch(carte1,carte2,stats);
+    end;
+  end;
+end;
+
 procedure actualiserEchange();
 begin
     renderRawImage(fond,false);
@@ -201,16 +406,20 @@ begin
     renderButtonGroup(boutons[1]);
     renderButtonGroup(boutons[2]);
     renderButtonGroup(boutons[3]);
+    if ichoix1<>ichoix2 then
+        renderButtonGroup(boutons[4]);
     createRawImage(imgCar1,boutons[2].image.rect.x,boutons[2].image.rect.y,boutons[2].image.rect.w,boutons[2].image.rect.h,StringToPChar('Sprites/Cartes/carte'+intToStr(statsJoueur.collection[iChoix1].numero)+'.bmp'));
     renderRawImage(imgCar1,False);
     createRawImage(imgCar2,boutons[3].image.rect.x,boutons[3].image.rect.y,boutons[3].image.rect.w,boutons[3].image.rect.h,StringToPChar('Sprites/Cartes/carte'+intToStr(statsJoueur.collection[iChoix2].numero)+'.bmp'));
     renderRawImage(imgCar2,False);
+    
 end;
 
 procedure confirmer();
 begin
     etatChoix:=not(etatChoix);
 end;
+
 
 procedure Echange;
 begin
@@ -222,6 +431,8 @@ SDL_RenderClear(sdlRenderer);
 InitButtonGroup(boutons[1],  415, 50, 250, 100, 'Sprites/Menu/button1.bmp','Annuler',@LancementSalleMarchand);
 InitButtonGroup(boutons[2],  255, 250, 250, 250, 'Sprites/Menu/button1.bmp','X',@confirmer);
 InitButtonGroup(boutons[3],  1080-255-250, 250, 250, 250, 'Sprites/Menu/button1.bmp','X',@confirmer);
+InitButtonGroup(boutons[4],  415, 580, 250, 100, 'Sprites/Menu/button1.bmp','Echange',btnProc);
+boutons[4].parametresSpeciaux:=3;boutons[4].procEch:=@trade;
 end;
 
 procedure LancementSalleMarchand; //###
@@ -238,7 +449,7 @@ begin
     if not echangeFait then
         InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/button1.bmp','Marchandage',@Echange);
     InitButtonGroup(boutons[2],  440, 200, 200, 100, 'Sprites/Menu/button1.bmp','Discussion',btnproc);
-    InitButtonGroup(boutons[3],  465, 300, 150, 100, 'Sprites/Menu/button1.bmp','Partir',btnProc);
+    InitButtonGroup(boutons[3],  465, 300, 150, 100, 'Sprites/Menu/button1.bmp','Partir',@choixSalle);
     initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp',nil,0,450,1080,300,'aaa',10);
     
     
@@ -351,195 +562,12 @@ begin
     RenderButtonGroup(salles[3].image);
 end;
 
+
+
+
+
 begin
 statsJoueur.avancement:=1;
 //
 writeln('MapSys ready')
 end.
-
-
-procedure ajouterCarteAleatoireRarete(rarete : Trarete ; var stats : Tstats);
-var rdm : integer;
-begin
-    randomize
-    case rarete of 
-    commune :  
-    begin
-        rdm := 1 + random(6)
-
-        case rdm of
-        1: ajouterCarte(stats.deck , 1);
-        2: ajouterCarte(stats.deck , 2);
-        3: ajouterCarte(stats.deck , 3);
-        4: ajouterCarte(stats.deck , 4);
-        5: ajouterCarte(stats.deck , 5);
-        6: ajouterCarte(stats.deck , 10);
-    end;
-
-    rare :
-    begin
-         rdm := 1 + random(7)
-
-        case rdm of
-        1: ajouterCarte(stats.deck , 6);
-        2: ajouterCarte(stats.deck , 7);
-        3: ajouterCarte(stats.deck , 8);
-        4: ajouterCarte(stats.deck ,9);
-        5: ajouterCarte(stats.deck , 11);
-        6: ajouterCarte(stats.deck , 16);
-        7: ajouterCarte(stats.deck , 19);
-    end;
-
-    epique :
-    begin
-         rdm := 1 + random(6)
-
-        case rdm of
-        1: ajouterCarte(stats.deck , 12);
-        2: ajouterCarte(stats.deck , 14);
-        3: ajouterCarte(stats.deck , 17);
-        4: ajouterCarte(stats.deck , 18);
-        5: ajouterCarte(stats.deck , 20);
-        6: ajouterCarte(stats.deck , 22);
-    end;
-
-    legendaire :
-    begin
-         rdm := 1 + random(3)
-
-        case rdm of
-        1: ajouterCarte(stats.deck , 13);
-        2: ajouterCarte(stats.deck , 15);
-        3: ajouterCarte(stats.deck , 21);
-    end;
-end;
-
-
-procedure trade(carte1, carte2 : TCarte ; Var stats : Tstats); //#### table de proba à finir
-var rdm : Integer;
-begin
-    randomize
-    //C-C -> Commune:93% Rare:5% Epique:1% Legendaire:1%
-    if (carte1.rarete = commune) AND (carte2.rarete = commune) then
-    begin
-        rdm := 1 + random(100);
-        case rdm of 
-            1..93: ajouterCarteAleatoireRarete(commune, stats);
-            94..98: ajouterCarteAleatoireRarete(rare, stats);
-            99: ajouterCarteAleatoireRarete(epique, stats);
-            100: ajouterCarteAleatoireRarete(legendaire, stats);
-        end;
-    end;
-
-    //R-R -> Commune:1% Rare:93% Epique:5% Legendaire:1%
-    else if (carte1.rarete = rare) AND (carte2.rarete = rare) then
-    begin
-        rdm := 1 + random(100);
-        case rdm of 
-            1: ajouterCarteAleatoireRarete(commune, stats);
-            2..94: ajouterCarteAleatoireRarete(rare, stats);
-            95..99: ajouterCarteAleatoireRarete(epique, stats);
-            100: ajouterCarteAleatoireRarete(legendaire, stats);
-        end;
-    end;
-
-    //E-E -> Commune:1% Rare:1% Epique:93% Legendaire:5%
-    else if (carte1.rarete = epique) AND (carte2.rarete = epique) then
-    begin
-        rdm := 1 + random(100);
-        case rdm of 
-            1: ajouterCarteAleatoireRarete(commune, stats);
-            2: ajouterCarteAleatoireRarete(rare, stats);
-            3..96: ajouterCarteAleatoireRarete(epique, stats);
-            96..100: ajouterCarteAleatoireRarete(legendaire, stats);
-        end;
-    end;
-
-    //L-L -> Commune:1% Rare:1% Epique:1% Legendaire:97%
-    else if (carte1.rarete = legendaire) AND (carte2.rarete = legendaire) then
-    begin
-        rdm := 1 + random(100);
-        case rdm of 
-            1: ajouterCarteAleatoireRarete(commune, stats);
-            2: ajouterCarteAleatoireRarete(rare, stats);
-            3: ajouterCarteAleatoireRarete(epique, stats);
-            4..100: ajouterCarteAleatoireRarete(legendaire, stats);
-        end;
-    end;
-
-    //C-R
-    else if ((carte1.rarete = commune) AND (carte2.rarete = rare) OR (carte1.rarete = rare) AND (carte2.rarete = commune));
-    begin
-        rdm := 1 + random(100);
-        case rdm of 
-            1..60 : ajouterCarteAleatoireRarete(commune, stats);
-            61..98: ajouterCarteAleatoireRarete(rare, stats);
-            99: ajouterCarteAleatoireRarete(epique, stats);
-            100: ajouterCarteAleatoireRarete(legendaire, stats);
-        end;
-    end;
-
-    //C-E
-    else if ((carte1.rarete = commune) AND (carte2.rarete = epique) OR (carte1.rarete = epique) AND (carte2.rarete = commune));
-    begin
-        rdm := 1 + random(100);
-        case rdm of 
-            1..50: ajouterCarteAleatoireRarete(commune, stats);
-            51..79: ajouterCarteAleatoireRarete(rare, stats);
-            80..99: ajouterCarteAleatoireRarete(epique, stats);
-            100: ajouterCarteAleatoireRarete(legendaire, stats);
-        end;
-    end;
-
-    //C-L
-    else if ((carte1.rarete = commune) AND (carte2.rarete = legendaire) OR (carte1.rarete = legendaire) AND (carte2.rarete = commune));
-    begin
-        rdm := 1 + random(100);
-        case rdm of 
-            1..20: ajouterCarteAleatoireRarete(commune, stats);
-            21..79: ajouterCarteAleatoireRarete(rare, stats);
-            80..99: ajouterCarteAleatoireRarete(epique, stats);
-            100: ajouterCarteAleatoireRarete(legendaire, stats);
-        end;
-    end;
-
-    //R-E
-    else if ((carte1.rarete = rare) AND (carte2.rarete = epique) OR (carte1.rarete = epique) AND (carte2.rarete = rare));
-    begin
-        rdm := 1 + random(100);
-        case rdm of 
-            1..20: ajouterCarteAleatoireRarete(commune, stats);
-            21..79: ajouterCarteAleatoireRarete(rare, stats);
-            80..99: ajouterCarteAleatoireRarete(epique, stats);
-            100: ajouterCarteAleatoireRarete(legendaire, stats);
-        end;
-    end;
-
-    //R-L
-    else if ((carte1.rarete = rare) AND (carte2.rarete = legendaire) OR (carte1.rarete = legendaire) AND (carte2.rarete = rare));
-    begin
-        rdm := 1 + random(100);
-        case rdm of 
-            1..20: ajouterCarteAleatoireRarete(commune, stats);
-            21..79: ajouterCarteAleatoireRarete(rare, stats);
-            80..99: ajouterCarteAleatoireRarete(epique, stats);
-            100: ajouterCarteAleatoireRarete(legendaire, stats);
-        end;
-    end;
-
-    //E-L
-    else if ((carte1.rarete = epique) AND (carte2.rarete = legendaire) OR (carte1.rarete = legendaire) AND (carte2.rarete = epique));
-    begin
-        rdm := 1 + random(100);
-        case rdm of 
-            1..20: ajouterCarteAleatoireRarete(commune, stats);
-            21..79: ajouterCarteAleatoireRarete(rare, stats);
-            80..99: ajouterCarteAleatoireRarete(epique, stats);
-            100: ajouterCarteAleatoireRarete(legendaire, stats);
-        end;
-    end;
-
-    end;
-
-
-end;

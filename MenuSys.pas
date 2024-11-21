@@ -93,10 +93,10 @@ procedure jouer;
 			DeclencherFondu(False, 1000);
 
 		//Objets dissimulés
-		button_leaderboard.button.estVisible := false;
-        button_continue.button.estVisible := false;
-		button_quit.button.estVisible := false;
-		button_new_game.button.estVisible := false;
+		boutons[3].button.estVisible := false;
+        boutons[2].button.estVisible := false;
+		boutons[4].button.estVisible := false;
+		boutons[1].button.estVisible := false;
 		button_retour_menu.button.estVisible :=false;
 		
 		boutons[8].button.estVisible := False;
@@ -116,10 +116,10 @@ procedure lead;
 
 		
 		
-		button_leaderboard.button.estVisible := false;
-		button_quit.button.estVisible := false;
-        button_continue.button.estVisible := false;
-		button_new_game.button.estVisible := false;
+		boutons[3].button.estVisible := false;
+		boutons[4].button.estVisible := false;
+        boutons[2].button.estVisible := false;
+		boutons[1].button.estVisible := false;
 
 		RenderParallaxMenu(bgImage,characterImage,cardsImage);
 		//RenderRawImage(vague);
@@ -214,11 +214,11 @@ begin
 	
 
     // Activer les boutons du menu principal
-    button_continue.button.estVisible := true;
-    button_new_game.button.estVisible := true;
-    button_leaderboard.button.estVisible := true;
-    button_quit.button.estVisible := true;
-    button_settings.button.estVisible := true;
+    boutons[2].button.estVisible := true;
+    boutons[1].button.estVisible := true;
+    boutons[3].button.estVisible := true;
+    boutons[4].button.estVisible := true;
+    boutons[5].button.estVisible := true;
     button_help.button.estVisible := true;
     button_home.button.estVisible := true;
     
@@ -226,22 +226,22 @@ begin
     RenderParallaxMenu(bgImage,characterImage,cardsImage);
 
     // Rendre les boutons principaux
-    OnMouseHover(button_continue, GetMouseX, GetMouseY);
-    OnMouseHover(button_new_game, GetMouseX, GetMouseY);
-    OnMouseHover(button_leaderboard, GetMouseX, GetMouseY);
-    OnMouseHover(button_quit, GetMouseX, GetMouseY);
+    OnMouseHover(boutons[2], GetMouseX, GetMouseY);
+    OnMouseHover(boutons[1], GetMouseX, GetMouseY);
+    OnMouseHover(boutons[3], GetMouseX, GetMouseY);
+    OnMouseHover(boutons[4], GetMouseX, GetMouseY);
 
-    RenderButtonGroup(button_continue);
-    RenderButtonGroup(button_new_game);
-    RenderButtonGroup(button_leaderboard);
-    RenderButtonGroup(button_quit);
+    RenderButtonGroup(boutons[2]);
+    RenderButtonGroup(boutons[1]);
+    RenderButtonGroup(boutons[3]);
+    RenderButtonGroup(boutons[4]);
 
     // Rendre les icônes en bas
-    OnMouseHover(button_settings, GetMouseX, GetMouseY);
+    OnMouseHover(boutons[5], GetMouseX, GetMouseY);
     OnMouseHover(button_help, GetMouseX, GetMouseY);
     OnMouseHover(button_home, GetMouseX, GetMouseY);
 
-    RenderButtonGroup(button_settings);
+    RenderButtonGroup(boutons[5]);
     RenderButtonGroup(button_help);
     RenderButtonGroup(button_home);
 	EffetDeFondu;
@@ -280,13 +280,13 @@ begin
     // Game icon (𓈒⟡₊⋆∘ Wowie 𓈒⟡₊⋆∘)
     CreateText(text1, windowWidth div 2-150, 20, 300, 250, 'Les Cartes du Destin',Fantasy30, whiteCol);
 	// Initialisation des boutons principaux (à gauche)
-	InitButtonGroup(button_continue, 100, windowHeight div 5, 350, 80, 'Sprites\Menu\Button1.bmp', 'Continuer', Pjouer);
-    InitButtonGroup(button_new_game, 100, (windowHeight div 5) + 100, 350, 80, 'Sprites\Menu\Button1.bmp', 'Nouvelle Partie', PNouvellePartieIntro);
-    InitButtonGroup(button_leaderboard, 100, (windowHeight div 5) + 200, 350, 80, 'Sprites\Menu\Button1.bmp', 'Leaderboard', leaderboard);
-    InitButtonGroup(button_quit, 100, (windowHeight div 5) + 300, 350, 80, 'Sprites\Menu\Button1.bmp', 'Quitter', quitter);
+	InitButtonGroup(boutons[2], 100, windowHeight div 5, 350, 80, 'Sprites\Menu\Button1.bmp', 'Continuer', Pjouer);
+    InitButtonGroup(boutons[1], 100, (windowHeight div 5) + 100, 350, 80, 'Sprites\Menu\Button1.bmp', 'Nouvelle Partie', PNouvellePartieIntro);
+    InitButtonGroup(boutons[3], 100, (windowHeight div 5) + 200, 350, 80, 'Sprites\Menu\Button1.bmp', 'Leaderboard', leaderboard);
+    InitButtonGroup(boutons[4], 100, (windowHeight div 5) + 300, 350, 80, 'Sprites\Menu\Button1.bmp', 'Quitter', quitter);
 
 	// Initialisation des icônes en bas
-	InitButtonGroup(button_settings, windowWidth div 2 - 300, windowHeight - 100, 100, 100, 'Sprites\Menu\Icon_Settings.bmp', ' ', PopenSettings);
+	InitButtonGroup(boutons[5], windowWidth div 2 - 300, windowHeight - 100, 100, 100, 'Sprites\Menu\Icon_Settings.bmp', ' ', PopenSettings);
 	InitButtonGroup(button_help, windowWidth div 2, windowHeight - 100, 100, 100, 'Sprites\Menu\Icon_Help.bmp', ' ', PgoSeekHelp);
 	InitButtonGroup(button_home, windowWidth div 2 + 300, windowHeight - 100, 100, 100, 'Sprites\Menu\Icon_Help.bmp', ' ', btnProc);
 
@@ -296,10 +296,10 @@ end;
 
 procedure reactualiserDeck();
 begin
-	writeln(ideck);
+	//writeln(ideck);
 	createRawImage(carteDeck,200,200,300,300,statsJoueur.collection[iDeck].dir);
-	initDialogueBox(dialogues[1],nil,nil,460,120,380,600,extractionTexte('DESC_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),0,Fantasy20,20);
-	initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),0);
+	initDialogueBox(dialogues[1],nil,nil,460,120,380,600,extractionTexte('DESC_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),0,Fantasy20,25);
+	initDialogueBox(dialogues[3],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),0);
 end;
 
 procedure ouvrirDeck();
@@ -325,7 +325,7 @@ begin
 	
 	renderRawImage(carteDeck,False);
 	UpdateDialogueBox(dialogues[1]);
-	UpdateDialogueBox(dialogues[2]);
+	UpdateDialogueBox(dialogues[3]);
 end;
 
 
@@ -333,8 +333,8 @@ end;
 procedure reactualiserBestiaire();
 begin
 	createRawImage(ennAff,200,200,300,300,StringToPChar('Sprites/Bestiaire/illustrations_bestiaire_'+intToStr(ienn)+'.bmp'));
-	initDialogueBox(dialogues[1],nil,nil,460,120,380,600,extractionTexte('DESC_ENN_'+intToStr(ienn)),0,Fantasy20,20);
-	initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_ENN_'+intToStr(ienn)),0);
+	initDialogueBox(dialogues[1],nil,nil,460,120,380,600,extractionTexte('DESC_ENN_'+intToStr(ienn)),0,Fantasy20,25);
+	initDialogueBox(dialogues[3],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_ENN_'+intToStr(ienn)),0);
 end;
 
 procedure ouvrirBestiaire();
@@ -350,7 +350,7 @@ procedure actualiserBestiaire();
 
 begin
 	UpdateDialogueBox(dialogues[1]);
-	UpdateDialogueBox(dialogues[2]);
+	UpdateDialogueBox(dialogues[3]);
 	renderRawImage(ennAff,False);
 end;
 
@@ -449,7 +449,7 @@ begin
     sceneActive:='victoire';
     for i:=1 to 3 do
         begin
-	    btnCartes[i].carte:=cartes[i]; //###c'est cette partie qui est à remplacer pour déterminer les cartes que l'on peut obtenir
+	    btnCartes[i].carte:=cartes[random(22)+1]; //###c'est cette partie qui est à remplacer pour déterminer les cartes que l'on peut obtenir
 	    InitButtonGroup(btnCartes[i],200+300*(i-1),200,128,128,btnCartes[i].carte.dir,' ',nil);
         btnCartes[i].procCarte:=@acquisitionCarte;
         btnCartes[i].parametresSpeciaux:=1;

@@ -549,7 +549,7 @@ BEGIN
   if Fantasy40 = nil then HALT;
   Fantasy30 := TTF_OpenFont(FantasyFontDirectory, 30);
   if Fantasy30 = nil then HALT;
-  Fantasy20 := TTF_OpenFont(FantasyFontDirectory, 20);
+  Fantasy20 := TTF_OpenFont(FantasyFontDirectory, 25);
   if Fantasy20 = nil then HALT;
 
   // activation de l'opacité

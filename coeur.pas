@@ -129,6 +129,7 @@ type
     case parametresSpeciaux:Integer of 
       1:(procCarte:procedure(carte:TCarte;var stats:TStats);carte:TCarte);
       2:(procSalle:procedure(evenement:evenements));
+      3:(procEch:procedure(carte1,carte2:TCarte;var stats:TStats))
     end;
 
 type TSalle=record
@@ -145,11 +146,6 @@ statsJoueur: TStats;
 PDeck:TDeck; //deck pointé par les stats du joueur
  
 // Boutons
-  button_new_game: TButtonGroup;
-	button_continue : TButtonGroup;
-	button_leaderboard : TButtonGroup;
-	button_quit : TButtonGroup;
-	button_settings : TButtonGroup;
 	button_help : TButtonGroup;
 	button_home : TButtonGroup;
   btnCartes:array[1..3] of TButtonGroup;
@@ -173,7 +169,7 @@ PDeck:TDeck; //deck pointé par les stats du joueur
 	text_n5: TText;
 
   var fond:TImage;
-	dialogues : Array [1..2] of TDialogueBox;
+	dialogues : Array [1..3] of TDialogueBox;
 
 
 

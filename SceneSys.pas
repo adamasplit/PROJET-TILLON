@@ -311,10 +311,18 @@ begin
 					OnMouseClick(btnCartes[i], EventSystem^.motion.x, EventSystem^.motion.y);
 					HandleButtonClickCarte(btnCartes[i], EventSystem^.motion.x, EventSystem^.motion.y,btnCartes[i].carte,statsJoueur);
 					end;
-				'marchand':for i:=1 to 3 do
+				'marchand':
 					begin
-					OnMouseClick(boutons[i], EventSystem^.motion.x, EventSystem^.motion.y);
-					HandleButtonClick(boutons[i].button, EventSystem^.motion.x, EventSystem^.motion.y);
+					if not echangeFait then
+						begin
+						OnMouseClick(boutons[1], EventSystem^.motion.x, EventSystem^.motion.y);
+						HandleButtonClick(boutons[1].button, EventSystem^.motion.x, EventSystem^.motion.y);
+						end;
+					for i:=2 to 3 do
+						begin
+						OnMouseClick(boutons[i], EventSystem^.motion.x, EventSystem^.motion.y);
+						HandleButtonClick(boutons[i].button, EventSystem^.motion.x, EventSystem^.motion.y);
+						end;
 					end;
 				'MenuShop':begin
 					highlight(boutons[2],getmousex,getmousey);
@@ -323,35 +331,16 @@ begin
 					OnMouseClick(boutons[i], EventSystem^.motion.x, EventSystem^.motion.y);
 					HandleButtonClick(boutons[i].button, EventSystem^.motion.x, EventSystem^.motion.y);
 					end;
+					if ichoix1<>ichoix2 then HandleButtonClickEch(boutons[4],getmouseX,getMouseY,statsJoueur.collection[iChoix1],statsJoueur.collection[iChoix2],statsJoueur);
 					end;
 				end;
-   				if button_continue.button.estVisible then
+				if sceneActive='Menu' then
 				begin
-				OnMouseClick(button_continue,EventSystem^.motion.x,EventSystem^.motion.y);
-				HandleButtonClick(button_continue.button,EventSystem^.motion.x,EventSystem^.motion.y);
-				end;
-                if button_new_game.button.estVisible then
-				begin
-				OnMouseClick(button_new_game,EventSystem^.motion.x,EventSystem^.motion.y);
-				HandleButtonClick(button_new_game.button,EventSystem^.motion.x,EventSystem^.motion.y);
-				end;
-				if button_leaderboard.button.estVisible then
-				begin
-				OnMouseClick(button_leaderboard,EventSystem^.motion.x,EventSystem^.motion.y);
-				HandleButtonClick(button_leaderboard.button,EventSystem^.motion.x,EventSystem^.motion.y);
-				//continue;
-				end;
-				if button_quit.button.estVisible then
-				begin
-				OnMouseClick(button_quit,EventSystem^.motion.x,EventSystem^.motion.y);
-				HandleButtonClick(button_quit.button,EventSystem^.motion.x,EventSystem^.motion.y);
-				//continue;
-				end;
-				if button_retour_menu.button.estVisible then
-				begin
-				OnMouseClick(button_retour_menu,EventSystem^.motion.x,EventSystem^.motion.y);
-				HandleButtonClick(button_retour_menu.button,EventSystem^.motion.x,EventSystem^.motion.y);
-				//continue;
+					for i:=1 to 5 do
+					begin
+					OnMouseClick(boutons[i],EventSystem^.motion.x,EventSystem^.motion.y);
+					HandleButtonClick(boutons[i].button,EventSystem^.motion.x,EventSystem^.motion.y);
+					end;
 				end;
 				if sceneActive='MenuEnJeu' then
 				begin

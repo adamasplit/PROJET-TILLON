@@ -26,6 +26,7 @@ procedure multiLasers(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,w,vit
 procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,l,w,xdest,ydest:Integer;vitRotation:Real;dureeVie,delai:Integer;nom:PChar;var rayon:TObjet);
 procedure updateRayon(var rayon:TObjet);
 procedure UpdateJustice(var justice:TObjet);
+procedure ajouterCarte(var stats : TStats ; num : integer); 
 procedure updateAttaques();
 procedure XXIII(origine:typeObjet;s:TStats;x,y,xcible,ycible,delai:Integer);
 procedure renderAvecAngle(objet:TObjet);
@@ -34,6 +35,7 @@ procedure InitJustice(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,xCibl
 procedure subirDegats(var victime:TObjet;degats,knockbackX,knockbackY:Integer);
 procedure JouerCarte(var stats:TStats;x,y,i:Integer); 
 procedure InitAngle(vectX,vectY:Real;var angle:Real);
+procedure supprimerCarte(var  stats : TStats; num : integer);
 
 
 
