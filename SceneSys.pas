@@ -118,6 +118,14 @@ var i:Integer;
 
 					end;
 			end;
+		if (Lobjets[0].stats.vie <= 0) then 
+		begin
+		DeclencherFondu(True, 3000);
+		setLength(LObjets, High(LObjets)+2);
+		CreateRawImage(Lobjets[High(LObjets)].image,1200,Lobjets[0].image.rect.y-50,200,200,'Sprites\Game\death\death_walking_1.bmp');
+		InitAnimation(Lobjets[High(LObjets)].anim,'death','walking',10,True);
+		SceneActive := 'mortJoueur';
+		end;
 		if vagueFinie then ajoutVague;
 		if combatFini then victoire(statsJoueur);
 	end;
@@ -238,6 +246,25 @@ begin
 				OnMouseHover(btnCartes[i],getMouseX,getMouseY,'SFX\cardHover.wav')
 				end;
 			end;
+		'mortJoueur':
+		begin
+		afficherTout;
+		if (Lobjets[High(LObjets)].image.rect.x > Lobjets[0].image.rect.x + 60) then
+			begin
+				Lobjets[High(LObjets)].image.rect.x -= 1;
+				UpdateAnimation(Lobjets[High(LObjets)].anim,Lobjets[High(LObjets)].image);
+			end
+			else
+			begin
+				if (Lobjets[High(LObjets)].anim.etat = 'walking') then InitAnimation(Lobjets[High(LObjets)].anim,'death','reap',21,False);
+				UpdateAnimation(Lobjets[High(LObjets)].anim,Lobjets[High(LObjets)].image);
+				if animFinie(Lobjets[High(LObjets)].anim) then
+				begin
+					DeclencherFondu(False, 5000);
+					sceneActive := 'Menu';
+				end;
+			end;
+		end;
   		'Cutscene':
 		begin
 		affichertout;

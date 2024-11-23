@@ -144,7 +144,12 @@ var
   progression: Real;
   alpha: Integer;
 begin
-  if not fonduActif then Exit;
+
+  if not fonduActif then 
+  begin 
+  SDL_RenderFillRect(sdlRenderer, nil);
+  exit;
+  end;
 
   // Calcul du temps écoulé depuis le début du fondu
   tempsEcoule := SDL_GetTicks() - TimeDebutFondu;

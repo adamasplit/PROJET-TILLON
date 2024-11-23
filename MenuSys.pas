@@ -430,6 +430,11 @@ begin
 					RenderRawImage(LObjets[0].image,255, LObjets[0].anim.isFliped);
 			end;
 		EffetDeFondu;
+		if sceneActive = 'mortJoueur' then 
+			begin
+			RenderRawImage(LObjets[0].image, LObjets[0].anim.isFliped);
+			RenderRawImage(LObjets[High(Lobjets)].image, False);
+			end;
 		end;
 	
 end;
