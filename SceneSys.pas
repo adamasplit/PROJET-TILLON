@@ -84,6 +84,7 @@ end;
 // Updates des Scenes
 
 procedure ActualiserJeu;
+var faucheuse : TObjet;
 var i:Integer;
 	begin
 		randomize();
@@ -122,7 +123,7 @@ var i:Integer;
 		begin
 		DeclencherFondu(True, 3000);
 		arretMus(1000);
-		setLength(LObjets, High(LObjets)+2);
+		ajoutObjet(faucheuse);
 		CreateRawImage(Lobjets[High(LObjets)].image,1200,Lobjets[0].image.rect.y-50,200,200,'Sprites\Game\death\death_walking_1.bmp');
 		InitAnimation(Lobjets[High(LObjets)].anim,'death','walking',10,True);
 		SceneActive := 'mortJoueur';
@@ -174,6 +175,51 @@ begin
     CreateRawImage(LObjets[0].image, windowWidth div 2-windowWidth div 4, windowHeight div 2, 100, 100, 'Sprites\Game\Joueur\Joueur_idle_1.bmp');
     CreateRawImage(menuBook,0,0,windowWidth,windowHeight,'Sprites\Game\Book\Book_Opening_1.bmp');
 	initAnimation(LObjets[0].anim,'Joueur','idle',12,True);
+end;
+
+procedure OnPlayerDeath;
+var hasDeath : Boolean;
+var i : Integer;
+begin
+afficherTout;
+	if (Lobjets[High(LObjets)].image.rect.x = 1100) then indiceMusiqueJouee:=32;
+	if (Lobjets[High(LObjets)].image.rect.x > Lobjets[0].image.rect.x + 60) then
+		begin
+			Lobjets[High(LObjets)].image.rect.x -= 1;
+			UpdateAnimation(Lobjets[High(LObjets)].anim,Lobjets[High(LObjets)].image);
+		end
+		else
+		begin
+			if (Lobjets[High(LObjets)].anim.etat = 'walking') then InitAnimation(Lobjets[High(LObjets)].anim,'death','reap',21,False);
+			UpdateAnimation(Lobjets[High(LObjets)].anim,Lobjets[High(LObjets)].image);
+			if animFinie(Lobjets[High(LObjets)].anim) then
+			begin
+				for i:=1 to Lobjets[0].stats.tailleCollection do 
+        			if Lobjets[0].stats.collection[i].numero = 13 then
+						begin
+							supprimerCarte(Lobjets[0].stats, i);
+							jouerSon('SFX\Effets\mort.wav');
+							sceneActive:='Jeu';
+							DeclencherFondu(false, 500);
+							Lobjets[0].stats.vie := 20;
+							hasDeath := True;
+							supprimeObjet(Lobjets[High(LObjets)]);
+							writeln('objet suprr');
+							break;
+							end;
+				if not(hasDeath) then
+					begin
+					jouerSon('SFX\Effets\impact.wav');
+					sdl_delay(3000);
+					DeclencherFondu(False, 5000);
+					indiceMusiqueJouee:=1;
+					supprimeObjet(Lobjets[High(LObjets)]);
+					sceneActive := 'Menu';
+				end;
+			end;
+		end;
+		autoMusique();
+		writeln('objet : ',High(LObjets));
 end;
 
 procedure HandleButtonClickCarte(var button: TButtonGroup; x, y: Integer;carte:TCarte;var stats:TStats);
@@ -247,30 +293,7 @@ begin
 				OnMouseHover(btnCartes[i],getMouseX,getMouseY,'SFX\cardHover.wav')
 				end;
 			end;
-		'mortJoueur':
-		begin
-		afficherTout;
-		if (Lobjets[High(LObjets)].image.rect.x = 1100) then indiceMusiqueJouee:=32;
-		if (Lobjets[High(LObjets)].image.rect.x > Lobjets[0].image.rect.x + 60) then
-			begin
-				Lobjets[High(LObjets)].image.rect.x -= 1;
-				UpdateAnimation(Lobjets[High(LObjets)].anim,Lobjets[High(LObjets)].image);
-			end
-			else
-			begin
-				if (Lobjets[High(LObjets)].anim.etat = 'walking') then InitAnimation(Lobjets[High(LObjets)].anim,'death','reap',21,False);
-				UpdateAnimation(Lobjets[High(LObjets)].anim,Lobjets[High(LObjets)].image);
-				if animFinie(Lobjets[High(LObjets)].anim) then
-				begin
-					jouerSon('SFX\Effets\impact.wav');
-					sdl_delay(3000);
-					DeclencherFondu(False, 5000);
-					indiceMusiqueJouee:=1;
-					sceneActive := 'Menu';
-				end;
-			end;
-		autoMusique();
-		end;
+		'mortJoueur': OnPlayerDeath;
   		'Cutscene':
 		begin
 		affichertout;
