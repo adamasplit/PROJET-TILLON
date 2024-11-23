@@ -1,8 +1,13 @@
 unit SonoSys;
 interface
-uses SDL2, SDL2_mixer,SysUtils,coeur,memgraph; //télécharger SDL2_mixer au préalable
+uses
+    coeur,
+    memgraph,
+    SDL2,
+    SDL2_mixer,
+    SysUtils; //télécharger SDL2_mixer au préalable
 
-const TAILLE_OST=31;
+const TAILLE_OST=32;
         VOLUME_MUSIQUE=40;
         VOLUME_SON=20;
         MAX_CHAINES = 6;
@@ -185,6 +190,8 @@ Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT,
     defMus(29,'OST/Boss2_VictoireRep.wav','',81);
     defMus(30,'OST/Boss3_VictoireRep.wav','',74);
     defMus(31,'OST/Boss4_VictoireRep.wav','',27);
+    //Mort
+    defMus(32,'OST\Project_DEATH.wav','',25);
 
 
 end.

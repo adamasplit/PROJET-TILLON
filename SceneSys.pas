@@ -121,6 +121,7 @@ var i:Integer;
 		if (Lobjets[0].stats.vie <= 0) then 
 		begin
 		DeclencherFondu(True, 3000);
+		arretMus(1000);
 		setLength(LObjets, High(LObjets)+2);
 		CreateRawImage(Lobjets[High(LObjets)].image,1200,Lobjets[0].image.rect.y-50,200,200,'Sprites\Game\death\death_walking_1.bmp');
 		InitAnimation(Lobjets[High(LObjets)].anim,'death','walking',10,True);
@@ -249,6 +250,7 @@ begin
 		'mortJoueur':
 		begin
 		afficherTout;
+		if (Lobjets[High(LObjets)].image.rect.x = 1100) then indiceMusiqueJouee:=32;
 		if (Lobjets[High(LObjets)].image.rect.x > Lobjets[0].image.rect.x + 60) then
 			begin
 				Lobjets[High(LObjets)].image.rect.x -= 1;
@@ -260,10 +262,14 @@ begin
 				UpdateAnimation(Lobjets[High(LObjets)].anim,Lobjets[High(LObjets)].image);
 				if animFinie(Lobjets[High(LObjets)].anim) then
 				begin
+					jouerSon('SFX\Effets\impact.wav');
+					sdl_delay(3000);
 					DeclencherFondu(False, 5000);
+					indiceMusiqueJouee:=1;
 					sceneActive := 'Menu';
 				end;
 			end;
+		autoMusique();
 		end;
   		'Cutscene':
 		begin
