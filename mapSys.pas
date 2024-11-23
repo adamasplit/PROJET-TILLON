@@ -94,17 +94,17 @@ begin
     vagueFinie:=True;
     combatFini:=False;
     randomize;
-    indiceMusiqueJouee:=random(1+statsJoueur.avancement div 2)+2;
+    indiceMusiqueJouee:=(statsJoueur.avancement div 3)+2;
 
     //###partie à modifier : choix des ennemis et de leur nombre
     setlength(ennemis,statsJoueur.avancement+1);
     for j:=1 to statsJoueur.avancement do
         begin
-        alea:=random(29)+1;
+        alea:=random(28)+1;
         if (alea=20) or (alea=21) then
-            ennemis[j]:=templatesEnnemis[24]
+            ennemis[j]:=templatesEnnemis[29]
         else
-            ennemis[j]:=templatesEnnemis[alea];
+            ennemis[j]:=templatesEnnemis[10];
         writeln('élément ',j,' de ennemis: ',ennemis[j].anim.objectName);
         end;
     writeln('ennemis choisis');
@@ -151,8 +151,8 @@ begin
         LObjets[j]:=TemplatesEnnemis[2];
     end;
     setlength(ennemis,3);
-    ennemis[2]:=templatesEnnemis[10];
-    ennemis[1]:=templatesEnnemis[12];
+    ennemis[2]:=templatesEnnemis[19];
+    ennemis[1]:=templatesEnnemis[20];
     writeln('ennemis choisis (boss)')
 end;
 

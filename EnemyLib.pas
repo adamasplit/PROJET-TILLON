@@ -25,6 +25,10 @@ procedure ajoutVague();
 
 implementation
 
+procedure JouerSonEnn(nom:String);
+begin
+  jouerSon(StringToPChar('SFX/Ennemis/'+nom+'.wav'));
+end;
 //supprime un ennemi de la liste
 procedure supprimeEnn(var enn:TObjet;j:integer);
 var taille,i:Integer;
@@ -132,7 +136,7 @@ begin
     ennemi.col.offset.y := offy;
     ennemi.col.nom := nom;
     ennemi.anim.estActif := True;
-    ennemi.stats.inamovible:=(ennemi.anim.objectname='Béhémoth');
+    ennemi.stats.inamovible:=((ennemi.anim.objectname='Béhémoth') or (ennemi.anim.objectName='gardien'));
     ennemi.stats.numero:=num;
     templatesEnnemis[num]:=ennemi;
 end;
@@ -177,6 +181,7 @@ procedure AIFly(var ennemi:TObjet;targetx,targety:Integer);
 var xdest,ydest:Integer;
 begin
   //fonctionne de façon similaire à AIWarp, sans initialiser l'animation de téléportation
+  jouerSonEnn('fly');
   repeat
   xdest:=random(10)*100;
   until (xdest<=800) and (xdest>=200) and (abs(xdest-targetx)>100) and (abs(xdest-ennemi.image.rect.x)>100);
@@ -199,6 +204,7 @@ end;
 procedure AIDodge(var ennemi:TObjet;target:TObjet);
 var distx:Integer;
 begin
+  jouerSonEnn(ennemi.anim.objectName+intToSTr(random(3)+1));
   //l'ennemi se décale vers un mur, selon sa position initiale, pour esquiver
   distx:=(ennemi.image.rect.x-target.image.rect.x);
   InitAnimation(ennemi.anim,ennemi.anim.ObjectName,'dodge', ennemi.stats.nbframes2,False);
@@ -242,10 +248,11 @@ procedure dashInit(var ennemi:TObjet);
 begin
   //permet à un ennemi de foncer de l'autre côté de la salle
   if ennemi.image.rect.x>500 then
-    ennemi.stats.xcible:=150
+    ennemi.stats.xcible:=0
   else
-    ennemi.stats.xcible:=700;
-  ennemi.stats.ycible:=ennemi.image.rect.y;
+    ennemi.stats.xcible:=1000;
+  ennemi.stats.ycible:=getcentery(ennemi);
+  JouerSonEnn(ennemi.anim.objectName);
   initAnimation(ennemi.anim,ennemi.anim.objectName,'dash',ennemi.stats.nbframes2,true);
 end;
 
@@ -254,8 +261,8 @@ var angle:Real;
   distX,distY,y:Integer;
 begin
   //l'ennemi se déplace vers sa position cible
-  distX:=ennemi.stats.xcible-ennemi.image.rect.x;
-  distY:=ennemi.stats.ycible-ennemi.image.rect.y;
+  distX:=ennemi.stats.xcible-getcenterx(ennemi);
+  distY:=ennemi.stats.ycible-getcentery(ennemi);
   ennemi.anim.isFliped:=(distX>0);
   begin
   if distX=0 then
@@ -296,16 +303,18 @@ procedure AIPathFollow(var ennemi: TObjet; target: TObjet;vitesse:Integer;deplac
 begin
   //l'ennemi suit le joueur, pas forcément dans toutes les directions
   if deplaceX then
-    ennemi.stats.xcible:=target.image.rect.x
+    ennemi.stats.xcible:=getcenterx(target)
   else 
-    ennemi.stats.xcible:=ennemi.image.rect.x;
+    ennemi.stats.xcible:=getcenterx(ennemi);
   if deplaceY then
-    ennemi.stats.ycible:=target.image.rect.y
+    ennemi.stats.ycible:=getcentery(target)
   else 
-    ennemi.stats.ycible:=ennemi.image.rect.y;
-  if (ennemi.stats.degatsContact>0) or (not deplaceX or (abs(ennemi.stats.xcible-(ennemi.image.rect.x)-ennemi.col.dimensions.w div 2)>ennemi.col.dimensions.w)) or (not deplaceY or (abs(ennemi.stats.ycible-(ennemi.image.rect.y)-ennemi.col.dimensions.h div 2)>ennemi.col.dimensions.h)) then
+    ennemi.stats.ycible:=getcentery(ennemi);
+  if (ennemi.stats.degatsContact>0) or (not deplaceX or (abs(ennemi.stats.xcible-getcenterx(ennemi))>ennemi.col.dimensions.w div 2)) or (not deplaceY or (abs(ennemi.stats.ycible-getcentery(ennemi))>ennemi.col.dimensions.h div 2)) then
     moveToTarget(ennemi,vitesse);
-  ennemi.anim.isFliped:=(target.image.rect.x-ennemi.image.rect.x>=0);
+  //SDL_setRenderDrawColor(sdlrenderer,255,255,0,255);
+  //sdl_renderDrawLINE(sdlrenderer,getcenterx(ennemi),getcentery(ennemi),ennemi.stats.xcible,ennemi.stats.ycible);
+  ennemi.anim.isFliped:=(getcenterx(target)-getcenterx(ennemi)>=0);
 end;
 
 
@@ -444,6 +453,22 @@ begin
         ajoutObjet(obj);
         end;
       end;
+    16:begin
+      if (ennemi.stats.compteurAction mod 80 = 0) then
+        begin
+        creerRayon(typeObjet(1),4,ennemi.stats.force,ennemi.stats.multiplicateurDegat,600,ennemi.stats.compteurAction div 2,300,150,1500,ennemi.stats.compteurAction div 2,0,30,50,ennemi.stats.nomAttaque,obj);
+        ajoutObjet(obj);
+        creerRayon(typeObjet(1),4,ennemi.stats.force,ennemi.stats.multiplicateurDegat,1400,ennemi.stats.compteurAction div 2,300,150,200,ennemi.stats.compteurAction div 2,0,30,50,ennemi.stats.nomAttaque,obj);
+        ajoutObjet(obj);
+        end;
+      if (ennemi.stats.compteurAction mod 50 =0) then
+        begin
+        creerRayon(typeObjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,(random(10)+6)*100,750,300,150,x+400,y,0,30,80,'pic_terre',obj);
+        ajoutObjet(obj);
+        creerRayon(typeObjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,(random(10)+6)*100,-30,300,150,x+400,y,0,30,80,'pic_terre',obj);
+        ajoutObjet(obj);
+        end;
+      end;
     end;
 end;
 
@@ -467,6 +492,7 @@ begin
           AIPathFollow(ennemi,joueur,ennemi.stats.vitessePoursuite,true,true);
           if ennemi.stats.compteurAction>300 then
             begin
+            //jouerSonEnn('focus ('+intToSTr(random(3)+1)+')');
             InitAnimation(ennemi.anim,ennemi.anim.objectName,'shoot',ennemi.stats.nbFrames2,True);
             ennemi.stats.compteurAction:=0;
             end
@@ -508,17 +534,12 @@ begin
           begin
           //ennemi.anim.isFliped:=(joueur.image.rect.x>ennemi.image.rect.x);
           AIPathFollow(ennemi,joueur,ennemi.stats.vitessePoursuite,false,true);
-          if abs((joueur.image.rect.y+64)-(ennemi.image.rect.y+(ennemi.col.dimensions.h div 2)))<50 then
+          if abs(getcentery(joueur)-getcentery(ennemi))<50 then
             begin
             dashInit(ennemi);
             ennemi.stats.compteurAction:=0;
             end
           end;
-        if ((ennemi.anim.etat='dash') or (ennemi.anim.etat='superdash')) and (abs(ennemi.stats.xcible-ennemi.image.rect.x)<40) then
-            begin
-            initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,true);
-            ennemi.col.estActif:=True;
-            end;
         if (ennemi.anim.etat='dash') then
           begin
           moveToTarget(ennemi,10);
@@ -531,6 +552,12 @@ begin
         if (ennemi.anim.etat='superdash') then
           movetoTarget(ennemi,30);
         end;
+        if ((ennemi.anim.etat='dash') or (ennemi.anim.etat='superdash')) and (pseudoColMurs(ennemi)) then
+            begin
+            initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,true);
+            ennemi.col.estActif:=True;
+            end;
+        
       4: //pour un ennemi qui se téléporte 
         begin
           if ennemi.anim.etat='chase' then
@@ -643,6 +670,8 @@ begin
             ennemi.stats.compteurAction:=600
             end;
           end;
+        if (ennemi.anim.etat='tir') and (ennemi.anim.currentFrame=10) then
+          jouerSonEff('rykor');
         if (ennemi.anim.etat='tir') and (ennemi.stats.compteurAction<=601) and (ennemi.anim.currentFrame=20) then
           begin
           ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
@@ -654,13 +683,15 @@ begin
           initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
           end;
         end;
-      12:begin
+      12:begin //ennemi qui s'arrête pour lancer un sort à la position du joueur
         ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
         if ennemi.anim.etat='chase' then
           begin
           AIPathFollow(ennemi,joueur,ennemi.stats.vitessePoursuite,True,True);
           if (ennemi.stats.compteurAction>300) then
+            begin
             initAnimation(ennemi.anim,ennemi.anim.objectName,'cast',ennemi.stats.nbFrames2,True);
+            end;
           end;
         
         if ennemi.stats.compteurAction>400 then
@@ -720,7 +751,8 @@ begin
         if (ennemi.anim.etat='strike') and animFinie(ennemi.anim) then
           begin
           initAnimation(ennemi.anim,ennemi.anim.objectName,'dodge',4,True);
-          ennemi.stats.compteurAction:=15
+          ennemi.stats.compteurAction:=15;
+          jouerSonEff('epee ('+intToSTr(random(4)+1)+')');
           end;
 
         if (ennemi.anim.etat='charge') then
@@ -748,7 +780,10 @@ begin
           ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
           end;
         if (ennemi.anim.etat='chase') and (random((150+ennemi.stats.vie))=0) then
+          begin
           initAnimation(ennemi.anim,ennemi.anim.objectName,'rage',ennemi.stats.nbFrames2,True);
+          jouerSonEnn(ennemi.anim.objectName);
+          end;
         if (ennemi.anim.etat='rage') and (animFinie(ennemi.anim)) and (random(10)=0) then
           begin
           initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
@@ -804,6 +839,13 @@ begin
               ennemi.stats.compteurAction:=0;
               end;
           end;
+        16:begin //Boss : Le gardien
+          
+          AIPathFollow(ennemi,joueur,ennemi.stats.vitessePoursuite,True,False);
+          ennemi.anim.isFliped:=False;
+          if (ennemi.stats.compteurAction>1600) then
+            ennemi.stats.compteurAction:=0;
+          end;
 
     end
 end;
@@ -820,6 +862,8 @@ begin
     begin
     ennemi.image.rect.x:=460;ennemi.image.rect.y:=00;
     end;
+  if ennemi.anim.objectName='gardien' then
+    ennemi.image.rect.y:=-50;
   if (ennemi.anim.etat='apparition') and (ennemi.anim.objectName='Béhémoth') and (ennemi.stats.compteurAction=0) then
     begin
 	    InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',0,0,windowWidth,400,extractionTexte('DIALOGUE_BOSS_1'),100);
@@ -860,7 +904,7 @@ begin
           begin
           x:=ennemi.image.rect.x;
           y:=ennemi.image.rect.y;
-          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portrait_Leo7.bmp',0,0,windowWidth,400,extractionTexte('DIALOGUE_EVENT_BOSS_2'),100);
+          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portrait_Leo7.bmp',0,0,windowWidth,400,extractionTexte('DIALOGUE_EVENT_BOSS_2'),10);
           sceneActive:='Cutscene';
           ennemi:=templatesEnnemis[21];
           ennemi.image.rect.x:=x;
@@ -874,6 +918,7 @@ begin
         ennemi.anim.isFliped:=(joueur.image.rect.x>ennemi.image.rect.x);
         if not (ennemi.anim.etat='mort') then 
           begin
+          jouerSonEnn(ennemi.anim.objectName+'_mort');
           InitAnimation(ennemi.anim,ennemi.anim.objectName,'mort',ennemi.stats.nbFramesMort,False);
           ennemi.col.estActif:=False;
           statsJoueur.bestiaire[ennemi.stats.numero]:=True;
@@ -924,6 +969,7 @@ initStatEnnemi(26,'elementaire_lumiere',1,50,2,0,4,3,300,300,12,11,6,0,8,60,60,1
 initStatEnnemi(27,'elementaire_ombre',1,50,2,0,4,3,300,300,11,12,9,0,10,60,60,120,120,'rayon_spectral');
 initStatEnnemi(28,'elementaire_tempete',3,50,0,5,0,2,150,150,10,8,4,0,10,100,150,25,0,'');
 initStatEnnemi(29,'elementaire_eclipse',1,250,2,0,4,3,400,400,19,12,7,0,9,60,60,160,160,'eclipse');
+initStatEnnemi(30,'gardien',16,500,2,1,0,1,300,300,8,16,0,0,23,250,120,25,120,'rayon_main');
 
 
 

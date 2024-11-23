@@ -1,10 +1,11 @@
 unit SonoSys;
 interface
-uses SDL2, SDL2_mixer,SysUtils,coeur; //télécharger SDL2_mixer au préalable
+uses SDL2, SDL2_mixer,SysUtils,coeur,memgraph; //télécharger SDL2_mixer au préalable
 
 const TAILLE_OST=31;
         VOLUME_MUSIQUE=40;
-        VOLUME_SON=40;
+        VOLUME_SON=20;
+        MAX_CHAINES = 6;
 type TMus=record
     musique:PMix_Music;
     duree:Integer;
@@ -13,7 +14,8 @@ type TMus=record
 end;
 
 var OST:array[1..TAILLE_OST] of TMus;
-    IndiceMusiqueJouee:Integer;
+    SFX:array[1..MAX_CHAINES] of PMix_Chunk;
+    IndiceMusiqueJouee,chaineActuelle:Integer;
     indiceMusiquePrec:Integer;
     updateTimeMusique,tempsTemp:UInt32;
     enFondu:Boolean;
@@ -22,7 +24,7 @@ var OST:array[1..TAILLE_OST] of TMus;
 procedure jouerSon(nomFichier:PChar);//joue un son .WAV
 procedure jouerMus(i:Integer);//joue une musique .OGG ou .WAV
 procedure autoMusique(); //recommence une musique si elle est finie (à mettre dans la boucle d'actualisation du jeu)
-
+procedure JouerSonEff(nom:String);
 procedure arretMus(duree:Integer);//éteindre progressivement la musique, durée en ms
 procedure arretSons(duree:Integer);//arrêter tous les sons
 procedure detruireOST();//à mettre impérativement en fin du programme
@@ -60,9 +62,21 @@ end;
 
 procedure jouerSon(nomFichier:PCHar);
 begin
-    Mix_PlayChannel(1,chargerSFX(nomFichier),0)
+    if fileExists(nomFichier) then
+        begin
+            Mix_FreeChunk(SFX[chaineActuelle]);
+            SFX[chaineActuelle]:=chargerSFX(nomFichier);
+            Mix_PlayChannel(chaineActuelle,SFX[chaineActuelle],0);
+            chaineActuelle:=chaineActuelle+1;
+            if chaineActuelle>6 then
+                chaineActuelle:=1;
+        end;
 end;
 
+procedure JouerSonEff(nom:String);
+begin
+    jouerSon(StringToPChar('SFX/Effets/'+nom+'.wav'));
+end;
 procedure jouerMus(i:Integer);
 begin
     mix_playMusic(chargerOST(OST[i].dir),0);
@@ -131,6 +145,7 @@ end;
 begin
 indiceMusiquePrec:=0;
 tempsTemp:=0;
+chaineActuelle:=0;
 Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT,
     MIX_DEFAULT_CHANNELS, 4096);
 

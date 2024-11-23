@@ -6,6 +6,8 @@ uses
     animationSys,
     coeur,
     eventSys,
+    sysutils,
+    sonoSys,
     math,
     memgraph,
     sdl2_mixer,
@@ -203,7 +205,7 @@ begin
   InitAnimation(obj.anim,nom,'active',frames,False);
   obj.anim.estActif:=True;
   obj.stats.genre:=effet;
-  
+  jouerSonEff(nom);
   createRawImage(obj.image,x,y,w,h,getFramePath(obj.anim));
   obj.col.estActif:=False;
   obj.col.nom:=nom;
@@ -353,6 +355,9 @@ begin
         proj.stats.multiplicateurDegat:=multiplicateurDegat;
         proj.stats.origine:=origine;
 
+        if (nom='projectile') and (origine=joueur) then
+            jouerSonEff('Arc ('+intToSTr(random(6)+1)+')');
+
         //Initialisation de l'affichage
         if nom='justice' then
             InitAnimation(proj.anim,nom,'modeProj',6,true)
@@ -490,6 +495,7 @@ begin
         justice.stats.delai:=-1;
         justice.col.estActif:=True;
         InitAnimation(justice.anim,justice.anim.objectName,'active',10,false);
+        jouerSonEff(justice.anim.objectName);
         justice.anim.currentFrame:=1;
         justice.col.estActif:=True;
         initAngle(justice.stats.vectX,justice.stats.vectY,justice.stats.angle);
@@ -550,6 +556,10 @@ begin
         begin
         knockbackX:=max(min(knockbackX*2,5),-5);
         knockbackY:=max(min(knockbackY*2,5),-5);
+        end
+    else
+        begin
+        knockbackX:=0;knockbackY:=0;
         end;
      
         victime.stats.etatPrec:=victime.anim;
@@ -581,6 +591,7 @@ end;
     begin
         CreerRayon(joueur , 2 , s.force , s.multiplicateurDegat , x,y,1200,120, getmouseX,getmouseY,{vitRotation}1,{dureeVie}30,{delai}1, 'rayon', proj);
         ajoutObjet(proj);
+        jouerSonEff('Rayon');
     end;
 
     //3 L'impératrice ### ne soigne pas encore pour l'instant
@@ -589,6 +600,7 @@ end;
     begin
         CreerRayon(joueur , 3 , s.force , s.multiplicateurDegat , x,y,1200,150, getmouseX,getmouseY,{vitRotation}0,{dureeVie}50,{delai}1, 'rayon', proj);
         ajoutObjet(proj);
+        jouerSonEff('Rayon');
     end;
 
     //4 L'empereur
@@ -663,7 +675,11 @@ end;
 
         case rdm of
             1,2,3 : degatInst(s, 5); //-5pv
-            4 : s.force := s.force + 3; // +3 force
+            4 : begin
+                s.force := s.force + 3;
+                creerEffet(0,0,100,100,16,'force',True,eff);
+                ajoutObjet(eff);
+                end; // +3 force
             5,6,7,8  : begin 
                 s.mana := s.mana + 2;
                 creerEffet(0,0,70,70,12,'plus',True,eff);
@@ -691,7 +707,7 @@ end;
         s.defense := s.defense +5;
         s.multiplicateurMana := s.multiplicateurMana + 0.25;
         s.vitesse := s.vitesse + 1;
-
+        jouerSonEff('pendu');
         //inverser les contrôles
         s.pendu := not(s.pendu); 
         //### mono usage
@@ -736,12 +752,14 @@ end;
     procedure XVI(s : TStats ; x,y : Integer);
     begin
         multiLasers(joueur, 2 ,s.force , s.multiplicateurDegat , x,y ,120, {vitesse} 0 ,4 ,360,0, 100 ,1,'rayon');
+        jouerSonEff('tour');
     end;
 
     //17 L'étoile
     procedure XVII(s : Tstats ; x,y : integer);
     begin
         multiLasers(joueur, 2 ,s.force , s.multiplicateurDegat , x,y ,120, {vitesse} 0 ,8 ,360,0, 100 ,1,'rayon');
+        jouerSonEff('etoile');
     end;
 
     //18 La lune
@@ -818,6 +836,7 @@ end;
     procedure XXIII(origine:typeObjet;s:TStats;x,y,xcible,ycible,delai:Integer);
     var distX,distY:Integer;
     begin
+        jouerSonEff('XXIII');
         distX:=xcible-x;
         distY:=ycible-y;
         initJustice(origine,5,s.force,s.multiplicateurDegat,xcible,ycible,xcible-distx,ycible-disty,18,delai,'Lionheart');
@@ -829,6 +848,7 @@ end;
     procedure XXIV(s:TStats;x,y:Integer);
     var angle:Real;
     begin
+        jouerSonEff('XXIV');
         initAngle(getmouseX-x,getMouseY-y,angle);
         multiprojs(joueur, 10 ,s.force , s.multiplicateurDegat , x,y ,100,100, 0,2 ,360 ,round(angle*360),'Roue');
     end;

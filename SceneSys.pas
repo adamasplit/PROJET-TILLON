@@ -56,7 +56,7 @@ begin
     randomize;
 	sdl_freesurface(fond.imgSurface);
 	sdl_destroytexture(fond.imgTexture);
-    CreateRawImage(fond,88,-80,900,900,StringToPChar('Sprites/Game/floor/Floor'+ IntToStr(Random(4)+1) +'.bmp'));
+    CreateRawImage(fond,88,-80,900,900,StringToPChar('Sprites/Game/floor/Floor'+ IntToStr(Random(5)) +'.bmp'));
 end;
 
 procedure InitDecorCartes;
