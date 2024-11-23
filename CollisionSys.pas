@@ -6,7 +6,7 @@ uses
   AnimationSys,
   Math,
   memgraph,
-  SDL2,sdl2_mixer,combatLib,eventSys,
+  SDL2,sdl2_mixer,combatLib,eventSys,sonoSys,
   SysUtils,coeur;
 
   var modeDebug:Boolean;
@@ -19,6 +19,7 @@ uses
   function isAttack(obj:TObjet):Boolean;
   // Fonction de vérification manuelle des collisions entre deux objets
   function CheckCollision(var obj1, obj2: TObjet): Boolean;
+  function PseudoColMurs(var obj:TObjet):Boolean;
 
   // Fonction OnTriggerEnter déclenchée lors d'une collision (si IsTrigger est vrai)
   procedure OnTriggerEnter(var obj1, obj2: TObjet);
@@ -254,6 +255,7 @@ begin
     obj.image.rect.y:=murs[3].image.rect.y-obj.col.offset.y-obj.col.dimensions.h;
     pseudoColMurs:=True;
     end;
+
 end;
 
 // Vérifie la collision entre deux objets et gère les conséquences (repoussement ou trigger)
@@ -338,6 +340,7 @@ begin
   else if att2 then
     collisionValide:=(not (att1)) and (stats1.genre<>stats2.origine)
   else if (stats1.genre=ennemi) or (stats1.genre=joueur) then collisionValide:=True;
+
 end;
 
 // Fonction appelée lorsqu'une collision avec un trigger est détectée
@@ -352,6 +355,8 @@ begin
       end;
     if ((obj2.stats.genre=projectile) or (obj2.stats.genre=laser) or (obj2.stats.genre=epee)) and (obj2.stats.origine<>obj1.stats.genre) then
       begin
+        if (obj2.stats.genre=epee) and not (isAttack(obj1)) then
+          jouerSonEff('impact_epee_'+intToStr(random(5)+1));
         if obj2.stats.genre=projectile then
           begin
           subirDegats(obj1,degat(obj2.stats.degats,obj2.stats.force,obj1.stats.defense,obj2.stats.multiplicateurDegat),round(obj2.stats.vectx),round(obj2.stats.vecty));
@@ -362,25 +367,16 @@ begin
           subirDegats(obj1,degat(obj2.stats.degats,obj2.stats.force,obj1.stats.defense,obj2.stats.multiplicateurDegat),0,0);
           creerEffet(getcenterx(obj1),getcentery(obj1),64,64,6,'impact',False,eff);
           ajoutobjet(eff);
-          end
+          end;
+        
       end
   end
-end;
-
-procedure conditionUnique(var obj1,obj2:TObjet);
-begin
-  if isAttack(obj2) and (obj1.stats.origine<>obj2.stats.origine) then
-    if collisionAngle(obj1,obj2) then
-      begin
-      supprimeObjet(obj2);
-      creerEffet(obj1.image.rect.x,obj1.image.rect.y,100,100,5,'roue_impact',False,obj1);
-      end;
 end;
 
 // Met à jour les collisions entre tous les objets actifs
 procedure UpdateCollisions();
 var
-  i, j: Integer;
+  i, j: Integer;destructionI:Boolean; //mémorise si l'objet I est détruit
 begin
   
   for i := 0 to High(LObjets) do
@@ -393,18 +389,33 @@ begin
     // Si l'objet est actif pour les collisions
     if LObjets[i].col.estActif then
     begin
-      
+      destructionI:=False;
       for j := i + 1 to High(LObjets) do
-      if j<=High(LObjets) then
+      if (j<=High(LObjets)) and (i<=High(LObjets)) and (not destructionI) then
       begin
-        if (LObjets[i].anim.objectName='Roue') and (LObjets[i].stats.origine=joueur) then
-          conditionUnique(LObjets[i],LObjets[j])
+        //writeln('i=',i,',j=',j,',High(LObjets)=',high(lobjets));
+        if (LObjets[i].anim.objectName='Roue') then 
+          begin 
+          if isAttack(LObjets[j]) and (LObjets[j].stats.origine<>LObjets[i].stats.origine) and collisionAngle(LObjets[i],LObjets[j]) then
+          begin
+          supprimeObjet(LObjets[i]);
+          creerEffet(LObjets[j-1].image.rect.x,LObjets[j-1].image.rect.y,100,100,5,'roue_impact',False,LObjets[j-1]);
+          destructionI:=True;
+          end
+          end
         else
-        if (LObjets[j].anim.objectName='Roue') and (LObjets[j].stats.origine=joueur) then
-          conditionUnique(LObjets[j],LObjets[i])
+        if (LObjets[j].anim.objectName='Roue') then 
+          begin
+          if isAttack(LObjets[i]) and (LObjets[j].stats.origine<>LObjets[i].stats.origine) and collisionAngle(LObjets[i],LObjets[j]) then
+            begin
+            supprimeObjet(LObjets[i]);
+            creerEffet(LObjets[j-1].image.rect.x,LObjets[j-1].image.rect.y,100,100,5,'roue_impact',False,LObjets[j-1]);
+            destructionI:=True;
+            end
+          end
         else
           // Si l'autre objet est aussi actif pour les collisions
-          if (LObjets[j].col.estActif) and collisionValide(LObjets[i].stats,LObjets[j].stats) then
+          if ((LObjets[j].col.estActif) and collisionValide(LObjets[i].stats,LObjets[j].stats)) and not (((LObjets[j].anim.objectName='Roue') and (Lobjets[j].stats.origine=joueur)) or ((LObjets[i].anim.objectName='Roue') and (Lobjets[i].stats.origine=joueur))) then
           begin
             // Vérifier les collisions entre obj[i] et obj[j]
             if pseudoColMurs(LObjets[i]) and not pseudoColMurs(LObjets[j]) then //si un objet est dans un mur, il a alors la 'priorité' pour le repoussement

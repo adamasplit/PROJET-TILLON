@@ -280,7 +280,7 @@ begin
     // Game icon (𓈒⟡₊⋆∘ Wowie 𓈒⟡₊⋆∘)
     CreateText(text1, windowWidth div 2-150, 20, 300, 250, 'Les Cartes du Destin',Fantasy30, whiteCol);
 	// Initialisation des boutons principaux (à gauche)
-	InitButtonGroup(boutons[2], 100, windowHeight div 5, 350, 80, 'Sprites\Menu\Button1.bmp', 'Continuer', Pjouer);
+	InitButtonGroup(boutons[2], 100, windowHeight div 5, 350, 80, 'Sprites\Menu\Button1.bmp', 'Continuer', @choixSalle);
     InitButtonGroup(boutons[1], 100, (windowHeight div 5) + 100, 350, 80, 'Sprites\Menu\Button1.bmp', 'Nouvelle Partie', PNouvellePartieIntro);
     InitButtonGroup(boutons[3], 100, (windowHeight div 5) + 200, 350, 80, 'Sprites\Menu\Button1.bmp', 'Leaderboard', leaderboard);
     InitButtonGroup(boutons[4], 100, (windowHeight div 5) + 300, 350, 80, 'Sprites\Menu\Button1.bmp', 'Quitter', quitter);
