@@ -209,9 +209,8 @@ end;
 
 procedure direction_menu;
 begin
-	
     SceneActive := 'Menu';
-	
+	indiceMusiqueJouee:=1;
 
     // Activer les boutons du menu principal
     boutons[2].button.estVisible := true;

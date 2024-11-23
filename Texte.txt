@@ -111,3 +111,6 @@
 <DIALOGUE_BOSS_2>Non... Emprisonné à nouveau? Vous ne perdez rien pour attendre, humains!;
 <DIALOGUE_EVENT_BOSS_1>Très bien, on va voir ce que vous valez!;
 <DIALOGUE_EVENT_BOSS_2>Il y a bien longtemps que je n'ai pas eu autant de difficultés... Il est temps de se battre à pleine puissance!;
+<GAMEOVER_1>Quelle terrible prémonition! Il ne tient qu'à moi de faire en sorte qu'elle ne se réalise pas.;
+<GAMEOVER_2>Non... Est-ce vraiment ce à quoi je me destine?;
+<GAMEOVER_3>J'ai déjà lu mon propre destin, ce n'est pas comme ça que les choses se passeront. Recommençons.;

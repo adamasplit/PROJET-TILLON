@@ -230,16 +230,17 @@ end;
 procedure CrossMoveInit(var ennemi:TObjet;x,y:Integer);
 var distx,disty:Integer;
 begin
+
   //choisit un endroit où l'ennemi peut se déplacer en ligne droite (tour aux échecs)
   distx:=-(ennemi.image.rect.x-x);disty:=-(ennemi.image.rect.y-y);
   if sqrt(distx**2+disty**2)>100 then
   if abs(distx)>abs(disty) then
     begin
-    ennemi.stats.ycible:=ennemi.image.rect.y;ennemi.stats.xcible:=max(200,x);
+    ennemi.stats.ycible:=getcentery(ennemi);ennemi.stats.xcible:=max(200,x);
     end
   else
     begin
-    ennemi.stats.xcible:=ennemi.image.rect.x;ennemi.stats.ycible:=y;
+    ennemi.stats.xcible:=getcenterx(ennemi);ennemi.stats.ycible:=y;
     end;
   ennemi.stats.compteurAction:=0;
 end;
