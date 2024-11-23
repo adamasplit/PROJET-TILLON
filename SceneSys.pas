@@ -96,6 +96,7 @@ var i:Integer;
 		UpdateCollisions();
 		UpdateAnimations();
 		UpdateAttaques();
+		UpdateDamagePopUps;
 		if LObjets[0].stats.vie>LObjets[0].stats.vieMax then LObjets[0].stats.vie:=LObjets[0].stats.vieMax;
 		if LObjets[0].stats.vie<0 then LObjets[0].stats.vie:=0;
 		if leMonde and (sdl_getTicks-UpdateTimeMonde>LObjets[0].stats.compteurLeMonde*1000) then
@@ -169,6 +170,7 @@ begin
     statsJoueur.multiplicateurDegat:=1;
     for j:=1 to 4 do 
         statsJoueur.collection[j]:=Cartes[1];
+	statsJoueur.collection[j]:=Cartes[20];
     statsJoueur.vie:=100;statsJoueur.vieMax:=100;
     initStatsCombat(statsJoueur,LObjets[0].stats);
     iCarteChoisie:=1;

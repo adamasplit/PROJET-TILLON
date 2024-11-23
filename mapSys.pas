@@ -104,7 +104,7 @@ begin
         if (alea=20) or (alea=21) then
             ennemis[j]:=templatesEnnemis[30]
         else
-            ennemis[j]:=templatesEnnemis[4];
+            ennemis[j]:=templatesEnnemis[20];
         writeln('élément ',j,' de ennemis: ',ennemis[j].anim.objectName);
         end;
     writeln('ennemis choisis');

@@ -7,7 +7,7 @@ uses
     SDL2_mixer,
     SysUtils; //télécharger SDL2_mixer au préalable
 
-const TAILLE_OST=32;
+const TAILLE_OST=40;
         VOLUME_MUSIQUE=40;
         VOLUME_SON=20;
         MAX_CHAINES = 6;

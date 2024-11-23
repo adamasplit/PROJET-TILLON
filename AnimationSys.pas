@@ -14,6 +14,9 @@ const
   FRAME_DURATION = 90;  // Durée en ms pour 30 FPS
 
 var
+  DamagePopUps: array of TText;
+
+var
   fonduActif: Boolean;
   fonduEntrant: Boolean;
   dureeFondu: Integer;  // Durée en millisecondes
@@ -42,10 +45,8 @@ procedure DeclencherFondu(isFonduEntrant: Boolean; duree: Integer);
 procedure EffetDeFondu;
 
 
-
-
-// Animation de Fondu au fromage
-
+procedure CreateDamagePopUp(x, y: Integer; damage: PChar; couleur: TSDL_Color);
+procedure UpdateDamagePopUps;
 
 implementation
 
@@ -272,6 +273,51 @@ begin
   jouerSon('SFX\Button_click.wav');
   end;
 end;
+
+procedure CreateDamagePopUp(x, y: Integer; damage: PChar; couleur: TSDL_Color);
+var
+  newPopUp: TText;
+begin
+  CreateText(newPopUp, x+10, y+20,20,20, damage, Fantasy30, couleur);
+  SetLength(DamagePopUps, Length(DamagePopUps) + 1);
+  DamagePopUps[High(DamagePopUps)] := newPopUp;
+end;
+
+
+procedure UpdateDamagePopUps;
+var
+  i,j: Integer;
+begin
+  if  High(DamagePopUps)+1 = 0 then exit;
+
+  for i :=0 to High(DamagePopUps) do
+  if(i<=High(DamagePopUps)) then
+  begin
+    //writeln('focusing on element ', High(DamagePopUps)+1, ' , careful !');
+    // Afficher le pop-up
+    RenderText(DamagePopUps[i]);
+
+    // Mise à jour de la position et de l'opacité
+    DamagePopUps[i].rect.y := DamagePopUps[i].rect.y - 1; 
+    DamagePopUps[i].textColor.a := Max(0, DamagePopUps[i].textColor.a - (255 div 60));
+
+    // Supprimer le pop-up si son temps est écoulé
+    if DamagePopUps[i].textColor.a = 0 then
+    begin
+      //writeln('element ', High(DamagePopUps)+1, ' being wiped out of existance...');
+      SDL_DestroyTexture(DamagePopUps[i].textTexture);
+      SDL_freeSurface(DamagePopUps[i].textSurface);
+      //writeln('element ', High(DamagePopUps)+1, ' destroyed sucessfully !');
+      for j:=i to High(DamagePopUps)-1 do 
+            DamagePopUps[j]:=DamagePopUps[j+1];
+      setlength(DamagePopUps,High(DamagePopUps));
+      //writeln('liste popup : ', High(DamagePopUps)+1)
+    end;
+  end;
+end;
+
+
+
 begin
   fonduActif := False;
   fonduEntrant := True;

@@ -100,6 +100,7 @@ procedure UpdateDialogueBox(var Box: TDialogueBox);
 procedure RenderDialogueText(var Box: TDialogueBox);
 
 
+
 procedure ClearScreen;
 function StringToPChar(s : string) : Pchar;
 {Debug}

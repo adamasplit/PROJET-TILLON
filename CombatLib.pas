@@ -6,12 +6,12 @@ uses
     animationSys,
     coeur,
     eventSys,
-    sysutils,
-    sonoSys,
     math,
     memgraph,
+    SDL2,
     sdl2_mixer,
-    SDL2;
+    sonoSys,
+    sysutils;
 
 var updateTimeMonde:UInt32;updateTimeMort:UInt32;
 
@@ -34,7 +34,8 @@ procedure XXIII(origine:typeObjet;s:TStats;x,y,xcible,ycible,delai:Integer);
 procedure renderAvecAngle(objet:TObjet);
 procedure creerEffet(x,y,w,h,frames:Integer;nom:PCHar;fixeJoueur:Boolean;var obj:TObjet);
 procedure InitJustice(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,xCible,yCible,vitesse,delai:Integer;dir:PChar);
-procedure subirDegats(var victime:TObjet;degats,knockbackX,knockbackY:Integer);
+procedure subirDegats(var victime:TObjet;degats,knockbackX,knockbackY:Integer);overload;
+procedure subirDegats(var stats:TStats;degats,x,y:Integer);overload;
 procedure JouerCarte(var stats:TStats;x,y,i:Integer); 
 procedure InitAngle(vectX,vectY:Real;var angle:Real);
 procedure supprimerCarte(var  stats : TStats; num : integer);
@@ -65,12 +66,6 @@ begin
     degat := math.ceil((flat + force - defense)*multiplicateurDegat);
     if degat < 1 then
         degat := 1;
-end;
-
-//procedure de dégat instantané : inflige des dégat FLAT 
-procedure degatInst (var s : Tstats ; degat : integer );
-begin
-    s.vie := s.vie - degat;
 end;
 
 
@@ -542,7 +537,8 @@ for i:=2 to High(LObjets) do
 		end
 end;
 
-procedure subirDegats(var victime:TObjet;degats,knockbackX,knockbackY:Integer);
+procedure subirDegats(var victime:TObjet;degats,knockbackX,knockbackY:Integer);overload;
+var popUpColor : TSDL_Color;
 begin
     if (victime.anim.etat<>'degats') then begin
     if (victime.stats.genre=joueur) and (victime.stats.leFou) then
@@ -569,7 +565,21 @@ begin
             initAnimation(victime.anim,victime.anim.objectname,'degats',4,False);
         if (victime.stats.genre=TypeObjet(1)) and (victime.anim.etat='chase') then
             victime.stats.compteurAction:=victime.stats.compteurAction+1;
+        if degats >= 0 then
+            begin popUpColor.r:=255;popUpColor.g:=51;popUpColor.b:=51;popUpColor.a:=255; end
+        else begin popUpColor.r:=51;popUpColor.g:=255;popUpColor.b:=51;popUpColor.a:=255; end;
+        CreateDamagePopUp(victime.image.rect.x,victime.image.rect.y,StringToPChar(IntToStr(abs(degats))),popUpColor);
     end;
+end;
+
+procedure subirDegats(var stats:TStats;degats,x,y:Integer);overload;
+var popUpColor : TSDL_Color;
+begin
+    stats.vie:=stats.vie-degats;
+    if degats >= 0 then
+        begin popUpColor.r:=255;popUpColor.g:=51;popUpColor.b:=51;popUpColor.a:=255; end
+        else begin popUpColor.r:=51;popUpColor.g:=255;popUpColor.b:=51;popUpColor.a:=255; end;
+    CreateDamagePopUp(x,y,StringToPChar(IntToStr(abs(degats))),popUpColor);
 end;
 
 
@@ -674,7 +684,7 @@ end;
         rdm := random(10)+1;
 
         case rdm of
-            1,2,3 : degatInst(s, 5); //-5pv
+            1,2,3 : subirDegats(s, 5,Lobjets[0].image.rect.x,Lobjets[0].image.rect.y); //-5pv
             4 : begin
                 s.force := s.force + 3;
                 creerEffet(0,0,100,100,16,'force',True,eff);
@@ -739,7 +749,7 @@ end;
     procedure XV(var sCombat, sPerm : TStats);
     var eff:TOBjet;
     begin
-        degatInst(sCombat, 45); // infliger 45 dmg
+        subirDegats(sCombat, 45,Lobjets[0].image.rect.x,Lobjets[0].image.rect.y); // infliger 45 dmg
         sCombat.defense := sCombat.defense + 1; //modifier le s en combat
         sPerm.defense := sPerm.defense + 1; // appliqué aussi au s de sauvegarde
         sCombat.multiplicateurDegat := sCombat.multiplicateurDegat + 0.5;
@@ -792,11 +802,11 @@ end;
     procedure XIX(var s : TStats);
     var i : integer;eff:TObjet;
     begin
-        degatInst(s, -5); // soin de 5 pv 
+        subirDegats(s, -5,Lobjets[0].image.rect.x,Lobjets[0].image.rect.y); // soin de 5 pv 
         for i := 0 to high(LOBjets) do
             if LOBjets[i].stats.genre=ennemi then
             begin
-                degatInst(LObjets[i].stats,1);
+                subirDegats(LObjets[i].stats,1,Lobjets[i].image.rect.x,Lobjets[i].image.rect.y);
                 creerEffet(LObjets[i].image.rect.x+LObjets[i].col.offset.x,LObjets[i].image.rect.y+LObjets[i].col.offset.x,LObjets[i].col.dimensions.w,LObjets[i].col.dimensions.h,7,'impact_solaire',False,eff);
                 ajoutObjet(eff);
             end;
@@ -808,7 +818,7 @@ end;
     procedure XX(var s : Tstats);
     var eff:TObjet;
     begin
-        degatInst(s, -20);
+        subirDegats(s, -20,Lobjets[0].image.rect.x,Lobjets[0].image.rect.y);
         creerEffet(0,0,150,150,15,'ange',True,eff);
         ajoutObjet(eff);
     end;
