@@ -33,7 +33,8 @@ procedure InitButtonGroup(var btnGroup: TButtonGroup;  x, y, w, h: Integer; imgP
 procedure RenderButtonGroup(var btnGroup: TButtonGroup);
 
 // Gestion des événements OnHover et OnClick
-procedure OnMouseHover(var btnGroup: TButtonGroup; x,y : Integer);
+procedure OnMouseHover(var btnGroup: TButtonGroup; x,y : Integer);overload;
+procedure OnMouseHover(var btnGroup: TButtonGroup; x,y : Integer; soundDir:Pchar);overload;
 procedure OnMouseClick(var btnGroup: TButtonGroup; x, y: Integer);
 
 //Gestion due fondu
@@ -178,7 +179,7 @@ RenderRawImage(btnGroup.image, False);
 RenderButton(btnGroup.button);
 end;
 
-procedure OnMouseHover(var btnGroup: TButtonGroup; x, y: Integer);
+procedure OnMouseHover(var btnGroup: TButtonGroup; x, y: Integer);overload;
 begin
   // Vérifier si la souris est sur le bouton
   if (x >= btnGroup.image.rect.x) and (x <= btnGroup.image.rect.x + btnGroup.image.rect.w) and
@@ -200,6 +201,40 @@ begin
 
       // Jouer le son de hoverr
       jouerSon('SFX\Button_hover.wav');
+      btnGroup.hoverSoundPlayed := True;
+    end;
+  end
+  else
+  if btnGroup.hoverSoundPlayed then
+  begin
+    // Réinitialiser l'alpha et la taille si la souris quitte la zone de Hover
+    SDL_SetTextureAlphaMod(btnGroup.image.imgTexture, 150);
+      //btnGroup.image.rect.x := Round(btnGroup.image.rect.x *1.05);
+      //btnGroup.image.rect.y := Round(btnGroup.image.rect.x *1.05);
+      btnGroup.image.rect.h := btnGroup.originalHeight;
+      btnGroup.image.rect.w := btnGroup.originalWidth;
+      btnGroup.button.rect.w := btnGroup.originalWidth;
+      btnGroup.button.rect.h := btnGroup.originalHeight;
+    btnGroup.hoverSoundPlayed := False;  // Réinitialiser pour le prochain Hover
+  end;
+end;
+
+procedure OnMouseHover(var btnGroup: TButtonGroup; x, y: Integer; soundDir : Pchar);overload;
+begin
+  // Vérifier si la souris est sur le bouton
+  if (x >= btnGroup.image.rect.x) and (x <= btnGroup.image.rect.x + btnGroup.image.rect.w) and
+     (y >= btnGroup.image.rect.y) and (y <= btnGroup.image.rect.y + btnGroup.image.rect.h) then
+  begin
+    if not btnGroup.hoverSoundPlayed then
+    begin
+      btnGroup.image.rect.w := Round(btnGroup.originalWidth * 1.1);
+      btnGroup.image.rect.h := Round(btnGroup.originalHeight * 1.1);
+
+      btnGroup.button.rect.w := btnGroup.image.rect.w;
+      btnGroup.button.rect.h := btnGroup.image.rect.h;
+
+      SDL_SetTextureAlphaMod(btnGroup.image.imgTexture, 180);
+      jouerSon(soundDir);
       btnGroup.hoverSoundPlayed := True;
     end;
   end
