@@ -358,7 +358,10 @@ begin
         end
       else
         multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+(ennemi.image.rect.w div 2),ennemi.image.rect.y+(ennemi.image.rect.h div 2),100,100,5,3,360,random(18)*10,ennemi.stats.nomAttaque);
-    5: if (ennemi.anim.etat='strike')then
+    5: begin
+      if (ennemi.anim.etat='chase') and (ennemi.stats.compteurAction mod 150 = 0) then
+        multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+(ennemi.image.rect.w div 2),ennemi.image.rect.y+(ennemi.image.rect.h div 2),100,100,5,3,360,random(18)*10,'kamui');
+      if (ennemi.anim.etat='strike')then
       begin
       ennemi.anim.isFliped:=(ennemi.stats.xcible>ennemi.image.rect.x);
       if (ennemi.anim.currentFrame=6) and (sdl_getTicks-ennemi.anim.lastUpdateTime<15) then
@@ -369,6 +372,7 @@ begin
           CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+40,ennemi.image.rect.y+50,1200,100,ennemi.image.rect.x-60,ennemi.image.rect.y+50,0,10,ennemi.stats.vie,ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj);
         end;
+      end;
       end;
     6:
       begin
@@ -458,7 +462,7 @@ begin
         begin
         creerRayon(typeObjet(1),4,ennemi.stats.force,ennemi.stats.multiplicateurDegat,600,ennemi.stats.compteurAction div 2,300,150,1500,ennemi.stats.compteurAction div 2,0,30,50,ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj);
-        creerRayon(typeObjet(1),4,ennemi.stats.force,ennemi.stats.multiplicateurDegat,1400,ennemi.stats.compteurAction div 2,300,150,200,ennemi.stats.compteurAction div 2,0,30,50,ennemi.stats.nomAttaque,obj);
+        creerRayon(typeObjet(1),4,ennemi.stats.force,ennemi.stats.multiplicateurDegat,1400,720-ennemi.stats.compteurAction div 2,300,150,200,720-ennemi.stats.compteurAction div 2,0,30,50,ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj);
         end;
       if (ennemi.stats.compteurAction mod 50 =0) then
@@ -467,6 +471,21 @@ begin
         ajoutObjet(obj);
         creerRayon(typeObjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,(random(10)+6)*100,-30,300,150,x+400,y,0,30,80,'pic_terre',obj);
         ajoutObjet(obj);
+        end;
+      end;
+    17:begin
+      if (ennemi.anim.etat='revolution') and (ennemi.anim.currentFrame=6) and (ennemi.stats.compteurAction<2) then
+        multiProjs(typeObjet(1),1,ennemi.stats.force,ennemi.stats.multiplicateurDegat,getcenterx(ennemi),getcentery(ennemi),100,100,7,10,360,ennemi.stats.compteurAction*10,'onde');
+      
+      if (ennemi.anim.etat='strike') and (ennemi.anim.currentFrame=4) and (ennemi.stats.compteurAction<5) then
+        begin
+        creerRayon(typeObjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,getcenterx(ennemi),getcentery(ennemi),1200,200,random(6)*100+200,y,0,30,80,ennemi.stats.nomAttaque,obj);
+        ajoutObjet(obj);
+        end;
+      if (ennemi.anim.etat='dodge') and (ennemi.stats.compteurAction>100) and (ennemi.stats.compteurAction mod 30 < 5) then
+        begin
+        creerBoule(typeobjet(1),1,ennemi.stats.force,ennemi.stats.multiplicateurDegat,getcenterx(ennemi),getcentery(ennemi),50,50,4,x,y,'onde',obj);
+        ajoutObjet(obj)
         end;
       end;
     end;
@@ -849,6 +868,69 @@ begin
           if (ennemi.stats.compteurAction>1600) then
             ennemi.stats.compteurAction:=0;
           end;
+        17:begin
+          if ennemi.anim.etat='chase' then
+            begin
+            AIPathFollow(ennemi,joueur,ennemi.stats.vitessePoursuite,True,True);
+            if sqrt((getcenterx(joueur)-getcenterx(ennemi))**2+(getcentery(joueur)-getcentery(ennemi))**2)<150 then
+              begin
+              initAnimation(ennemi.anim,ennemi.anim.objectName,'revolution',9,False);
+              ennemi.stats.compteurAction:=0;
+              end;
+            if ennemi.stats.compteurAction mod 40 = 0 then
+              begin
+              rect1.x:=getcenterx(ennemi)-100;
+              rect1.y:=getcenterx(ennemi)-100;
+              rect1.w:=200;
+              rect1.h:=200;
+              for i:=0 to high(LObjets) do
+                begin
+                rect2:=getcollisionrect(LObjets[i]);
+                if isAttack(LObjets[i]) and (LObjets[i].stats.origine=TypeObjet(0)) and CheckAABB(rect1,rect2) then
+                  begin
+                  initAnimation(ennemi.anim,ennemi.anim.objectName,'dodge',3,True);
+                  ennemi.stats.compteurAction:=100;
+                  AIFly(ennemi,getcenterx(joueur),getcentery(joueur))
+                  end;
+                end;
+              end;
+            end;
+          if (ennemi.anim.etat='revolution') then
+            begin
+            if ennemi.anim.currentFrame=6 then
+              ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
+            if animFinie(ennemi.anim) then
+              begin
+              AIFly(ennemi,getcenterx(joueur),getcentery(joueur));
+              initAnimation(ennemi.anim,ennemi.anim.objectName,'dodge',ennemi.stats.nbFrames2,True);
+              ennemi.stats.compteurAction:=0;
+              end;
+            end;
+          if (ennemi.anim.etat='dodge') then
+            begin
+            flyUpdate(ennemi,10);
+            if (ennemi.stats.compteurAction>30) and (ennemi.stats.compteurAction<100) then
+              begin
+              initAnimation(ennemi.anim,ennemi.anim.objectName,'strike',ennemi.stats.nbFrames3,False);
+              ennemi.stats.compteurAction:=0;
+              end;
+            if (ennemi.stats.compteurAction>100) and (ennemi.stats.compteurAction mod 20 = 10) then
+              AIFly(ennemi,getcenterx(joueur),getcentery(joueur));
+            if (ennemi.stats.compteurAction>200) then
+              begin
+              initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
+              ennemi.stats.compteurAction:=0;
+              end;
+            end;
+          if (ennemi.anim.etat='strike') then
+            begin
+            ennemi.anim.isFliped:=(getcenterx(joueur)>getcenterx(ennemi));
+            if ennemi.anim.currentFrame=4 then
+              ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
+            if animFinie(ennemi.anim) then
+              initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
+            end;
+          end;
 
     end
 end;
@@ -973,7 +1055,7 @@ initStatEnnemi(27,'elementaire_ombre',1,50,2,0,4,3,300,300,11,12,9,0,10,60,60,12
 initStatEnnemi(28,'elementaire_tempete',3,50,0,5,0,2,150,150,10,8,4,0,10,100,150,25,0,'');
 initStatEnnemi(29,'elementaire_eclipse',1,250,2,0,4,3,400,400,19,12,7,0,9,60,60,160,160,'eclipse');
 initStatEnnemi(30,'gardien',16,500,2,1,0,1,300,300,8,16,0,0,23,250,120,25,120,'rayon_main');
-//initStatEnnemi(31,'Geist',17,200,10,0,-10,1,300,300,8,16,0,0,23,250,120,25,120,'rayonAL');
+initStatEnnemi(31,'Geist',17,200,10,0,-10,4,300,300,21,24,3,7,9,80,80,110,160,'rayonAL');
 
 
 
