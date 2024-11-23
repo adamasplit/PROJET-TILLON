@@ -59,6 +59,22 @@ begin
     CreateRawImage(fond,88,-80,900,900,StringToPChar('Sprites/Game/floor/Floor'+ IntToStr(Random(4)+1) +'.bmp'));
 end;
 
+procedure InitDecorCartes;
+begin
+    randomize;
+	sdl_freesurface(fond.imgSurface);
+	sdl_destroytexture(fond.imgTexture);
+    CreateRawImage(fond,0,0,windowWidth,windowHeight,StringToPChar('Sprites/Menu/fond_cartes.bmp'));
+end;
+
+procedure InitDecorMap;
+begin
+    randomize;
+	sdl_freesurface(fond.imgSurface);
+	sdl_destroytexture(fond.imgTexture);
+    CreateRawImage(fond,88,-80,900,900,StringToPChar('Sprites/Game/floor/map_Bg.bmp'));
+end;
+
 procedure InitDialogues;
 begin
 
@@ -137,12 +153,12 @@ begin
     LObjets[0].image.rect.x := windowWidth div 2;
     LObjets[0].image.rect.y := windowHeight div 2;
 	LObjets[0].stats.lastUpdateTimeMana:=SDL_GetTicks;
-    statsJoueur.tailleCollection:=24;
+    statsJoueur.tailleCollection:=4;
     statsJoueur.Vitesse:=5;
     statsJoueur.multiplicateurMana:=1;
     statsJoueur.multiplicateurDegat:=1;
-    for j:=1 to 24 do 
-        statsJoueur.collection[j]:=Cartes[j];
+    for j:=1 to 4 do 
+        statsJoueur.collection[j]:=Cartes[1];
     statsJoueur.vie:=100;statsJoueur.vieMax:=100;
     initStatsCombat(statsJoueur,LObjets[0].stats);
     iCarteChoisie:=1;
@@ -213,9 +229,14 @@ begin
 		'NouvellePartieIntro': NouvellePartieIntro;
 		'victoire':
 			begin
-			affichertout;
+			InitDecorCartes;
+			RenderRawImage(fond,False);
+			InitDecor;
 			for i:=1 to 3 do
+				begin
 				RenderButtonGroup(btnCartes[i]);
+				OnMouseHover(btnCartes[i],getMouseX,getMouseY,'SFX\cardHover.wav')
+				end;
 			end;
   		'Cutscene':
 		begin
@@ -298,7 +319,7 @@ begin
 				'Jeu': jouerCarte(LObjets[0].stats,LObjets[0].image.rect.x+(LObjets[0].image.rect.w div 2),LObjets[0].image.rect.y+(LObjets[0].image.rect.h div 2),iCarteChoisie);
 
 				'map':begin 
-					writeln('Mouse button pressed at (', EventSystem^.motion.x, ',', EventSystem^.motion.y, ')');
+					//writeln('Mouse button pressed at (', EventSystem^.motion.x, ',', EventSystem^.motion.y, ')');
                     writeln(salles[1].image.button.rect.x);
 					for i:=1 to 3 do
 						begin
