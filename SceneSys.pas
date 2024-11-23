@@ -179,12 +179,23 @@ begin
 	initAnimation(LObjets[0].anim,'Joueur','idle',12,True);
 end;
 
-procedure OnPlayerDeath;
+procedure retourMenu;
+begin
+	InitMenuPrincipal;
+	direction_menu;
+end;
+procedure InitGameOver();
+begin
+	initButtonGroup(boutons[1],1080-540-270,200,540,180,'Sprites/Menu/button1.bmp','Menu principal',@retourmenu);
+end;
+
+procedure OnPlayerDeath(var son:Boolean);
 var hasDeath : Boolean;
 var i : Integer;
 begin
+mix_pauseMusic;
 afficherTout;
-	if (Lobjets[High(LObjets)].image.rect.x = 1100) then indiceMusiqueJouee:=32;
+	//if (Lobjets[High(LObjets)].image.rect.x = 1100) then indiceMusiqueJouee:=32;
 	if (Lobjets[High(LObjets)].image.rect.x > Lobjets[0].image.rect.x + 60) then
 		begin
 			Lobjets[High(LObjets)].image.rect.x -= 1;
@@ -192,12 +203,22 @@ afficherTout;
 		end
 		else
 		begin
-			if (Lobjets[High(LObjets)].anim.etat = 'walking') then InitAnimation(Lobjets[High(LObjets)].anim,'death','reap',21,False);
+			if (Lobjets[High(LObjets)].anim.etat = 'walking') then 
+				begin
+				InitAnimation(Lobjets[High(LObjets)].anim,'death','reap',21,False);
+				son:=False;
+				end;
+			if (not son) and (Lobjets[High(LObjets)].anim.etat = 'reap') and (LObjets[High(LObjets)].anim.currentFrame=5) and (LObjets[HIgh(LObjets)].anim.lastUpdateTime-SDL_GetTicks<=0) then
+				begin
+				jouerSonEff('mort');
+				son:=True;
+				end;
 			UpdateAnimation(Lobjets[High(LObjets)].anim,Lobjets[High(LObjets)].image);
 			if animFinie(Lobjets[High(LObjets)].anim) then
 			begin
+				hasDeath:=False;
 				for i:=1 to Lobjets[0].stats.tailleCollection do 
-        			if Lobjets[0].stats.collection[i].numero = 13 then
+        			if (not hasDeath) and (Lobjets[0].stats.collection[i].numero = 13) then
 						begin
 							supprimerCarte(Lobjets[0].stats, i);
 							jouerSon('SFX\Effets\mort.wav');
@@ -207,21 +228,32 @@ afficherTout;
 							hasDeath := True;
 							supprimeObjet(Lobjets[High(LObjets)]);
 							writeln('objet suprr');
-							break;
+							mix_resumeMusic();
 							end;
 				if not(hasDeath) then
 					begin
-					jouerSon('SFX\Effets\impact.wav');
+					//jouerSon('SFX\Effets\mort.wav');
 					sdl_delay(3000);
 					DeclencherFondu(False, 5000);
-					indiceMusiqueJouee:=1;
+					indiceMusiqueJouee:=32;
 					supprimeObjet(Lobjets[High(LObjets)]);
-					sceneActive := 'Menu';
+					sceneActive := 'GameOver';
+					initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,1080,350,extractionTexte('GAMEOVER_'+intToSTr(random(5)+1)),40);
+					InitGameOver();
 				end;
 			end;
 		end;
 		autoMusique();
-		writeln('objet : ',High(LObjets));
+		//writeln('objet : ',High(LObjets));
+end;
+
+procedure GameOver();
+begin
+	
+	drawrect(black_color,255,0,0,WINDOWWIDTH,windowHeight);
+	renderButtonGroup(boutons[1]);
+	UpdateDialogueBox(dialogues[2]);
+	EffetDeFondu;
 end;
 
 procedure HandleButtonClickCarte(var button: TButtonGroup; x, y: Integer;carte:TCarte;var stats:TStats);
@@ -238,7 +270,7 @@ begin
 end;
 
 procedure GameUpdate;
-var i:Integer;
+var i:Integer;son:Boolean;
 begin
   new(EventSystem);
    while True do
@@ -295,7 +327,8 @@ begin
 				OnMouseHover(btnCartes[i],getMouseX,getMouseY,'SFX\cardHover.wav')
 				end;
 			end;
-		'mortJoueur': OnPlayerDeath;
+		'mortJoueur': OnPlayerDeath(son);
+		'GameOver': GameOver;
   		'Cutscene':
 		begin
 		affichertout;
@@ -390,6 +423,10 @@ begin
 					OnMouseClick(btnCartes[i], EventSystem^.motion.x, EventSystem^.motion.y);
 					HandleButtonClickCarte(btnCartes[i], EventSystem^.motion.x, EventSystem^.motion.y,btnCartes[i].carte,statsJoueur);
 					end;
+				'GameOver':begin
+					OnMouseClick(boutons[1], EventSystem^.motion.x, EventSystem^.motion.y);
+						HandleButtonClick(boutons[1].button, EventSystem^.motion.x, EventSystem^.motion.y);
+						end;
 				'marchand':
 					begin
 					if not echangeFait then

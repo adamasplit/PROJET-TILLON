@@ -12,7 +12,6 @@ const TAILLE_OST=40;
         VOLUME_SON=20;
         MAX_CHAINES = 6;
 type TMus=record
-    musique:PMix_Music;
     duree:Integer;
     nom:String;
     dir:PChar;
@@ -20,6 +19,7 @@ end;
 
 var OST:array[1..TAILLE_OST] of TMus;
     SFX:array[1..MAX_CHAINES] of PMix_Chunk;
+    MusiqueJouee:PMix_Music;
     IndiceMusiqueJouee,chaineActuelle:Integer;
     indiceMusiquePrec:Integer;
     updateTimeMusique,tempsTemp:UInt32;
@@ -58,8 +58,6 @@ function chargerOST(nomFichier:PChar):PMix_Music;
 procedure defMus(indice:Integer;dir:Pchar;nom:String;duree:Integer);
 
 begin
-    OST[indice].musique:=Mix_LoadMUS(dir);
-    if OST[indice].musique = nil then writeln('La musique n°',indice,' n"est pas correctement chargée');
     OST[indice].dir:=dir;
     OST[indice].nom:=nom;
     OST[indice].duree:=duree;
@@ -93,22 +91,26 @@ begin
         if (IndiceMusiqueJouee<>indiceMusiquePrec) then
             if indiceMusiquePrec=0 then
                 begin
-                mix_playMusic(OST[IndiceMusiqueJouee].musique,0);
+                MusiqueJouee:=chargerOST(OST[IndiceMusiqueJouee].dir);
+                mix_playMusic(MusiqueJouee,0);
                 indiceMusiquePrec:=indiceMusiqueJouee;
                 end
             else
                 begin
+                Mix_FreeMusic(MusiqueJouee);
+                MusiqueJouee:=chargerOST(OST[IndiceMusiqueJouee].dir);
+                mix_playMusic(MusiqueJouee,0);
                 writeln('changing music from ',indiceMusiquePrec,' to ',indiceMusiqueJouee);
                 indiceMusiquePrec:=indiceMusiqueJouee;
                 updatetimemusique:=sdl_getticks;
-                enFondu:=True;
+                //enFondu:=True;
                 //mix_fadeoutmusic(1000)
                 end;
-        if enFondu and (sdl_getTicks-updateTimeMusique>0) then
-            begin
-            mix_playMusic(OST[IndiceMusiqueJouee].musique,0);
-            enFondu:=False;
-            end;
+        //if enFondu and (sdl_getTicks-updateTimeMusique>0) then
+            //begin
+            //mix_playMusic(OST[IndiceMusiqueJouee].musique,0);
+            //enFondu:=False;
+            //end;
         if (SDL_GetTicks()-UpdateTimeMusique)>(OST[indiceMusiqueJouee].duree)*1000 then //vérifier si le morceau est fini ou non
             begin
             if (indiceMusiqueJouee>12) and (indiceMusiqueJouee<22) then
@@ -143,7 +145,7 @@ procedure detruireOST();
 var i:Integer;
 begin
     for i:=1 to TAILLE_OST do
-        if Assigned(OST[i].musique) then Mix_FreeMusic(OST[i].musique);
+        //if Assigned(OST[i].musique) then Mix_FreeMusic(OST[i].musique);
     Mix_CloseAudio
 end;
 
