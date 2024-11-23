@@ -550,13 +550,16 @@ begin
             end;
           end;
         if (ennemi.anim.etat='superdash') then
+          begin
           movetoTarget(ennemi,30);
-        end;
+          ennemi.col.estActif:=False
+          end;
         if ((ennemi.anim.etat='dash') or (ennemi.anim.etat='superdash')) and (pseudoColMurs(ennemi)) then
             begin
             initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,true);
             ennemi.col.estActif:=True;
             end;
+        end;
         
       4: //pour un ennemi qui se téléporte 
         begin
@@ -970,6 +973,7 @@ initStatEnnemi(27,'elementaire_ombre',1,50,2,0,4,3,300,300,11,12,9,0,10,60,60,12
 initStatEnnemi(28,'elementaire_tempete',3,50,0,5,0,2,150,150,10,8,4,0,10,100,150,25,0,'');
 initStatEnnemi(29,'elementaire_eclipse',1,250,2,0,4,3,400,400,19,12,7,0,9,60,60,160,160,'eclipse');
 initStatEnnemi(30,'gardien',16,500,2,1,0,1,300,300,8,16,0,0,23,250,120,25,120,'rayon_main');
+//initStatEnnemi(31,'Geist',17,200,10,0,-10,1,300,300,8,16,0,0,23,250,120,25,120,'rayonAL');
 
 
 
