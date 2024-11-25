@@ -24,8 +24,8 @@ procedure initStatsCombat(statsPerm:TStats;var statsTemp:TStats);
 procedure CreerBoule(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,w,h,vitesse,xdest,ydest:Integer;nom:PChar;var proj:TObjet);
 procedure updateBoule(var proj:TObjet);
 procedure multiProjs(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,w,h,vitesse,nb,range,angleDepart:Integer;nom:PChar);
-procedure multiLasers(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,w,vitesse,nb,range,angleDepart,duree,delai:Integer;nom:PChar);
-procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,l,w,xdest,ydest:Integer;vitRotation:Real;dureeVie,delai:Integer;nom:PChar;var rayon:TObjet);
+procedure multiLasers(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,l,w,vitesse,nb,range,angleDepart,duree,delai:Integer;nom:PChar);
+procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;volVie:Boolean;x,y,l,w,xdest,ydest:Integer;vitRotation:Real;dureeVie,delai:Integer;nom:PChar;var rayon:TObjet);
 procedure updateRayon(var rayon:TObjet);
 procedure UpdateJustice(var justice:TObjet);
 procedure ajouterCarte(var stats : TStats ; num : integer); 
@@ -154,7 +154,9 @@ begin
         j:=3
     else
         for j:= 3 to High(deck)-1 do
+            begin
             deck[j] := deck[j+1];
+            end;
 
     if mem.discard then
         begin
@@ -162,11 +164,16 @@ begin
         end
     else
         begin
-        deck[j] := mem ;
-        deck[j].active:=False;
-        deck[j].charges:=deck[j].chargesMax;
+        deck[high(deck)] := mem ;
+        deck[high(deck)].active:=False;
+        deck[high(deck)].charges:=deck[high(deck)].chargesMax;
         end
-    end;
+    end
+    else
+        begin
+        deck[i].active:=False;
+        deck[i].charges:=deck[i].chargesMax;
+        end;
 end;
 
 
@@ -207,7 +214,7 @@ begin
   obj.stats.fixeJoueur:=fixeJoueur;
 end;
 
-procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,l,w,xdest,ydest:Integer;vitRotation:Real;dureeVie,delai:Integer;nom:PChar;var rayon:TObjet);
+procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;volVie:Boolean;x,y,l,w,xdest,ydest:Integer;vitRotation:Real;dureeVie,delai:Integer;nom:PChar;var rayon:TObjet);
 var norme:Real;destination,distance:array['X'..'Y'] of Integer;i:Integer;
 begin
     //Initialisation des caractéristiques
@@ -224,6 +231,7 @@ begin
     rayon.stats.dureeVieInit:=dureeVie;
     rayon.stats.delai:=delai;
     rayon.stats.delaiInit:=delai;
+    rayon.stats.volVie:=volVie;
 
     //Initialisation de l'affichage
     InitAnimation(rayon.anim,nom,'start',5,False);
@@ -336,7 +344,7 @@ procedure CreerBoule(   origine:TypeObjet ;
                         multiplicateurDegat:Real ; 
                         x,y,w,h,vitesse,xdest,ydest:Integer; 
                         nom:PChar ;
-                        var proj:TObjet); //Crée un project
+                        var proj:TObjet); //Crée un projectile
 
 var norme:Real;destination,distance:array['X'..'Y'] of Integer;
 begin
@@ -425,12 +433,12 @@ begin
         end;
 end;
 
-procedure multiLasers(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,w,vitesse,nb,range,angleDepart,duree,delai:Integer;nom:PChar);
+procedure multiLasers(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,l,w,vitesse,nb,range,angleDepart,duree,delai:Integer;nom:PChar);
 var rayon:TObjet;i:Integer;
 begin
     for i:=0 to nb-1 do
         begin
-        CreerRayon(origine,degats,force,mult,x,y,1200,w,x+round(100*cos((i*2*pi+(angleDepart*pi/180))/((nb)*360/range))),y+round(100*sin((i*2*pi+(angleDepart*pi/180))/((nb)*360/range))),vitesse,duree,delai,nom,rayon);
+        CreerRayon(origine,degats,force,mult,False,x,y,l,w,x+round(100*cos((i*2*pi+(angleDepart*pi/180))/((nb)*360/range))),y+round(100*sin((i*2*pi+(angleDepart*pi/180))/((nb)*360/range))),vitesse,duree,delai,nom,rayon);
         ajoutObjet(rayon);
         end;
 end;
@@ -568,7 +576,7 @@ begin
         if degats >= 0 then
             begin popUpColor.r:=255;popUpColor.g:=51;popUpColor.b:=51;popUpColor.a:=255; end
         else begin popUpColor.r:=51;popUpColor.g:=255;popUpColor.b:=51;popUpColor.a:=255; end;
-        CreateDamagePopUp(victime.image.rect.x,victime.image.rect.y,StringToPChar(IntToStr(abs(degats))),popUpColor);
+        CreateDamagePopUp(getcenterx(victime),getcentery(victime),StringToPChar(IntToStr(abs(degats))),popUpColor);
     end;
 end;
 
@@ -599,7 +607,7 @@ end;
     procedure II(s : TStats ; x,y : integer);
     var proj : TObjet;
     begin
-        CreerRayon(joueur , 2 , s.force , s.multiplicateurDegat , x,y,1200,120, getmouseX,getmouseY,{vitRotation}1,{dureeVie}30,{delai}1, 'rayon', proj);
+        CreerRayon(joueur , 2 , s.force , s.multiplicateurDegat ,True, x,y,1200,120, getmouseX,getmouseY,{vitRotation}1,{dureeVie}30,{delai}1, 'rayon', proj);
         ajoutObjet(proj);
         jouerSonEff('Rayon');
     end;
@@ -608,7 +616,7 @@ end;
     procedure III(s : TStats ; x,y : integer);
     var proj : TObjet;
     begin
-        CreerRayon(joueur , 3 , s.force , s.multiplicateurDegat , x,y,1200,150, getmouseX,getmouseY,{vitRotation}0,{dureeVie}50,{delai}1, 'rayon', proj);
+        CreerRayon(joueur , 3 , s.force , s.multiplicateurDegat ,True, x,y,1200,180, getmouseX,getmouseY,{vitRotation}0,{dureeVie}50,{delai}1, 'rayon', proj);
         ajoutObjet(proj);
         jouerSonEff('Rayon');
     end;
@@ -761,14 +769,14 @@ end;
     //16 La tour
     procedure XVI(s : TStats ; x,y : Integer);
     begin
-        multiLasers(joueur, 2 ,s.force , s.multiplicateurDegat , x,y ,120, {vitesse} 0 ,4 ,360,0, 100 ,1,'rayon');
+        multiLasers(joueur, 2 ,s.force , s.multiplicateurDegat , x,y ,1200,120, {vitesse} 0 ,4 ,360,0, 100 ,1,'rayon');
         jouerSonEff('tour');
     end;
 
     //17 L'étoile
     procedure XVII(s : Tstats ; x,y : integer);
     begin
-        multiLasers(joueur, 2 ,s.force , s.multiplicateurDegat , x,y ,120, {vitesse} 0 ,8 ,360,0, 100 ,1,'rayon');
+        multiLasers(joueur, 2 ,s.force , s.multiplicateurDegat , x,y ,1200,120, {vitesse} 0 ,8 ,360,0, 100 ,1,'rayon');
         jouerSonEff('etoile');
     end;
 

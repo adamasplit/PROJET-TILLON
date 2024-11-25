@@ -122,12 +122,12 @@ var i:Integer;
 			end;
 		if (Lobjets[0].stats.vie <= 0) then 
 		begin
-		DeclencherFondu(True, 3000);
-		arretMus(1000);
-		ajoutObjet(faucheuse);
-		CreateRawImage(Lobjets[High(LObjets)].image,1200,Lobjets[0].image.rect.y-50,200,200,'Sprites\Game\death\death_walking_1.bmp');
-		InitAnimation(Lobjets[High(LObjets)].anim,'death','walking',10,True);
-		SceneActive := 'mortJoueur';
+			DeclencherFondu(True, 3000);
+			arretMus(1000);
+			ajoutObjet(faucheuse);
+			CreateRawImage(Lobjets[High(LObjets)].image,1200,Lobjets[0].image.rect.y-50,200,200,'Sprites\Game\death\death_walking_1.bmp');
+			InitAnimation(Lobjets[High(LObjets)].anim,'death','walking',10,True);
+			SceneActive := 'mortJoueur';
 		end;
 		if vagueFinie then ajoutVague;
 		if combatFini then victoire(statsJoueur);
@@ -142,42 +142,13 @@ procedure ActualiserMenuEnJeu;
 			begin
 			RenderButtonGroup(boutons[8]);
 			RenderButtonGroup(boutons[9]);
+			//RenderButtonGroup(boutons[10]);
 			end;
 	end;
 
 //Initialisations
 
-procedure InitJoueur;
-var j : Integer;
-begin
-    // Initialisation du joueur
-	
-    LObjets[0].col.isTrigger := False;
-    LObjets[0].col.estActif := True;
-    LObjets[0].col.dimensions.w := 50;
-    LObjets[0].col.dimensions.h := 85;
-    LObjets[0].col.offset.x := 25;
-    LObjets[0].col.offset.y := 15;
-    LObjets[0].col.nom := 'Joueur';
-	LObjets[0].stats.angle:=0;
-    LObjets[0].anim.estActif := True;
-    LObjets[0].image.rect.x := windowWidth div 2;
-    LObjets[0].image.rect.y := windowHeight div 2;
-	LObjets[0].stats.lastUpdateTimeMana:=SDL_GetTicks;
-    statsJoueur.tailleCollection:=4;
-    statsJoueur.Vitesse:=5;
-    statsJoueur.multiplicateurMana:=1;
-    statsJoueur.multiplicateurDegat:=1;
-    for j:=1 to 4 do 
-        statsJoueur.collection[j]:=Cartes[1];
-	statsJoueur.collection[j]:=Cartes[20];
-    statsJoueur.vie:=100;statsJoueur.vieMax:=100;
-    initStatsCombat(statsJoueur,LObjets[0].stats);
-    iCarteChoisie:=1;
-    CreateRawImage(LObjets[0].image, windowWidth div 2-windowWidth div 4, windowHeight div 2, 100, 100, 'Sprites\Game\Joueur\Joueur_idle_1.bmp');
-    CreateRawImage(menuBook,0,0,windowWidth,windowHeight,'Sprites\Game\Book\Book_Opening_1.bmp');
-	initAnimation(LObjets[0].anim,'Joueur','idle',12,True);
-end;
+
 
 procedure retourMenu;
 begin
@@ -233,7 +204,12 @@ afficherTout;
 				if not(hasDeath) then
 					begin
 					//jouerSon('SFX\Effets\mort.wav');
-					sdl_delay(3000);
+					DeclencherFondu(true,3000);
+					for i:=1 to 300 do
+						begin
+						EffetDeFondu;
+						sdl_delay(10);
+						end;
 					DeclencherFondu(False, 5000);
 					indiceMusiqueJouee:=32;
 					supprimeObjet(Lobjets[High(LObjets)]);
@@ -343,7 +319,7 @@ begin
       			case EventSystem^.type_ of
 					SDL_mousebuttondown:if dialogues[1].letterdelay=0 then begin
 						sceneActive:='Jeu';
-						indiceMusiqueJouee:=8;
+						if LObjets[1].anim.objectName='Béhémoth' then indiceMusiqueJouee:=8;
 						end
 						 else dialogues[1].LetterDelay:=0;
 				end
@@ -505,7 +481,6 @@ begin
 	initDecor;
 	InitDialogues;
 	setlength(LObjets,1);
-	initjoueur;
 	writeln('essai d''actualisation...');
 	DeclencherFondu(False, 5000);
     GameUpdate;

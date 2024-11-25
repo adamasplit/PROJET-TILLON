@@ -42,10 +42,44 @@ function NextOrSkipDialogue(i : Integer) : Boolean;
 procedure actualiserDeck();
 procedure actualiserBestiaire();
 procedure scrollBestiaire();
+procedure InitJoueur(continuer:Boolean);
 
 implementation
 
-
+procedure InitJoueur(continuer:Boolean);
+var j : Integer;
+begin
+    // Initialisation du joueur
+	
+    LObjets[0].col.isTrigger := False;
+    LObjets[0].col.estActif := True;
+    LObjets[0].col.dimensions.w := 50;
+    LObjets[0].col.dimensions.h := 85;
+    LObjets[0].col.offset.x := 25;
+    LObjets[0].col.offset.y := 15;
+    LObjets[0].col.nom := 'Joueur';
+	LObjets[0].stats.angle:=0;
+    LObjets[0].anim.estActif := True;
+    LObjets[0].image.rect.x := windowWidth div 2;
+    LObjets[0].image.rect.y := windowHeight div 2;
+	LObjets[0].stats.lastUpdateTimeMana:=SDL_GetTicks;
+	statsJoueur.tailleCollection:=4;
+	statsJoueur.Vitesse:=5;
+	statsJoueur.multiplicateurMana:=1;
+	statsJoueur.multiplicateurDegat:=1;
+	for j:=1 to 4 do 
+		statsJoueur.collection[j]:=Cartes[1];
+	statsJoueur.collection[j]:=Cartes[20];
+	statsJoueur.vie:=100;statsJoueur.vieMax:=100;
+	initStatsCombat(statsJoueur,LObjets[0].stats);
+	iCarteChoisie:=1;
+	CreateRawImage(LObjets[0].image, windowWidth div 2-windowWidth div 4, windowHeight div 2, 100, 100, 'Sprites\Game\Joueur\Joueur_idle_1.bmp');
+	CreateRawImage(menuBook,0,0,windowWidth,windowHeight,'Sprites\Game\Book\Book_Opening_1.bmp');
+	initAnimation(LObjets[0].anim,'Joueur','idle',12,True);
+	if continuer then
+		chargerSauvegarde(statsJoueur)
+		
+end;
 
 function NextOrSkipDialogue(i : Integer) : Boolean;
 begin
@@ -202,6 +236,7 @@ begin
 	until NextOrSkipDialogue(1);
 	ClearScreen;
 	black_color.r := 0; black_color.g := 0; black_color.b := 0;
+	initjoueur(false);
 	jouer;
 end;
 
@@ -263,6 +298,11 @@ begin
   SDL_Quit;
 end;
 
+procedure continuer();
+begin
+	initJoueur(true);
+	choixSalle;
+end;
 procedure InitMenuPrincipal;
 begin
     // Créer des boutons
@@ -279,7 +319,7 @@ begin
     // Game icon (𓈒⟡₊⋆∘ Wowie 𓈒⟡₊⋆∘)
     CreateText(text1, windowWidth div 2-150, 20, 300, 250, 'Les Cartes du Destin',Fantasy30, whiteCol);
 	// Initialisation des boutons principaux (à gauche)
-	InitButtonGroup(boutons[2], 100, windowHeight div 5, 350, 80, 'Sprites\Menu\Button1.bmp', 'Continuer', @choixSalle);
+	InitButtonGroup(boutons[2], 100, windowHeight div 5, 350, 80, 'Sprites\Menu\Button1.bmp', 'Continuer', @continuer);
     InitButtonGroup(boutons[1], 100, (windowHeight div 5) + 100, 350, 80, 'Sprites\Menu\Button1.bmp', 'Nouvelle Partie', PNouvellePartieIntro);
     InitButtonGroup(boutons[3], 100, (windowHeight div 5) + 200, 350, 80, 'Sprites\Menu\Button1.bmp', 'Leaderboard', leaderboard);
     InitButtonGroup(boutons[4], 100, (windowHeight div 5) + 300, 350, 80, 'Sprites\Menu\Button1.bmp', 'Quitter', quitter);

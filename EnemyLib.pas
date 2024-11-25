@@ -311,7 +311,7 @@ begin
     ennemi.stats.ycible:=getcentery(target)
   else 
     ennemi.stats.ycible:=getcentery(ennemi);
-  if (ennemi.stats.degatsContact>0) or (not deplaceX or (abs(ennemi.stats.xcible-getcenterx(ennemi))>ennemi.col.dimensions.w div 2)) or (not deplaceY or (abs(ennemi.stats.ycible-getcentery(ennemi))>ennemi.col.dimensions.h div 2)) then
+  if (not deplaceX or (abs(ennemi.stats.xcible-getcenterx(ennemi))>ennemi.col.dimensions.w div 2+10)) or (not deplaceY or (abs(ennemi.stats.ycible-getcentery(ennemi))>ennemi.col.dimensions.h div 2+10)) then
     moveToTarget(ennemi,vitesse);
   //SDL_setRenderDrawColor(sdlrenderer,255,255,0,255);
   //sdl_renderDrawLINE(sdlrenderer,getcenterx(ennemi),getcentery(ennemi),ennemi.stats.xcible,ennemi.stats.ycible);
@@ -333,9 +333,9 @@ begin
     else if (ennemi.stats.compteurAction>10) and (ennemi.stats.compteurAction<15) then 
       begin
         if (ennemi.image.rect.x<ennemi.stats.xcible) then
-                CreerRayon(typeobjet(1),2,ennemi.stats.force,1,getcenterx(ennemi),getCenterY(ennemi),1200,80,ennemi.image.rect.x+400,getCenterY(ennemi),(random(5)-3)*3,10,100,ennemi.stats.nomAttaque,obj)
+                CreerRayon(typeobjet(1),2,ennemi.stats.force,1,false,getcenterx(ennemi),getCenterY(ennemi),1200,80,ennemi.image.rect.x+400,getCenterY(ennemi),(random(5)-3)*3,10,100,ennemi.stats.nomAttaque,obj)
               else
-                CreerRayon(typeobjet(1),2,ennemi.stats.force,1,getcenterx(ennemi),getCenterY(ennemi),1200,80,ennemi.image.rect.x-400,getCenterY(ennemi),(random(5)-3)*3,10,100,ennemi.stats.nomAttaque,obj);
+                CreerRayon(typeobjet(1),2,ennemi.stats.force,1,false,getcenterx(ennemi),getCenterY(ennemi),1200,80,ennemi.image.rect.x-400,getCenterY(ennemi),(random(5)-3)*3,10,100,ennemi.stats.nomAttaque,obj);
               ajoutObjet(obj);
       end;
   case ennemi.stats.typeIA_MVT of
@@ -354,13 +354,13 @@ begin
     4:if (ennemi.anim.etat='warp') and (ennemi.stats.compteurAction=1) then 
       if ennemi.anim.objectName='elementaire_spectral' then
         begin
-        CreerRayon(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,getCenterX(ennemi),getCenterY(ennemi),1200,200,x,y,0,50,100,ennemi.stats.nomAttaque,obj);
+        CreerRayon(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,getCenterX(ennemi),getCenterY(ennemi),1200,200,x,y,0,50,100,ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj);
         end
       else
         multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+(ennemi.image.rect.w div 2),ennemi.image.rect.y+(ennemi.image.rect.h div 2),100,100,5,3,360,random(18)*10,ennemi.stats.nomAttaque);
     5: begin
-      if (ennemi.anim.etat='chase') and (ennemi.stats.compteurAction mod 150 = 0) then
+      if (ennemi.anim.etat='chase') and (ennemi.stats.compteurAction mod 150 = 0) and (ennemi.anim.objectName='liche') then
         multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+(ennemi.image.rect.w div 2),ennemi.image.rect.y+(ennemi.image.rect.h div 2),100,100,5,3,360,random(18)*10,'kamui');
       if (ennemi.anim.etat='strike')then
       begin
@@ -368,9 +368,9 @@ begin
       if (ennemi.anim.currentFrame=6) and (sdl_getTicks-ennemi.anim.lastUpdateTime<15) then
         begin
         if (ennemi.image.rect.x<ennemi.stats.xcible) then
-          CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+40,ennemi.image.rect.y+50,1200,100,ennemi.image.rect.x+60,ennemi.image.rect.y+50,0,10,ennemi.stats.vie,ennemi.stats.nomAttaque,obj)
+          CreerRayon(typeobjet(1),2,1,1,false,ennemi.image.rect.x+40,ennemi.image.rect.y+50,1200,100,ennemi.image.rect.x+60,ennemi.image.rect.y+50,0,10,ennemi.stats.vie,ennemi.stats.nomAttaque,obj)
         else
-          CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+40,ennemi.image.rect.y+50,1200,100,ennemi.image.rect.x-60,ennemi.image.rect.y+50,0,10,ennemi.stats.vie,ennemi.stats.nomAttaque,obj);
+          CreerRayon(typeobjet(1),2,1,1,false,ennemi.image.rect.x+40,ennemi.image.rect.y+50,1200,100,ennemi.image.rect.x-60,ennemi.image.rect.y+50,0,10,ennemi.stats.vie,ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj);
         end;
       end;
@@ -383,7 +383,7 @@ begin
         ajoutObjet(obj)
         end;
       if (ennemi.stats.compteurAction=100) and (ennemi.anim.objectName='expurgateur') then
-        multiLasers(TypeObjet(1),1,1,1,ennemi.image.rect.x+50,ennemi.image.rect.y+50,120,0,4,360,0,10,100,'rayon');
+        multiLasers(TypeObjet(1),1,1,1,ennemi.image.rect.x+50,ennemi.image.rect.y+50,1200,120,0,4,360,0,10,100,'rayon');
       end;
     7:if (((ennemi.stats.vie<ennemi.stats.vieMax div 4) and (ennemi.stats.compteurAction mod 20 = 0)) or (ennemi.stats.vie>=ennemi.stats.vieMax div 4) and (ennemi.stats.compteurAction mod 50 = 0)) and (ennemi.anim.etat='fly') then begin
         creerBoule(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,ennemi.image.rect.x+96+random(192),ennemi.image.rect.y+64+random(128),200,100,4,x,y,ennemi.stats.nomAttaque,obj);
@@ -394,7 +394,7 @@ begin
         begin
           if (ennemi.stats.compteurAction mod 50 = 0) then
           begin
-          CreerRayon(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,getCenterX(ennemi)+60,getCenterY(ennemi),1000,200,x-100+random(20)*10,y,0,10,50,ennemi.stats.nomAttaque,obj);
+          CreerRayon(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,getCenterX(ennemi)+60,getCenterY(ennemi),1000,200,x-100+random(20)*10,y,0,10,50,ennemi.stats.nomAttaque,obj);
           ajoutObjet(obj);
           end
         end
@@ -407,7 +407,7 @@ begin
     10:begin
         if (ennemi.anim.etat='tir') and (ennemi.anim.currentFrame=20) and (ennemi.stats.compteurAction<=601) then
         begin
-        CreerRayon(typeobjet(1),2,1,1,ennemi.image.rect.x+250,ennemi.image.rect.y+350,1200,300,ennemi.image.rect.x-60,ennemi.image.rect.y+350,-(y-(ennemi.image.rect.y+350))/280,80,50,ennemi.stats.nomAttaque,obj);
+        CreerRayon(typeobjet(1),2,1,1,false,ennemi.image.rect.x+250,ennemi.image.rect.y+350,1200,300,ennemi.image.rect.x-60,ennemi.image.rect.y+350,-(y-(ennemi.image.rect.y+350))/280,80,50,ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj)
         end;
         if (ennemi.anim.etat='chase') and (ennemi.anim.currentFrame mod 5 =2) and (ennemi.anim.currentFrame<>2) then
@@ -418,32 +418,32 @@ begin
         end;
     11:if random(30)=0 then begin
         alea1:=random(100)*10+200;alea2:=random(100)*10;
-        creerRayon(typeObjet(1),100,ennemi.stats.force,ennemi.stats.multiplicateurDegat,alea1,alea2,400,200,alea1,alea2-100,0,100,100,ennemi.stats.nomAttaque,obj);
+        creerRayon(typeObjet(1),100,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,alea1,alea2,400,200,alea1,alea2-100,0,100,100,ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj)
         end;
     12:if (ennemi.anim.etat='cast') and (ennemi.stats.compteurAction mod 30=0) then begin
         alea1:=random(30)*10+350;alea2:=random(100)-300;
-        creerRayon(typeObjet(1),100,ennemi.stats.force,ennemi.stats.multiplicateurDegat,x+alea1,y+alea2-100,400,200,x+alea1,y+alea2,0,50,100,ennemi.stats.nomAttaque,obj);
+        creerRayon(typeObjet(1),100,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,x+alea1,y+alea2-100,400,200,x+alea1,y+alea2,0,50,100,ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj)
         end;
     13:begin
       if (ennemi.anim.etat='charge') and (ennemi.stats.compteurAction mod 30=0) then 
         begin
         alea1:=random(180);
-        creerRayon(typeObjet(1),1,ennemi.stats.force,ennemi.stats.multiplicateurDegat,round(x+cos(alea1)*100)+400,50+round(y+sin(alea1)*100),400,200,350+round(x-cos(alea1)*100),round(y-sin(alea1)*100),0,50,50,ennemi.stats.nomAttaque,obj);
+        creerRayon(typeObjet(1),1,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,round(x+cos(alea1)*100)+400,50+round(y+sin(alea1)*100),400,200,350+round(x-cos(alea1)*100),round(y-sin(alea1)*100),0,50,50,ennemi.stats.nomAttaque,obj);
         sdl_settexturecolormod(obj.image.imgtexture,255,0,0);
         ajoutObjet(obj)
         end;
         if ((ennemi.anim.etat='strike') and (ennemi.stats.compteurAction<15)) then//or ((ennemi.anim.etat='dodge') and (ennemi.stats.compteurAction>40)) then
           begin 
-          creerRayon(typeObjet(1),1,ennemi.stats.force,ennemi.stats.multiplicateurDegat,ennemi.image.rect.x+(ennemi.image.rect.w div 2),ennemi.image.rect.y+(ennemi.image.rect.h div 2),1200,200,x,y,0,10,100-ennemi.anim.currentFrame*10,'rayonLeo',obj);
+          creerRayon(typeObjet(1),1,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,ennemi.image.rect.x+(ennemi.image.rect.w div 2),ennemi.image.rect.y+(ennemi.image.rect.h div 2),1200,200,x,y,0,10,100-ennemi.anim.currentFrame*10,'rayonLeo',obj);
           ajoutObjet(obj);
           end;
         end;
     14:begin
     if (random(30)=0) and (ennemi.anim.etat='rage') then begin
         alea1:=random(100)*10+200;alea2:=random(100)*10;
-        creerRayon(typeObjet(1),100,ennemi.stats.force,ennemi.stats.multiplicateurDegat,alea1,alea2,400,200,alea1,alea2-100,0,100,100,ennemi.stats.nomAttaque,obj);
+        creerRayon(typeObjet(1),100,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,alea1,alea2,400,200,alea1,alea2-100,0,100,100,ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj)
         end;
     if (ennemi.anim.etat='cast') and (ennemi.anim.currentFrame=2) and (ennemi.stats.compteurAction<3) then
@@ -454,33 +454,39 @@ begin
     15:begin
       if (ennemi.anim.etat='float') and (ennemi.stats.compteurAction mod 20=0) then
         begin
-        CreerRayon(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,getCenterX(ennemi),getCenterY(ennemi),1200,100,x,y,0,10,100,ennemi.stats.nomAttaque,obj);
+        CreerRayon(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,getCenterX(ennemi),getCenterY(ennemi),1200,100,x,y,0,10,100,ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj);
         end;
       end;
     16:begin
+      if (ennemi.stats.compteurAction mod 160 = 0) then
+        multiLasers(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,x+580,y+50,150,60,0,8,360,0,10,200,'pic_terre');
       if (ennemi.stats.compteurAction mod 80 = 0) then
         begin
-        creerRayon(typeObjet(1),4,ennemi.stats.force,ennemi.stats.multiplicateurDegat,600,ennemi.stats.compteurAction div 2,300,150,1500,ennemi.stats.compteurAction div 2,0,30,50,ennemi.stats.nomAttaque,obj);
+        creerRayon(typeObjet(1),4,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,600,ennemi.stats.compteurAction div 2,300,150,1500,ennemi.stats.compteurAction div 2,0,30,50,ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj);
-        creerRayon(typeObjet(1),4,ennemi.stats.force,ennemi.stats.multiplicateurDegat,1400,720-ennemi.stats.compteurAction div 2,300,150,200,720-ennemi.stats.compteurAction div 2,0,30,50,ennemi.stats.nomAttaque,obj);
+        creerRayon(typeObjet(1),4,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,1400,720-ennemi.stats.compteurAction div 2,300,150,200,720-ennemi.stats.compteurAction div 2,0,30,50,ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj);
         end;
       if (ennemi.stats.compteurAction mod 50 =0) then
         begin
-        creerRayon(typeObjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,(random(10)+6)*100,750,300,150,x+400,y,0,30,80,'pic_terre',obj);
+        creerRayon(typeObjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,(random(10)+6)*100,750,300,150,x+400,y,0,30,80,'pic_terre',obj);
         ajoutObjet(obj);
-        creerRayon(typeObjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,(random(10)+6)*100,-30,300,150,x+400,y,0,30,80,'pic_terre',obj);
+        creerRayon(typeObjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,(random(10)+6)*100,-30,300,150,x+400,y,0,30,80,'pic_terre',obj);
         ajoutObjet(obj);
         end;
       end;
     17:begin
       if (ennemi.anim.etat='revolution') and (ennemi.anim.currentFrame=6) and (ennemi.stats.compteurAction<2) then
+        begin
+        jouerSonEnn('Geist (2)');
         multiProjs(typeObjet(1),1,ennemi.stats.force,ennemi.stats.multiplicateurDegat,getcenterx(ennemi),getcentery(ennemi),100,100,7,10,360,ennemi.stats.compteurAction*10,'onde');
+        end;
       
       if (ennemi.anim.etat='strike') and (ennemi.anim.currentFrame=4) and (ennemi.stats.compteurAction<5) then
         begin
-        creerRayon(typeObjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,getcenterx(ennemi),getcentery(ennemi),1200,200,random(6)*100+200,y,0,30,80,ennemi.stats.nomAttaque,obj);
+        if ennemi.stats.compteurAction=2 then jouerSonEnn('Geist (3)');
+        creerRayon(typeObjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,getcenterx(ennemi),getcentery(ennemi),1200,200,random(6)*100+200,y,0,30,80,ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj);
         end;
       if (ennemi.anim.etat='dodge') and (ennemi.stats.compteurAction>100) and (ennemi.stats.compteurAction mod 30 < 5) then
@@ -845,7 +851,7 @@ begin
               for i:=1 to high(lobjets) do
                 if lobjets[i].stats.genre=typeObjet(1) then
                   begin
-                  SDL_setRenderDrawColor(sdlRenderer,0,255,0,255);
+                  //SDL_setRenderDrawColor(sdlRenderer,0,255,0,255);
                   sdl_renderdrawline(sdlRenderer,getcenterx(ennemi),getCenterY(ennemi),getcenterx(LObjets[i]),getCenterY(LObjets[i]));
                   if LObjets[i].stats.vie<LObjets[i].stats.vieMax then
                     lObjets[i].stats.vie:=LObjets[i].stats.vie+ennemi.stats.force;
@@ -875,10 +881,11 @@ begin
             AIPathFollow(ennemi,joueur,ennemi.stats.vitessePoursuite,True,True);
             if sqrt((getcenterx(joueur)-getcenterx(ennemi))**2+(getcentery(joueur)-getcentery(ennemi))**2)<150 then
               begin
+              jouerSonEnn('Geist (1)');
               initAnimation(ennemi.anim,ennemi.anim.objectName,'revolution',9,False);
               ennemi.stats.compteurAction:=0;
               end;
-            if ennemi.stats.compteurAction mod 40 = 0 then
+            if ennemi.stats.compteurAction mod 20 = 0 then
               begin
               rect1.x:=getcenterx(ennemi)-100;
               rect1.y:=getcenterx(ennemi)-100;

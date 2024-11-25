@@ -93,7 +93,8 @@ type TStats=record //(version variable)
         projectile,laser,epee:(degats:Integer;
         origine:typeObjet;
         vectX,vectY,vitRotation:Real;
-        dureeVie,dureeVieInit,delai,delaiInit:Integer);
+        dureeVie,dureeVieInit,delai,delaiInit:Integer;
+        volVie:Boolean); //soigne le joueur si jamais l'attaque touche une cible
 
         effet:(fixeJoueur:Boolean);//si l'effet suit le joueur ou non
 end;
@@ -189,6 +190,8 @@ PDeck:TDeck; //deck pointé par les stats du joueur
 procedure AjoutObjet(var obj:TObjet);
 procedure supprimeObjet(var obj:TObjet); 
 procedure analyseObjet(obj:TObjet);
+function getCenterX(var obj:TObjet):Integer;
+function getCentery(var obj:TObjet):Integer;
 
 implementation
 
@@ -218,6 +221,16 @@ begin
     setlength(LObjets,taille-1);
 end;
 
+//pour déterminer la position du centre d'une boîte de collisions d'un objet
+function getCenterX(var obj:TObjet):Integer;
+begin
+  getCenterX:=obj.image.rect.x+obj.col.offset.x+(obj.col.dimensions.w div 2);
+end;
+
+function getCentery(var obj:TObjet):Integer;
+begin
+  getCentery:=obj.image.rect.y+obj.col.offset.y+(obj.col.dimensions.h div 2);
+end;
 procedure analyseObjet(obj:TObjet); //donne toutes les caractéristiques d'un objet (procédure de debug)
 begin
   writeln(obj.stats.genre,' nommé ',obj.anim.objectName);

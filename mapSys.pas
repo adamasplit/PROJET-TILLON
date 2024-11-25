@@ -11,6 +11,7 @@ uses
     memgraph,
     SDL2,
     sonoSys,
+    fichierSys,
     SysUtils;
 var imgs0,imgs1,imgs2,imgs3:TButtonGroup;
 var salleChoisie:TSalle;
@@ -100,11 +101,11 @@ begin
     setlength(ennemis,statsJoueur.avancement+1);
     for j:=1 to statsJoueur.avancement do
         begin
-        alea:=random(28)+1;
+        alea:=random(30)+1;
         if (alea=20) or (alea=21) then
             ennemis[j]:=templatesEnnemis[31]
         else
-            ennemis[j]:=templatesEnnemis[31];
+            ennemis[j]:=templatesEnnemis[alea];
         writeln('élément ',j,' de ennemis: ',ennemis[j].anim.objectName);
         end;
     writeln('ennemis choisis');
@@ -531,6 +532,7 @@ end;
 procedure choixSalle();
     
 begin
+    sauvegarder(statsJoueur);
     entree:=true;
     combatFini:=False;
     echangeFait:=False;

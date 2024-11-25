@@ -24,22 +24,11 @@ uses
   // Fonction OnTriggerEnter déclenchée lors d'une collision (si IsTrigger est vrai)
   procedure OnTriggerEnter(var obj1, obj2: TObjet);
 
-function getCenterX(var obj:TObjet):Integer;
-function getCentery(var obj:TObjet):Integer;
 
 implementation
 
 
-//pour déterminer la position du centre d'une boîte de collisions d'un objet
-function getCenterX(var obj:TObjet):Integer;
-begin
-  getCenterX:=obj.image.rect.x+obj.col.offset.x+(obj.col.dimensions.w div 2);
-end;
 
-function getCentery(var obj:TObjet):Integer;
-begin
-  getCentery:=obj.image.rect.y+obj.col.offset.y+(obj.col.dimensions.h div 2);
-end;
 
 type ligne=record
   x,y:real;
@@ -365,6 +354,7 @@ begin
         else
           begin
           subirDegats(obj1,degat(obj2.stats.degats,obj2.stats.force,obj1.stats.defense,obj2.stats.multiplicateurDegat),0,0);
+          if obj2.stats.volVie then subirDegats(LObjets[0].stats,-degat(obj2.stats.degats,obj2.stats.force,obj1.stats.defense,obj2.stats.multiplicateurDegat) div 4,getcenterx(LObjets[0]),getCenterY(LObjets[0]));
           creerEffet(getcenterx(obj1),getcentery(obj1),64,64,6,'impact',False,eff);
           ajoutobjet(eff);
           end;

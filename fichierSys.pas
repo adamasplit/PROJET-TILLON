@@ -19,6 +19,7 @@ begin
     rewrite(fichier);
     write(fichier,stats);
     close(fichier);
+    writeln('écriture faite');
 end;
 
 procedure chargerSauvegarde(var stats:TStats);
@@ -28,12 +29,14 @@ begin
         begin
         assign(fichier,'sauvegarde_COF');
         reset(fichier);
-        read(fichier,stats)
+        read(fichier,stats);
+        close(fichier);
+        writeln('sauvegarde chargée');
         end
     else
         begin
         end;
-    close(fichier)
+    
 end;
 
 function extractionTexte(code:String):String;
