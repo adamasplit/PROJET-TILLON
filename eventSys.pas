@@ -96,12 +96,12 @@ begin
     SDL_FreeSurface(CombatUI[3].imgSurface);
     SDL_DestroyTexture(CombatUI[3].imgTexture);
     if (icarteChoisie>2) or (icarteChoisie<0) then writeln(icarteChoisie);
-    CreateRawImage(CombatUI[3],min(820,max(GetMouseX-20,140)),GetMouseY-5,64,64,stats.deck^[icarteChoisie].dir);
+    CreateRawImage(CombatUI[3],min(820,max(GetMouseX-20,140)),GetMouseY-5,80,80,stats.deck^[icarteChoisie].dir);
     if (LObjets[0].stats.mana<LObjets[0].stats.deck^[iCarteChoisie].cout) and not (LObjets[0].stats.deck^[iCarteChoisie].active) then
       begin
       //sdl_settexturecolormod(combatUI[3].imgTexture,120,120,120);
       RenderRawImage(combatUI[3],100,false);
-      drawRect(black_color,100,CombatUI[3].rect.x+10,CombatUI[3].rect.y,45,64);
+      drawRect(black_color,100,CombatUI[3].rect.x+12,CombatUI[3].rect.y,64,80);
       end
     else
       begin

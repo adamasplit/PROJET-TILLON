@@ -10,7 +10,7 @@ uses
 
 
 const MAXSALLES=40; //nombre de salles total pour finir le jeu
-  MAXENNEMIS=31; //nombre d'ennemis ayant une entrée dans le bestiaire
+  MAXENNEMIS=35; //nombre d'ennemis ayant une entrée dans le bestiaire
   MAXCARTES=60; //taille max du deck
 
 var whiteCol,b_color,bf_color,f_color,navy_color,red_color,black_col,yellowCol: TSDL_Color;
@@ -130,7 +130,7 @@ type
     case parametresSpeciaux:Integer of 
       1:(procCarte:procedure(carte:TCarte;var stats:TStats);carte:TCarte);
       2:(procSalle:procedure(evenement:evenements));
-      3:(procEch:procedure(carte1,carte2:TCarte;var stats:TStats))
+      3:(procEch:procedure(carte1,carte2:TCarte;var stats:TStats));
     end;
 
 type TSalle=record

@@ -205,10 +205,12 @@ afficherTout;
 					begin
 					//jouerSon('SFX\Effets\mort.wav');
 					DeclencherFondu(true,3000);
+					sceneActive:='MortFondu';
 					for i:=1 to 300 do
 						begin
 						EffetDeFondu;
 						sdl_delay(10);
+						sdl_renderpresent(sdlrenderer);
 						end;
 					DeclencherFondu(False, 5000);
 					indiceMusiqueJouee:=32;

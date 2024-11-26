@@ -320,7 +320,7 @@ end;
 
 
 procedure ActionEnnemi(ennemi:TObjet;x,y:Integer); //permet à un ennemi d'agir (donc d'attaquer)
-var obj:TObjet;alea1,alea2:Integer;
+var obj:TObjet;alea1,alea2:Integer;angle:Real;
 begin
   if (ennemi.anim.etat='shoot') then
     if (ennemi.anim.objectName='elementaire_eclipse') and (ennemi.stats.compteurAction<20) then
@@ -493,6 +493,25 @@ begin
         begin
         creerBoule(typeobjet(1),1,ennemi.stats.force,ennemi.stats.multiplicateurDegat,getcenterx(ennemi),getcentery(ennemi),50,50,4,x,y,'onde',obj);
         ajoutObjet(obj)
+        end;
+      end;
+    18:begin
+      if (ennemi.anim.etat='strike') and (ennemi.anim.currentFrame>=10) and (ennemi.stats.compteurAction mod 10 = 0) then
+        begin
+        initAngle(ennemi.stats.xcible-getcenterx(ennemi),ennemi.stats.ycible-getcentery(ennemi),angle);
+        if ennemi.anim.isFliped then
+          begin
+          alea1:=getcenterx(ennemi)+round(9*ennemi.stats.compteurAction*cos(angle))+550;
+          alea2:=getcentery(ennemi)+round(9*ennemi.stats.compteurAction*sin(angle))+100;
+          end
+        else
+          begin
+          alea1:=getcenterx(ennemi)-round(9*ennemi.stats.compteurAction*cos(angle))+450;
+          alea2:=getcentery(ennemi)-round(9*ennemi.stats.compteurAction*sin(angle))+100;
+          end;
+        
+        creerRayon(typeObjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,alea1,alea2,300,150,alea1,alea2-50,0,50,100{-ennemi.stats.compteurAction},ennemi.stats.nomAttaque,obj);
+        ajoutObjet(obj);
         end;
       end;
     end;
@@ -939,7 +958,36 @@ begin
               initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
             end;
           end;
-
+    18: begin //Boss : Le geôlier
+    ennemi.anim.isFliped:=(ennemi.Stats.xcible>getcenterx(ennemi));
+      if ennemi.anim.etat='chase' then
+        begin
+        ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
+        ennemi.stats.degatsContact:=0;
+        if ennemi.stats.compteurAction>100 then
+          begin
+          ennemi.stats.compteurAction:=0;
+          if random(2)=0 then
+            begin
+            ennemi.stats.xcible:=getcenterx(joueur);
+            ennemi.stats.ycible:=getcentery(joueur);
+            initAnimation(ennemi.anim,ennemi.anim.objectName,'strike',ennemi.stats.nbFrames2,False)
+            end
+          else
+            begin
+            initAnimation(ennemi.anim,ennemi.anim.objectName,'dash',ennemi.stats.nbFrames3,False);
+            ennemi.stats.xcible:=getcenterx(joueur);
+            ennemi.stats.ycible:=getcentery(joueur);
+            end;
+          end;
+        end;
+      if (ennemi.anim.etat='dash') then
+        moveToTarget(ennemi,10);
+      if (ennemi.anim.etat='strike') and (ennemi.anim.currentFrame>=10) then
+        ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
+      if animFinie(ennemi.anim) and ((ennemi.anim.etat='strike') or (ennemi.anim.etat='dash')) then
+        initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
+      end;
     end
 end;
 
@@ -977,7 +1025,7 @@ begin
   if (ennemi.stats.vie>0) and (ennemi.anim.etat<>'apparition') then 
     begin
       deplacementEnnemi(ennemi,joueur);
-      actionEnnemi(ennemi,joueur.image.rect.x,joueur.image.rect.y);
+      actionEnnemi(ennemi,getcenterx(joueur),getcentery(joueur));
     end
 		else
       if (animFinie(ennemi.anim)) and (ennemi.anim.etat='mort') then
@@ -1064,6 +1112,7 @@ initStatEnnemi(28,'elementaire_tempete',3,50,0,5,0,2,150,150,10,8,4,0,10,100,150
 initStatEnnemi(29,'elementaire_eclipse',1,250,2,0,4,3,400,400,19,12,7,0,9,60,60,160,160,'eclipse');
 initStatEnnemi(30,'gardien',16,500,2,1,0,1,300,300,8,16,0,0,23,250,120,25,120,'rayon_main');
 initStatEnnemi(31,'Geist',17,200,10,0,-10,4,300,300,21,24,3,7,9,80,80,110,160,'rayonAL');
+initStatEnnemi(32,'geolier',18,300,10,0,-10,2,500,400,4,12,20,4,6,100,200,200,200,'arcane');
 
 
 

@@ -101,11 +101,11 @@ begin
     setlength(ennemis,statsJoueur.avancement+1);
     for j:=1 to statsJoueur.avancement do
         begin
-        alea:=random(30)+1;
+        alea:=random(31)+1;
         if (alea=20) or (alea=21) then
-            ennemis[j]:=templatesEnnemis[31]
+            ennemis[j]:=templatesEnnemis[32]
         else
-            ennemis[j]:=templatesEnnemis[alea];
+            ennemis[j]:=templatesEnnemis[32];
         writeln('élément ',j,' de ennemis: ',ennemis[j].anim.objectName);
         end;
     writeln('ennemis choisis');
