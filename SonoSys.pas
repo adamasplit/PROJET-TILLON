@@ -7,7 +7,7 @@ uses
     SDL2_mixer,
     SysUtils; //télécharger SDL2_mixer au préalable
 
-const TAILLE_OST=40;
+const TAILLE_OST=50;
         VOLUME_MUSIQUE=40;
         VOLUME_SON=20;
         MAX_CHAINES = 6;
@@ -26,12 +26,15 @@ var OST:array[1..TAILLE_OST] of TMus;
     enFondu:Boolean;
 
 
-procedure jouerSon(nomFichier:PChar);//joue un son .WAV
+procedure jouerSon(nomFichier:PChar);overload;//joue un son .WAV
+procedure jouerSon(nomFichier:PCHar;volume:Integer);overload;
 procedure jouerMus(i:Integer);//joue une musique .OGG ou .WAV
 procedure autoMusique(); //recommence une musique si elle est finie (à mettre dans la boucle d'actualisation du jeu)
 procedure JouerSonEff(nom:String);
 procedure arretMus(duree:Integer);//éteindre progressivement la musique, durée en ms
 procedure arretSons(duree:Integer);//arrêter tous les sons
+procedure JouerSonEnn(nom:String);overload;
+procedure JouerSonEnn(nom:String;num:Integer);overload;
 procedure detruireOST();//à mettre impérativement en fin du programme
 
 
@@ -63,6 +66,20 @@ begin
     OST[indice].duree:=duree;
 end;
 
+procedure jouerSon(nomFichier:PCHar;volume:Integer);
+begin
+    if fileExists(nomFichier) then
+        begin
+            Mix_FreeChunk(SFX[chaineActuelle]);
+            SFX[chaineActuelle]:=chargerSFX(nomFichier);
+            Mix_VolumeChunk(SFX[chaineActuelle],volume);
+            Mix_PlayChannel(chaineActuelle,SFX[chaineActuelle],0);
+            chaineActuelle:=chaineActuelle+1;
+            if chaineActuelle>6 then
+                chaineActuelle:=1;
+        end;
+end;
+
 procedure jouerSon(nomFichier:PCHar);
 begin
     if fileExists(nomFichier) then
@@ -78,7 +95,22 @@ end;
 
 procedure JouerSonEff(nom:String);
 begin
-    jouerSon(StringToPChar('SFX/Effets/'+nom+'.wav'));
+    case nom of
+    'ange','soleil','monde':jouerSon(StringToPChar('SFX/Effets/'+nom+'.wav'),VOLUME_SON);
+    'impact':jouerSon(StringToPChar('SFX/Effets/'+nom+'.wav'),VOLUME_SON div 3);
+    else
+    jouerSon(StringToPChar('SFX/Effets/'+nom+'.wav'),VOLUME_SON div 2);
+    end;
+end;
+
+procedure JouerSonEnn(nom:String);
+begin
+  jouerSon(StringToPChar('SFX/Ennemis/'+nom+'.wav'),VOLUME_SON * 2);
+end;
+
+procedure JouerSonEnn(nom:String;num:Integer);
+begin
+    jouerSon(StringToPChar('SFX/Ennemis/'+nom+' ('+intToStr(num)+').wav'),VOLUME_SON * 2);
 end;
 procedure jouerMus(i:Integer);
 begin
@@ -113,8 +145,8 @@ begin
             //end;
         if (SDL_GetTicks()-UpdateTimeMusique)>(OST[indiceMusiqueJouee].duree)*1000 then //vérifier si le morceau est fini ou non
             begin
-            if (indiceMusiqueJouee>12) and (indiceMusiqueJouee<22) then
-                indiceMusiqueJouee:=indiceMusiqueJouee+10
+            if (indiceMusiqueJouee>15) and (indiceMusiqueJouee<30) then
+                indiceMusiqueJouee:=indiceMusiqueJouee+14
             else
                 mix_rewindMusic();
             updatetimeMusique := SDL_GetTicks();
@@ -164,36 +196,39 @@ Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT,
     defMus(4,'OST/C3.wav','',104);
     defMus(5,'OST/C4.wav','',96);
     defMus(6,'OST/C5.wav','With Or Against You',113);
+    defMus(7,'OST/C6.wav','',72);
     //Boss
-    defMus(7,'OST/Boss1.wav','',120);
-    defMus(8,'OST/Boss2.wav','',116);
-    defMus(9,'OST/Boss3.wav','',149);
-    defMus(10,'OST/Boss4.wav','',133);
+    defMus(10,'OST/Boss1.wav','',120);
+    defMus(11,'OST/Boss2.wav','',116);
+    defMus(12,'OST/Boss3.wav','',149);
+    defMus(13,'OST/Boss4.wav','',133);
     //Map/évènements
-    defMus(11,'OST/Map.wav','',163);
-    defMus(12,'OST/Event.wav','',49);
+    defMus(14,'OST/Map.wav','',163);
+    defMus(15,'OST/Event.wav','',49);
     //Fanfares de victoire
-    defMus(13,'OST/C1_VictoireIntro.wav','',5);
-    defMus(14,'OST/C2_VictoireIntro.wav','',5);
-    defMus(15,'OST/C3_VictoireIntro.wav','',5);
-    defMus(16,'OST/C4_VictoireIntro.wav','',3);
-    defMus(17,'OST/C5_VictoireIntro.wav','',5);
-    defMus(18,'OST/Boss1_VictoireIntro.wav','',5);
-    defMus(19,'OST/Boss2_VictoireIntro.wav','',7);
-    defMus(20,'OST/Boss3_VictoireIntro.wav','',5);
-    defMus(21,'OST/Boss4_VictoireIntro.wav','',5);
+    defMus(20,'OST/C1_VictoireIntro.wav','',5);
+    defMus(21,'OST/C2_VictoireIntro.wav','',5);
+    defMus(22,'OST/C3_VictoireIntro.wav','',5);
+    defMus(23,'OST/C4_VictoireIntro.wav','',3);
+    defMus(24,'OST/C5_VictoireIntro.wav','',5);
+    defMus(25,'OST/C6_VictoireIntro.wav','',4);
+    defMus(26,'OST/Boss1_VictoireIntro.wav','',5);
+    defMus(27,'OST/Boss2_VictoireIntro.wav','',7);
+    defMus(28,'OST/Boss3_VictoireIntro.wav','',5);
+    defMus(29,'OST/Boss4_VictoireIntro.wav','',5);
     //Thèmes de victoire/map
-    defMus(23,'OST/C1_VictoireRep.wav','',6);
-    defMus(24,'OST/C2_VictoireRep.wav','',11);
-    defMus(25,'OST/C3_VictoireRep.wav','',33);
-    defMus(26,'OST/C4_VictoireRep.wav','',36);
-    defMus(27,'OST/C5_VictoireRep.wav','',18);
-    defMus(28,'OST/Boss1_VictoireRep.wav','',81);
-    defMus(29,'OST/Boss2_VictoireRep.wav','',81);
-    defMus(30,'OST/Boss3_VictoireRep.wav','',74);
-    defMus(31,'OST/Boss4_VictoireRep.wav','',27);
+    defMus(34,'OST/C1_VictoireRep.wav','',6);
+    defMus(35,'OST/C2_VictoireRep.wav','',11);
+    defMus(36,'OST/C3_VictoireRep.wav','',33);
+    defMus(37,'OST/C4_VictoireRep.wav','',36);
+    defMus(38,'OST/C5_VictoireRep.wav','',18);
+    defMus(39,'OST/C6_VictoireRep.wav','',48);
+    defMus(40,'OST/Boss1_VictoireRep.wav','',81);
+    defMus(41,'OST/Boss2_VictoireRep.wav','',81);
+    defMus(42,'OST/Boss3_VictoireRep.wav','',74);
+    defMus(43,'OST/Boss4_VictoireRep.wav','',27);
     //Mort
-    defMus(32,'OST\Project_DEATH.wav','',25);
+    defMus(32,'OST\Project_DEATH.wav','',24);
 
 
 end.

@@ -321,7 +321,7 @@ begin
       			case EventSystem^.type_ of
 					SDL_mousebuttondown:if dialogues[1].letterdelay=0 then begin
 						sceneActive:='Jeu';
-						if LObjets[1].anim.objectName='Béhémoth' then indiceMusiqueJouee:=8;
+						if LObjets[1].anim.objectName='Béhémoth' then indiceMusiqueJouee:=10;
 						end
 						 else dialogues[1].LetterDelay:=0;
 				end
@@ -340,12 +340,12 @@ begin
 		while (SDL_PollEvent( EventSystem ) = 1) do
     		begin
       			case EventSystem^.type_ of
-					SDL_mousebuttondown:if dialogues[1].letterdelay=0 then begin 
+					SDL_mousebuttondown:if dialogues[2].letterdelay=0 then begin 
 						InitAnimation(LObjets[1].anim,LObjets[1].anim.objectName,'mort',LObjets[1].stats.nbFramesMort,False);
 						sceneActive:='Jeu';
 						end
 						else
-							dialogues[1].LetterDelay:=0;
+							dialogues[2].LetterDelay:=0;
 				end
 			end
 		end;
@@ -366,7 +366,7 @@ begin
 						LObjets[0].stats.compteurLeMonde:=100;
 						updateTimeMonde:=sdl_getTicks;
 						end;
-					SDLK_O:LOBjets[0].stats.multiplicateurMana:=10;
+					SDLK_O:LOBjets[0].stats.multiplicateurMana:=LOBjets[0].stats.multiplicateurMana+10;
 					SDLK_H : choixSalle();
 					SDLK_F2:begin
 						statsJoueur.force:=statsJoueur.force+1;

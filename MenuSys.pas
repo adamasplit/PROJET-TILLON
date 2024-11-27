@@ -185,7 +185,7 @@ end;
 
 procedure NouvellePartieIntro;
 begin
-	indiceMusiqueJouee:=11;
+	indiceMusiqueJouee:=14;
 	ClearScreen;
 	SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
 	black_color.r := 255; black_color.g := 255; black_color.b := 255;
@@ -237,7 +237,7 @@ begin
 	ClearScreen;
 	black_color.r := 0; black_color.g := 0; black_color.b := 0;
 	initjoueur(false);
-	jouer;
+	choixSalle;
 end;
 
 
@@ -489,7 +489,7 @@ end;
 procedure victoire(var statsJ:TStats); //censé contenir le choix+obtention d'une carte après un combat (voire d'une relique, pour plus tard)
 var i:Integer;
 begin
-	if indiceMusiqueJouee<>11 then indiceMusiqueJouee:=indiceMusiqueJouee+11;
+	if indiceMusiqueJouee<14 then indiceMusiqueJouee:=indiceMusiqueJouee+18;
     sceneActive:='victoire';
     for i:=1 to 3 do
         begin

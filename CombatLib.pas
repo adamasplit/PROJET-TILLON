@@ -299,6 +299,7 @@ begin
         if rayon.stats.delai=0 then //si le rayon atteint son délai, il s'active
             begin 
             initAnimation(rayon.anim,rayon.anim.objectName,'actif',5,False);
+            jouerSonEff(rayon.anim.objectName);
             rayon.col.estActif:=True;
             rayon.anim.estActif:=True;
             rayon.stats.delai:=-1;
@@ -373,10 +374,10 @@ begin
 
         proj.col.isTrigger := True;
         proj.col.estActif := True;
-        proj.col.dimensions.w := w div 2;
-        proj.col.dimensions.h := h div 2;
-        proj.col.offset.x := w div 5;
-        proj.col.offset.y := h div 5;
+        proj.col.dimensions.w := w*2 div 8;
+        proj.col.dimensions.h := h*2 div 8;
+        proj.col.offset.x := w*3 div 8;
+        proj.col.offset.y := h*3 div 8;
         proj.col.nom := 'boule';
 
         //Création du vecteur de mouvement du projectile

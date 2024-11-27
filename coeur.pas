@@ -144,6 +144,7 @@ var LObjets: ListeObjets; //Liste universelle des objets présents
 murs:array[1..4] of TObjet;
 combatFini,vagueFinie,leMonde:Boolean;
 statsJoueur: TStats;
+var modeDebug:Boolean;
 PDeck:TDeck; //deck pointé par les stats du joueur
  
 // Boutons
