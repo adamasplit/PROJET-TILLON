@@ -671,7 +671,7 @@ end;
             sPerm.nbJustice := sPerm.nbJustice + 1;
             sCombat.nbJustice := sCombat.nbJustice + 1;   //### à initialiser à 0 en débur de partie 
             end;
-        initJustice(typeObjet(0),scombat.nbjustice,scombat.force,sCombat.multiplicateurDegat,x,y,getmousex,getmousey,28,50,'justice');
+        initJustice(typeObjet(0),1,scombat.force,sCombat.multiplicateurDegat,x,y,getmousex,getmousey,28,50,'justice');
     end;
     
     //9 L'ermite
@@ -815,7 +815,7 @@ end;
         for i := 0 to high(LOBjets) do
             if LOBjets[i].stats.genre=ennemi then
             begin
-                subirDegats(LObjets[i].stats,1,Lobjets[i].image.rect.x,Lobjets[i].image.rect.y);
+                subirDegats(LObjets[i].stats,1,getcenterx(LObjets[i]),getcentery(LObjets[i]));
                 creerEffet(LObjets[i].image.rect.x+LObjets[i].col.offset.x,LObjets[i].image.rect.y+LObjets[i].col.offset.x,LObjets[i].col.dimensions.w,LObjets[i].col.dimensions.h,7,'impact_solaire',False,eff);
                 ajoutObjet(eff);
             end;

@@ -84,7 +84,7 @@ end;
 function NextOrSkipDialogue(i : Integer) : Boolean;
 begin
 	NextOrSkipDialogue:=False;
-	if dialogues[i].letterdelay<>0 then writeln(dialogues[i].letterdelay);
+	if dialogues[i].letterdelay<>0 then begin writeln(dialogues[i].letterdelay); end;
   	  while (SDL_PollEvent( EventSystem ) = 1) do
       			case EventSystem^.type_ of
 					SDL_mousebuttondown:if dialogues[i].letterdelay=0 then NextOrSkipDialogue:=True else dialogues[i].LetterDelay:=0;

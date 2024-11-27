@@ -1066,7 +1066,7 @@ begin
     ennemi.stats.cooldown:=ennemi.stats.cooldown-1;
   DrawRect(black_color,255, ennemi.image.rect.x-2+ennemi.col.offset.x,ennemi.image.rect.y+ennemi.col.dimensions.h+ennemi.col.offset.y+5, ennemi.col.dimensions.w+4, 14);
   if ennemi.stats.vieMax>0 then
-  DrawRect(red_color,255, ennemi.image.rect.x+ennemi.col.offset.x,ennemi.image.rect.y+ennemi.col.dimensions.h+ennemi.col.offset.y+7, Round(ennemi.col.dimensions.w*(ennemi.stats.vie/ennemi.stats.vieMax)), 10 );
+  DrawRect(red_color,255, ennemi.image.rect.x+ennemi.col.offset.x,ennemi.image.rect.y+ennemi.col.dimensions.h+ennemi.col.offset.y+7, max(0,Round(ennemi.col.dimensions.w*(ennemi.stats.vie/ennemi.stats.vieMax))), 10 );
   if ennemi.stats.vie<0 then ennemi.stats.vie:=0;
   if (ennemi.stats.vie>0) and (ennemi.anim.etat<>'apparition') then 
     begin

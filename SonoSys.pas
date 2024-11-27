@@ -212,10 +212,10 @@ Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT,
     defMus(23,'OST/C4_VictoireIntro.wav','',3);
     defMus(24,'OST/C5_VictoireIntro.wav','',5);
     defMus(25,'OST/C6_VictoireIntro.wav','',4);
-    defMus(26,'OST/Boss1_VictoireIntro.wav','',5);
-    defMus(27,'OST/Boss2_VictoireIntro.wav','',7);
-    defMus(28,'OST/Boss3_VictoireIntro.wav','',5);
-    defMus(29,'OST/Boss4_VictoireIntro.wav','',5);
+    defMus(28,'OST/Boss1_VictoireIntro.wav','',5);
+    defMus(29,'OST/Boss2_VictoireIntro.wav','',7);
+    defMus(30,'OST/Boss3_VictoireIntro.wav','',5);
+    defMus(31,'OST/Boss4_VictoireIntro.wav','',5);
     //Thèmes de victoire/map
     defMus(34,'OST/C1_VictoireRep.wav','',6);
     defMus(35,'OST/C2_VictoireRep.wav','',11);
@@ -223,12 +223,13 @@ Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT,
     defMus(37,'OST/C4_VictoireRep.wav','',36);
     defMus(38,'OST/C5_VictoireRep.wav','',18);
     defMus(39,'OST/C6_VictoireRep.wav','',48);
-    defMus(40,'OST/Boss1_VictoireRep.wav','',81);
-    defMus(41,'OST/Boss2_VictoireRep.wav','',81);
-    defMus(42,'OST/Boss3_VictoireRep.wav','',74);
-    defMus(43,'OST/Boss4_VictoireRep.wav','',27);
+    defMus(42,'OST/Boss1_VictoireRep.wav','',81);
+    defMus(43,'OST/Boss2_VictoireRep.wav','',81);
+    defMus(44,'OST/Boss3_VictoireRep.wav','',74);
+    defMus(45,'OST/Boss4_VictoireRep.wav','',27);
     //Mort
     defMus(32,'OST\Project_DEATH.wav','',24);
+    defMus(33,'OST\Project_DEATH2.wav','',72);
 
 
 end.
