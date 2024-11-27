@@ -1,4 +1,4 @@
-<DESC_CAR_1>Le bateleur, symbole des nouveaux départs, est une carte classique de combat.;
+<DESC_CAR_1>Le bateleur, symbole des nouveaux départs, est une carte classique de combat qui permet de projeter son pouvoir.;
 <DESC_CAR_2>La sagesse de la papesse lui permet de combiner attaque et soin.;
 <DESC_CAR_3>L'impératrice impose sa volonté en pulvérisant ses ennemis, tout en accordant l'abondance de la vie à ses sujets.;
 <DESC_CAR_4>L'autorité de l'empereur est transmise dans une puissante vague d'énergie.;
@@ -9,9 +9,9 @@
 <DESC_CAR_9>Méditer permet de canaliser plus efficacement son mana, afin d'être concentré sur l'utilisation de sorts.;
 <DESC_CAR_10>Active un effet choisi par le destin, qui peut parfois être facétieux...;
 <DESC_CAR_11>Libère la force intérieure, augmentant la puissance des cartes.;
-<DESC_CAR_12>Au prix de son équilibre, l'utilisateur voit sa vitesse augmentée.;
+<DESC_CAR_12>Au prix de son équilibre, l'utilisateur voit sa vitesse, sa force et sa défense augmentées.;
 <DESC_CAR_13>L'utilisateur reçoit la protection ultime, pour échapper à son destin. Immunise contre la défaite pendant 5 secondes.;
-<DESC_CAR_14>;
+<DESC_CAR_14>L'utilisateur se concentre pour se protéger des attaques jusqu'à la fin du combat.;
 <DESC_CAR_15>Un pacte avec le diable coûte une partie de la vitalité de celui qui le passe. En échange, il gagne une puissance immense.;
 <DESC_CAR_16>;
 <DESC_CAR_17>Sous forme d'étoile, la puissance magique de l'utilisateur est envoyée dans toutes les directions.;
@@ -19,7 +19,7 @@
 <DESC_CAR_19>Le soleil darde le mal de ses rayons et protège ceux qui marchent dans la lumière.;
 <DESC_CAR_20>L'ange passe son jugement et donne son aide à ceux qu'il en juge dignes.;
 <DESC_CAR_21>La carte du Monde donne à l'utilisateur l'autorité sur le temps.;
-<DESC_CAR_22>;
+<DESC_CAR_22>Permet d'esquiver une fois les attaques.;
 <DESC_CAR_23>Cette carte porte le symbole du Lion. Elle appelle la puissance de son épée flamboyante.;
 <DESC_CAR_24>Cette carte porte le symbole du Serpentaire. Elle renferme une grande puissance qui ne peut pas être utilisée offensivement.;
 <COMM_CAR_1>Il faut bien commencer quelque part. J'accepte l'aide que les cartes m'accorderont.;
@@ -56,7 +56,7 @@
 <DESC_ENN_8>Un être artificiel créé par les mages.;
 <DESC_ENN_9>Une relique des temps anciens qui est maintenant utilisée comme garde. Elle semble pourtant dotée d'une forme d'intelligence.;
 <DESC_ENN_10>Cette imposante machine, alimentée par magie, sert de moyen de transport mais également de sentinelle pour garder le donjon. L'alliage de ces deux fonctions lui donne une grande vitesse.;
-<DESC_ENN_11>Des animaux qui, à l'état sauvage, sont incapables de manipuler leur important mana. Ils ont donc été capturés par les mages, avides d'utiliser cette énergie. Leur armure leur permet de contrôler leur pouvoir, notamment sous forme de rayons d'énergie.;
+<DESC_ENN_11>Des animaux qui, à l'état sauvage, sont incapables de manipuler leur important mana. Ils ont donc été capturés par les mages, avides d'utiliser cette énergie. Leur armure leur permet de contrôler leur pouvoir, notamment sous forme de rayons dévastateurs.;
 <DESC_ENN_12>Un être artificiel créé à partir de l'âme d'un mort. Sa volonté a fini par le transformer en sorte d'esprit du zodiaque.;
 <DESC_ENN_13>;
 <DESC_ENN_14>;
@@ -73,7 +73,7 @@
 <COMM_ENN_3>C'est ce genre de choses que je déplore. Ces techniques qui profanent la vie et la mort.;
 <COMM_ENN_4>Je n'ai jamais vu une créature pareille. Elle semble avoir une emprise sur les ténèbres.;
 <COMM_ENN_5>Le moins que je puisse faire maintenant est d'empêcher qu'ils ne prennent plus de vies.;
-<COMM_ENN_6>;
+<COMM_ENN_6>J'imagine que recevoir le don de la magie a grandement aidé les autres formes de vie.;
 <COMM_ENN_7>...Quelle atrocité...;
 <COMM_ENN_8>Que peut-il avoir à faire ici? Je ne crois pas que nous soyons ennemis.;
 <COMM_ENN_9>Ce n'est pas qu'une simple machine, c'est un vestige des dieux! Et ils l'utilisent comme simple geôlier? C'est inadmissible!;
@@ -89,7 +89,15 @@
 <COMM_ENN_19>Ce symbole! Il doit donc s'agir d'un genre de pacte. Mais pourquoi aller aussi loin pour le pouvoir? Suis-je une telle menace?;
 <COMM_ENN_20>Dans nos légendes, les dragons sont réputés pour leur hargne, mais... Qu'a-t'il pu bien se passer pour en arriver là? Dans tous les cas, le seul moyen de le renvoyer dans la mort est de tuer son réceptacle.;
 <COMM_ENN_21>Cette puissance me glace le sang... D'où peut-il donc la tenir?;
+<COMM_ENN_22>;
 <COMM_ENN_24>Leurs sorts sont certes bien plus perfectionnés que les miens, mais peu importe.;
+<COMM_ENN_27>;
+<COMM_ENN_28>L'ombre n'est ni fondamentalement bonne ou mauvaise. Après tout, certains y trouvent le confort et le repos.;
+<COMM_ENN_29>Pourquoi cet élémentaire est-il si agressif, ne représente-t-il pas l'équilibre ? Ou bien... est-ce que je menace cet équilibre ?;
+<COMM_ENN_30>Est-ce une machine animée d'une âme? Je ne sais pas si je devrais être impressionnée ou terrifiée.;
+<COMM_ENN_31>Je comprends la volonté de s'accrocher à la vie. Mais...;
+<COMM_ENN_32>Un ennemi puissant, mais il n'aurait pas dû se mettre en travers de mon chemin.;
+<COMM_ENN_33>Pourquoi...;
 <DESC_REL_1>Un recueil de techniques ancestrales;
 <TXT_INTRO1>Il fait si froid...;
 <TXT_INTRO2>Tout est noir. Aucun son, aucune lumière.;
