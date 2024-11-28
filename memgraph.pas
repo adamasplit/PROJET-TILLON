@@ -395,7 +395,13 @@ begin
   sdl_destroytexture(box.portrait.imgtexture);
   
   if ImgPath <> nil then CreateRawImage(Box.BackgroundImage, X, Y, W, H, ImgPath) else begin Box.BackgroundImage.rect.x := X; Box.BackgroundImage.rect.y := Y end;
-  if portraitPath <> nil then CreateRawImage(Box.portrait, X, Y, W div 4, W div 4, portraitPath);
+  if portraitPath <> nil then 
+    begin
+    if portraitPath='Sprites/Menu/portraitB.bmp' then
+      CreateRawImage(Box.portrait, X, Y, W div 4, W div 4, portraitPath)
+    else
+      CreateRawImage(Box.portrait, X+(W div 20), Y+(H div 6), H div 2+ (H div 10), H div 2+(H div 10), portraitPath);
+    end;
   
   box.w:=W;
   Box.RemainingText := DialogueText;
@@ -417,7 +423,13 @@ begin
   sdl_destroytexture(box.portrait.imgtexture);
   
   if ImgPath <> nil then CreateRawImage(Box.BackgroundImage, X, Y, W, H, ImgPath) else begin Box.BackgroundImage.rect.x := X; Box.BackgroundImage.rect.y := Y end;
-  if portraitPath <> nil then CreateRawImage(Box.portrait, X, Y, W div 4, W div 4, portraitPath);
+  if portraitPath <> nil then 
+    begin
+    if portraitPath='Sprites/Menu/portraitB.bmp' then
+      CreateRawImage(Box.portrait, X, Y, W div 4, W div 4, portraitPath)
+    else
+      CreateRawImage(Box.portrait, X, Y, W div 4-(W div 5), W div 4-(W div 5), portraitPath);
+    end;
   
   box.w:=W;
   Box.RemainingText := DialogueText;
@@ -441,7 +453,6 @@ procedure UpdateDialogueBox(var Box: TDialogueBox); // C'est la la scene de crim
 var
   CurrentTime: UInt32;
   TimeDiff: UInt32;
-  delay:UInt32;
   test:Boolean;
 begin
   CurrentTime := SDL_GetTicks();
@@ -452,7 +463,6 @@ begin
   if Box.portrait.imgTexture <> nil then RenderRawImage(Box.portrait, 255, False);
 
   TimeDiff := CurrentTime - Box.LastUpdateTime;
-  delay:=box.letterdelay;
   test:=timediff>box.letterdelay;
 
   if (Box.DisplayedLetters < Length(Box.Lines[Box.CurrentLine])) then

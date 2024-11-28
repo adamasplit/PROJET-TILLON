@@ -9,7 +9,7 @@ uses
   SDL2,sdl2_mixer,combatLib,eventSys,sonoSys,
   SysUtils,coeur;
 
-  var modeDebug:Boolean;
+  
 
 
   // Vérifie automatiquement les collisions entre tous les objets actifs

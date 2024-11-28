@@ -33,6 +33,7 @@ procedure choixSalle();
 procedure actualiserMap();
 procedure actualiserMarchand();
 procedure actualiserEchange();
+procedure actualiserSalleLeo;
 procedure choisirEnnemis;
 procedure LancementSalleHasard;
 procedure LancementSalleBoss;
@@ -44,7 +45,8 @@ function Highlight(var btnGroup: TButtonGroup; x, y: Integer):Boolean;
 implementation
 
 var entree:Boolean;
-var imgCar1,imgCar2:TImage;
+var numDialogue:Integer;
+var imgCar1,imgCar2,imgCar3:TImage;
 
 procedure generationChoix(var salle1,salle2,salle3:TSalle);
 var alea:Integer;
@@ -62,18 +64,18 @@ begin
         case alea of
             1:begin
                 salle1.evenement:=combat;
-                salle2.evenement:=evenements(random(3));
-                salle3.evenement:=evenements(random(3))
+                salle2.evenement:=evenements(random(4));
+                salle3.evenement:=evenements(random(4))
                 end;
             2:begin
                 salle2.evenement:=combat;
-                salle1.evenement:=evenements(random(3));
-                salle3.evenement:=evenements(random(3))
+                salle1.evenement:=evenements(random(4));
+                salle3.evenement:=evenements(random(4))
                 end;
             3:begin
                 salle3.evenement:=combat;
-                salle1.evenement:=evenements(random(3));
-                salle2.evenement:=evenements(random(3))
+                salle1.evenement:=evenements(random(4));
+                salle2.evenement:=evenements(random(4))
                 end
             end
         end
@@ -88,10 +90,8 @@ begin
             SDL_DestroyTexture(ennemis[high(ennemis)].image.imgTexture);
             setlength(ennemis,high(ennemis));
         until high(ennemis)=0;}
-    writeln('liste ennemis vide');
     initStatsCombat(statsJoueur,LObjets[0].stats);
     if high(LOBjets)>0 then repeat supprimeObjet(LObjets[1]) until high(LObjets)=0;
-    writeln('LObjets vidée');
     vagueFinie:=True;
     combatFini:=False;
     randomize;
@@ -105,10 +105,9 @@ begin
         if (alea=20) or (alea=21) then
             ennemis[j]:=templatesEnnemis[32]
         else
-            ennemis[j]:=templatesEnnemis[32];
+            ennemis[j]:=templatesEnnemis[alea];
         writeln('élément ',j,' de ennemis: ',ennemis[j].anim.objectName);
         end;
-    writeln('ennemis choisis');
 
 end;
 
@@ -119,22 +118,23 @@ choisirEnnemis;
 statsJoueur.avancement := statsJoueur.avancement+1;
 ClearScreen;
 SDL_RenderClear(sdlRenderer);
-writeln('choix des ennemis...');
 
 SceneActive := 'Jeu';
 //indiceMusiqueJouee:=random(4)+2;
 end;
 
-procedure LancementSalleHasard;
+procedure LancementVSLeo();
 begin
-writeln('Lancement de salle Hasard');
-choisirEnnemis;
-statsJoueur.avancement := statsJoueur.avancement+1;
-ClearScreen;
-SDL_RenderClear(sdlRenderer);
-SceneActive := 'Jeu';
-
+    initStatsCombat(statsJoueur,LObjets[0].stats);
+    if high(LOBjets)>0 then repeat supprimeObjet(LObjets[1]) until high(LObjets)=0;
+    vagueFinie:=True;
+    combatFini:=False;
+    setlength(ennemis,2);
+    ennemis[1]:=templatesEnnemis[12];
+    sceneActive:='Jeu';
 end;
+
+
 
 procedure LancementSalleBoss;
 var j : integer;
@@ -157,7 +157,7 @@ begin
     writeln('ennemis choisis (boss)')
 end;
 
-procedure ajouterCarteAleatoireRarete(rarete : Trarete ; var stats : Tstats);
+function ajouterCarteAleatoireRarete(rarete : Trarete):TCarte;
 var rdm : integer;
 begin
     randomize;
@@ -167,12 +167,12 @@ begin
         rdm := 1 + random(6);
 
         case rdm of
-        1: ajouterCarte(stats , 1);
-        2: ajouterCarte(stats , 2);
-        3: ajouterCarte(stats , 3);
-        4: ajouterCarte(stats , 4);
-        5: ajouterCarte(stats , 5);
-        6: ajouterCarte(stats , 10);
+        1: ajouterCarteAleatoireRarete:=cartes[1];
+        2: ajouterCarteAleatoireRarete:=cartes[2];
+        3: ajouterCarteAleatoireRarete:=cartes[3];
+        4: ajouterCarteAleatoireRarete:=cartes[4];
+        5: ajouterCarteAleatoireRarete:=cartes[5];
+        6: ajouterCarteAleatoireRarete:=cartes[10];
         end;
     end;
 
@@ -181,13 +181,13 @@ begin
          rdm := 1 + random(7);
 
         case rdm of
-        1: ajouterCarte(stats , 6);
-        2: ajouterCarte(stats , 7);
-        3: ajouterCarte(stats , 8);
-        4: ajouterCarte(stats ,9);
-        5: ajouterCarte(stats , 11);
-        6: ajouterCarte(stats , 16);
-        7: ajouterCarte(stats , 19);
+        1: ajouterCarteAleatoireRarete:=cartes[6];
+        2: ajouterCarteAleatoireRarete:=cartes[7];
+        3: ajouterCarteAleatoireRarete:=cartes[8];
+        4: ajouterCarteAleatoireRarete:=cartes[9];
+        5: ajouterCarteAleatoireRarete:=cartes[11];
+        6: ajouterCarteAleatoireRarete:=cartes[16];
+        7: ajouterCarteAleatoireRarete:=cartes[19];
         end;
     end;
 
@@ -196,12 +196,12 @@ begin
          rdm := 1 + random(6);
 
         case rdm of
-        1: ajouterCarte(stats , 12);
-        2: ajouterCarte(stats , 14);
-        3: ajouterCarte(stats , 17);
-        4: ajouterCarte(stats , 18);
-        5: ajouterCarte(stats , 20);
-        6: ajouterCarte(stats , 22);
+        1: ajouterCarteAleatoireRarete:=cartes[12];
+        2: ajouterCarteAleatoireRarete:=cartes[14];
+        3: ajouterCarteAleatoireRarete:=cartes[17];
+        4: ajouterCarteAleatoireRarete:=cartes[18];
+        5: ajouterCarteAleatoireRarete:=cartes[20];
+        6: ajouterCarteAleatoireRarete:=cartes[22];
         end;
     
     end;
@@ -211,9 +211,9 @@ begin
          rdm := 1 + random(3);
 
         case rdm of
-        1: ajouterCarte(stats , 13);
-        2: ajouterCarte(stats , 15);
-        3: ajouterCarte(stats , 21);
+        1: ajouterCarteAleatoireRarete:=cartes[13];
+        2: ajouterCarteAleatoireRarete:=cartes[15];
+        3: ajouterCarteAleatoireRarete:=cartes[21];
         end;
     end;
     end;
@@ -221,7 +221,7 @@ end;
 
 
 procedure trade(carte1, carte2 : TCarte ; Var stats : Tstats); //#### table de proba à finir
-var rdm : Integer;
+var rdm : Integer;carte:TCarte;
 begin
     randomize;
     //C-C -> Commune:93% Rare:5% Epique:1% Legendaire:1%
@@ -229,10 +229,10 @@ begin
     begin
         rdm := 1 + random(100);
         case rdm of 
-            1..93: ajouterCarteAleatoireRarete(commune, stats);
-            94..98: ajouterCarteAleatoireRarete(rare, stats);
-            99: ajouterCarteAleatoireRarete(epique, stats);
-            100: ajouterCarteAleatoireRarete(legendaire, stats);
+            1..93:  carte:=ajouterCarteAleatoireRarete(commune);
+            94..98: carte:=ajouterCarteAleatoireRarete(rare);
+            99:     carte:=ajouterCarteAleatoireRarete(epique);
+            100:    carte:=ajouterCarteAleatoireRarete(legendaire);
         end;
     end
 
@@ -241,10 +241,10 @@ begin
     begin
         rdm := 1 + random(100);
         case rdm of 
-            1: ajouterCarteAleatoireRarete(commune, stats);
-            2..94: ajouterCarteAleatoireRarete(rare, stats);
-            95..99: ajouterCarteAleatoireRarete(epique, stats);
-            100: ajouterCarteAleatoireRarete(legendaire, stats);
+            1:      ajouterCarteAleatoireRarete(commune);
+            2..94:  ajouterCarteAleatoireRarete(rare);
+            95..99: ajouterCarteAleatoireRarete(epique);
+            100:    ajouterCarteAleatoireRarete(legendaire);
         end;
     end
 
@@ -253,10 +253,10 @@ begin
     begin
         rdm := 1 + random(100);
         case rdm of 
-            1: ajouterCarteAleatoireRarete(commune, stats);
-            2: ajouterCarteAleatoireRarete(rare, stats);
-            3..95: ajouterCarteAleatoireRarete(epique, stats);
-            96..100: ajouterCarteAleatoireRarete(legendaire, stats);
+            1:      carte:=ajouterCarteAleatoireRarete(commune);
+            2:      carte:=ajouterCarteAleatoireRarete(rare);
+            3..95:  carte:=ajouterCarteAleatoireRarete(epique);
+            96..100:carte:=ajouterCarteAleatoireRarete(legendaire);
         end;
     end
 
@@ -265,82 +265,82 @@ begin
     begin
         rdm := 1 + random(100);
         case rdm of 
-            1: ajouterCarteAleatoireRarete(commune, stats);
-            2: ajouterCarteAleatoireRarete(rare, stats);
-            3: ajouterCarteAleatoireRarete(epique, stats);
-            4..100: ajouterCarteAleatoireRarete(legendaire, stats);
+            1:      carte:=ajouterCarteAleatoireRarete(commune);
+            2:      carte:=ajouterCarteAleatoireRarete(rare);
+            3:      carte:=ajouterCarteAleatoireRarete(epique);
+            4..100: carte:=ajouterCarteAleatoireRarete(legendaire);
         end;
     end
 
     //C-R
-    else if ((carte1.rarete = commune) AND (carte2.rarete = rare) OR (carte1.rarete = rare) AND (carte2.rarete = commune)) then
+    else if ((carte1.rarete = commune) AND (carte2.rarete = rare)) OR ((carte1.rarete = rare) AND (carte2.rarete = commune)) then
     begin
         rdm := 1 + random(100);
         case rdm of 
-            1..60 : ajouterCarteAleatoireRarete(commune, stats);
-            61..98: ajouterCarteAleatoireRarete(rare, stats);
-            99: ajouterCarteAleatoireRarete(epique, stats);
-            100: ajouterCarteAleatoireRarete(legendaire, stats);
+            1..60 : carte:=ajouterCarteAleatoireRarete(commune);
+            61..98: carte:=ajouterCarteAleatoireRarete(rare);
+            99:     carte:=ajouterCarteAleatoireRarete(epique);
+            100:    carte:=ajouterCarteAleatoireRarete(legendaire);
         end;
     end
 
     //C-E
-    else if ((carte1.rarete = commune) AND (carte2.rarete = epique) OR (carte1.rarete = epique) AND (carte2.rarete = commune)) then
+    else if ((carte1.rarete = commune) AND (carte2.rarete = epique)) OR ((carte1.rarete = epique) AND (carte2.rarete = commune)) then
     begin
         rdm := 1 + random(100);
         case rdm of 
-            1..50: ajouterCarteAleatoireRarete(commune, stats);
-            51..79: ajouterCarteAleatoireRarete(rare, stats);
-            80..99: ajouterCarteAleatoireRarete(epique, stats);
-            100: ajouterCarteAleatoireRarete(legendaire, stats);
+            1..50:  carte:=ajouterCarteAleatoireRarete(commune);
+            51..79: carte:=ajouterCarteAleatoireRarete(rare);
+            80..99: carte:=ajouterCarteAleatoireRarete(epique);
+            100:    carte:=ajouterCarteAleatoireRarete(legendaire);
         end;
     end
 
     //C-L
-    else if ((carte1.rarete = commune) AND (carte2.rarete = legendaire) OR (carte1.rarete = legendaire) AND (carte2.rarete = commune)) then
+    else if ((carte1.rarete = commune) AND (carte2.rarete = legendaire)) OR ((carte1.rarete = legendaire) AND (carte2.rarete = commune)) then
     begin
         rdm := 1 + random(100);
         case rdm of 
-            1..20: ajouterCarteAleatoireRarete(commune, stats);
-            21..79: ajouterCarteAleatoireRarete(rare, stats);
-            80..99: ajouterCarteAleatoireRarete(epique, stats);
-            100: ajouterCarteAleatoireRarete(legendaire, stats);
+            1..20:  carte:=ajouterCarteAleatoireRarete(commune);
+            21..79: carte:=ajouterCarteAleatoireRarete(rare);
+            80..99: carte:=ajouterCarteAleatoireRarete(epique);
+            100:    carte:=ajouterCarteAleatoireRarete(legendaire);
         end;
     end
 
     //R-E
-    else if ((carte1.rarete = rare) AND (carte2.rarete = epique) OR (carte1.rarete = epique) AND (carte2.rarete = rare)) then
+    else if ((carte1.rarete = rare) AND (carte2.rarete = epique)) OR ((carte1.rarete = epique) AND (carte2.rarete = rare)) then
     begin
         rdm := 1 + random(100);
         case rdm of 
-            1..20: ajouterCarteAleatoireRarete(commune, stats);
-            21..79: ajouterCarteAleatoireRarete(rare, stats);
-            80..99: ajouterCarteAleatoireRarete(epique, stats);
-            100: ajouterCarteAleatoireRarete(legendaire, stats);
+            1..20:  carte:=ajouterCarteAleatoireRarete(commune);
+            21..79: carte:=ajouterCarteAleatoireRarete(rare);
+            80..99: carte:=ajouterCarteAleatoireRarete(epique);
+            100:    carte:=ajouterCarteAleatoireRarete(legendaire);
         end;
     end
 
     //R-L
-    else if ((carte1.rarete = rare) AND (carte2.rarete = legendaire) OR (carte1.rarete = legendaire) AND (carte2.rarete = rare)) then
+    else if ((carte1.rarete = rare) AND (carte2.rarete = legendaire)) OR ((carte1.rarete = legendaire) AND (carte2.rarete = rare)) then
     begin
         rdm := 1 + random(100);
         case rdm of 
-            1..20: ajouterCarteAleatoireRarete(commune, stats);
-            21..79: ajouterCarteAleatoireRarete(rare, stats);
-            80..99: ajouterCarteAleatoireRarete(epique, stats);
-            100: ajouterCarteAleatoireRarete(legendaire, stats);
+            1..20:  carte:=ajouterCarteAleatoireRarete(commune);
+            21..79: carte:=ajouterCarteAleatoireRarete(rare);
+            80..99: carte:=ajouterCarteAleatoireRarete(epique);
+            100:    carte:=ajouterCarteAleatoireRarete(legendaire);
         end;
     end
 
     //E-L
-    else if ((carte1.rarete = epique) AND (carte2.rarete = legendaire) OR (carte1.rarete = legendaire) AND (carte2.rarete = epique)) then
+    else if ((carte1.rarete = epique) AND (carte2.rarete = legendaire)) OR ((carte1.rarete = legendaire) AND (carte2.rarete = epique)) then
     begin
         rdm := 1 + random(100);
         case rdm of 
-            1..20: ajouterCarteAleatoireRarete(commune, stats);
-            21..79: ajouterCarteAleatoireRarete(rare, stats);
-            80..99: ajouterCarteAleatoireRarete(epique, stats);
-            100: ajouterCarteAleatoireRarete(legendaire, stats);
+            1..20:  carte:=ajouterCarteAleatoireRarete(commune);
+            21..79: carte:=ajouterCarteAleatoireRarete(rare);
+            80..99: carte:=ajouterCarteAleatoireRarete(epique);
+            100:    carte:=ajouterCarteAleatoireRarete(legendaire);
         end;
     end;
 
@@ -348,6 +348,11 @@ begin
     supprimerCarte(stats,carte1.numero);
     supprimerCarte(stats,carte2.numero);
     echangeFait:=True;
+    ajouterCarte(statsJoueur,carte.numero);
+    createRawImage(imgCar3,1080-250-127,imgCar2.rect.y,imgCar2.rect.w,imgCar2.rect.h,carte.dir);
+    renderRawImage(imgCar3,False);
+    sdl_renderpresent(sdlrenderer);
+    sdl_delay(3000);
     LancementSalleMarchand;
 end;
 
@@ -421,7 +426,6 @@ begin
     etatChoix:=not(etatChoix);
 end;
 
-
 procedure Echange;
 begin
 SceneActive := 'MenuShop';
@@ -430,8 +434,8 @@ etatchoix:=False;
 iChoix1:=1;iChoix2:=2;
 SDL_RenderClear(sdlRenderer);
 InitButtonGroup(boutons[1],  415, 50, 250, 100, 'Sprites/Menu/button1.bmp','Annuler',@LancementSalleMarchand);
-InitButtonGroup(boutons[2],  255, 250, 250, 250, 'Sprites/Menu/button1.bmp','X',@confirmer);
-InitButtonGroup(boutons[3],  1080-255-250, 250, 250, 250, 'Sprites/Menu/button1.bmp','X',@confirmer);
+InitButtonGroup(boutons[2],  100, 250, 250, 250, 'Sprites/Menu/button1.bmp','X',@confirmer);
+InitButtonGroup(boutons[3],  1080-255-500, 250, 250, 250, 'Sprites/Menu/button1.bmp','X',@confirmer);
 InitButtonGroup(boutons[4],  415, 580, 250, 100, 'Sprites/Menu/button1.bmp','Echange',btnProc);
 boutons[4].parametresSpeciaux:=3;boutons[4].procEch:=@trade;
 end;
@@ -439,9 +443,11 @@ end;
 procedure LancementSalleMarchand; //###
 begin
     sceneActive := 'marchand';
-    indiceMusiqueJouee:=12;
+    indiceMusiqueJouee:=15;
     writeln('Lancement de salle Marchand');
     createRawImage(fond, 0,0, WINDOWWIDTH, windowHeight,'Sprites/Menu/fondMarchand.bmp');
+    if statsJoueur.tailleCollection<4 then
+        echangeFait:=True;
     if entree then
         begin
         statsJoueur.avancement := statsJoueur.avancement+1;
@@ -449,9 +455,9 @@ begin
         end;
     if not echangeFait then
         InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/button1.bmp','Marchandage',@Echange);
-    InitButtonGroup(boutons[2],  440, 200, 200, 100, 'Sprites/Menu/button1.bmp','Discussion',btnproc);
+    InitButtonGroup(boutons[2],  440, 200, 200, 100, 'Sprites/Menu/button1.bmp','Discussion',@LancementSalleMarchand);
     InitButtonGroup(boutons[3],  465, 300, 150, 100, 'Sprites/Menu/button1.bmp','Partir',@choixSalle);
-    initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp',nil,0,450,1080,300,'aaa',10);
+    initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp',nil,0,450,1080,300,extractionTexte('DIALOGUE_MARCHAND_'+intToStr(random(9)+1)),10);
     
     
 end;
@@ -472,7 +478,54 @@ begin
     renderButtonGroup(boutons[3]);
 end;
 
+procedure rerollDialogue;
+begin
+    if numDialogue=6 then
+        numDialogue:=numDialogue
+    else
+        numDialogue:=numDialogue+1;
+    case numDialogue of
+    0,2,4,5:
+        initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/portrait_Leo1.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT_'+intToStr(numDialogue)),10)
+    else
+        initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT_'+intToStr(numDialogue)),10);
+    end;
+end;
 
+procedure LancementSalleHasardLeo;
+begin
+    sceneActive:='Leo_Menu';
+    numDialogue:=0;
+    InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/button1.bmp','Affronter',@LancementVSLeo);
+    InitButtonGroup(boutons[2],  440, 200, 200, 100, 'Sprites/Menu/button1.bmp','Discussion',@rerollDialogue);
+    InitButtonGroup(boutons[3],  465, 300, 150, 100, 'Sprites/Menu/button1.bmp','Partir',@choixSalle);
+    initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/portrait_Leo3.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT_0'),10);
+end;
+
+procedure actualiserSalleLeo;
+begin
+    renderRawImage(fond,false);
+    OnMouseHover(boutons[1],getMouseX,getMouseY);
+    renderButtonGroup(boutons[1]);
+    UpdateDialogueBox(dialogues[2]);
+    OnMouseHover(boutons[2],getMouseX,getMouseY);
+    renderButtonGroup(boutons[2]);
+    OnMouseHover(boutons[3],getMouseX,getMouseY);
+    renderButtonGroup(boutons[3]);
+end;
+
+procedure LancementSalleHasard;
+begin
+writeln('Lancement de salle Hasard');
+statsJoueur.avancement := statsJoueur.avancement+1;
+ClearScreen;
+SDL_RenderClear(sdlRenderer);
+case random(10)+1 of
+1..10:LancementSalleHasardLeo;
+else begin
+    end;
+end;
+end;
 
 
 procedure LancementSalleCamp;

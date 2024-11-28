@@ -213,7 +213,7 @@ afficherTout;
 						sdl_renderpresent(sdlrenderer);
 						end;
 					DeclencherFondu(False, 5000);
-					indiceMusiqueJouee:=32;
+					indiceMusiqueJouee:=33;
 					supprimeObjet(Lobjets[High(LObjets)]);
 					sceneActive := 'GameOver';
 					initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,1080,350,extractionTexte('GAMEOVER_'+intToSTr(random(5)+1)),40);
@@ -294,6 +294,10 @@ begin
 		begin
 		actualiserEchange;
 		end;
+		'Leo_Menu':
+		begin
+		actualiserSalleLeo;
+		end;
 		'NouvellePartieIntro': NouvellePartieIntro;
 		'victoire':
 			begin
@@ -320,17 +324,23 @@ begin
 		UpdateDialogueBox(dialogues[2]);
 		updateanimation(LObjets[0].anim,LObjets[0].image);
 		if LObjets[1].anim.objectName<>'Leo_Transe' then
-		updateanimation(LObjets[1].anim,LObjets[1].image);
+			updateanimation(LObjets[1].anim,LObjets[1].image);
 		
-		fond.rect.x:=88-4+random(9);
+		if LObjets[1].anim.objectName='Béhémoth' then fond.rect.x:=88-4+random(9);
 		while (SDL_PollEvent( EventSystem ) = 1) do
     		begin
       			case EventSystem^.type_ of
-					SDL_mousebuttondown:if dialogues[1].letterdelay=0 then begin
-						sceneActive:='Jeu';
-						if LObjets[1].anim.objectName='Béhémoth' then indiceMusiqueJouee:=8;
+					SDL_mousebuttondown:if (dialogues[2].letterdelay=0) then begin
+						if high(queueDialogues)>-1 then
+							supprimeDialogue(2)
+						else begin
+							if (LObjets[1].anim.objectName='Leo_Transe') and (LObjets[1].anim.etat='mort') then victoire(statsJoueur,23)
+							else
+								sceneActive:='Jeu';
+							if LObjets[1].anim.objectName='Béhémoth' then indiceMusiqueJouee:=11;
+							end;
 						end
-						 else dialogues[1].LetterDelay:=0;
+						 else dialogues[2].LetterDelay:=0;
 				end
 			end
 		end;
@@ -347,12 +357,12 @@ begin
 		while (SDL_PollEvent( EventSystem ) = 1) do
     		begin
       			case EventSystem^.type_ of
-					SDL_mousebuttondown:if dialogues[1].letterdelay=0 then begin 
+					SDL_mousebuttondown:if dialogues[2].letterdelay=0 then begin 
 						InitAnimation(LObjets[1].anim,LObjets[1].anim.objectName,'mort',LObjets[1].stats.nbFramesMort,False);
 						sceneActive:='Jeu';
 						end
 						else
-							dialogues[1].LetterDelay:=0;
+							dialogues[2].LetterDelay:=0;
 				end
 			end
 		end;
@@ -373,7 +383,7 @@ begin
 						LObjets[0].stats.compteurLeMonde:=100;
 						updateTimeMonde:=sdl_getTicks;
 						end;
-					SDLK_O:LOBjets[0].stats.multiplicateurMana:=10;
+					SDLK_O:LOBjets[0].stats.multiplicateurMana:=LOBjets[0].stats.multiplicateurMana+10;
 					SDLK_H : choixSalle();
 					SDLK_F2:begin
 						statsJoueur.force:=statsJoueur.force+1;
@@ -392,6 +402,11 @@ begin
 			SDL_mousebuttondown : 
 				begin 
 				case sceneActive of
+				'Leo_Menu':for i:=1 to 3 do
+					begin
+					OnMouseClick(boutons[i], EventSystem^.motion.x, EventSystem^.motion.y);
+                    HandleButtonClick(boutons[i].button, EventSystem^.motion.x, EventSystem^.motion.y);
+					end;
 				'Jeu': jouerCarte(LObjets[0].stats,LObjets[0].image.rect.x+(LObjets[0].image.rect.w div 2),LObjets[0].image.rect.y+(LObjets[0].image.rect.h div 2),iCarteChoisie);
 
 				'map':begin 

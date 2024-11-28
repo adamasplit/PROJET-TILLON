@@ -24,7 +24,8 @@ uses
 var iEnn,ideckprec:Integer;carteDeck,ennAff:TImage;
 
 procedure AfficherTout();
-procedure victoire(var statsJ:TStats);
+procedure victoire(var statsJ:TStats);overload;
+procedure victoire(var statsJ:TStats;num:Integer);overload;
 procedure RenderParallaxMenu(bgImage,characterImage,cardsImage : TImage);
 procedure InitLeaderboard;
 procedure ParallaxMenuInit;
@@ -69,7 +70,7 @@ begin
 	statsJoueur.multiplicateurDegat:=1;
 	for j:=1 to 4 do 
 		statsJoueur.collection[j]:=Cartes[1];
-	statsJoueur.collection[j]:=Cartes[20];
+	statsJoueur.collection[j]:=Cartes[10];
 	statsJoueur.vie:=100;statsJoueur.vieMax:=100;
 	initStatsCombat(statsJoueur,LObjets[0].stats);
 	iCarteChoisie:=1;
@@ -84,7 +85,7 @@ end;
 function NextOrSkipDialogue(i : Integer) : Boolean;
 begin
 	NextOrSkipDialogue:=False;
-	if dialogues[i].letterdelay<>0 then writeln(dialogues[i].letterdelay);
+	if dialogues[i].letterdelay<>0 then begin writeln(dialogues[i].letterdelay); end;
   	  while (SDL_PollEvent( EventSystem ) = 1) do
       			case EventSystem^.type_ of
 					SDL_mousebuttondown:if dialogues[i].letterdelay=0 then NextOrSkipDialogue:=True else dialogues[i].LetterDelay:=0;
@@ -185,7 +186,7 @@ end;
 
 procedure NouvellePartieIntro;
 begin
-	indiceMusiqueJouee:=11;
+	indiceMusiqueJouee:=14;
 	ClearScreen;
 	SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
 	black_color.r := 255; black_color.g := 255; black_color.b := 255;
@@ -237,7 +238,7 @@ begin
 	ClearScreen;
 	black_color.r := 0; black_color.g := 0; black_color.b := 0;
 	initjoueur(false);
-	jouer;
+	choixSalle;
 end;
 
 
@@ -375,14 +376,42 @@ begin
 	initDialogueBox(dialogues[1],nil,nil,460,120,380,600,extractionTexte('DESC_ENN_'+intToStr(ienn)),0,Fantasy20,25);
 	initDialogueBox(dialogues[3],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_ENN_'+intToStr(ienn)),0);
 end;
-
+procedure trouverBestiaire(var i:Integer;avance:Boolean);
+var compte:Integer;
+begin
+	compte:=0;
+	if avance then
+	repeat
+			if i>=MAXENNEMIS then
+				begin
+				compte:=compte+1;
+				i:=1;
+				end
+			else
+				i:=i+1
+		until (statsJoueur.bestiaire[i]) or (compte>1)
+	else
+	repeat
+			if i<=1 then
+				begin
+				i:=MAXENNEMIS;
+				compte:=compte+1;
+				end
+			else
+				i:=i-1
+		until (statsJoueur.bestiaire[i]) or (compte>1);
+	if compte>1 then sceneActive:='MenuEnJeu';
+end;
 procedure ouvrirBestiaire();
 
 begin
 	writeln('ouverture du deck');
 	sceneActive:='Bestiaire';
 	iEnn:=1;
+	if not statsJoueur.bestiaire[1] then
+		trouverBestiaire(iEnn,True);
 	reactualiserBestiaire;
+	
 end;
 
 procedure actualiserBestiaire();
@@ -393,23 +422,15 @@ begin
 	renderRawImage(ennAff,False);
 end;
 
+
+
 procedure scrollBestiaire();
 
 begin
 	if EventSystem^.wheel.y<0 then
-		repeat
-			if iEnn>=MAXENNEMIS then
-				iEnn:=1
-			else
-				iEnn:=iEnn+1
-		until statsJoueur.bestiaire[iEnn]
+		trouverBestiaire(iEnn,true)
 	else
-		repeat
-			if iEnn<=1 then
-				iEnn:=MAXENNEMIS
-			else
-				iEnn:=iEnn-1
-		until statsJoueur.bestiaire[iEnn];
+		trouverBestiaire(iEnn,false);
 	reactualiserBestiaire;
 end;
 
@@ -489,11 +510,25 @@ end;
 procedure victoire(var statsJ:TStats); //censé contenir le choix+obtention d'une carte après un combat (voire d'une relique, pour plus tard)
 var i:Integer;
 begin
-	if indiceMusiqueJouee<>11 then indiceMusiqueJouee:=indiceMusiqueJouee+11;
+	if indiceMusiqueJouee<14 then indiceMusiqueJouee:=indiceMusiqueJouee+18;
     sceneActive:='victoire';
     for i:=1 to 3 do
         begin
 	    btnCartes[i].carte:=cartes[random(22)+1]; //###c'est cette partie qui est à remplacer pour déterminer les cartes que l'on peut obtenir
+	    InitButtonGroup(btnCartes[i],200+300*(i-1),200,128,128,btnCartes[i].carte.dir,' ',nil);
+        btnCartes[i].procCarte:=@acquisitionCarte;
+        btnCartes[i].parametresSpeciaux:=1;
+        end;
+end;
+
+procedure victoire(var statsJ:TStats;num:Integer);overload;
+var i:Integer;
+begin
+	if indiceMusiqueJouee<14 then indiceMusiqueJouee:=indiceMusiqueJouee+18;
+    sceneActive:='victoire';
+    for i:=1 to 3 do
+        begin
+	    btnCartes[i].carte:=cartes[num]; //###c'est cette partie qui est à remplacer pour déterminer les cartes que l'on peut obtenir
 	    InitButtonGroup(btnCartes[i],200+300*(i-1),200,128,128,btnCartes[i].carte.dir,' ',nil);
         btnCartes[i].procCarte:=@acquisitionCarte;
         btnCartes[i].parametresSpeciaux:=1;

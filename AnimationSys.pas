@@ -146,7 +146,7 @@ var
   alpha: Integer;
 begin
 
-  if not fonduActif then 
+  if not fonduActif and not modeDebug then 
   begin 
   SDL_RenderFillRect(sdlRenderer, nil);
   exit;

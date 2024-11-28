@@ -25,10 +25,6 @@ procedure ajoutVague();
 
 implementation
 
-procedure JouerSonEnn(nom:String);
-begin
-  jouerSon(StringToPChar('SFX/Ennemis/'+nom+'.wav'));
-end;
 //supprime un ennemi de la liste
 procedure supprimeEnn(var enn:TObjet;j:integer);
 var taille,i:Integer;
@@ -77,6 +73,7 @@ begin
           taille:=taille-1;
           LObjets[i].image.rect.x:=(i-1)*round(600/TAILLE_VAGUE)+180;
           LObjets[i].image.rect.y:=50;
+          jouerSonEnn(LObjets[i].anim.objectName+'_apparition');
           if LObjets[i].anim.objectName='dracomage' then
             begin
             fini:=True;
@@ -204,7 +201,7 @@ end;
 procedure AIDodge(var ennemi:TObjet;target:TObjet);
 var distx:Integer;
 begin
-  jouerSonEnn(ennemi.anim.objectName+intToSTr(random(3)+1));
+  jouerSonEnn(ennemi.anim.objectName,random(3)+1);
   //l'ennemi se décale vers un mur, selon sa position initiale, pour esquiver
   distx:=(ennemi.image.rect.x-target.image.rect.x);
   InitAnimation(ennemi.anim,ennemi.anim.ObjectName,'dodge', ennemi.stats.nbframes2,False);
@@ -407,7 +404,7 @@ begin
     10:begin
         if (ennemi.anim.etat='tir') and (ennemi.anim.currentFrame=20) and (ennemi.stats.compteurAction<=601) then
         begin
-        CreerRayon(typeobjet(1),2,1,1,false,ennemi.image.rect.x+250,ennemi.image.rect.y+350,1200,300,ennemi.image.rect.x-60,ennemi.image.rect.y+350,-(y-(ennemi.image.rect.y+350))/280,80,50,ennemi.stats.nomAttaque,obj);
+        CreerRayon(typeobjet(1),12,ennemi.stats.force,1,false,ennemi.image.rect.x+250,ennemi.image.rect.y+350,1200,300,ennemi.image.rect.x-60,ennemi.image.rect.y+350,-(y-(ennemi.image.rect.y+350))/280,100,50,ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj)
         end;
         if (ennemi.anim.etat='chase') and (ennemi.anim.currentFrame mod 5 =2) and (ennemi.anim.currentFrame<>2) then
@@ -512,6 +509,25 @@ begin
         
         creerRayon(typeObjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,alea1,alea2,300,150,alea1,alea2-50,0,50,100{-ennemi.stats.compteurAction},ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj);
+        end;
+      end;
+    19:begin
+      if (ennemi.anim.etat='cast') and (ennemi.stats.compteurAction mod 60 = 59) then
+        multiProjs(typeObjet(1),1,ennemi.stats.force,ennemi.stats.multiplicateurDegat,getcenterx(ennemi)-50,getcentery(ennemi)-150,180,180,3,10,360,ennemi.stats.compteurAction*10,'flamme');
+      if (ennemi.anim.etat='rage') and (ennemi.stats.compteurAction mod 30=0) then
+        begin
+        if random(2)=0 then
+          begin
+          alea1:=1080*random(2);
+          alea2:=100*random(8);
+          end
+        else
+          begin
+          alea2:=-80+800*random(2);
+          alea1:=random(10)*100;
+          end;
+        creerRayon(typeObjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,alea1,alea2,1600,150,x,y,0,5,150,ennemi.stats.nomAttaque,obj);
+        ajoutObjet(obj)
         end;
       end;
     end;
@@ -967,6 +983,7 @@ begin
         if ennemi.stats.compteurAction>100 then
           begin
           ennemi.stats.compteurAction:=0;
+          jouerSonEnn('geolier',random(5)+1);
           if random(2)=0 then
             begin
             ennemi.stats.xcible:=getcenterx(joueur);
@@ -988,6 +1005,35 @@ begin
       if animFinie(ennemi.anim) and ((ennemi.anim.etat='strike') or (ennemi.anim.etat='dash')) then
         initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
       end;
+    19:begin //Geôlier (phase 2)
+      if (ennemi.anim.etat='chase') then
+        begin
+        AIPathFollow(ennemi,joueur,ennemi.stats.vitessePoursuite,True,True);
+        if ennemi.stats.compteurAction>100 then
+          begin
+          jouerSonEnn('geolier2',random(3)+1);
+          ennemi.stats.compteurAction:=0;
+          if random(2)=0 then
+            begin
+            initAnimation(ennemi.anim,ennemi.anim.objectName,'rage',ennemi.stats.nbFrames2,False);
+            end
+          else
+            begin
+            initAnimation(ennemi.anim,ennemi.anim.objectName,'cast',ennemi.stats.nbFrames3,False);
+            end;
+          end;
+        end;
+      if (ennemi.anim.etat='cast') or (ennemi.anim.etat='rage') then
+        begin
+        ennemi.anim.isFliped:=(getcenterx(joueur)>getcenterx(ennemi));
+        ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
+        if ennemi.stats.compteurAction>100 then
+          begin
+          initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
+          ennemi.stats.compteurAction:=0;
+          end;
+        end;
+      end;
     end
 end;
 
@@ -1008,6 +1054,7 @@ begin
   if (ennemi.anim.etat='apparition') and (ennemi.anim.objectName='Béhémoth') and (ennemi.stats.compteurAction=0) then
     begin
 	    InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',0,0,windowWidth,400,extractionTexte('DIALOGUE_BOSS_1'),100);
+      ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS_2'));
       sceneActive:='Cutscene';
       ennemi.stats.compteurAction:=1;
     end;
@@ -1016,11 +1063,17 @@ begin
       //sceneActive:='Dracomage';
       ennemi.stats.compteurAction:=1;
     end;
+  if (ennemi.anim.etat='apparition') and (ennemi.anim.objectName='Leo') and (ennemi.stats.compteurAction=0) then
+    begin
+      InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portrait_Leo7.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_EVENT_BOSS_1'),10);
+      sceneActive:='Cutscene';
+      ennemi.stats.compteurAction:=1;
+    end;
   if ennemi.stats.cooldown>0 then
     ennemi.stats.cooldown:=ennemi.stats.cooldown-1;
   DrawRect(black_color,255, ennemi.image.rect.x-2+ennemi.col.offset.x,ennemi.image.rect.y+ennemi.col.dimensions.h+ennemi.col.offset.y+5, ennemi.col.dimensions.w+4, 14);
   if ennemi.stats.vieMax>0 then
-  DrawRect(red_color,255, ennemi.image.rect.x+ennemi.col.offset.x,ennemi.image.rect.y+ennemi.col.dimensions.h+ennemi.col.offset.y+7, Round(ennemi.col.dimensions.w*(ennemi.stats.vie/ennemi.stats.vieMax)), 10 );
+  DrawRect(red_color,255, ennemi.image.rect.x+ennemi.col.offset.x,ennemi.image.rect.y+ennemi.col.dimensions.h+ennemi.col.offset.y+7, max(0,Round(ennemi.col.dimensions.w*(ennemi.stats.vie/ennemi.stats.vieMax))), 10 );
   if ennemi.stats.vie<0 then ennemi.stats.vie:=0;
   if (ennemi.stats.vie>0) and (ennemi.anim.etat<>'apparition') then 
     begin
@@ -1029,7 +1082,38 @@ begin
     end
 		else
       if (animFinie(ennemi.anim)) and (ennemi.anim.etat='mort') then
-        if (ennemi.anim.objectName<>'Leo') then
+        if ennemi.anim.objectName='Leo' then begin
+          x:=ennemi.image.rect.x;
+          y:=ennemi.image.rect.y;
+          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portrait_Leo8.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_EVENT_BOSS_2'),10);
+          ajoutDialogue('Sprites/Menu/portrait_Leo7.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_3'));
+          ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_4'));
+          sceneActive:='Cutscene';
+          sdl_destroytexture(ennemi.image.imgTexture);
+          sdl_freeSurface(ennemi.image.imgSurface);
+          ennemi:=templatesEnnemis[21];
+          ennemi.image.rect.x:=x;
+          ennemi.image.rect.y:=y;
+          end
+        else if ennemi.anim.objectName='geolier' then begin
+          x:=ennemi.image.rect.x;
+          y:=ennemi.image.rect.y;
+          sdl_destroytexture(ennemi.image.imgTexture);
+          sdl_freeSurface(ennemi.image.imgSurface);
+          ennemi:=templatesEnnemis[33];
+          ennemi.image.rect.x:=x;
+          ennemi.image.rect.y:=y;
+          end
+        else if (ennemi.anim.objectName='Leo_Transe') and (ennemi.stats.compteurAction=-1) then begin
+          sceneActive:='Cutscene';
+          ennemi.stats.compteurAction:=0;
+          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portrait_Leo2.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_EVENT_BOSS_5'),10);
+          ajoutDialogue('Sprites/Menu/portrait_Leo6.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_6'));
+          ajoutDialogue('Sprites/Menu/portrait_Leo6.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_7'));
+          ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_8'));
+          end
+          
+        else
           begin
           if ennemi.anim.objectName='elementaire_temps' then
             LObjets[0].stats.vitesse:=statsJoueur.vitesse;
@@ -1041,16 +1125,6 @@ begin
               vagueFinie:=False;
               end;
           end
-        else
-          begin
-          x:=ennemi.image.rect.x;
-          y:=ennemi.image.rect.y;
-          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portrait_Leo7.bmp',0,0,windowWidth,400,extractionTexte('DIALOGUE_EVENT_BOSS_2'),10);
-          sceneActive:='Cutscene';
-          ennemi:=templatesEnnemis[21];
-          ennemi.image.rect.x:=x;
-          ennemi.image.rect.y:=y;
-          end
           
       else if ennemi.stats.vie<=0 then
       begin
@@ -1060,6 +1134,7 @@ begin
         if not (ennemi.anim.etat='mort') then 
           begin
           jouerSonEnn(ennemi.anim.objectName+'_mort');
+          if ennemi.anim.objectName='Leo_Transe' then ennemi.stats.compteurAction:=-1;
           InitAnimation(ennemi.anim,ennemi.anim.objectName,'mort',ennemi.stats.nbFramesMort,False);
           ennemi.col.estActif:=False;
           statsJoueur.bestiaire[ennemi.stats.numero]:=True;
@@ -1070,7 +1145,7 @@ begin
           begin
           statsJoueur.bestiaire[ennemi.stats.numero]:=True;
           initAnimation(ennemi.anim,ennemi.anim.objectName,'mortRep',ennemi.stats.nbframes3,True);
-          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',0,0,windowWidth,400,extractionTexte('DIALOGUE_BOSS_2'),100);
+          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',0,-70,windowWidth,400,extractionTexte('DIALOGUE_BOSS_3'),100);
           sceneActive:='Behemoth_Mort';
           end;
     end
@@ -1113,6 +1188,7 @@ initStatEnnemi(29,'elementaire_eclipse',1,250,2,0,4,3,400,400,19,12,7,0,9,60,60,
 initStatEnnemi(30,'gardien',16,500,2,1,0,1,300,300,8,16,0,0,23,250,120,25,120,'rayon_main');
 initStatEnnemi(31,'Geist',17,200,10,0,-10,4,300,300,21,24,3,7,9,80,80,110,160,'rayonAL');
 initStatEnnemi(32,'geolier',18,300,10,0,-10,2,500,400,4,12,20,4,6,100,200,200,200,'arcane');
+initStatEnnemi(33,'geolier2',19,300,10,0,-10,1,500,400,32,18,10,10,14,200,200,150,200,'chaine');
 
 
 

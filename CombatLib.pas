@@ -299,6 +299,7 @@ begin
         if rayon.stats.delai=0 then //si le rayon atteint son délai, il s'active
             begin 
             initAnimation(rayon.anim,rayon.anim.objectName,'actif',5,False);
+            if rayon.anim.objectName<>'rayon' then jouerSonEff(rayon.anim.objectName);
             rayon.col.estActif:=True;
             rayon.anim.estActif:=True;
             rayon.stats.delai:=-1;
@@ -373,10 +374,10 @@ begin
 
         proj.col.isTrigger := True;
         proj.col.estActif := True;
-        proj.col.dimensions.w := w div 2;
-        proj.col.dimensions.h := h div 2;
-        proj.col.offset.x := w div 5;
-        proj.col.offset.y := h div 5;
+        proj.col.dimensions.w := w*2 div 8;
+        proj.col.dimensions.h := h*2 div 8;
+        proj.col.offset.x := w*3 div 8;
+        proj.col.offset.y := h*3 div 8;
         proj.col.nom := 'boule';
 
         //Création du vecteur de mouvement du projectile
@@ -668,9 +669,9 @@ end;
         if charges>=scombat.nbjustice then
             begin
             sPerm.nbJustice := sPerm.nbJustice + 1;
-            sCombat.nbJustice := sCombat.nbJustice + 1;   //### à initialiser à 0 en débur de partie 
+            sCombat.nbJustice := sCombat.nbJustice + 1;   //### à initialiser à 0 en début de partie 
             end;
-        initJustice(typeObjet(0),scombat.nbjustice,scombat.force,sCombat.multiplicateurDegat,x,y,getmousex,getmousey,28,50,'justice');
+        initJustice(typeObjet(0),1,scombat.force,sCombat.multiplicateurDegat,x,y,getmousex,getmousey,28,50,'justice');
     end;
     
     //9 L'ermite
@@ -814,7 +815,7 @@ end;
         for i := 0 to high(LOBjets) do
             if LOBjets[i].stats.genre=ennemi then
             begin
-                subirDegats(LObjets[i].stats,1,Lobjets[i].image.rect.x,Lobjets[i].image.rect.y);
+                subirDegats(LObjets[i].stats,1,getcenterx(LObjets[i]),getcentery(LObjets[i]));
                 creerEffet(LObjets[i].image.rect.x+LObjets[i].col.offset.x,LObjets[i].image.rect.y+LObjets[i].col.offset.x,LObjets[i].col.dimensions.w,LObjets[i].col.dimensions.h,7,'impact_solaire',False,eff);
                 ajoutObjet(eff);
             end;
