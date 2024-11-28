@@ -138,12 +138,17 @@ type TSalle=record
     image:TButtonGroup;
 end;
 
+type InfoBoiteDialogues=record
+  dirPortrait:PChar;
+  texte:String;
+end;
 
 type ListeObjets = Array of TObjet; 
 var LObjets: ListeObjets; //Liste universelle des objets présents
 murs:array[1..4] of TObjet;
 combatFini,vagueFinie,leMonde:Boolean;
 statsJoueur: TStats;
+queueDialogues:array of InfoBoiteDialogues;
 var modeDebug:Boolean;
 PDeck:TDeck; //deck pointé par les stats du joueur
  
@@ -189,10 +194,16 @@ PDeck:TDeck; //deck pointé par les stats du joueur
 //Procédures de gestion de LObjets
 
 procedure AjoutObjet(var obj:TObjet);
-procedure supprimeObjet(var obj:TObjet); 
+procedure supprimeObjet(var obj:TObjet);
+
+//Pour faciliter la gestion d'un objet
 procedure analyseObjet(obj:TObjet);
 function getCenterX(var obj:TObjet):Integer;
 function getCentery(var obj:TObjet):Integer;
+
+procedure ajoutDialogue(portrait,texte:String);
+procedure supprimeDialogue(i:Integer);
+
 
 implementation
 
@@ -220,6 +231,20 @@ begin
             LObjets[i].stats.indice:=i;
         end;
     setlength(LObjets,taille-1);
+end;
+
+procedure ajoutDialogue(portrait,texte:String);
+begin
+  setlength(queueDialogues,high(queueDialogues)+2);
+  queueDialogues[High(queueDialogues)].dirPortrait:=stringtoPchar(portrait);
+  queueDialogues[High(queueDialogues)].texte:=texte;
+end;
+procedure supprimeDialogue(i:Integer);
+begin
+  initDialogueBox(dialogues[i],dialogues[i].BackgroundImage.directory,queueDialogues[0].dirPortrait,dialogues[i].BackgroundImage.rect.x,dialogues[i].BackgroundImage.rect.y,dialogues[i].BackgroundImage.rect.w,dialogues[i].BackgroundImage.rect.h,queueDialogues[0].texte,dialogues[i].letterDelay+1);
+  for i:=0 to high(queueDialogues) do
+    queueDialogues[i]:=queueDialogues[i+1];
+  setlength(queueDialogues,high(queueDialogues));
 end;
 
 //pour déterminer la position du centre d'une boîte de collisions d'un objet

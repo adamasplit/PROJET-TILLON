@@ -121,10 +121,28 @@
 <COMM_REL_2>;
 <COMM_REL_3>;
 <COMM_REL_4>;
+
 <DIALOGUE_BOSS_1>Longtemps, j'ai attendu ce moment. L'humanité connaîtra mon courroux pour ces millénaires de souffrance...;
-<DIALOGUE_BOSS_2>Non... Emprisonné à nouveau? Vous ne perdez rien pour attendre, humains!;
+<DIALOGUE_BOSS_2>Qu'est-ce que cette chose? Qu'est-il advenu de l'archimage qui vous a invoqué?;
+<DIALOGUE_BOSS_3>Non... Emprisonné à nouveau? Vous ne perdez rien pour attendre, humains!;
+<DIALOGUE_EVENT_0>Hmmm.... Ah, qu'est-ce que vous voulez? Je viens de me réveiller...;
+<DIALOGUE_EVENT_1>Qui êtes-vous?;
+<DIALOGUE_EVENT_2>Mon nom ... Peu importe. Je suis une création des mages, en quelque sorte.;
+<DIALOGUE_EVENT_3>Des mages... Sommes-nous ennemis?;
+<DIALOGUE_EVENT_4>Non, évidemment, je n'ai pas d'allégeance envers qui que ce soit! Mais... C'est dur de trouver des adversaires de taille, si vous voyez ce que je veux dire...;
+<DIALOGUE_EVENT_5>En plus, j'ai dû me séparer de ceux avec qui je suis arrivé ici... Une mauvaise journée, quoi.;
+<DIALOGUE_EVENT_6>...;
 <DIALOGUE_EVENT_BOSS_1>Très bien, on va voir ce que vous valez!;
-<DIALOGUE_EVENT_BOSS_2>Il y a bien longtemps que je n'ai pas eu autant de difficultés... Il est temps de se battre à pleine puissance!;
+<DIALOGUE_EVENT_BOSS_2>Il y a bien longtemps que je n'ai pas eu autant de difficultés... Vous êtes certainement très tenace!;
+<DIALOGUE_EVENT_BOSS_3>Ah, mais je ne vais pas m'en plaindre, depuis le temps que j'attends un   adversaire digne de ce nom! Il est temps de se battre à pleine puissance!;
+<DIALOGUE_EVENT_BOSS_4>Quoi encore? Moi qui croyais en avoir fini.;
+<DIALOGUE_EVENT_BOSS_5>Ah, il faut bien croire que les années m'ont rattrapé...;
+<DIALOGUE_EVENT_BOSS_6>Merci pour ce combat, c'était exactement ce qu'il me fallait! En échange...;
+<DIALOGUE_EVENT_BOSS_7>Voilà, ma propre carte!;
+<DIALOGUE_EVENT_BOSS_8>Une carte? Comment se fait-il que je ne la connaisse pas?;
+
 <GAMEOVER_1>Quelle terrible prémonition! Il ne tient qu'à moi de faire en sorte qu'elle ne se réalise pas.;
 <GAMEOVER_2>Non... Est-ce vraiment ce à quoi je me destine?;
-<GAMEOVER_3>J'ai déjà lu mon propre destin, ce n'est pas comme ça que les choses se passeront. Recommençons.;
+<GAMEOVER_3>J'ai déjà lu mon propre destin, ce n'est pas comme ça que les choses se passeront.    Recommençons.;
+<GAMEOVER_4>...;
+<GAMEOVER_5>Qu'est-ce que le destin cherche à me montrer? Que puis-je apprendre de cet échec?;

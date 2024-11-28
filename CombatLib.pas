@@ -299,7 +299,7 @@ begin
         if rayon.stats.delai=0 then //si le rayon atteint son délai, il s'active
             begin 
             initAnimation(rayon.anim,rayon.anim.objectName,'actif',5,False);
-            jouerSonEff(rayon.anim.objectName);
+            if rayon.anim.objectName<>'rayon' then jouerSonEff(rayon.anim.objectName);
             rayon.col.estActif:=True;
             rayon.anim.estActif:=True;
             rayon.stats.delai:=-1;
@@ -669,7 +669,7 @@ end;
         if charges>=scombat.nbjustice then
             begin
             sPerm.nbJustice := sPerm.nbJustice + 1;
-            sCombat.nbJustice := sCombat.nbJustice + 1;   //### à initialiser à 0 en débur de partie 
+            sCombat.nbJustice := sCombat.nbJustice + 1;   //### à initialiser à 0 en début de partie 
             end;
         initJustice(typeObjet(0),1,scombat.force,sCombat.multiplicateurDegat,x,y,getmousex,getmousey,28,50,'justice');
     end;

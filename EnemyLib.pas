@@ -1054,12 +1054,19 @@ begin
   if (ennemi.anim.etat='apparition') and (ennemi.anim.objectName='Béhémoth') and (ennemi.stats.compteurAction=0) then
     begin
 	    InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',0,0,windowWidth,400,extractionTexte('DIALOGUE_BOSS_1'),100);
+      ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS_2'));
       sceneActive:='Cutscene';
       ennemi.stats.compteurAction:=1;
     end;
   if (ennemi.anim.etat='apparition') and (ennemi.anim.objectName='dracomage') and (ennemi.stats.compteurAction=0) then
     begin
       //sceneActive:='Dracomage';
+      ennemi.stats.compteurAction:=1;
+    end;
+  if (ennemi.anim.etat='apparition') and (ennemi.anim.objectName='Leo') and (ennemi.stats.compteurAction=0) then
+    begin
+      InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portrait_Leo7.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_EVENT_BOSS_1'),10);
+      sceneActive:='Cutscene';
       ennemi.stats.compteurAction:=1;
     end;
   if ennemi.stats.cooldown>0 then
@@ -1078,7 +1085,9 @@ begin
         if ennemi.anim.objectName='Leo' then begin
           x:=ennemi.image.rect.x;
           y:=ennemi.image.rect.y;
-          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portrait_Leo7.bmp',0,0,windowWidth,400,extractionTexte('DIALOGUE_EVENT_BOSS_2'),10);
+          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portrait_Leo8.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_EVENT_BOSS_2'),10);
+          ajoutDialogue('Sprites/Menu/portrait_Leo7.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_3'));
+          ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_4'));
           sceneActive:='Cutscene';
           sdl_destroytexture(ennemi.image.imgTexture);
           sdl_freeSurface(ennemi.image.imgSurface);
@@ -1094,6 +1103,14 @@ begin
           ennemi:=templatesEnnemis[33];
           ennemi.image.rect.x:=x;
           ennemi.image.rect.y:=y;
+          end
+        else if (ennemi.anim.objectName='Leo_Transe') and (ennemi.stats.compteurAction=-1) then begin
+          sceneActive:='Cutscene';
+          ennemi.stats.compteurAction:=0;
+          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portrait_Leo2.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_EVENT_BOSS_5'),10);
+          ajoutDialogue('Sprites/Menu/portrait_Leo6.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_6'));
+          ajoutDialogue('Sprites/Menu/portrait_Leo6.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_7'));
+          ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_8'));
           end
           
         else
@@ -1117,6 +1134,7 @@ begin
         if not (ennemi.anim.etat='mort') then 
           begin
           jouerSonEnn(ennemi.anim.objectName+'_mort');
+          if ennemi.anim.objectName='Leo_Transe' then ennemi.stats.compteurAction:=-1;
           InitAnimation(ennemi.anim,ennemi.anim.objectName,'mort',ennemi.stats.nbFramesMort,False);
           ennemi.col.estActif:=False;
           statsJoueur.bestiaire[ennemi.stats.numero]:=True;
@@ -1127,7 +1145,7 @@ begin
           begin
           statsJoueur.bestiaire[ennemi.stats.numero]:=True;
           initAnimation(ennemi.anim,ennemi.anim.objectName,'mortRep',ennemi.stats.nbframes3,True);
-          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',0,-70,windowWidth,400,extractionTexte('DIALOGUE_BOSS_2'),100);
+          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',0,-70,windowWidth,400,extractionTexte('DIALOGUE_BOSS_3'),100);
           sceneActive:='Behemoth_Mort';
           end;
     end
