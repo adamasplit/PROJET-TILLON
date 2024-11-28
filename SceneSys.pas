@@ -248,7 +248,7 @@ begin
 end;
 
 procedure GameUpdate;
-var i:Integer;son:Boolean;
+var i:Integer;son:Boolean;cardHover:Array [1..3] of Boolean;
 begin
   new(EventSystem);
    while True do
@@ -270,6 +270,7 @@ begin
 		end;
   		'Jeu': 
   		begin
+		InitDecor;
 		ActualiserJeu;
 		MouvementJoueur(LObjets[0]);
 		end;
@@ -302,8 +303,14 @@ begin
 			for i:=1 to 3 do
 				begin
 				RenderButtonGroup(btnCartes[i]);
-				OnMouseHover(btnCartes[i],getMouseX,getMouseY,'SFX\cardHover.wav')
+				OnMouseHover(btnCartes[i],getMouseX,getMouseY,'SFX\cardHover.wav', cardHover[i]);
+				if cardHover[i] then 
+					begin
+						cardHover[i] := False;
+						initDialogueBox(dialogues[2],nil,nil,0,350,1080,450,extractionTexte('DESC_CAR_'+intToSTr(btnCartes[i].carte.numero)),20);
+					end;
 				end;
+			UpdateDialogueBox(dialogues[2])
 			end;
 		'mortJoueur': OnPlayerDeath(son);
 		'GameOver': GameOver;

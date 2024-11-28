@@ -178,8 +178,8 @@ end;
 
 procedure ParallaxMenuInit;
 begin
-  CreateRawImage(bgImage,0 , 10,windowWidth ,windowHeight ,'Sprites\Menu\parallax_bg.bmp');
-  CreateRawImage(characterImage,0 , 8,windowWidth ,windowHeight ,'Sprites\Menu\parallax_player.bmp');
+  CreateRawImage(bgImage,0 , 0,windowWidth+30 ,windowHeight+30 ,'Sprites\Menu\parallax_bg.bmp');
+  CreateRawImage(characterImage,0 , 8,windowWidth+30 ,windowHeight+30 ,'Sprites\Menu\parallax_player.bmp');
   CreateRawImage(cardsImage,0 , 0,windowWidth ,windowHeight ,'Sprites\Menu\parallax_cards.bmp');
 end;
 
@@ -508,7 +508,7 @@ var
   targetX_cards, targetY_cards, offsetX_cards, offsetY_cards: Integer;
 
 const
-  SmoothFactor = 0.1; // Facteur de smothiessage pour un resultat plus clean
+  SmoothFactor = 0.3; // Facteur de smothiessage pour un resultat plus clean
 
 begin
   // Obtenir la position de la souris

@@ -37,7 +37,7 @@ procedure RenderButtonGroup(var btnGroup: TButtonGroup);
 
 // Gestion des événements OnHover et OnClick
 procedure OnMouseHover(var btnGroup: TButtonGroup; x,y : Integer);overload;
-procedure OnMouseHover(var btnGroup: TButtonGroup; x,y : Integer; soundDir:Pchar);overload;
+procedure OnMouseHover(var btnGroup: TButtonGroup; x, y: Integer; soundDir : Pchar;var isHovered :Boolean);overload;
 procedure OnMouseClick(var btnGroup: TButtonGroup; x, y: Integer);
 
 //Gestion due fondu
@@ -225,7 +225,7 @@ begin
   end;
 end;
 
-procedure OnMouseHover(var btnGroup: TButtonGroup; x, y: Integer; soundDir : Pchar);overload;
+procedure OnMouseHover(var btnGroup: TButtonGroup; x, y: Integer; soundDir : Pchar;var isHovered :Boolean);overload;
 begin
   // Vérifier si la souris est sur le bouton
   if (x >= btnGroup.image.rect.x) and (x <= btnGroup.image.rect.x + btnGroup.image.rect.w) and
@@ -242,6 +242,7 @@ begin
       SDL_SetTextureAlphaMod(btnGroup.image.imgTexture, 180);
       jouerSon(soundDir);
       btnGroup.hoverSoundPlayed := True;
+      isHovered:=True;
     end;
   end
   else
@@ -256,6 +257,7 @@ begin
       btnGroup.button.rect.w := btnGroup.originalWidth;
       btnGroup.button.rect.h := btnGroup.originalHeight;
     btnGroup.hoverSoundPlayed := False;  // Réinitialiser pour le prochain Hover
+    isHovered:=False;
   end;
 end;
 
