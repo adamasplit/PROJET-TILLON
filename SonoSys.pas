@@ -8,7 +8,7 @@ uses
     SysUtils; //télécharger SDL2_mixer au préalable
 
 const TAILLE_OST=50;
-        VOLUME_MUSIQUE=40;
+        VOLUME_MUSIQUE=20;
         VOLUME_SON=20;
         MAX_CHAINES = 6;
 type TMus=record
@@ -110,7 +110,10 @@ end;
 
 procedure JouerSonEnn(nom:String;num:Integer);
 begin
-    jouerSon(StringToPChar('SFX/Ennemis/'+nom+' ('+intToStr(num)+').wav'),VOLUME_SON * 2);
+    if nom='elementaires' then
+        jouerSon(StringToPChar('SFX/Ennemis/'+nom+' ('+intToStr(num)+').wav'),VOLUME_SON * 4)
+    else
+        jouerSon(StringToPChar('SFX/Ennemis/'+nom+' ('+intToStr(num)+').wav'),VOLUME_SON * 2);
 end;
 procedure jouerMus(i:Integer);
 begin

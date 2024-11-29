@@ -18,7 +18,7 @@ uses
 	sysutils;
 
 //Image
-	var fond,menuBook,bgImage,characterImage,cardsImage : TImage;
+	var menuBook,bgImage,characterImage,cardsImage : TImage;
 	menuBookAnim : TAnimation;
 
 var iEnn,ideckprec:Integer;carteDeck,ennAff:TImage;
@@ -191,54 +191,14 @@ begin
 	SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
 	black_color.r := 255; black_color.g := 255; black_color.b := 255;
 	
-	InitDialogueBox(dialogues[1],nil,nil,-50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('TXT_INTRO1'),100);
-	repeat
-	UpdateDialogueBox(dialogues[1]);
-	SDL_RenderPresent(sdlRenderer);
-	SDL_Delay(10);
-	autoMusique;
-	until NextOrSkipDialogue(1);
-
-	
-	ClearScreen;
-  	SDL_Delay(300);  
-	
-	InitDialogueBox(dialogues[1],nil,nil,-50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('TXT_INTRO2'),100);
-
-	repeat
-	UpdateDialogueBox(dialogues[1]);
-	SDL_RenderPresent(sdlRenderer);
-	autoMusique;
-	until NextOrSkipDialogue(1);
-	ClearScreen;
-
-	InitDialogueBox(dialogues[1],nil,nil,-50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('TXT_INTRO3'),100);
-	repeat
-	UpdateDialogueBox(dialogues[1]);
-	SDL_RenderPresent(sdlRenderer);
-	autoMusique;
-	until NextOrSkipDialogue(1);
-	ClearScreen;
-	
-	InitDialogueBox(dialogues[1],nil,nil,-50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('TXT_INTRO4'),100);
-	dialogues[1].letterdelay:=10;
-	repeat
-	UpdateDialogueBox(dialogues[1]);
-	SDL_RenderPresent(sdlRenderer);
-	autoMusique;
-	until NextOrSkipDialogue(1);
-	ClearScreen;
-
-	InitDialogueBox(dialogues[1],nil,nil,-50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('TXT_INTRO5'),100);
-	repeat
-	UpdateDialogueBox(dialogues[1]);
-	SDL_RenderPresent(sdlRenderer);
-	autoMusique;
-	until NextOrSkipDialogue(1);
-	ClearScreen;
-	black_color.r := 0; black_color.g := 0; black_color.b := 0;
+	InitDialogueBox(dialogues[1],nil,nil,0,windowHeight div 3 - 100,windowWidth,400,extractionTexte('TXT_INTRO1'),10);
+	sceneActive:='Event';
+	sceneSuiv:='Intro';
+	ajoutDialogue(nil,extractionTexte('TXT_INTRO2'));
+	ajoutDialogue(nil,extractionTexte('TXT_INTRO3'));
+	ajoutDialogue(nil,extractionTexte('TXT_INTRO4'));
+	ajoutDialogue(nil,extractionTexte('TXT_INTRO5'));
 	initjoueur(false);
-	choixSalle;
 end;
 
 
@@ -460,6 +420,7 @@ end;
 procedure AfficherTout(); //affiche tout (en combat)
 var i : Integer;
 begin
+	if sceneActive='Jeu' then scenePrec:='Jeu';
 	if scenePrec='Jeu' then
 		begin
 		renderRawImage(fond,255,False);
@@ -511,6 +472,7 @@ procedure victoire(var statsJ:TStats); //censé contenir le choix+obtention d'un
 var i:Integer;
 begin
 	if indiceMusiqueJouee<14 then indiceMusiqueJouee:=indiceMusiqueJouee+18;
+	InitDecorCartes;
     sceneActive:='victoire';
     for i:=1 to 3 do
         begin

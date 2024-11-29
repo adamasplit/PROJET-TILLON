@@ -40,6 +40,7 @@ procedure LancementSalleBoss;
 procedure LancementSalleMarchand;
 procedure LancementSalleCamp;
 procedure scrollDeck(var i:Integer);
+procedure activationEvent(scene:String);
 procedure HandleButtonClickEch(var button: TButtonGroup; x, y: Integer;carte1,carte2:TCarte;var stats:TStats);
 function Highlight(var btnGroup: TButtonGroup; x, y: Integer):Boolean;
 implementation
@@ -96,6 +97,7 @@ begin
     combatFini:=False;
     randomize;
     indiceMusiqueJouee:=(statsJoueur.avancement div 3)+2;
+    initDecor;
 
     //###partie à modifier : choix des ennemis et de leur nombre
     setlength(ennemis,statsJoueur.avancement+1);
@@ -106,13 +108,13 @@ begin
             ennemis[j]:=templatesEnnemis[32]
         else
             ennemis[j]:=templatesEnnemis[alea];
-        writeln('élément ',j,' de ennemis: ',ennemis[j].anim.objectName);
         end;
 
 end;
 
 procedure LancementSalleCombat();
 begin
+
 writeln('Lancement de salle Combat');
 choisirEnnemis;
 statsJoueur.avancement := statsJoueur.avancement+1;
@@ -478,7 +480,7 @@ begin
     renderButtonGroup(boutons[3]);
 end;
 
-procedure rerollDialogue;
+procedure rerollDialogueLeo;
 begin
     if numDialogue=6 then
         numDialogue:=numDialogue
@@ -492,21 +494,65 @@ begin
     end;
 end;
 
+procedure rerollDialogueOph;
+begin
+    if (numDialogue=0) and statsJoueur.bestiaire[8] then
+        numDialogue:=12
+    else if numDialogue>=14 then
+        numDialogue:=1
+    else if numDialogue=5 then
+        begin
+        ajouterCarte(statsJoueur,24);
+        numDialogue:=6;
+        end
+    else if (numDialogue>=6) and (numDialogue<=11) then
+        numDialogue:=random(5)+7
+    else
+        numDialogue:=numDialogue+1;
+    case numDialogue of
+    0,2,4,5,13,15:
+        initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/portrait_Ophiucus1.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT2_'+intToStr(numDialogue)),10);
+    7..11:
+        initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/portrait_Ophiucus2.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT2_'+intToStr(numDialogue)),10);
+    else
+        initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT2_'+intToStr(numDialogue)),10);
+    end;
+end;
+
 procedure LancementSalleHasardLeo;
 begin
     sceneActive:='Leo_Menu';
+    sdl_destroytexture(fond.imgtexture);
+    sdl_freeSurface(fond.imgsurface);
+    createRawImage(fond, 0,0, WINDOWWIDTH, windowHeight,'Sprites/Menu/fondMarchand.bmp');
     numDialogue:=0;
     InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/button1.bmp','Affronter',@LancementVSLeo);
-    InitButtonGroup(boutons[2],  440, 200, 200, 100, 'Sprites/Menu/button1.bmp','Discussion',@rerollDialogue);
+    InitButtonGroup(boutons[2],  440, 200, 200, 100, 'Sprites/Menu/button1.bmp','Discussion',@rerollDialogueLeo);
     InitButtonGroup(boutons[3],  465, 300, 150, 100, 'Sprites/Menu/button1.bmp','Partir',@choixSalle);
     initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/portrait_Leo3.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT_0'),10);
+end;
+
+procedure LancementSalleHasardOph;
+begin
+    sceneActive:='Oph_Menu';
+    sdl_destroytexture(fond.imgtexture);
+    sdl_freeSurface(fond.imgsurface);
+    createRawImage(fond, 0,0, WINDOWWIDTH, windowHeight,'Sprites/Menu/fondMarchand.bmp');
+    numDialogue:=0;
+    //InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/button1.bmp','Affronter',@LancementVSLeo);
+    InitButtonGroup(boutons[2],  440, 200, 200, 100, 'Sprites/Menu/button1.bmp','Discussion',@rerollDialogueOph);
+    InitButtonGroup(boutons[3],  465, 300, 150, 100, 'Sprites/Menu/button1.bmp','Partir',@choixSalle);
+    initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/portrait_Ophiucus4.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT2_0'),10);
 end;
 
 procedure actualiserSalleLeo;
 begin
     renderRawImage(fond,false);
-    OnMouseHover(boutons[1],getMouseX,getMouseY);
-    renderButtonGroup(boutons[1]);
+    if sceneActive='Leo_Menu' then
+        begin
+        OnMouseHover(boutons[1],getMouseX,getMouseY);
+        renderButtonGroup(boutons[1]);
+        end;
     UpdateDialogueBox(dialogues[2]);
     OnMouseHover(boutons[2],getMouseX,getMouseY);
     renderButtonGroup(boutons[2]);
@@ -521,7 +567,24 @@ statsJoueur.avancement := statsJoueur.avancement+1;
 ClearScreen;
 SDL_RenderClear(sdlRenderer);
 case random(10)+1 of
-1..10:LancementSalleHasardLeo;
+1:  if trouverCarte(statsJoueur,24) then lancementSalleHasard
+    else
+    if trouverCarte(statsJoueur,23) then
+        begin
+        sceneActive:='Event';
+        InitDialogueBox(dialogues[1],nil,nil,-50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('INTRO_EVENT2_1'),100);
+        ajoutDialogue(nil,extractionTexte('INTRO_EVENT2_2'));
+        sceneSuiv:='Ophiucus';
+        end
+    else
+        begin
+        sceneActive:='Event';
+        InitDialogueBox(dialogues[1],nil,nil,-50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('INTRO_EVENT1_1'),100);
+        ajoutDialogue(nil,extractionTexte('INTRO_EVENT1_2'));
+        ajoutDialogue(nil,extractionTexte('INTRO_EVENT1_3'));
+        ajoutDialogue(nil,extractionTexte('INTRO_EVENT1_4'));
+        sceneSuiv:='Leo';
+        end
 else begin
     end;
 end;
@@ -617,9 +680,20 @@ begin
     RenderButtonGroup(salles[3].image);
 end;
 
-
-
-
+procedure activationEvent(scene:String);
+begin
+    case scene of
+        'Leo':LancementSalleHasardLeo;
+        'Ophiucus':lancementSalleHasardOph;
+        'Intro':
+            begin 
+            black_color.r := 0; 
+            black_color.g := 0; 
+            black_color.b := 0;
+            ChoixSalle;
+            end;
+    end;
+end;
 
 begin
 statsJoueur.avancement:=1;

@@ -56,12 +56,10 @@ begin
     vagueFinie:=False;
     taille:=high(ennemis);
     fini:=False;
-    writeln(taille,',',high(lobjets));
     if (high(LObjets)<taille) and (taille>TAILLE_VAGUE) then
       setlength(LObjets,TAILLE_VAGUE+1);
     if (high(LObjets)<taille) and (taille<=TAILLE_VAGUE) then
       setlength(LObjets,taille+1);
-    writeln(taille,',',high(lobjets));
     for i:=1 to TAILLE_VAGUE do
       if not fini then
       begin
@@ -536,7 +534,8 @@ end;
 procedure DeplacementEnnemi(var ennemi:TObjet;joueur:TObjet); //déplace un ennemi 
 var i:Integer;rect1,rect2:TSDL_REct;trouve:Boolean;
 begin
-
+  if (random(100)=0) and (ennemi.anim.objectName[0]+ennemi.anim.objectName[1]+ennemi.anim.objectName[2]+ennemi.anim.objectName[3]+ennemi.anim.objectName[4]+ennemi.anim.objectName[5]+ennemi.anim.objectName[6]+ennemi.anim.objectName[7]+ennemi.anim.objectName[8]+ennemi.anim.objectName[9]+ennemi.anim.objectName[10]='elementaire') then
+    jouerSonEnn('elementaires',random(5)+1);
   case ennemi.stats.typeIA_MVT of
       0:
         begin //ennemi qui ne fait que suivre le joueur
@@ -553,7 +552,7 @@ begin
           AIPathFollow(ennemi,joueur,ennemi.stats.vitessePoursuite,true,true);
           if ennemi.stats.compteurAction>300 then
             begin
-            //jouerSonEnn('focus ('+intToSTr(random(3)+1)+')');
+            jouerSonEnn(ennemi.anim.objectName,random(3)+1);
             InitAnimation(ennemi.anim,ennemi.anim.objectName,'shoot',ennemi.stats.nbFrames2,True);
             ennemi.stats.compteurAction:=0;
             end
@@ -585,7 +584,10 @@ begin
           end
           else ennemi.anim.isFliped:=(ennemi.stats.xcible>ennemi.image.rect.x);
         if animFinie(ennemi.anim) and (ennemi.anim.etat='charge') then
+          begin
+          jouerSonEnn(ennemi.anim.objectName,random(5)+1);
           InitAnimation(ennemi.anim,ennemi.anim.objectName,'cast',ennemi.stats.nbFrames3,False);
+          end;
         if animFinie(ennemi.anim) and (ennemi.anim.etat='cast') then
           InitAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
         end;

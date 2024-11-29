@@ -201,11 +201,26 @@ procedure analyseObjet(obj:TObjet);
 function getCenterX(var obj:TObjet):Integer;
 function getCentery(var obj:TObjet):Integer;
 
-procedure ajoutDialogue(portrait,texte:String);
+procedure ajoutDialogue(portrait:PChar;texte:String);
 procedure supprimeDialogue(i:Integer);
-
+procedure InitDecor;
+procedure InitDecorCartes;
 
 implementation
+procedure InitDecor;
+begin
+	sdl_freesurface(fond.imgSurface);
+	sdl_destroytexture(fond.imgTexture);
+  CreateRawImage(fond,88,-80,900,900,StringToPChar('Sprites/Game/floor/Floor'+ IntToStr(Random(5)) +'.bmp'));
+end;
+
+procedure InitDecorCartes;
+begin
+    randomize;
+	sdl_freesurface(fond.imgSurface);
+	sdl_destroytexture(fond.imgTexture);
+    CreateRawImage(fond,0,0,windowWidth,windowHeight,StringToPChar('Sprites/Menu/fond_cartes.bmp'));
+end;
 
 procedure AjoutObjet(var obj:TObjet); //Ajoute directement un projectile/autre à LObjets
 begin
@@ -233,15 +248,15 @@ begin
     setlength(LObjets,taille-1);
 end;
 
-procedure ajoutDialogue(portrait,texte:String);
+procedure ajoutDialogue(portrait:PChar;texte:String);
 begin
   setlength(queueDialogues,high(queueDialogues)+2);
-  queueDialogues[High(queueDialogues)].dirPortrait:=stringtoPchar(portrait);
+  queueDialogues[High(queueDialogues)].dirPortrait:=(portrait);
   queueDialogues[High(queueDialogues)].texte:=texte;
 end;
 procedure supprimeDialogue(i:Integer);
 begin
-  initDialogueBox(dialogues[i],dialogues[i].BackgroundImage.directory,queueDialogues[0].dirPortrait,dialogues[i].BackgroundImage.rect.x,dialogues[i].BackgroundImage.rect.y,dialogues[i].BackgroundImage.rect.w,dialogues[i].BackgroundImage.rect.h,queueDialogues[0].texte,dialogues[i].letterDelay+1);
+  initDialogueBox(dialogues[i],dialogues[i].BackgroundImage.directory,queueDialogues[0].dirPortrait,dialogues[i].BackgroundImage.rect.x,dialogues[i].BackgroundImage.rect.y,dialogues[i].w,dialogues[i].BackgroundImage.rect.h,queueDialogues[0].texte,dialogues[i].letterDelay+1);
   for i:=0 to high(queueDialogues) do
     queueDialogues[i]:=queueDialogues[i+1];
   setlength(queueDialogues,high(queueDialogues));

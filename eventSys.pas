@@ -4,6 +4,7 @@ interface
 uses
   AnimationSys,
   coeur,
+  Sysutils,
   math,
   memgraph,
   SDL2;
@@ -12,7 +13,7 @@ var CombatUI:Array[1..15] of TImage;
 	sdlKeyboardState: PUInt8;
   lastMouseX,lastMouseY:Integer;
 EventSystem:PSDL_Event;
-SceneActive,ScenePrec : String;
+SceneActive,ScenePrec,SceneSuiv : String;
 
 
 function GetMouseX():Integer;

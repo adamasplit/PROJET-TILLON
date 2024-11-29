@@ -51,21 +51,7 @@ end;
 
 
 
-procedure InitDecor;
-begin
-    randomize;
-	sdl_freesurface(fond.imgSurface);
-	sdl_destroytexture(fond.imgTexture);
-    CreateRawImage(fond,88,-80,900,900,StringToPChar('Sprites/Game/floor/Floor'+ IntToStr(Random(5)) +'.bmp'));
-end;
 
-procedure InitDecorCartes;
-begin
-    randomize;
-	sdl_freesurface(fond.imgSurface);
-	sdl_destroytexture(fond.imgTexture);
-    CreateRawImage(fond,0,0,windowWidth,windowHeight,StringToPChar('Sprites/Menu/fond_cartes.bmp'));
-end;
 
 procedure InitDecorMap;
 begin
@@ -191,7 +177,7 @@ afficherTout;
 				for i:=1 to Lobjets[0].stats.tailleCollection do 
         			if (not hasDeath) and (Lobjets[0].stats.collection[i].numero = 13) then
 						begin
-							supprimerCarte(Lobjets[0].stats, i);
+							supprimerCarte(Lobjets[0].stats, 13);
 							jouerSon('SFX\Effets\mort.wav');
 							sceneActive:='Jeu';
 							DeclencherFondu(false, 500);
@@ -270,7 +256,6 @@ begin
 		end;
   		'Jeu': 
   		begin
-		InitDecor;
 		ActualiserJeu;
 		MouvementJoueur(LObjets[0]);
 		end;
@@ -298,12 +283,15 @@ begin
 		begin
 		actualiserSalleLeo;
 		end;
+		'Oph_Menu':
+		begin
+		actualiserSalleLeo;
+		end;
 		'NouvellePartieIntro': NouvellePartieIntro;
 		'victoire':
 			begin
-			InitDecorCartes;
 			RenderRawImage(fond,False);
-			InitDecor;
+			//InitDecor;
 			for i:=1 to 3 do
 				begin
 				RenderButtonGroup(btnCartes[i]);
@@ -318,6 +306,23 @@ begin
 			end;
 		'mortJoueur': OnPlayerDeath(son);
 		'GameOver': GameOver;
+		'Event':
+		begin
+		UpdateDialogueBox(dialogues[1]);
+		while (SDL_PollEvent( EventSystem ) = 1) do
+    		begin
+      			case EventSystem^.type_ of
+					SDL_mousebuttondown:if (dialogues[1].letterdelay=0) then 
+					begin
+						if high(queueDialogues)>-1 then
+							supprimeDialogue(1)
+						else 
+							activationEvent(sceneSuiv);
+						end
+						 else dialogues[1].LetterDelay:=0;
+					end;
+				end;
+			end;
   		'Cutscene':
 		begin
 		affichertout;
@@ -377,7 +382,7 @@ begin
         		case EventSystem^.key.keysym.sym of
           			SDLK_UP:  LObjets[0].stats.vie := LObjets[0].stats.vie +10;
 					SDLK_DOWN: LObjets[0].stats.vie := LObjets[0].stats.vie-10;
-					SDLK_ESCAPE : menuEnJeu;
+					SDLK_ESCAPE : if sceneActive<>'Menu' then menuEnJeu;
 					SDLK_SPACE:begin
 						leMonde:=not(leMonde);
 						LObjets[0].stats.compteurLeMonde:=100;
@@ -403,6 +408,11 @@ begin
 				begin 
 				case sceneActive of
 				'Leo_Menu':for i:=1 to 3 do
+					begin
+					OnMouseClick(boutons[i], EventSystem^.motion.x, EventSystem^.motion.y);
+                    HandleButtonClick(boutons[i].button, EventSystem^.motion.x, EventSystem^.motion.y);
+					end;
+				'Oph_Menu':for i:=2 to 3 do
 					begin
 					OnMouseClick(boutons[i], EventSystem^.motion.x, EventSystem^.motion.y);
                     HandleButtonClick(boutons[i].button, EventSystem^.motion.x, EventSystem^.motion.y);

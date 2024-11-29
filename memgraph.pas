@@ -360,8 +360,10 @@ begin
   begin
     LineWidth:= Length(TempText);
     TempText := TempText + Text[i];
-    if (LineWidth >= width*30 div (size*25)) and (text[i]=' ')  then
+    if (LineWidth >= (width*30) div (size*25)) and (text[i]=' ')  then
+      begin
       Exit(i - 1);
+      end;
   end;
   WidthBasedLineLength := Length(Text);
 end;
@@ -402,7 +404,6 @@ begin
     else
       CreateRawImage(Box.portrait, X+(W div 20), Y+(H div 6), H div 2+ (H div 10), H div 2+(H div 10), portraitPath);
     end;
-  
   box.w:=W;
   Box.RemainingText := DialogueText;
   Box.DisplayedLetters := 0;
@@ -430,6 +431,7 @@ begin
     else
       CreateRawImage(Box.portrait, X, Y, W div 4-(W div 5), W div 4-(W div 5), portraitPath);
     end;
+  
   
   box.w:=W;
   Box.RemainingText := DialogueText;
@@ -467,10 +469,8 @@ begin
 
   if (Box.DisplayedLetters < Length(Box.Lines[Box.CurrentLine])) then
   begin
-    //writeln('testing, condition : ',test=True);
     if test=false then
       begin
-      //writeln('trying to render');
       end
     else
     begin
@@ -565,9 +565,7 @@ BEGIN
 
   // activation de l'opacité
   SDL_SetRenderDrawBlendMode(sdlRenderer, SDL_BLENDMODE_BLEND);
-  writeln(windowwidth,windowHeight);
   TTF_SetFontStyle(Fantasy40, TTF_STYLE_NORMAL);
   TTF_SetFontOutline(Fantasy40, 1);
   TTF_SetFontHinting(Fantasy40, TTF_HINTING_NORMAL);
-  writeln('memgraph DONE.');
 END.

@@ -18,6 +18,7 @@ var updateTimeMonde:UInt32;updateTimeMort:UInt32;
 function degat(flat : Integer ; force : Integer ; defense : Integer;multiplicateurDegat:Real): Integer;
 procedure RegenMana(var LastUpdateTime : UInt32;var mana:Integer;manaMax:Integer;multiplicateurMana:Real); 
 procedure CreerDeckCombat(stat : TStats;var DeckCombat:TDeck); 
+function trouverCarte(stats:TStats;num:Integer):Boolean;
 procedure cycle (var deck : TDeck ; i : Integer);
 procedure circoncision  (var deck : Tdeck);
 procedure initStatsCombat(statsPerm:TStats;var statsTemp:TStats);
@@ -119,6 +120,14 @@ begin
     setLength (deck , High(deck));
 end;
 
+function trouverCarte(stats:TStats;num:Integer):Boolean;
+var i:Integer;
+begin
+    trouverCarte:=False;
+    for i:=1 to stats.tailleCollection do
+        if stats.collection[i].numero=num then
+            trouverCarte:=True;
+end;
 //supprimer une carte de la collection
 procedure supprimerCarte(var  stats : TStats; num : integer); // num : numéro de la carte
 var i,j: integer;
