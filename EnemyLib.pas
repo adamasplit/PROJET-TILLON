@@ -102,7 +102,11 @@ begin
     InitAnimation(ennemi.anim,nom,'apparition', ennemi.stats.nbFramesApparition,False);
     //writeln('accès au fichier ',getframePath(ennemi.anim));
     CreateRawImage(ennemi.image,(random(20)+5)*20,0,w,h,getFramePath(ennemi.anim));
-    
+
+    case num of
+      20,30,31,33:ennemi.stats.boss:=True
+    else ennemi.stats.boss:=False;
+    end;
 
     //Initialisation des caractéristiques
     ennemi.stats.genre:=TypeObjet(1);
@@ -600,8 +604,7 @@ begin
             ennemi.stats.compteurAction:=0;
             end
           else ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1
-          end
-          else ennemi.anim.isFliped:=(ennemi.stats.xcible>ennemi.image.rect.x);
+          end;
         if animFinie(ennemi.anim) and (ennemi.anim.etat='charge') then
           begin
           jouerSonEnn(ennemi.anim.objectName,random(5)+1);
@@ -609,6 +612,7 @@ begin
           end;
         if animFinie(ennemi.anim) and (ennemi.anim.etat='cast') then
           InitAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
+        ennemi.anim.isFliped:=(ennemi.stats.xcible>ennemi.image.rect.x);
         end;
       3: //ennemi qui dash horizontalement
         begin
@@ -760,7 +764,6 @@ begin
         if (ennemi.anim.etat='tir') and (ennemi.stats.compteurAction<=601) and (ennemi.anim.currentFrame=20) then
           begin
           ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
-          //writeln(ennemi.stats.compteurAction);
           end;
         if (ennemi.anim.etat='tir') and (animFinie(ennemi.anim)) then
           begin
@@ -1077,6 +1080,7 @@ begin
 	    InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',0,0,windowWidth,400,extractionTexte('DIALOGUE_BOSS_1'),100);
       ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS_2'));
       sceneActive:='Cutscene';
+      jouersonenn('dragon');
       ennemi.stats.compteurAction:=1;
     end;
   if (ennemi.anim.etat='apparition') and (ennemi.anim.objectName='dracomage') and (ennemi.stats.compteurAction=0) then
@@ -1164,6 +1168,7 @@ begin
       else
         if (ennemi.anim.etat<>'mortRep') and (ennemi.anim.etat<>'mort') then
           begin
+          jouerSonEnn('dragon2');
           statsJoueur.bestiaire[ennemi.stats.numero]:=True;
           initAnimation(ennemi.anim,ennemi.anim.objectName,'mortRep',ennemi.stats.nbframes3,True);
           InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',0,-70,windowWidth,400,extractionTexte('DIALOGUE_BOSS_3'),100);

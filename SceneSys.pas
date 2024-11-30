@@ -69,7 +69,7 @@ end;
 
 // Updates des Scenes
 
-procedure ActualiserJeu;
+procedure ActualiserJeu(boss:Boolean);
 var faucheuse : TObjet;
 var i:Integer;
 	begin
@@ -116,7 +116,8 @@ var i:Integer;
 			SceneActive := 'mortJoueur';
 		end;
 		if vagueFinie then ajoutVague;
-		if combatFini then victoire(statsJoueur);
+		if combatFini then 
+			victoire(statsJoueur,boss);
 	end;
 
 procedure ActualiserMenuEnJeu;
@@ -207,7 +208,7 @@ afficherTout;
 				end;
 			end;
 		end;
-		autoMusique();
+		autoMusique(indiceMusiqueJouee);
 		//writeln('objet : ',High(LObjets));
 end;
 
@@ -233,15 +234,28 @@ begin
   end;
 end;
 
+procedure HandleButtonClickRelique(var button: TButtonGroup; x, y: Integer;rel:Integer;var stats:TStats);
+begin
+  if (x >= button.image.rect.x) and (x <= button.image.rect.x + button.image.rect.w) and
+     (y >= button.image.rect.y) and (y <= button.image.rect.y + button.image.rect.h) then
+  begin
+    if Assigned(button.procCarte) then
+    begin
+        writeln('procédure spéciale en cours');
+		button.procRel(rel,Stats);
+    end;
+  end;
+end;
+
 procedure GameUpdate;
-var i:Integer;son:Boolean;cardHover:Array [1..3] of Boolean;
+var i:Integer;son,boss:Boolean;cardHover:Array [1..3] of Boolean;
 begin
   new(EventSystem);
    while True do
   begin
   sdl_delay(10);
   sdl_renderclear(sdlRenderer);
-  autoMusique();
+  autoMusique(indiceMusiqueJouee);
     //Mouvement Joueur
 	case SceneActive of
 		'Deck':
@@ -256,7 +270,8 @@ begin
 		end;
   		'Jeu': 
   		begin
-		ActualiserJeu;
+		boss:=(high(LObjets)>=1) and (LObjets[1].stats.boss);
+		ActualiserJeu(boss);
 		MouvementJoueur(LObjets[0]);
 		end;
   		'MenuEnJeu': 
@@ -294,15 +309,18 @@ begin
 			//InitDecor;
 			for i:=1 to 3 do
 				begin
-				RenderButtonGroup(btnCartes[i]);
-				OnMouseHover(btnCartes[i],getMouseX,getMouseY,'SFX\cardHover.wav', cardHover[i]);
+				RenderButtonGroup(boutons[i]);
+				OnMouseHover(boutons[i],getMouseX,getMouseY,'SFX\cardHover.wav', cardHover[i]);
 				if cardHover[i] then 
 					begin
 						cardHover[i] := False;
-						initDialogueBox(dialogues[2],nil,nil,0,350,1080,450,extractionTexte('DESC_CAR_'+intToSTr(btnCartes[i].carte.numero)),20);
+						if boutons[i].parametresSpeciaux=4 then
+							initDialogueBox(dialogues[1],nil,nil,0,350,1080,450,extractionTexte('DESC_REL_'+intToSTr(boutons[i].relique)),20)
+						else
+							initDialogueBox(dialogues[1],nil,nil,0,350,1080,450,extractionTexte('DESC_CAR_'+intToSTr(boutons[i].carte.numero)),20);
 					end;
 				end;
-			UpdateDialogueBox(dialogues[2])
+			UpdateDialogueBox(dialogues[1])
 			end;
 		'mortJoueur': OnPlayerDeath(son);
 		'GameOver': GameOver;
@@ -363,6 +381,7 @@ begin
     		begin
       			case EventSystem^.type_ of
 					SDL_mousebuttondown:if dialogues[2].letterdelay=0 then begin 
+						jouerSonEnn('dragon3');
 						InitAnimation(LObjets[1].anim,LObjets[1].anim.objectName,'mort',LObjets[1].stats.nbFramesMort,False);
 						sceneActive:='Jeu';
 						end
@@ -430,8 +449,11 @@ begin
 					end;
 				'victoire':for i:=1 to 3 do
 					begin
-					OnMouseClick(btnCartes[i], EventSystem^.motion.x, EventSystem^.motion.y);
-					HandleButtonClickCarte(btnCartes[i], EventSystem^.motion.x, EventSystem^.motion.y,btnCartes[i].carte,statsJoueur);
+					OnMouseClick(boutons[i], EventSystem^.motion.x, EventSystem^.motion.y);
+					if boutons[i].parametresSpeciaux=4 then
+						HandleButtonClickRelique(boutons[i], EventSystem^.motion.x, EventSystem^.motion.y,boutons[i].relique,statsJoueur)
+					else
+						HandleButtonClickCarte(boutons[i], EventSystem^.motion.x, EventSystem^.motion.y,boutons[i].carte,statsJoueur);
 					end;
 				'GameOver':begin
 					OnMouseClick(boutons[1], EventSystem^.motion.x, EventSystem^.motion.y);
@@ -484,7 +506,10 @@ begin
 					end;
 				if (sceneActive='Deck') then
 					begin
-					scrollDeck(ideck);
+					if statsJoueur.relique<>0 then
+						scrollDeck(ideck,statsJoueur.tailleCollection+1)
+					else
+						scrollDeck(ideck,statsJoueur.tailleCollection)
 					end;
 				if sceneActive='Bestiaire' then
 					begin
@@ -492,8 +517,8 @@ begin
 					end;
 				if sceneActive='MenuShop' then
 					begin
-					if not etatChoix then scrolldeck(iChoix1)
-					else scrollDeck(iChoix2)
+					if not etatChoix then scrolldeck(iChoix1,statsJoueur.tailleCollection)
+					else scrollDeck(iChoix2,statsJoueur.tailleCollection)
 					end;
 				end;
 			end;

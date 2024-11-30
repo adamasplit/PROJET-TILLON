@@ -1,8 +1,6 @@
 unit SonoSys;
 interface
 uses
-    coeur,
-    memgraph,
     SDL2,
     SDL2_mixer,
     SysUtils; //télécharger SDL2_mixer au préalable
@@ -10,7 +8,7 @@ uses
 const TAILLE_OST=50;
         VOLUME_MUSIQUE=20;
         VOLUME_SON=20;
-        MAX_CHAINES = 6;
+        MAX_CHAINES = 8;
 type TMus=record
     duree:Integer;
     nom:String;
@@ -28,7 +26,7 @@ var OST:array[1..TAILLE_OST] of TMus;
 
 procedure jouerSon(nomFichier:PChar);overload;//joue un son .WAV
 procedure jouerSon(nomFichier:PCHar;volume:Integer);overload;
-procedure autoMusique(); //recommence une musique si elle est finie (à mettre dans la boucle d'actualisation du jeu)
+procedure autoMusique(var indice:Integer); //recommence une musique si elle est finie (à mettre dans la boucle d'actualisation du jeu)
 procedure JouerSonEff(nom:String);
 procedure arretMus(duree:Integer);//éteindre progressivement la musique, durée en ms
 procedure arretSons(duree:Integer);//arrêter tous les sons
@@ -42,6 +40,12 @@ procedure detruireOST();//à mettre impérativement en fin du programme
 
 {IMPORTANT : à la fin du programme, utiliser 'Mix_CloseAudio' ainsi que 'Mix_FreeMusic' ou 'Mix_FreeChunk' pour des variables PMix_Music ou PMix_Chunk}
 implementation
+
+function StringToPChar(s : string) : Pchar;
+begin
+StringToPChar := StrAlloc(Length(s)+1);
+StrPCopy(StringToPChar, s);
+end;
 
 function chargerSFX(nomFichier:PCHar):PMix_Chunk;
     begin
@@ -115,23 +119,23 @@ begin
         jouerSon(StringToPChar('SFX/Ennemis/'+nom+' ('+intToStr(num)+').wav'),VOLUME_SON * 2);
 end;
 
-procedure autoMusique();
+procedure autoMusique(var indice:integer);
 begin
     SDL_PumpEvents;
-        if (IndiceMusiqueJouee<>indiceMusiquePrec) then
+        if (Indice<>indiceMusiquePrec) then
             if indiceMusiquePrec=0 then
                 begin
-                MusiqueJouee:=chargerOST(OST[IndiceMusiqueJouee].dir);
+                MusiqueJouee:=chargerOST(OST[Indice].dir);
                 mix_playMusic(MusiqueJouee,0);
-                indiceMusiquePrec:=indiceMusiqueJouee;
+                indiceMusiquePrec:=indice;
                 end
             else
                 begin
                 Mix_FreeMusic(MusiqueJouee);
-                MusiqueJouee:=chargerOST(OST[IndiceMusiqueJouee].dir);
+                MusiqueJouee:=chargerOST(OST[Indice].dir);
                 mix_playMusic(MusiqueJouee,0);
-                writeln('changing music from ',indiceMusiquePrec,' to ',indiceMusiqueJouee);
-                indiceMusiquePrec:=indiceMusiqueJouee;
+                writeln('changing music from ',indiceMusiquePrec,' to ',indice);
+                indiceMusiquePrec:=indice;
                 updatetimemusique:=sdl_getticks;
                 //enFondu:=True;
                 //mix_fadeoutmusic(1000)
@@ -141,10 +145,10 @@ begin
             //mix_playMusic(OST[IndiceMusiqueJouee].musique,0);
             //enFondu:=False;
             //end;
-        if (SDL_GetTicks()-UpdateTimeMusique)>(OST[indiceMusiqueJouee].duree)*1000 then //vérifier si le morceau est fini ou non
+        if (SDL_GetTicks()-UpdateTimeMusique)>(OST[indice].duree)*1000 then //vérifier si le morceau est fini ou non
             begin
-            if (indiceMusiqueJouee>15) and (indiceMusiqueJouee<30) then
-                indiceMusiqueJouee:=indiceMusiqueJouee+14
+            if (indice>15) and (indice<30) then
+                indice:=indice+14
             else
                 mix_rewindMusic();
             updatetimeMusique := SDL_GetTicks();
@@ -172,10 +176,7 @@ begin
 end;
 
 procedure detruireOST();
-var i:Integer;
 begin
-    for i:=1 to TAILLE_OST do
-        //if Assigned(OST[i].musique) then Mix_FreeMusic(OST[i].musique);
     Mix_CloseAudio
 end;
 
@@ -196,6 +197,7 @@ Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT,
     defMus(6,'OST/C5.wav','With Or Against You',113);
     defMus(7,'OST/C6.wav','',72);
     //Boss
+    defMus(9,'OST/Boss0.wav','',72);
     defMus(10,'OST/Boss1.wav','',120);
     defMus(11,'OST/Boss2.wav','',116);
     defMus(12,'OST/Boss3.wav','',149);
@@ -210,6 +212,7 @@ Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT,
     defMus(23,'OST/C4_VictoireIntro.wav','',3);
     defMus(24,'OST/C5_VictoireIntro.wav','',5);
     defMus(25,'OST/C6_VictoireIntro.wav','',4);
+    defMus(27,'OST/Boss0_VictoireIntro.wav','',4);
     defMus(28,'OST/Boss1_VictoireIntro.wav','',5);
     defMus(29,'OST/Boss2_VictoireIntro.wav','',7);
     defMus(30,'OST/Boss3_VictoireIntro.wav','',5);
@@ -221,6 +224,7 @@ Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT,
     defMus(37,'OST/C4_VictoireRep.wav','',36);
     defMus(38,'OST/C5_VictoireRep.wav','',18);
     defMus(39,'OST/C6_VictoireRep.wav','',48);
+    defMus(41,'OST/Boss0_VictoireRep.wav','',71);
     defMus(42,'OST/Boss1_VictoireRep.wav','',81);
     defMus(43,'OST/Boss2_VictoireRep.wav','',81);
     defMus(44,'OST/Boss3_VictoireRep.wav','',74);

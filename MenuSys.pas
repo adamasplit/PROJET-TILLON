@@ -24,7 +24,7 @@ uses
 var iEnn,ideckprec:Integer;carteDeck,ennAff:TImage;
 
 procedure AfficherTout();
-procedure victoire(var statsJ:TStats);overload;
+procedure victoire(var statsJ:TStats;boss:Boolean);
 procedure victoire(var statsJ:TStats;num:Integer);overload;
 procedure RenderParallaxMenu(bgImage,characterImage,cardsImage : TImage);
 procedure InitLeaderboard;
@@ -71,7 +71,9 @@ begin
 	for j:=1 to 4 do 
 		statsJoueur.collection[j]:=Cartes[1];
 	statsJoueur.collection[j]:=Cartes[10];
+	statsJoueur.relique:=0;
 	statsJoueur.vie:=100;statsJoueur.vieMax:=100;
+	statsJoueur.multiplicateurSoin:=1;
 	initStatsCombat(statsJoueur,LObjets[0].stats);
 	iCarteChoisie:=1;
 	CreateRawImage(LObjets[0].image, windowWidth div 2-windowWidth div 4, windowHeight div 2, 100, 100, 'Sprites\Game\Joueur\Joueur_idle_1.bmp');
@@ -297,9 +299,19 @@ end;
 procedure reactualiserDeck();
 begin
 	//writeln(ideck);
-	createRawImage(carteDeck,200,200,300,300,statsJoueur.collection[iDeck].dir);
-	initDialogueBox(dialogues[1],nil,nil,460,120,380,600,extractionTexte('DESC_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),0,Fantasy20,25);
-	initDialogueBox(dialogues[3],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),0);
+	
+	if iDeck=statsJoueur.tailleCollection+1 then
+		begin
+		createRawImage(carteDeck,200,200,300,300,StringToPChar('Sprites/Reliques/reliques'+intToStr(statsJoueur.relique)+'.bmp'));
+		initDialogueBox(dialogues[1],nil,nil,460,120,380,600,extractionTexte('DESC_REL_'+intToStr(statsJoueur.relique)),10,Fantasy20,25);
+		initDialogueBox(dialogues[3],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_REL_'+intToStr(statsJoueur.relique)),0);
+		end
+	else
+		begin
+		createRawImage(carteDeck,200,200,300,300,statsJoueur.collection[iDeck].dir);
+		initDialogueBox(dialogues[1],nil,nil,460,120,380,600,extractionTexte('DESC_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),0,Fantasy20,25);
+		initDialogueBox(dialogues[3],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),0);
+		end;
 end;
 
 procedure ouvrirDeck();
@@ -462,38 +474,93 @@ end;
 
 procedure acquisitionCarte(carte:TCarte;var stats:TStats);
 begin
-    //writeln('tentative d''ajout d''une carte');
     stats.tailleCollection:=stats.tailleCollection+1;
     stats.collection[stats.tailleCollection]:=carte;
     choixSalle;
 end;
 
-procedure victoire(var statsJ:TStats); //censé contenir le choix+obtention d'une carte après un combat (voire d'une relique, pour plus tard)
+procedure desequiperRelique(var stats:TStats);
+begin
+	case stats.relique of
+	1:
+	stats.vitesse:=stats.vitesse-5;
+	2:
+	stats.manaMax:=stats.manaMax-4;
+	3:	
+	begin 
+	stats.vieMax:=stats.vieMax-20;
+	end;
+	4:
+	stats.multiplicateurSoin:=stats.multiplicateurSoin-0.3;
+	5:
+	stats.manaDebutCombat:=0;
+	6:stats.force:=stats.force-5;
+	7:stats.defense:=stats.defense-4;
+	end;
+end;
+
+procedure equiperRelique(rel:Integer;var stats:TStats);
+begin
+	if stats.relique<>0 then desequiperRelique(stats);
+	case rel of
+	1:
+	stats.vitesse:=stats.vitesse+5;
+	2:
+	stats.manaMax:=stats.manaMax+4;
+	3:	
+	begin 
+	stats.vieMax:=stats.vieMax+20;
+	stats.vie:=stats.vie+20;
+	end;
+	4:
+	stats.multiplicateurSoin:=stats.multiplicateurSoin+0.3;
+	5:
+	stats.manaDebutCombat:=10;
+	6:stats.force:=stats.force+5;
+	7:stats.defense:=stats.defense+4;
+	end;
+
+	stats.relique:=rel;
+	choixSalle;
+end;
+
+procedure victoire(var statsJ:TStats;boss:Boolean); //censé contenir le choix+obtention d'une carte après un combat
 var i:Integer;
 begin
 	if indiceMusiqueJouee<14 then indiceMusiqueJouee:=indiceMusiqueJouee+18;
+	StatsJoueur.vie:=LObjets[0].stats.vie;
 	InitDecorCartes;
     sceneActive:='victoire';
     for i:=1 to 3 do
-        begin
-	    btnCartes[i].carte:=cartes[random(22)+1]; //###c'est cette partie qui est à remplacer pour déterminer les cartes que l'on peut obtenir
-	    InitButtonGroup(btnCartes[i],200+300*(i-1),200,128,128,btnCartes[i].carte.dir,' ',nil);
-        btnCartes[i].procCarte:=@acquisitionCarte;
-        btnCartes[i].parametresSpeciaux:=1;
-        end;
+		if boss and (random(2)=0) then
+			begin
+			boutons[i].parametresSpeciaux:=4;
+			boutons[i].relique:=random(7)+1; //###c'est cette partie qui est à remplacer pour déterminer les cartes que l'on peut obtenir
+			InitButtonGroup(boutons[i],200+300*(i-1),200,128,128,StringToPChar('Sprites/Reliques/reliques'+intToStr(boutons[i].relique)+'.bmp'),' ',btnProc);
+			boutons[i].procRel:=@equiperRelique; 
+			end
+		else
+			begin
+			boutons[i].parametresSpeciaux:=1;
+			boutons[i].carte:=cartes[random(22)+1]; //###c'est cette partie qui est à remplacer pour déterminer les cartes que l'on peut obtenir
+			InitButtonGroup(boutons[i],200+300*(i-1),200,128,128,boutons[i].carte.dir,' ',btnProc);
+			boutons[i].procCarte:=@acquisitionCarte; 
+			end;
 end;
 
 procedure victoire(var statsJ:TStats;num:Integer);overload;
 var i:Integer;
 begin
 	if indiceMusiqueJouee<14 then indiceMusiqueJouee:=indiceMusiqueJouee+18;
+	StatsJoueur.vie:=LObjets[0].stats.vie;
+	InitDecorCartes;
     sceneActive:='victoire';
     for i:=1 to 3 do
         begin
-	    btnCartes[i].carte:=cartes[num]; //###c'est cette partie qui est à remplacer pour déterminer les cartes que l'on peut obtenir
-	    InitButtonGroup(btnCartes[i],200+300*(i-1),200,128,128,btnCartes[i].carte.dir,' ',nil);
-        btnCartes[i].procCarte:=@acquisitionCarte;
-        btnCartes[i].parametresSpeciaux:=1;
+	    boutons[i].carte:=cartes[num];
+	    InitButtonGroup(boutons[i],200+300*(i-1),200,128,128,boutons[i].carte.dir,' ',nil);
+        boutons[i].procCarte:=@acquisitionCarte;
+        boutons[i].parametresSpeciaux:=1;
         end;
 end;
 

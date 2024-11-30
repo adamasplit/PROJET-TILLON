@@ -86,6 +86,7 @@ begin
     CreateRawImage(CombatUI[4],15,560,128,128,'Sprites/Menu/CombatUI_4.bmp');
     CreateRawImage(CombatUI[5],30,575,100,100,'Sprites/Menu/CombatUI_5.bmp');
     renderRawImage(CombatUI[1],255,False);
+    
     iCarteChoisie:=1;
 end;
 
@@ -96,6 +97,7 @@ begin
     //if sdl_getTicks mod 150 <10 then writeln('mise à jour de l''UI,indice:',icarteChoisie);
     SDL_FreeSurface(CombatUI[3].imgSurface);
     SDL_DestroyTexture(CombatUI[3].imgTexture);
+   
     if (icarteChoisie>2) or (icarteChoisie<0) then writeln(icarteChoisie);
     CreateRawImage(CombatUI[3],min(820,max(GetMouseX-20,140)),GetMouseY-5,80,80,stats.deck^[icarteChoisie].dir);
     if (LObjets[0].stats.mana<LObjets[0].stats.deck^[iCarteChoisie].cout) and not (LObjets[0].stats.deck^[iCarteChoisie].active) then
@@ -112,6 +114,13 @@ begin
     //Bandes de part et d'autre
     RenderRawImage(CombatUI[1],255,False);
     RenderRawImage(CombatUI[2],255,True);
+    if stats.relique<>0 then
+      begin
+      SDL_FreeSurface(CombatUI[6].imgSurface);
+      SDL_DestroyTexture(CombatUI[6].imgTexture);
+      createRawImage(CombatUI[6],0,0,160,160,StringToPChar('Sprites/Reliques/reliques'+intToStr(stats.relique)+'.bmp'));
+      renderRawImage(combatUI[6],255,False);
+      end;
     //Vie
     DrawRect(black_color,255, 30, 350, 30, 2*stats.vieMax);
     if stats.vie>0 then
