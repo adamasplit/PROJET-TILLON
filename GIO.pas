@@ -177,7 +177,7 @@ procedure ActualiserJeu;
 		sdl_delay(10);
 		//afficherTout;
 		//UpdateDialogueBox(box);
-		//UpdateCollisions();
+		//MAJCollisions();
 		//UpdateAnimations();
 		if LObjets[0].stats.vie>LObjets[0].stats.vieMax then LObjets[0].stats.vie:=LObjets[0].stats.vieMax;
 		if LObjets[0].stats.vie<0 then LObjets[0].stats.vie:=0;

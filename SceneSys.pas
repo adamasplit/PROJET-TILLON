@@ -79,7 +79,7 @@ var i:Integer;
 		SDL_PumpEvents;
 		afficherTout;
 		//UpdateDialogueBox(box);
-		UpdateCollisions();
+		MAJCollisions();
 		UpdateAnimations();
 		UpdateAttaques();
 		UpdateDamagePopUps;

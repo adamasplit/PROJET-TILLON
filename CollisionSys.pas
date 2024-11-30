@@ -13,12 +13,12 @@ uses
 
 
   // Vérifie automatiquement les collisions entre tous les objets actifs
-  procedure UpdateCollisions();
+  procedure MAJCollisions();
   function GetCollisionRect(var obj: TObjet): TSDL_Rect;
   function CheckAABB(rect1, rect2: TSDL_Rect): Boolean;
   function isAttack(obj:TObjet):Boolean;
   // Fonction de vérification manuelle des collisions entre deux objets
-  function CheckCollision(var obj1, obj2: TObjet): Boolean;
+  function VerifCollision(var obj1, obj2: TObjet): Boolean;
   function PseudoColMurs(var obj:TObjet):Boolean;
 
   // Fonction OnTriggerEnter déclenchée lors d'une collision (si IsTrigger est vrai)
@@ -215,7 +215,7 @@ begin
     end;
 end;
 
-//simule une collision avec tous les murs (différente de CheckCollision)
+//simule une collision avec tous les murs (différente de VerifCollision)
 function PseudoColMurs(var obj:TObjet):Boolean;
 var colx1,colx2,coly1,coly2:Integer; //4 coins de l'objet
 begin
@@ -248,19 +248,19 @@ begin
 end;
 
 // Vérifie la collision entre deux objets et gère les conséquences (repoussement ou trigger)
-function CheckCollision(var obj1, obj2: TObjet): Boolean;
+function VerifCollision(var obj1, obj2: TObjet): Boolean;
 var
   rect1, rect2: TSDL_Rect;
   overlapX, overlapY: Integer;
 begin
-  if obj2.stats.angle<>0 then checkCollision:=collisionAngle(obj1,obj2)
+  if obj2.stats.angle<>0 then VerifCollision:=collisionAngle(obj1,obj2)
   else begin
     if modeDebug then
       SDL_SetRenderDrawColor(sdlRenderer, 0, 255, 0, 255);
     rect1 := GetCollisionRect(obj1);
     rect2 := GetCollisionRect(obj2);
-    CheckCollision := CheckAABB(rect1, rect2);
-    if CheckCollision then if modeDebug then 
+    VerifCollision := CheckAABB(rect1, rect2);
+    if VerifCollision then if modeDebug then 
       begin
       SDL_SetRenderDrawColor(sdlRenderer, 255, 0, 0, 255);
       rect1 := GetCollisionRect(obj1);
@@ -269,7 +269,7 @@ begin
 
     end;
 
-  if (CheckCollision) and not (isAttack(obj2) and obj2.col.collisionsFaites[obj1.stats.indice]) then
+  if (VerifCollision) and not (isAttack(obj2) and obj2.col.collisionsFaites[obj1.stats.indice]) then
   begin
     //sert uniquement à l'affichage
     obj1.col.hasCollided:=True;
@@ -315,7 +315,7 @@ begin
     end;
   end
     else
-      if (not checkCollision) and isAttack(obj2) then
+      if (not VerifCollision) and isAttack(obj2) then
         obj2.col.collisionsFaites[obj1.stats.indice]:=False;
 end;
 
@@ -354,8 +354,8 @@ begin
         else
           begin
           subirDegats(obj1,degat(obj2.stats.degats,obj2.stats.force,obj1.stats.defense,obj2.stats.multiplicateurDegat),0,0);
-          if obj2.stats.volVie then subirDegats(LObjets[0].stats,-degat(obj2.stats.degats,obj2.stats.force,obj1.stats.defense,obj2.stats.multiplicateurDegat) div 4,getcenterx(LObjets[0]),getCenterY(LObjets[0]));
-          creerEffet(getcenterx(obj1),getcentery(obj1),64,64,6,'impact',False,eff);
+          if obj2.stats.volVie then subirDegats(LObjets[0].stats,-degat(obj2.stats.degats,obj2.stats.force,obj1.stats.defense,obj2.stats.multiplicateurDegat) div 4,trouverCentreX(LObjets[0]),trouverCentreY(LObjets[0]));
+          creerEffet(trouverCentreX(obj1),trouverCentreY(obj1),64,64,6,'impact',False,eff);
           ajoutobjet(eff);
           end;
         
@@ -364,7 +364,7 @@ begin
 end;
 
 // Met à jour les collisions entre tous les objets actifs
-procedure UpdateCollisions();
+procedure MAJCollisions();
 var
   i, j: Integer;destructionI:Boolean; //mémorise si l'objet I est détruit
 begin
@@ -410,10 +410,10 @@ begin
             // Vérifier les collisions entre obj[i] et obj[j]
             if pseudoColMurs(LObjets[i]) and not pseudoColMurs(LObjets[j]) then //si un objet est dans un mur, il a alors la 'priorité' pour le repoussement
               begin
-              CheckCollision(LObjets[j], LObjets[i])
+              VerifCollision(LObjets[j], LObjets[i])
               end
             else
-              CheckCollision(LObjets[i], LObjets[j]);
+              VerifCollision(LObjets[i], LObjets[j]);
         end;
       end;
     end;

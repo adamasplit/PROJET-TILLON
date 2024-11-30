@@ -28,7 +28,6 @@ var OST:array[1..TAILLE_OST] of TMus;
 
 procedure jouerSon(nomFichier:PChar);overload;//joue un son .WAV
 procedure jouerSon(nomFichier:PCHar;volume:Integer);overload;
-procedure jouerMus(i:Integer);//joue une musique .OGG ou .WAV
 procedure autoMusique(); //recommence une musique si elle est finie (à mettre dans la boucle d'actualisation du jeu)
 procedure JouerSonEff(nom:String);
 procedure arretMus(duree:Integer);//éteindre progressivement la musique, durée en ms
@@ -114,10 +113,6 @@ begin
         jouerSon(StringToPChar('SFX/Ennemis/'+nom+' ('+intToStr(num)+').wav'),VOLUME_SON * 4)
     else
         jouerSon(StringToPChar('SFX/Ennemis/'+nom+' ('+intToStr(num)+').wav'),VOLUME_SON * 2);
-end;
-procedure jouerMus(i:Integer);
-begin
-    mix_playMusic(chargerOST(OST[i].dir),0);
 end;
 
 procedure autoMusique();

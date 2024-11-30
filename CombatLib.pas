@@ -245,9 +245,8 @@ begin
     //Initialisation de l'affichage
     InitAnimation(rayon.anim,nom,'start',5,False);
     rayon.anim.estActif:=True;
-    CreateRawImage(rayon.image,x-600,y-64,l,w,getFramePath(rayon.anim));
+    CreateRawImage(rayon.image,x-(l div 2),y-64,l,w,getFramePath(rayon.anim));
     
-
     //Initialisation de la boîte de collisions
 
     rayon.col.isTrigger := True;
@@ -487,7 +486,7 @@ begin
 end;
 
 procedure UpdateJustice(var justice:TObjet);
-var angleDepart:Real;
+var angleDepart:Real;i:Integer;
 begin
     if justice.stats.delai>0 then 
         begin
@@ -509,6 +508,8 @@ begin
         justice.col.estActif:=True;
         InitAnimation(justice.anim,justice.anim.objectName,'active',10,false);
         jouerSonEff(justice.anim.objectName);
+        for i:=0 to 3 do
+            justice.col.collisionsFaites[i]:=False;
         justice.anim.currentFrame:=1;
         justice.col.estActif:=True;
         initAngle(justice.stats.vectX,justice.stats.vectY,justice.stats.angle);
@@ -586,7 +587,7 @@ begin
         if degats >= 0 then
             begin popUpColor.r:=255;popUpColor.g:=51;popUpColor.b:=51;popUpColor.a:=255; end
         else begin popUpColor.r:=51;popUpColor.g:=255;popUpColor.b:=51;popUpColor.a:=255; end;
-        CreateDamagePopUp(getcenterx(victime),getcentery(victime),StringToPChar(IntToStr(abs(degats))),popUpColor);
+        CreateDamagePopUp(trouverCentreX(victime),trouverCentreY(victime),StringToPChar(IntToStr(abs(degats))),popUpColor);
     end;
 end;
 
@@ -824,7 +825,7 @@ end;
         for i := 0 to high(LOBjets) do
             if LOBjets[i].stats.genre=ennemi then
             begin
-                subirDegats(LObjets[i].stats,1,getcenterx(LObjets[i]),getcentery(LObjets[i]));
+                subirDegats(LObjets[i].stats,1,trouverCentreX(LObjets[i]),trouverCentreY(LObjets[i]));
                 creerEffet(LObjets[i].image.rect.x+LObjets[i].col.offset.x,LObjets[i].image.rect.y+LObjets[i].col.offset.x,LObjets[i].col.dimensions.w,LObjets[i].col.dimensions.h,7,'impact_solaire',False,eff);
                 ajoutObjet(eff);
             end;

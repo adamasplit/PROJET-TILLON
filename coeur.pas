@@ -198,8 +198,8 @@ procedure supprimeObjet(var obj:TObjet);
 
 //Pour faciliter la gestion d'un objet
 procedure analyseObjet(obj:TObjet);
-function getCenterX(var obj:TObjet):Integer;
-function getCentery(var obj:TObjet):Integer;
+function trouverCentreX(var obj:TObjet):Integer;
+function trouverCentreY(var obj:TObjet):Integer;
 
 procedure ajoutDialogue(portrait:PChar;texte:String);
 procedure supprimeDialogue(i:Integer);
@@ -263,14 +263,14 @@ begin
 end;
 
 //pour déterminer la position du centre d'une boîte de collisions d'un objet
-function getCenterX(var obj:TObjet):Integer;
+function trouverCentreX(var obj:TObjet):Integer;
 begin
-  getCenterX:=obj.image.rect.x+obj.col.offset.x+(obj.col.dimensions.w div 2);
+  trouverCentreX:=obj.image.rect.x+obj.col.offset.x+(obj.col.dimensions.w div 2);
 end;
 
-function getCentery(var obj:TObjet):Integer;
+function trouverCentreY(var obj:TObjet):Integer;
 begin
-  getCentery:=obj.image.rect.y+obj.col.offset.y+(obj.col.dimensions.h div 2);
+  trouverCentreY:=obj.image.rect.y+obj.col.offset.y+(obj.col.dimensions.h div 2);
 end;
 procedure analyseObjet(obj:TObjet); //donne toutes les caractéristiques d'un objet (procédure de debug)
 begin

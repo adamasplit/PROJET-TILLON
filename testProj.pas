@@ -52,7 +52,7 @@ while True do
           if LObjets[i].stats.genre=laser then updaterayon(LObjets[i]) else updateBoule(LObjets[i]);
         renderAvecAngle(lobjets[i]);
         end;
-    updateCollisions;
+    MAJCollisions;
     while sdl_pollevent(testEvent)=1 do 
       case testEvent^.type_ of
         SDL_MOUSEBUTTONDOWN:begin
