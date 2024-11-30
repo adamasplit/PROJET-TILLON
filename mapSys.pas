@@ -7,11 +7,11 @@ uses
     combatlib,
     EnemyLib,
     eventsys,
+    fichierSys,
     math,
     memgraph,
     SDL2,
     sonoSys,
-    fichierSys,
     SysUtils;
 var imgs0,imgs1,imgs2,imgs3:TButtonGroup;
 var salleChoisie:TSalle;
@@ -109,6 +109,7 @@ begin
         else
             ennemis[j]:=templatesEnnemis[30];
         end;
+        ennemis[j].stats.vie := ennemis[j].stats.vie + statsJoueur.avancement*2;
 
 end;
 

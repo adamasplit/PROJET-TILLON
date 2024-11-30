@@ -244,6 +244,7 @@ begin
   autoMusique();
     //Mouvement Joueur
 	case SceneActive of
+		'Credits':Credits;
 		'Deck':
 		begin
 		actualiserMenuEnJeu;
@@ -510,7 +511,7 @@ begin
 	sdlKeyboardState := SDL_GetKeyboardState(nil);
     InitMenuPrincipal;
     InitMenuEnJeu;
-    InitLeaderboard;
+    InitCredits;
 	initUICombat;
 	initDecor;
 	InitDialogues;

@@ -150,8 +150,10 @@ combatFini,vagueFinie,leMonde:Boolean;
 statsJoueur: TStats;
 queueDialogues:array of InfoBoiteDialogues;
 var modeDebug:Boolean;
+
 PDeck:TDeck; //deck pointé par les stats du joueur
- 
+
+Title : TText;
 // Boutons
 	button_help : TButtonGroup;
 	button_home : TButtonGroup;
@@ -160,20 +162,6 @@ PDeck:TDeck; //deck pointé par les stats du joueur
 	button_retour_menu : TButtonGroup;
 
   boutons:array[1..9] of TButtonGroup;
-
-// Textes
-	text1 : TText;
-	titre_lead : TText;
-	text_score_seize : TText;
-	text_score_trente : TText;
-	text_nom_seize : TText;
-	text_nom_trente : TText;
-	text_s3: TText;
-	text_n3 : TText;
-	text_s4 : TText;
-	text_n4: TText;
-	text_s5: TText;
-	text_n5: TText;
 
   var fond:TImage;
 	dialogues : Array [1..3] of TDialogueBox;
@@ -185,7 +173,7 @@ PDeck:TDeck; //deck pointé par les stats du joueur
 	quitter : ButtonProcedure;
 	retour_menu : ButtonProcedure;
 	Pjouer : ButtonProcedure;
-	leaderboard : ButtonProcedure;
+	PCredits : ButtonProcedure;
   PopenSettings : ButtonProcedure;
   PgoSeekHelp : ButtonProcedure;
 	PNouvellePartieIntro : ButtonProcedure;
@@ -322,7 +310,7 @@ begin
   statsJoueur.vie:=100;
   statsJoueur.mana:=0;
   statsJoueur.manaMax:=10;
-  statsJoueur.force:=1;
+  statsJoueur.force:=7;
   statsJoueur.multiplicateurDegat:=1;
   statsJoueur.multiplicateurMana:=1;
   statsJoueur.nbJustice:=0;
