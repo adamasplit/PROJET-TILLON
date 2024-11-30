@@ -39,7 +39,7 @@ procedure LancementSalleHasard;
 procedure LancementSalleBoss;
 procedure LancementSalleMarchand;
 procedure LancementSalleCamp;
-procedure scrollDeck(var i:Integer);
+procedure scrollDeck(var i:Integer;imax:Integer);
 procedure activationEvent(scene:String);
 procedure HandleButtonClickEch(var button: TButtonGroup; x, y: Integer;carte1,carte2:TCarte;var stats:TStats);
 function Highlight(var btnGroup: TButtonGroup; x, y: Integer):Boolean;
@@ -107,7 +107,7 @@ begin
         if (alea=20) or (alea=21) then
             ennemis[j]:=templatesEnnemis[32]
         else
-            ennemis[j]:=templatesEnnemis[30];
+            ennemis[j]:=templatesEnnemis[alea];
         end;
         ennemis[j].stats.vie := ennemis[j].stats.vie + statsJoueur.avancement*2;
 
@@ -133,6 +133,8 @@ begin
     vagueFinie:=True;
     combatFini:=False;
     setlength(ennemis,2);
+    indiceMusiqueJouee:=9;
+    initDecor;
     ennemis[1]:=templatesEnnemis[12];
     sceneActive:='Jeu';
 end;
@@ -149,6 +151,7 @@ begin
     SceneActive := 'Jeu';
     vagueFinie:=False;
     setlength(LObjets,2);
+    indiceMusiqueJouee:=random(4)+11;
     for j:=1 to 1 do
     begin
         randomize;  
@@ -359,17 +362,17 @@ begin
     LancementSalleMarchand;
 end;
 
-procedure scrollDeck(var i:Integer);
+procedure scrollDeck(var i:Integer;imax:Integer);
 
 begin
 	if EventSystem^.wheel.y<0 then
-		if i>=statsJoueur.tailleCollection then
+		if i>=imax then
 			i:=1
 		else
 			i:=i+1
 	else
 		if i<=2 then
-			i:=statsJoueur.tailleCollection
+            i:=imax
 		else
 			i:=i-1;
 end;

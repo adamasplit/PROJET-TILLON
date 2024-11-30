@@ -104,7 +104,6 @@
 <COMM_ENN_31>Je comprends la volonté de s'accrocher à la vie. Mais...;
 <COMM_ENN_32>Un ennemi puissant, mais il n'aurait pas dû se mettre en travers de mon chemin.;
 <COMM_ENN_33>Pourquoi...Pourquoi soumettre quelqu'un à un sort si cruel?;
-<DESC_REL_1>Un recueil de techniques ancestrales;
 <TXT_INTRO1>Il fait si froid...;
 <TXT_INTRO2>Tout est noir. Aucun son, aucune lumière.;
 <TXT_INTRO3>Une sensation étrange... Comme un rêve dont on peine à sortir.;
@@ -114,9 +113,12 @@
  Les cartes guideront ton destin, ou te condamneront…;
 
 <DESC_REL_1>;
-<DESC_REL_2>;
-<DESC_REL_3>;
+<DESC_REL_2>Un recueil de techniques ancestrales venues de l'Archange, serviteur des dieux, et confié à ceux qui sont jugés méritants.;
+<DESC_REL_3>Cet étrange cristal semble battre avec le coeur de son porteur. Il lui donne une endurance surnaturelle.;
 <DESC_REL_4>;
+<DESC_REL_5>Une relique venue de la guerre qui a séparé les dieux et les dragons dans une ère révolue. Elle ruisselle d'une magie incommensurable.;
+<DESC_REL_6>Le sceptre d'une mage qui aurait vécu il y a bien longtemps, et affronté les dieux. Elle n'a donc pas réellement servi;
+<DESC_REL_7>Une cape tissée d'un matériau inconnu, qui protège son porteur grâce aux runes qui y sont brodées.;
 <COMM_REL_1>;
 <COMM_REL_2>;
 <COMM_REL_3>;

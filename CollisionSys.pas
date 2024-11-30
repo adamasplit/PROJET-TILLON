@@ -354,7 +354,7 @@ begin
         else
           begin
           subirDegats(obj1,degat(obj2.stats.degats,obj2.stats.force,obj1.stats.defense,obj2.stats.multiplicateurDegat),0,0);
-          if obj2.stats.volVie then subirDegats(LObjets[0].stats,-degat(obj2.stats.degats,obj2.stats.force,obj1.stats.defense,obj2.stats.multiplicateurDegat) div 4,trouverCentreX(LObjets[0]),trouverCentreY(LObjets[0]));
+          if obj2.stats.volVie then subirDegats(LObjets[0].stats,-round(degat(obj2.stats.degats,obj2.stats.force,obj1.stats.defense,obj2.stats.multiplicateurDegat)*LObjets[0].stats.multiplicateurSoin) div 4,trouverCentreX(LObjets[0]),trouverCentreY(LObjets[0]));
           creerEffet(trouverCentreX(obj1),trouverCentreY(obj1),64,64,6,'impact',False,eff);
           ajoutobjet(eff);
           end;

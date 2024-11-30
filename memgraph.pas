@@ -6,6 +6,7 @@ uses
   math,
   SDL2,
   SDL2_ttf,
+  sonoSys,
   SysUtils;
 
 type
@@ -241,12 +242,13 @@ begin
   image.directory := directory;
   if directory = nil then Exit;
    // Rendering text --> surface
+  //if image.imgtexture<>nil then SDL_DestroyTexture(image.imgtexture);
+  //if image.imgsurface<>nil then SDL_freeSurface(image.imgsurface);
   image.imgSurface := SDL_LoadBMP(image.directory);
   if image.imgSurface = nil then begin WriteLn('Error in Surface load : ',image.directory);Write(SDL_GetError); HALT end;
   // Convertion surface --> texture
-  //if image.imgtexture<>nil then SDL_DestroyTexture(image.imgtexture);
+  
   image.imgTexture := SDL_CreateTextureFromSurface(sdlRenderer, image.imgSurface);
-  //SDL_freeSurface(image.imgsurface);
   if image.imgTexture = nil then begin WriteLn(SDL_GetError); HALT end;
   
   
@@ -475,6 +477,12 @@ begin
     else
     begin
       Inc(Box.DisplayedLetters);
+      if box.portrait.directory=nil then
+        begin
+        //jouerSon('SFX/Dialogues/texte.wav')
+        end
+      else
+        jouerSon(StringToPChar('SFX/Dialogues/'+box.portrait.directory+'.wav'));
       Box.LastUpdateTime := CurrentTime;
     end;
   end;

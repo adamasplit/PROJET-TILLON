@@ -201,6 +201,7 @@ begin
     initAnimation(LObjets[0].anim,LObjets[0].anim.objectName,'idle',12,True);
     //Création de la copie
     statsTemp:=statsPerm;
+    statsTemp.mana:=statsPerm.manaDebutCombat;
     creerDeckCombat(statsTemp,Pdeck);
     //Initialisation du deck pointé
     statsTemp.deck:=@pDeck;
@@ -366,6 +367,7 @@ begin
         proj.stats.yreel:=y;
         proj.stats.multiplicateurDegat:=multiplicateurDegat;
         proj.stats.origine:=origine;
+        proj.stats.volvie:=False;
 
         if (nom='projectile') and (origine=joueur) then
             jouerSonEff('Arc ('+intToSTr(random(6)+1)+')');
@@ -474,6 +476,7 @@ begin
     justice.stats.origine:=origine;
     justice.stats.delai:=delai;
     justice.stats.delaiInit:=delai;
+    justice.stats.volvie:=False;
     ajoutObjet(justice);
 end;
 
@@ -623,7 +626,7 @@ end;
         jouerSonEff('Rayon');
     end;
 
-    //3 L'impératrice ### ne soigne pas encore pour l'instant
+    //3 L'impératrice
     procedure III(s : TStats ; x,y : integer);
     var proj : TObjet;
     begin
@@ -821,7 +824,7 @@ end;
     procedure XIX(var s : TStats);
     var i : integer;eff:TObjet;
     begin
-        subirDegats(s, -5,Lobjets[0].image.rect.x,Lobjets[0].image.rect.y); // soin de 5 pv 
+        subirDegats(s, round(-5*s.multiplicateurSoin),Lobjets[0].image.rect.x,Lobjets[0].image.rect.y); // soin de 5 pv 
         for i := 0 to high(LOBjets) do
             if LOBjets[i].stats.genre=ennemi then
             begin
@@ -837,7 +840,7 @@ end;
     procedure XX(var s : Tstats);
     var eff:TObjet;
     begin
-        subirDegats(s, -20,Lobjets[0].image.rect.x,Lobjets[0].image.rect.y);
+        subirDegats(s, round(-20*s.multiplicateurSoin),Lobjets[0].image.rect.x,Lobjets[0].image.rect.y);
         creerEffet(0,0,150,150,15,'ange',True,eff);
         ajoutObjet(eff);
     end;

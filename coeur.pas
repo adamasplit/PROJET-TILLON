@@ -64,6 +64,7 @@ type TStats=record //(version variable)
           lastUpdateTimeMana:UInt32;
           avancement:Integer;
           multiplicateurMana:Real;
+          multiplicateurSoin:Real;
           Vitesse:Integer;
           manaDebutCombat:Integer;
           collection:TPaquet;
@@ -73,21 +74,23 @@ type TStats=record //(version variable)
           pendu:Boolean;
           compteurLeMonde:Integer;
           laMort,leFou:Boolean;
-          nbJustice : Integer);
+          nbJustice : Integer;
+          relique:Integer);// numéro de la relique équipée
         
         ennemi:(
-          xcible,ycible, //position de la cible du déplacement de l'ennemi (souvent celle du joueur)
+          xcible,ycible, //position de la cible du déplacement ou des attaques de l'ennemi (souvent celle du joueur)
           compteurAction, //sert à temporiser les actions des ennemis
           nbFrames1,
           nbFrames2,
           nbFrames3,
-          nbFramesMort, //nombre de frames : 1->chase, 2->action1, 3->action2
+          nbFramesMort, //nombre de frames : 1->poursuite/sans action, 2->action n°1, 3->action n°2
           nbFramesApparition:Integer;
           typeIA_MVT:Byte; //détermine la façon dont l'ennemi se déplace et agit
           degatsContact:Integer; //permet d'infliger des dégâts au contact avec le joueur
           cooldown:Byte; //limite les dégâts au contact par le temps
           vitessePoursuite:Integer; //indique la vitesse où l'ennemi peut suivre le joueur
           nomAttaque:PCHar;//pour le sprite utilisé par le projectile ou rayon
+          boss:Boolean;//détermine ce que l'on obtient à l'issue d'un combat avec l'ennemi
           numero:Integer); 
 
         projectile,laser,epee:(degats:Integer;
@@ -131,6 +134,7 @@ type
       1:(procCarte:procedure(carte:TCarte;var stats:TStats);carte:TCarte);
       2:(procSalle:procedure(evenement:evenements));
       3:(procEch:procedure(carte1,carte2:TCarte;var stats:TStats));
+      4:(procRel:procedure(rel:Integer;var stats:TStats);relique:Integer);
     end;
 
 type TSalle=record
@@ -157,10 +161,8 @@ Title : TText;
 // Boutons
 	button_help : TButtonGroup;
 	button_home : TButtonGroup;
-  btnCartes:array[1..3] of TButtonGroup;
   salles: array[1..3] of TSalle;
 	button_retour_menu : TButtonGroup;
-
   boutons:array[1..9] of TButtonGroup;
 
   var fond:TImage;
