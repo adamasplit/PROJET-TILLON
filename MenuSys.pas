@@ -27,16 +27,17 @@ procedure AfficherTout();
 procedure victoire(var statsJ:TStats;boss:Boolean);
 procedure victoire(var statsJ:TStats;num:Integer);overload;
 procedure RenderParallaxMenu(bgImage,characterImage,cardsImage : TImage);
-procedure InitLeaderboard;
+procedure InitCredits;
 procedure ParallaxMenuInit;
 procedure annihiler();
 procedure InitMenuEnJeu;
 procedure InitMenuPrincipal;
+procedure InitTutorial;
 procedure jouer;
 procedure direction_menu;
 procedure openSettings;
 procedure goSeekHelp;
-procedure lead;
+procedure Credits;
 procedure NouvellePartieIntro;
 procedure menuEnJeu;
 function NextOrSkipDialogue(i : Integer) : Boolean;
@@ -143,38 +144,21 @@ procedure jouer;
 		//ActualiserJeu;
 end;
 
-procedure lead;
+procedure Credits;
 	begin
 
-		SceneActive := 'Leaderboard';
-
+		SceneActive := 'Credits';
 		ClearScreen;
-		SDL_RenderClear(sdlRenderer);
-
 		
 		
 		boutons[3].button.estVisible := false;
 		boutons[4].button.estVisible := false;
         boutons[2].button.estVisible := false;
 		boutons[1].button.estVisible := false;
-
-		RenderParallaxMenu(bgImage,characterImage,cardsImage);
-		//RenderRawImage(vague);
-		RenderText(text1);
-		RenderText(titre_lead);
-		RenderText(text_score_seize);
-		RenderText(text_score_trente);
-		RenderText(text_nom_seize);
-		RenderText(text_nom_trente);
-		RenderText(text_n3);
-		RenderText(text_s3);
-		RenderText(text_n4);
-		RenderText(text_s4);
-		RenderText(text_n5);
-		RenderText(text_s5);
-
-
+		
+		
 		OnMouseHover(button_retour_menu,GetMouseX,GetMouseY);
+		OnMouseClick(button_retour_menu,GetMouseX,GetMouseY);
 		RenderButtonGroup(button_retour_menu);
 		SDL_RenderPresent(sdlRenderer);
 end;
@@ -244,7 +228,7 @@ begin
 	EffetDeFondu;
 
     // Afficher le texte et autres éléments si nécessaire
-    RenderText(text1);
+    RenderText(Title);
     SDL_RenderPresent(sdlRenderer);
 end;
 
@@ -272,7 +256,7 @@ begin
     btnProc := @OnButtonClickDebug;
     quitter:=@annihiler;
     Pjouer:=@jouer;
-    leaderboard:=@lead;
+    PCredits:=@Credits;
     retour_menu:=@direction_menu;
     PopenSettings := @openSettings;
     PgoSeekHelp := @goSeekHelp;
@@ -280,11 +264,11 @@ begin
     
 	//Menu Principal
     // Game icon (𓈒⟡₊⋆∘ Wowie 𓈒⟡₊⋆∘)
-    CreateText(text1, windowWidth div 2-150, 20, 300, 250, 'Les Cartes du Destin',Fantasy30, whiteCol);
+    CreateText(Title, windowWidth div 2-150, 20, 300, 250, 'Les Cartes du Destin',Fantasy30, whiteCol);
 	// Initialisation des boutons principaux (à gauche)
 	InitButtonGroup(boutons[2], 100, windowHeight div 5, 350, 80, 'Sprites\Menu\Button1.bmp', 'Continuer', @continuer);
     InitButtonGroup(boutons[1], 100, (windowHeight div 5) + 100, 350, 80, 'Sprites\Menu\Button1.bmp', 'Nouvelle Partie', PNouvellePartieIntro);
-    InitButtonGroup(boutons[3], 100, (windowHeight div 5) + 200, 350, 80, 'Sprites\Menu\Button1.bmp', 'Leaderboard', leaderboard);
+    InitButtonGroup(boutons[3], 100, (windowHeight div 5) + 200, 350, 80, 'Sprites\Menu\Button1.bmp', 'Credits', PCredits);
     InitButtonGroup(boutons[4], 100, (windowHeight div 5) + 300, 350, 80, 'Sprites\Menu\Button1.bmp', 'Quitter', quitter);
 
 	// Initialisation des icônes en bas
@@ -413,20 +397,17 @@ begin
 	InitButtonGroup(boutons[9], 210, 390, 240, 50,nil,'Bestiaire',@ouvrirBestiaire);
 end;
 
-procedure InitLeaderboard;
+procedure InitCredits;
 begin
-    CreateText(titre_lead, windowWidth div 2-210, 90, 300, 250, 'Leaderboard',Fantasy40, navy_color);
-	CreateText(text_score_seize, 40, 200, 150, 125, '1> Score  :',Fantasy20, bf_color);
-	CreateText(text_nom_seize, 40, 225, 250, 125, 'Nom partie :',Fantasy20, bf_color);
-	CreateText(text_score_trente, 40, 275, 150, 125, '2> Score :',Fantasy20, bf_color);
-	CreateText(text_nom_trente, 40, 300, 150, 125,'Nom partie :',Fantasy20, bf_color);
-	CreateText(text_n3, 40, 350, 150, 125, '3> Score :',Fantasy20, bf_color);
-	CreateText(text_s3, 40, 375, 150, 125, 'Nom partie :',Fantasy20, bf_color);
-	CreateText(text_n4, 40, 425, 150, 125, '4> Score :',Fantasy20, bf_color);
-	CreateText(text_s4, 40, 450, 150, 125, 'Nom partie :',Fantasy20, bf_color);
-	CreateText(text_n5, 40, 500, 150, 125, '5> Score :',Fantasy20, bf_color);
-	CreateText(text_s5, 40, 525, 150, 125, 'Arrive prochainement !',Fantasy20, bf_color);
 	InitButtonGroup(button_retour_menu, 850, 625, 200, 75,'Sprites\Menu\Button1.bmp','Menu',retour_menu);
+end;
+
+procedure InitTutorial;
+begin
+	CreateText(TutorialTexts[1], windowWidth div 2-250, windowHeight div 2 + 50, 300, 250, 'ZQSD pour se deplacer',Fantasy30, whiteCol);
+	CreateText(TutorialTexts[2], windowWidth div 2-250, windowHeight div 2 + 50, 300, 250, 'Echap pour ouvrir le menu',Fantasy30, whiteCol);
+	CreateText(TutorialTexts[3], windowWidth div 2-250, windowHeight div 2 + 50, 300, 250, 'Scroll pour choisir une carte',Fantasy30, whiteCol);
+	CreateText(TutorialTexts[4], windowWidth div 2-250, windowHeight div 2 + 50, 300, 250, 'Clic droit pour utiliser une carte',Fantasy30, whiteCol);
 end;
 
 procedure AfficherTout(); //affiche tout (en combat)

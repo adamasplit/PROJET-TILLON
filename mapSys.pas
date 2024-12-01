@@ -7,11 +7,11 @@ uses
     combatlib,
     EnemyLib,
     eventsys,
+    fichierSys,
     math,
     memgraph,
     SDL2,
     sonoSys,
-    fichierSys,
     SysUtils;
 var imgs0,imgs1,imgs2,imgs3:TButtonGroup;
 var salleChoisie:TSalle;
@@ -107,7 +107,11 @@ begin
         if (alea=20) or (alea=21) then
             ennemis[j]:=templatesEnnemis[32]
         else
-            ennemis[j]:=templatesEnnemis[35];
+            ennemis[j]:=templatesEnnemis[alea];
+        ennemis[j].stats.vie := ennemis[j].stats.vie + (statsJoueur.avancement * 2);
+        ennemis[j].stats.force := ennemis[j].stats.force + (statsJoueur.avancement div 2);
+        ennemis[j].stats.defense := ennemis[j].stats.defense + (statsJoueur.avancement div 3);
+        ennemis[j].stats.vitesse := ennemis[j].stats.vitesse + (statsJoueur.avancement div 5);
         end;
 
 end;
