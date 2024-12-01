@@ -358,7 +358,7 @@ begin
         end
         end
       else
-      multiProjs(typeObjet(1),1,1,1,ennemi.image.rect.x+96,ennemi.image.rect.y+96,100,100,3,10,360,0,ennemi.stats.nomAttaque);
+        multiProjs(typeObjet(1),1,1,1,ennemi.image.rect.x+96,ennemi.image.rect.y+96,100,100,3,10,360,0,ennemi.stats.nomAttaque);
       end;
     3: if (ennemi.anim.etat='dash') and (ennemi.stats.compteurAction>50) and (ennemi.stats.compteurAction mod 45=0) and (ennemi.anim.objectName='undrixel') then
       begin
@@ -437,9 +437,17 @@ begin
         ajoutObjet(obj)
         end;
     12:if (ennemi.anim.etat='cast') and (ennemi.stats.compteurAction mod 30=0) then begin
-        alea1:=random(30)*10+180;alea2:=random(100)-300;
-        creerRayon(typeObjet(1),100,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,x+alea1,y+alea2-100,400,200,x+alea1,y+alea2,0,50,100,ennemi.stats.nomAttaque,obj);
-        ajoutObjet(obj)
+        if (ennemi.anim.objectName='invocateur') then
+          begin
+          if ennemi.stats.compteurAction mod 90 = 0 then
+            ajoutObjet(templatesEnnemis[36])
+          end
+        else 
+          begin
+          alea1:=random(30)*10-180;alea2:=random(100)-300;
+          creerRayon(typeObjet(1),100,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,x+alea1,y+alea2-100,400,200,x+alea1,y+alea2,0,50,100,ennemi.stats.nomAttaque,obj);
+          ajoutObjet(obj);
+          end;
         end;
     13:begin
       if (ennemi.anim.etat='charge') and (ennemi.stats.compteurAction mod 30=0) then 
@@ -1077,8 +1085,10 @@ begin
     ennemi.image.rect.y:=-50;
   if (ennemi.anim.etat='apparition') and (ennemi.anim.objectName='Béhémoth') and (ennemi.stats.compteurAction=0) then
     begin
-	    InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',0,0,windowWidth,400,extractionTexte('DIALOGUE_BOSS_1'),100);
-      ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS_2'));
+	    InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS4_1'),100);
+      ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_2'));
+      ajoutDialogue('Sprites/Menu/portraitB.bmp',extractionTexte('DIALOGUE_BOSS4_3'));
+      ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_4'));
       sceneActive:='Cutscene';
       jouersonenn('dragon');
       ennemi.stats.compteurAction:=1;
@@ -1171,7 +1181,7 @@ begin
           jouerSonEnn('dragon2');
           statsJoueur.bestiaire[ennemi.stats.numero]:=True;
           initAnimation(ennemi.anim,ennemi.anim.objectName,'mortRep',ennemi.stats.nbframes3,True);
-          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',0,-70,windowWidth,400,extractionTexte('DIALOGUE_BOSS_3'),100);
+          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',0,-70,windowWidth,300,extractionTexte('DIALOGUE_BOSS4_0'),100);
           sceneActive:='Behemoth_Mort';
           end;
     end
@@ -1215,8 +1225,9 @@ initStatEnnemi(30,'gardien',16,500,2,1,0,1,300,300,8,16,0,0,23,250,120,25,120,'r
 initStatEnnemi(31,'Geist',17,200,10,0,-10,4,300,300,21,24,3,7,9,80,80,110,160,'rayonAL');
 initStatEnnemi(32,'geolier',18,300,10,0,-10,2,500,400,4,12,20,4,6,100,200,200,200,'arcane');
 initStatEnnemi(33,'geolier2',19,300,10,0,-10,1,500,400,32,18,10,10,14,200,200,150,200,'chaine');
-initStatEnnemi(34,'mage_noir',2,50,0,0,0,0,126,120,10,8,9,7,9,80,100,30,20,'flamme')
-
+initStatEnnemi(34,'mage_noir',2,50,0,0,0,0,126,120,10,8,9,7,9,80,100,30,20,'flamme');
+initStatEnnemi(35,'invocateur',12,50,0,0,0,0,120,132,12,8,3,0,5,80,100,30,20,'rayon');
+initStatEnnemi(36,'diablotin',4,10,1,0,0,3,80,80,4,6,4,5,4,50,50,15,0,'eclairR');
 
 
 end.

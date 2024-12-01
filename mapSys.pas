@@ -107,7 +107,7 @@ begin
         if (alea=20) or (alea=21) then
             ennemis[j]:=templatesEnnemis[32]
         else
-            ennemis[j]:=templatesEnnemis[alea];
+            ennemis[j]:=templatesEnnemis[35];
         end;
 
 end;
