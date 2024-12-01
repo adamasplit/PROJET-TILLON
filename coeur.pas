@@ -158,6 +158,7 @@ var modeDebug:Boolean;
 PDeck:TDeck; //deck pointé par les stats du joueur
 
 Title : TText;
+TutorialTexts : Array [1..10] of TText;
 // Boutons
 	button_help : TButtonGroup;
 	button_home : TButtonGroup;

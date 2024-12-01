@@ -108,8 +108,11 @@ begin
             ennemis[j]:=templatesEnnemis[32]
         else
             ennemis[j]:=templatesEnnemis[alea];
+        ennemis[j].stats.vie := ennemis[j].stats.vie + (statsJoueur.avancement * 2);
+        ennemis[j].stats.force := ennemis[j].stats.force + (statsJoueur.avancement div 2);
+        ennemis[j].stats.defense := ennemis[j].stats.defense + (statsJoueur.avancement div 3);
+        ennemis[j].stats.vitesse := ennemis[j].stats.vitesse + (statsJoueur.avancement div 5);
         end;
-        ennemis[j].stats.vie := ennemis[j].stats.vie + statsJoueur.avancement*2;
 
 end;
 

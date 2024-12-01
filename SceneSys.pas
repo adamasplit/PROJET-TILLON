@@ -22,6 +22,8 @@ procedure StartGame;
 
 implementation
 
+var UpdateTimeTuto : UInt32; indiceTuto:Integer;
+
 procedure UpdateAnimations();
 var i:Integer;
 begin
@@ -70,8 +72,7 @@ end;
 // Updates des Scenes
 
 procedure ActualiserJeu(boss:Boolean);
-var faucheuse : TObjet;
-var i:Integer;
+var faucheuse : TObjet;i:Integer;
 	begin
 		randomize();
 		scenePrec:='Jeu';
@@ -118,6 +119,17 @@ var i:Integer;
 		if vagueFinie then ajoutVague;
 		if combatFini then 
 			victoire(statsJoueur,boss);
+		if statsJoueur.avancement = 2 then
+			begin
+
+			if (sdl_getTicks-UpdateTimeTuto>3500) then
+				begin
+				UpdateTimeTuto:=sdl_getTicks;
+				indiceTuto:=indiceTuto+1;
+				if indiceTuto>4 then indiceTuto:=1;
+				end;
+			RenderText(TutorialTexts[indiceTuto]);
+			end;
 	end;
 
 procedure ActualiserMenuEnJeu;
@@ -540,6 +552,7 @@ begin
 	initUICombat;
 	initDecor;
 	InitDialogues;
+	InitTutorial;
 	setlength(LObjets,1);
 	writeln('essai d''actualisation...');
 	DeclencherFondu(False, 5000);
