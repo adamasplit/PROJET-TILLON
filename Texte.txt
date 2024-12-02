@@ -148,6 +148,12 @@
 <INTRO_EVENT1_5>Vous décidez cependant d'observer ses actions, plutôt que de l'attaquer tout de suite. Après tout, qui sait?;
 <INTRO_EVENT2_1>Dans des zones distordues par l'utilisation abusive de sorts...;
 <INTRO_EVENT2_2>Une créature à tête d'oiseau vous observe brièvement puis vous adresse la parole, manifestement intriguée par vos pouvoirs.;
+<INTRO_EVENT3_1>Vous entrez dans une salle qui semble vide . . .;
+<INTRO_EVENT3_2>Aucun monstre, aucun bruit, vous allez enfin pouvoir vous reposer un peu...;
+<INTRO_EVENT3_3>Un bruit assourdissant vous réveille ..!;
+<INTRO_EVENT3_4>Des monstres approchent !;
+<INTRO_EVENT3_5>Vous vous réveillez..;
+<INTRO_EVENT3_6>La salle est toujours aussi vide. Vous reprenez votre aventure !;
 <DIALOGUE_EVENT2_0>Ah, euh...bonjour. Hum...;
 <DIALOGUE_EVENT2_1>Qu'est-ce que vous voulez?;
 <DIALOGUE_EVENT2_2>Je... Cette carte que vous portez, je peux la voir?;

@@ -128,7 +128,7 @@ var faucheuse : TObjet;i:Integer;
 				indiceTuto:=indiceTuto+1;
 				if indiceTuto>4 then indiceTuto:=1;
 				end;
-			RenderText(TutorialTexts[indiceTuto]);
+			RenderText(TexteTutos[indiceTuto]);
 			end;
 	end;
 
@@ -315,6 +315,7 @@ begin
 		begin
 		actualiserSalleLeo;
 		end;
+		'Hreposrisque_Menu' : actualiserReposRisque;
 		'NouvellePartieIntro': NouvellePartieIntro;
 		'victoire':
 			begin
@@ -445,6 +446,11 @@ begin
                     HandleButtonClick(boutons[i].button, EventSystem^.motion.x, EventSystem^.motion.y);
 					end;
 				'Oph_Menu':for i:=2 to 3 do
+					begin
+					OnMouseClick(boutons[i], EventSystem^.motion.x, EventSystem^.motion.y);
+                    HandleButtonClick(boutons[i].button, EventSystem^.motion.x, EventSystem^.motion.y);
+					end;
+				'Hreposrisque_Menu':for i:=1 to 2 do
 					begin
 					OnMouseClick(boutons[i], EventSystem^.motion.x, EventSystem^.motion.y);
                     HandleButtonClick(boutons[i].button, EventSystem^.motion.x, EventSystem^.motion.y);

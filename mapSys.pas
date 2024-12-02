@@ -34,6 +34,9 @@ procedure actualiserMap();
 procedure actualiserMarchand();
 procedure actualiserEchange();
 procedure actualiserSalleLeo;
+procedure LancementSalleHasardReposRisque;
+procedure actualiserReposRisque;
+procedure ReposRisque;
 procedure choisirEnnemis;
 procedure LancementSalleHasard;
 procedure LancementSalleBoss;
@@ -552,6 +555,19 @@ begin
     initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/portrait_Ophiucus4.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT2_0'),10);
 end;
 
+procedure LancementSalleHasardReposRisque;
+begin
+    sceneActive:='Hreposrisque_Menu';
+    sdl_destroytexture(fond.imgtexture);
+    sdl_freeSurface(fond.imgsurface);
+    createRawImage(fond, 0,0, WINDOWWIDTH, windowHeight,'Sprites/Menu/fondMarchand.bmp');
+    numDialogue:=0;
+    InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/button1.bmp','Se reposer',@ReposRisque);
+    InitButtonGroup(boutons[2],  465, 300, 150, 100, 'Sprites/Menu/button1.bmp','Partir',@choixSalle);
+    initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp',nil,0,450,1080,300,extractionTexte('DIALOGUE_EVENT_0'),10);
+end;
+
+
 procedure actualiserSalleLeo;
 begin
     renderRawImage(fond,false);
@@ -567,19 +583,53 @@ begin
     renderButtonGroup(boutons[3]);
 end;
 
+procedure actualiserReposRisque;
+begin
+    renderRawImage(fond,false);
+    if sceneActive='Hreposrisque_Menu' then
+        begin
+        OnMouseHover(boutons[1],getMouseX,getMouseY);
+        renderButtonGroup(boutons[1]);
+        end;
+    OnMouseHover(boutons[2],getMouseX,getMouseY);
+    renderButtonGroup(boutons[2]);
+end;
+procedure ReposRisque;
+begin
+    statsJoueur.avancement := statsJoueur.avancement+1;
+    case random(2)+1 of
+    1 : begin
+        StatsJoueur.vie := StatsJoueur.vie + 15;
+        LancementSalleCombat;
+        SceneActive:='Event';
+        InitDialogueBox(dialogues[1],nil,nil,-50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('INTRO_EVENT3_3'),100);
+        ajoutDialogue(nil,extractionTexte('INTRO_EVENT3_4'));
+        sceneSuiv:='Jeu';
+        end;
+    2 : begin
+        StatsJoueur.vie := StatsJoueur.vie + 50;
+        choixSalle;
+        SceneActive:='Event';
+        InitDialogueBox(dialogues[1],nil,nil,-50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('INTRO_EVENT3_5'),100);
+        ajoutDialogue(nil,extractionTexte('INTRO_EVENT3_6'));
+        SceneSuiv:='map';
+        end;
+    end;
+end;
+
 procedure LancementSalleHasard;
 begin
 writeln('Lancement de salle Hasard');
 statsJoueur.avancement := statsJoueur.avancement+1;
 ClearScreen;
 SDL_RenderClear(sdlRenderer);
-case random(10)+1 of
+case random(2)+1 of
 1:  if trouverCarte(statsJoueur,24) then lancementSalleHasard
     else
     if trouverCarte(statsJoueur,23) then
         begin
         sceneActive:='Event';
-        InitDialogueBox(dialogues[1],nil,nil,-50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('INTRO_EVENT2_1'),100);
+        InitDialogueBox(dialogues[1],nil,nil,-50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('INTRO_EVENT3_1'),100);
         ajoutDialogue(nil,extractionTexte('INTRO_EVENT2_2'));
         sceneSuiv:='Ophiucus';
         end
@@ -591,7 +641,13 @@ case random(10)+1 of
         ajoutDialogue(nil,extractionTexte('INTRO_EVENT1_3'));
         ajoutDialogue(nil,extractionTexte('INTRO_EVENT1_4'));
         sceneSuiv:='Leo';
-        end
+        end;
+2: begin
+    sceneActive:='Event';
+    InitDialogueBox(dialogues[1],nil,nil,-50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('INTRO_EVENT3_1'),100);
+    ajoutDialogue(nil,extractionTexte('INTRO_EVENT3_2'));
+    sceneSuiv:='HReposRisque';
+    end;
 else begin
     end;
 end;
@@ -692,6 +748,7 @@ begin
     case scene of
         'Leo':LancementSalleHasardLeo;
         'Ophiucus':lancementSalleHasardOph;
+        'HReposRisque':lancementSalleHasardReposRisque;
         'Intro':
             begin 
             black_color.r := 0; 
@@ -699,6 +756,7 @@ begin
             black_color.b := 0;
             ChoixSalle;
             end;
+        else sceneActive := sceneSuiv;
     end;
 end;
 
