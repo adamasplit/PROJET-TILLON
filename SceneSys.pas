@@ -259,6 +259,12 @@ begin
   end;
 end;
 
+procedure Intro;
+begin
+	initDialogueBox();
+
+end;
+
 procedure GameUpdate;
 var i:Integer;son,boss:Boolean;cardHover:Array [1..3] of Boolean;
 begin
@@ -337,6 +343,8 @@ begin
 			UpdateDialogueBox(dialogues[1])
 			end;
 		'mortJoueur': OnPlayerDeath(son);
+		'feuCamp':actualiserFeuCamp;
+		'defausse':actualiserDefausse;
 		'GameOver': GameOver;
 		'Event':
 		begin
@@ -456,7 +464,12 @@ begin
                     HandleButtonClick(boutons[i].button, EventSystem^.motion.x, EventSystem^.motion.y);
 					end;
 				'Jeu': jouerCarte(LObjets[0].stats,LObjets[0].image.rect.x+(LObjets[0].image.rect.w div 2),LObjets[0].image.rect.y+(LObjets[0].image.rect.h div 2),iCarteChoisie);
-
+				'defausse':begin
+					OnMouseClick(boutons[3], EventSystem^.motion.x, EventSystem^.motion.y);
+					HandleButtonClickCarte(boutons[3], EventSystem^.motion.x, EventSystem^.motion.y,boutons[i].carte,statsJoueur);
+					OnMouseClick(boutons[1], EventSystem^.motion.x, EventSystem^.motion.y);
+                    HandleButtonClick(boutons[1].button, EventSystem^.motion.x, EventSystem^.motion.y);
+					end;
 				'map':begin 
 					//writeln('Mouse button pressed at (', EventSystem^.motion.x, ',', EventSystem^.motion.y, ')');
                     writeln(salles[1].image.button.rect.x);
@@ -478,6 +491,17 @@ begin
 					OnMouseClick(boutons[1], EventSystem^.motion.x, EventSystem^.motion.y);
 						HandleButtonClick(boutons[1].button, EventSystem^.motion.x, EventSystem^.motion.y);
 						end;
+				'feuCamp':
+					begin
+						OnMouseClick(boutons[3], EventSystem^.motion.x, EventSystem^.motion.y);
+						HandleButtonClick(boutons[3].button, EventSystem^.motion.x, EventSystem^.motion.y);
+					for i:=1 to 2 do
+						if not echangeFait then
+						begin
+						OnMouseClick(boutons[i], EventSystem^.motion.x, EventSystem^.motion.y);
+						HandleButtonClick(boutons[i].button, EventSystem^.motion.x, EventSystem^.motion.y);
+						end;
+					end;
 				'marchand':
 					begin
 					if not echangeFait then
@@ -518,6 +542,8 @@ begin
 				end;
 				end;
 			SDL_MOUSEWHEEL:begin
+				if sceneActive='defausse' then
+					scrolldeck(ichoix1,statsJoueur.tailleCollection);
 				if sceneActive='Jeu' then 
 					begin
   					if EventSystem^.wheel.y < 0 then icarteChoisie:=(isuiv(iCarteChoisie))

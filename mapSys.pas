@@ -112,6 +112,7 @@ begin
         else
             ennemis[j]:=templatesEnnemis[alea];
         ennemis[j].stats.vie := ennemis[j].stats.vie + (statsJoueur.avancement * 2);
+        ennemis[j].stats.vieMax := ennemis[j].stats.vieMax + (statsJoueur.avancement * 2);
         ennemis[j].stats.force := ennemis[j].stats.force + (statsJoueur.avancement div 2);
         ennemis[j].stats.defense := ennemis[j].stats.defense + (statsJoueur.avancement div 3);
         ennemis[j].stats.vitesse := ennemis[j].stats.vitesse + (statsJoueur.avancement div 5);
@@ -413,9 +414,8 @@ end;
 procedure actualiserEchange();
 begin
     renderRawImage(fond,false);
-
-
-    highlight(boutons[2],getmousex,getmousey);highlight(boutons[3],getmousex,getmousey);
+    highlight(boutons[2],getmousex,getmousey);
+    highlight(boutons[3],getmousex,getmousey);
     sdl_destroytexture(imgCar1.imgTexture);
     sdl_freeSurface(imgCar1.imgSurface);
     sdl_destroytexture(imgCar2.imgTexture);
@@ -430,7 +430,6 @@ begin
     renderRawImage(imgCar1,False);
     createRawImage(imgCar2,boutons[3].image.rect.x,boutons[3].image.rect.y,boutons[3].image.rect.w,boutons[3].image.rect.h,StringToPChar('Sprites/Cartes/carte'+intToStr(statsJoueur.collection[iChoix2].numero)+'.bmp'));
     renderRawImage(imgCar2,False);
-    
 end;
 
 procedure confirmer();
@@ -460,13 +459,13 @@ begin
     createRawImage(fond, 0,0, WINDOWWIDTH, windowHeight,'Sprites/Menu/fondMarchand.bmp');
     if statsJoueur.tailleCollection<4 then
         echangeFait:=True;
-    if entree then
+    if not entree then
         begin
         statsJoueur.avancement := statsJoueur.avancement+1;
-        entree:=False;
+        entree:=True;
         end;
     if not echangeFait then
-        InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/button1.bmp','Marchandage',@Echange);
+    InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/button1.bmp','Marchandage',@Echange);
     InitButtonGroup(boutons[2],  440, 200, 200, 100, 'Sprites/Menu/button1.bmp','Discussion',@LancementSalleMarchand);
     InitButtonGroup(boutons[3],  465, 300, 150, 100, 'Sprites/Menu/button1.bmp','Partir',@choixSalle);
     initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp',nil,0,450,1080,300,extractionTexte('DIALOGUE_MARCHAND_'+intToStr(random(9)+1)),10);
@@ -488,6 +487,79 @@ begin
     renderButtonGroup(boutons[2]);
     OnMouseHover(boutons[3],getMouseX,getMouseY);
     renderButtonGroup(boutons[3]);
+end;
+
+procedure soinFeuCamp();
+begin
+    subirDegats(statsJoueur, -40, windowWidth div 2, windowHeight div 2);
+    echangeFait:=True;
+end;
+
+
+
+procedure actualiserFeuCamp;
+begin
+    renderRawImage(fond,false);
+    if not echangeFait then 
+        begin
+        OnMouseHover(boutons[1],getMouseX,getMouseY);
+        renderButtonGroup(boutons[1]);
+        OnMouseHover(boutons[2],getMouseX,getMouseY);
+        renderButtonGroup(boutons[2]);
+        //HandleButtonClick(boutons[1].button,getmousex,getmousey);
+        end;
+    UpdateDialogueBox(dialogues[2]);
+    OnMouseHover(boutons[3],getMouseX,getMouseY);
+    renderButtonGroup(boutons[3]);
+end;
+
+procedure actualiserDefausse;
+begin
+    renderRawImage(fond,false);
+    highlight(boutons[2],getmousex,getmousey);
+    //writeln(ichoix1);
+    renderButtonGroup(boutons[1]);
+    renderButtonGroup(boutons[2]);
+    renderButtonGroup(boutons[3]);
+    createRawImage(imgCar1,boutons[2].image.rect.x,boutons[2].image.rect.y,boutons[2].image.rect.w,boutons[2].image.rect.h,StringToPChar('Sprites/Cartes/carte'+intToStr(statsJoueur.collection[iChoix1].numero)+'.bmp'));
+    renderRawImage(imgCar1,False);
+    sdl_destroytexture(imgCar1.imgTexture);
+    sdl_freeSurface(imgCar1.imgSurface);
+end;
+
+procedure defaussecarte;
+begin
+    sceneActive:='defausse';
+    ClearScreen;
+    iChoix1:=1;
+    SDL_RenderClear(sdlRenderer);
+    InitButtonGroup(boutons[1],  415, 50, 250, 100, 'Sprites/Menu/button1.bmp','Annuler',@lancementSalleCamp);
+    InitButtonGroup(boutons[2],  540-125, 250, 250, 250, 'Sprites/Menu/button1.bmp','X',btnProc);
+    InitButtonGroup(boutons[3],  415, 580, 250, 100, 'Sprites/Menu/button1.bmp','brulerCarte',btnProc);
+    boutons[3].parametresSpeciaux:=1;boutons[3].procCarte:=@brulerCarte;
+end;
+
+
+procedure LancementSalleCamp;
+begin
+    sceneActive:='feuCamp';
+    createRawImage(fond, 0,0, WINDOWWIDTH, windowHeight,'Sprites/Menu/fondMarchand.bmp');
+    if not(entree) then  
+        begin
+        statsJoueur.avancement:=statsJoueur.avancement+1;
+        entree:=true;
+        end;
+    InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/button1.bmp','Bruler carte',@defaussecarte);
+    InitButtonGroup(boutons[2],  440, 200, 200, 100, 'Sprites/Menu/button1.bmp','Repos',@soinFeuCamp);
+    InitButtonGroup(boutons[3],  465, 300, 150, 100, 'Sprites/Menu/button1.bmp','Partir',@choixSalle);
+    initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,1800,300,extractionTexte('FEU_DE_CAMP_'+intToSTR(random(3)+1)),10);
+end;
+
+procedure brulerCarte(carte:TCarte ; var stats : Tstats);
+begin
+    supprimerCarte(stats,carte.numero);
+    echangeFait:=True;
+    lancementSalleCamp;
 end;
 
 procedure rerollDialogueLeo;
@@ -653,17 +725,6 @@ else begin
 end;
 end;
 
-
-procedure LancementSalleCamp;
-begin
-writeln('Lancement de salle Camp');
-statsJoueur.avancement := statsJoueur.avancement+1;
-ClearScreen;
-SDL_RenderClear(sdlRenderer);
-SceneActive := 'Jeu';
-choisirEnnemis;
-end;
-
 procedure affichageSalle(var salle:TSalle;x,y:integer);
 var dir:PCHar;proc:ButtonProcedure;
 begin
@@ -712,7 +773,7 @@ procedure choixSalle();
     
 begin
     sauvegarder(statsJoueur);
-    entree:=true;
+    entree:=false;
     combatFini:=False;
     echangeFait:=False;
     sdl_renderclear(sdlrenderer);
@@ -759,6 +820,14 @@ begin
         else sceneActive := sceneSuiv;
     end;
 end;
+    
+
+    
+
+
+
+
+
 
 begin
 statsJoueur.avancement:=1;
