@@ -179,6 +179,16 @@
 <DIALOGUE_EVENT_BOSS_7>Voilà, ma propre carte!;
 <DIALOGUE_EVENT_BOSS_8>Une carte? Comment se fait-il que je ne la connaisse pas?;
 
+<FEU_DE_CAMP_1>Enfin un feu de camp, je vais pouvoir me reposer.;
+<FEU_DE_CAMP_2>Un peu de chaleur, ce batiment est froid à mourir...;
+<FEU_DE_CAMP_3>Enfin un peu de lumière après tant d'ombre.;
+
+<MARCHAND_ACCUEIL_1>Bienvenue chez Wizgamoth !;
+<MARCHAND_ACCUEIL_2>De retour ? Mes produits doivent vous plaire !;
+<MARCHAND_ACCUEIL_3>Approchez jeune aventurière !;
+<MARCHAND_ACCUEIL_4>Il est frai mon étalage, il est frai !;
+<MARCHAND_DISCUSSION_1>Au fait saviez vous 
+
 <INTRO_1>Dans les temps immémoriaux, l'univers n'était que chaos et désolation.;
 <INTRO_2>Aucune matière, aucun concept, aucune vie...;
 <INTRO_3>Pourtant, il ne fallut que d'un instant pour voir naître de ces abîmes deux familles de créatures : les dragons et les dieux.;
