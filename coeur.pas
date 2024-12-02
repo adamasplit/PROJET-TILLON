@@ -167,7 +167,7 @@ TutorialTexts : Array [1..10] of TText;
   boutons:array[1..9] of TButtonGroup;
 
   var fond:TImage;
-	dialogues : Array [1..3] of TDialogueBox;
+	dialogues : Array [1..4] of TDialogueBox;
 
 
 

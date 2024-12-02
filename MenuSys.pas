@@ -171,19 +171,21 @@ begin
 end;
 
 procedure NouvellePartieIntro;
+var i:Integer;
 begin
 	indiceMusiqueJouee:=14;
 	ClearScreen;
 	SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
-	black_color.r := 255; black_color.g := 255; black_color.b := 255;
+	//black_color.r := 255; black_color.g := 255; black_color.b := 255;
 	
-	InitDialogueBox(dialogues[1],nil,nil,0,windowHeight div 3 - 100,windowWidth,400,extractionTexte('TXT_INTRO1'),10);
+	InitDialogueBox(dialogues[1],'Sprites/Menu/button1.bmp',nil,0,windowHeight div 3 + 100,windowWidth,300,extractionTexte('PRISON_CELLULE_0'),10);
 	sceneActive:='Event';
+	for i:=1 to 19 do
+		case i of
+		5,7,9,11,14:ajoutDialogue('Sprites/Menu/portraitGarde.bmp',extractionTexte('PRISON_CELLULE_'+intToStr(i)))
+		else ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('PRISON_CELLULE_'+intToStr(i)));
+		end;
 	sceneSuiv:='Intro';
-	ajoutDialogue(nil,extractionTexte('TXT_INTRO2'));
-	ajoutDialogue(nil,extractionTexte('TXT_INTRO3'));
-	ajoutDialogue(nil,extractionTexte('TXT_INTRO4'));
-	ajoutDialogue(nil,extractionTexte('TXT_INTRO5'));
 	initjoueur(false);
 end;
 
@@ -287,13 +289,13 @@ begin
 	if iDeck=statsJoueur.tailleCollection+1 then
 		begin
 		createRawImage(carteDeck,200,200,300,300,StringToPChar('Sprites/Reliques/reliques'+intToStr(statsJoueur.relique)+'.bmp'));
-		initDialogueBox(dialogues[1],nil,nil,460,120,380,600,extractionTexte('DESC_REL_'+intToStr(statsJoueur.relique)),10,Fantasy20,25);
+		initDialogueBox(dialogues[4],nil,nil,460,120,380,600,extractionTexte('DESC_REL_'+intToStr(statsJoueur.relique)),10,Fantasy20,25);
 		initDialogueBox(dialogues[3],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_REL_'+intToStr(statsJoueur.relique)),0);
 		end
 	else
 		begin
 		createRawImage(carteDeck,200,200,300,300,statsJoueur.collection[iDeck].dir);
-		initDialogueBox(dialogues[1],nil,nil,460,120,380,600,extractionTexte('DESC_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),0,Fantasy20,25);
+		initDialogueBox(dialogues[4],nil,nil,460,120,380,600,extractionTexte('DESC_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),0,Fantasy20,25);
 		initDialogueBox(dialogues[3],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),0);
 		end;
 end;
@@ -320,7 +322,7 @@ begin
 		end;
 	
 	renderRawImage(carteDeck,False);
-	UpdateDialogueBox(dialogues[1]);
+	UpdateDialogueBox(dialogues[4]);
 	UpdateDialogueBox(dialogues[3]);
 end;
 
@@ -329,7 +331,7 @@ end;
 procedure reactualiserBestiaire();
 begin
 	createRawImage(ennAff,200,200,300,300,StringToPChar('Sprites/Bestiaire/illustrations_bestiaire_'+intToStr(ienn)+'.bmp'));
-	initDialogueBox(dialogues[1],nil,nil,460,120,380,600,extractionTexte('DESC_ENN_'+intToStr(ienn)),0,Fantasy20,25);
+	initDialogueBox(dialogues[4],nil,nil,460,120,380,600,extractionTexte('DESC_ENN_'+intToStr(ienn)),0,Fantasy20,25);
 	initDialogueBox(dialogues[3],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_ENN_'+intToStr(ienn)),0);
 end;
 procedure trouverBestiaire(var i:Integer;avance:Boolean);
@@ -373,7 +375,7 @@ end;
 procedure actualiserBestiaire();
 
 begin
-	UpdateDialogueBox(dialogues[1]);
+	UpdateDialogueBox(dialogues[4]);
 	UpdateDialogueBox(dialogues[3]);
 	renderRawImage(ennAff,False);
 end;

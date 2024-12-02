@@ -196,7 +196,8 @@
 <INTRO_13>L'humanité, une fois libérée, fut enfin maîtresse de la vie, de la magie et de son histoire.;
 <INTRO_14>L'an I avait sonné.;
 
-<PRISON_CELLULE_1>AN |VI • M| DCCIX , geôles du ministère de la magie.;
+<PRISON_CELLULE_0>AN |VI • M| DCCIX , geôles du ministère de la magie.;
+<PRISON_CELLULE_1>*Soupir*;
 <PRISON_CELLULE_2>Quelle idée d'avoir diviné cela. On m'avait pourant mise en garde à l'école de magie de ce genre de choses.;
 <PRISON_CELLULE_3>Me voilà à croupir dans cette cellule pour le prochain millénaire...;
 <PRISON_CELLULE_4>Enfin surtout jusqu'à la fin de ma vie. Au moins je m'ennuierai moins longtemps.;
@@ -205,14 +206,14 @@
 <PRISON_CELLULE_7>LA FERME ! Si ça ne tenait qu'à moi, des terroristes de ton genre finiraient exécutés en place publique.;
 <PRISON_CELLULE_8>Hmph. C'est bien plus d'honneur que je n'en mérite.;
 <PRISON_CELLULE_9>Justement, à cause de cela tu bloques des places dans la liste.;
-<PRISON_CELLULE_9>Ne t'en fais pas. Je n'ai pas décidé de prolonger ma vie comme vous. Ma place sera libérée d'ici 60 ans.;
-<PRISON_CELLULE_10>Tiens donc et pourquoi cela ?;
-<PRISON_CELLULE_11>Car la vie c'est avant tout une étape d'un cycle qui se renouvelle. La mort, comme la naissance, fait partie de la vie.;
-<PRISON_CELLULE_12>C'est l'ordre naturel des choses.;
-<PRISON_CELLULE_13>Et bien dans ce cas profite bien de ta "vie" est encore plus de ta mort.
-<PRISON_CELLULE_14>À vous de même...;
-<PRISON_CELLULE_15>Hein ? Le garde viens de faire tomber quelque-chose.;
-<PRISON_CELLULE_16>Fantastique, des cartes d'atouts du tarots. J'ai de la chance que ce jeu soit si populaire.;
-<PRISON_CELLULE_17>Bon c'est pas un jeu de cartes enchanté mais je devrais pouvoir m'en servir pour sortir de là.
-<PRISON_CELLULE_18>Quels idiots ! Il ne savent pas la puissance que contiennent réellement ces cartes. 
+<PRISON_CELLULE_10>Ne t'en fais pas. Je n'ai pas décidé de prolonger ma vie comme vous. Ma place sera libérée d'ici 60 ans.;
+<PRISON_CELLULE_11>Tiens donc et pourquoi cela ?;
+<PRISON_CELLULE_12>La vie est avant tout une étape d'un cycle qui se renouvelle. La mort, comme la naissance, fait partie de la vie.;
+<PRISON_CELLULE_13>C'est l'ordre naturel des choses.;
+<PRISON_CELLULE_14>Et bien dans ce cas profite bien de ta "vie"... et encore plus de ta mort.;
+<PRISON_CELLULE_15>À vous de même...;
+<PRISON_CELLULE_16>Hein ? Le garde vient de faire tomber quelque-chose.;
+<PRISON_CELLULE_17>Fantastique, des cartes d'atouts du tarot. J'ai de la chance que ce jeu soit si populaire.;
+<PRISON_CELLULE_18>Bon... c'est pas un jeu de cartes enchanté, mais je devrais pouvoir m'en servir pour sortir de là.;
+<PRISON_CELLULE_19>Quels idiots ! Il ne savent pas la puissance que contient réellement ces cartes.;
 
