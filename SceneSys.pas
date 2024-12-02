@@ -261,7 +261,7 @@ end;
 
 procedure Intro;
 begin
-	initDialogueBox();
+	//initDialogueBox();
 
 end;
 
