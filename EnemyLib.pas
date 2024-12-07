@@ -1267,10 +1267,10 @@ begin
           ajoutDialogue('Sprites/Menu/portrait_Leo7.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_3'));
           ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_4'));
           sceneActive:='Cutscene';
-          transformation(ennemi,21);
+          transformation(ennemi,24);
           end
         else if ennemi.anim.objectName='geolier' then begin
-          transformation(ennemi,33)
+          transformation(ennemi,32)
           end
         else if (ennemi.anim.objectName='Leo_Transe') and (ennemi.stats.compteurAction=-1) then begin
           sceneActive:='Cutscene';
@@ -1297,7 +1297,7 @@ begin
       else if ennemi.stats.vie<=0 then
       if (ennemi.anim.objectName='Spectre') then
         begin
-        transformation(ennemi,16)
+        transformation(ennemi,34)
         end
       else
       begin

@@ -147,7 +147,7 @@ begin
             //end;
         if (SDL_GetTicks()-UpdateTimeMusique)>(OST[indice].duree)*1000 then //vérifier si le morceau est fini ou non
             begin
-            if (indice>15) and (indice<30) then
+            if (indice>15) and (indice<=31) then
                 indice:=indice+14
             else
                 mix_playMusic(musiquejouee,0);
