@@ -24,7 +24,7 @@ procedure ajoutVague();
 
 implementation
 
-procedure transformation(var ennemi:TObjet;num:Integer);
+procedure transformation(var ennemi:TObjet;num:Integer); //remplace un ennemi par un autre tout en conservant sa position
 var x,y:Integer;
 begin
   x:=ennemi.image.rect.x;
@@ -36,6 +36,7 @@ begin
   ennemi.image.rect.y:=y;
   jouerSonEnn(ennemi.anim.objectName+'_apparition');
 end;
+
 //supprime un ennemi de la liste
 procedure supprimeEnn(var enn:TObjet;j:integer);
 var taille,i:Integer;
@@ -201,21 +202,20 @@ begin
   ennemi.stats.xcible:=xdest;ennemi.stats.ycible:=ydest;
 end;
 
-procedure FlyUpdate(var ennemi:TObjet;vit:Integer);
+procedure FlyUpdate(var ennemi:TObjet;lenteur:Integer);
 var distx,disty:Integer;
 begin
   //l'ennemi se déplace vers sa cible, à une vitesse proportionnelle à la distance
   distx:=-(ennemi.image.rect.x-ennemi.stats.xcible);disty:=-(ennemi.image.rect.y-ennemi.stats.ycible);
-  ennemi.image.rect.x:=ennemi.image.rect.x + (distx div vit);
-  ennemi.image.rect.y:=ennemi.image.rect.y + (disty div vit);
+  ennemi.image.rect.x:=ennemi.image.rect.x + (distx div lenteur);
+  ennemi.image.rect.y:=ennemi.image.rect.y + (disty div lenteur);
   ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
 end;
 
-procedure AIDodge(var ennemi:TObjet;target:TObjet);
+procedure AIDodge(var ennemi:TObjet;target:TObjet);   //l'ennemi se décale vers un mur, selon sa position initiale, pour esquiver
 var distx:Integer;
 begin
   jouerSonEnn(ennemi.anim.objectName,random(3)+1);
-  //l'ennemi se décale vers un mur, selon sa position initiale, pour esquiver
   distx:=(ennemi.image.rect.x-target.image.rect.x);
   InitAnimation(ennemi.anim,ennemi.anim.ObjectName,'dodge', ennemi.stats.nbframes2,False);
   if distx>=0 then
@@ -241,7 +241,7 @@ procedure CrossMoveInit(var ennemi:TObjet;x,y:Integer);
 var distx,disty:Integer;
 begin
 
-  //choisit un endroit où l'ennemi peut se déplacer en ligne droite (tour aux échecs)
+  //choisit un endroit où l'ennemi peut se déplacer en ligne droite (comme la tour aux échecs)
   distx:=-(ennemi.image.rect.x-x);disty:=-(ennemi.image.rect.y-y);
   if sqrt(distx**2+disty**2)>100 then
   if abs(distx)>abs(disty) then
@@ -1104,6 +1104,7 @@ begin
           else
             begin
             initAnimation(ennemi.anim,ennemi.anim.objectName,'dash',ennemi.stats.nbFrames3,False);
+            ennemi.stats.degatsContact:=10;
             ennemi.stats.xcible:=trouverCentreX(joueur);
             ennemi.stats.ycible:=trouverCentreY(joueur);
             end;
@@ -1114,7 +1115,10 @@ begin
       if (ennemi.anim.etat='strike') and (ennemi.anim.currentFrame>=10) then
         ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
       if animFinie(ennemi.anim) and ((ennemi.anim.etat='strike') or (ennemi.anim.etat='dash')) then
+        begin
         initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
+        ennemi.stats.degatsContact:=0;
+        end;
       end;
     19:begin //Geôlier (phase 2)
       if (ennemi.anim.etat='chase') then

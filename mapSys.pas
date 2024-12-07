@@ -88,7 +88,7 @@ begin
 end;
 
 function choisirennemi(avancement:Integer):integer; //choisit un ennemi adapté à la salle actuelle
-var alea:Integer;av2:Integer;
+var alea:Integer;
 begin
     alea:=random(10)+1;
     if (avancement<=MAXSALLES div 4) then
@@ -138,11 +138,10 @@ begin
     vagueFinie:=True;
     combatFini:=False;
     randomize;
-    initDecor(avancement div 10);
+    initDecor((avancement-1) div 10);
     indiceMusiqueJouee:=(avancement div 3)+2;
-    nb:=(avancement mod (maxSalles div 4));
+    nb:=(avancement mod (maxSalles div 4)) + (avancement div (maxSalles div 4));
     writeln('choix des ennemis');
-    //###partie à modifier : choix des ennemis et de leur nombre
     if not boss then begin
         setlength(ennemis,nb+1);
         for j:=1 to nb do
@@ -159,7 +158,7 @@ begin
 
 end;
 
-procedure LancementSalleCombat();
+procedure LancementSalleCombat(); //déclenche une salle de combat normal
 begin
 
 writeln('Lancement de salle Combat');
@@ -169,10 +168,9 @@ ClearScreen;
 SDL_RenderClear(sdlRenderer);
 
 SceneActive := 'Jeu';
-//indiceMusiqueJouee:=random(4)+2;
 end;
 
-procedure LancementVSLeo();
+procedure LancementVSLeo(); //active le combat contre Leo
 begin
     initStatsCombat(statsJoueur,LObjets[0].stats);
     if high(LOBjets)>0 then repeat supprimeObjet(LObjets[1]) until high(LObjets)=0;
@@ -185,10 +183,10 @@ begin
     sceneActive:='Jeu';
 end;
 
-procedure choixBoss(avancement:Integer);
+procedure choixBoss(avancement:Integer); //choisit parmi la liste l'ennemi à mettre dans une salle de boss
 begin
     setlength(LObjets,2);
-    indiceMusiqueJouee:=random(4)+10;
+    indiceMusiqueJouee:=(avancement-1 div (maxSalles div 4))+10;
     if (avancement<=MAXSALLES div 4) then
         LObjets[1]:=templatesEnnemis[31]
     else if (avancement<=MAXSALLES div 2) then
@@ -204,18 +202,14 @@ begin
         end;
 end;
 
-procedure LancementSalleBoss;
-var j : integer;
+procedure LancementSalleBoss; //active une salle où le joueur combattra un unique ennemi plus puissant
 begin
     writeln('Lancement de salle Boss');
     choisirEnnemis(statsJoueur.avancement,true);
-    
-    
     ClearScreen;
     SDL_RenderClear(sdlRenderer);
     SceneActive := 'Jeu';
     vagueFinie:=False;
-    
     choixBoss(statsJoueur.avancement);
     writeln('ennemis choisis (boss)');
     statsJoueur.avancement := statsJoueur.avancement+1;

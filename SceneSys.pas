@@ -666,7 +666,7 @@ begin
 	InitTutorial;
 	setlength(LObjets,1);
 	writeln('essai d''actualisation...');
-	DeclencherFondu(False, 5000);
+	DeclencherFondu(False, 3000);
     GameUpdate;
 end;
 

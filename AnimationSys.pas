@@ -98,8 +98,12 @@ begin
       // Mettre à jour le répertoire de l'image pour charger la nouvelle frame
       if image.directory<>nil then 
       begin
-        //sdl_freeSurface(image.imgSurface);
         SDL_DestroyTexture(image.imgtexture);
+        {if image.imgSurface<>nil then 
+          begin 
+          writeln('destruction surface');
+          sdl_freeSurface(image.imgSurface); 
+          end}
       end;
       image.directory := GetFramePath(anim);
       
