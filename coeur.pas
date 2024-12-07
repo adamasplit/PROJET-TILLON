@@ -396,7 +396,7 @@ begin
     24:cartes[i].dir:='Sprites/Cartes/carte24.bmp';
     end;
     case i of
-      7,9,13,15:cartes[i].discard:=True
+      7,9,12,13,15:cartes[i].discard:=True
     else
       cartes[i].discard:=False;
     end;

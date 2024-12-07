@@ -541,7 +541,7 @@ begin
 				'Jeu': jouerCarte(LObjets[0].stats,LObjets[0].image.rect.x+(LObjets[0].image.rect.w div 2),LObjets[0].image.rect.y+(LObjets[0].image.rect.h div 2),iCarteChoisie);
 				'defausse':begin
 					OnMouseClick(boutons[3], EventSystem^.motion.x, EventSystem^.motion.y);
-					HandleButtonClickCarte(boutons[3], EventSystem^.motion.x, EventSystem^.motion.y,boutons[i].carte,statsJoueur);
+					HandleButtonClickCarte(boutons[3], EventSystem^.motion.x, EventSystem^.motion.y,statsjoueur.collection[ichoix1],statsJoueur);
 					OnMouseClick(boutons[1], EventSystem^.motion.x, EventSystem^.motion.y);
                     HandleButtonClick(boutons[1].button, EventSystem^.motion.x, EventSystem^.motion.y);
 					end;

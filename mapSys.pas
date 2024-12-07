@@ -139,7 +139,7 @@ begin
     randomize;
     initDecor((avancement-1) div 10);
     indiceMusiqueJouee:=(avancement div 3)+2;
-    nb:=(avancement mod (maxSalles div 4)) + (avancement div (maxSalles div 4));
+    nb:=(avancement mod (maxSalles div 4));
     writeln('choix des ennemis');
     if not boss then begin
         setlength(ennemis,nb+1);
@@ -185,7 +185,7 @@ end;
 procedure choixBoss(avancement:Integer); //choisit parmi la liste l'ennemi à mettre dans une salle de boss
 begin
     setlength(LObjets,2);
-    indiceMusiqueJouee:=(avancement-1 div (maxSalles div 4))+10;
+    indiceMusiqueJouee:=((avancement-1) div (maxSalles div 4))+10;
     if (avancement<=MAXSALLES div 4) then
         LObjets[1]:=templatesEnnemis[31]
     else if (avancement<=MAXSALLES div 2) then

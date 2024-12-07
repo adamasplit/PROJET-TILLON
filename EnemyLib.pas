@@ -118,7 +118,7 @@ begin
     CreateRawImage(ennemi.image,(random(20)+5)*20,0,w,h,getFramePath(ennemi.anim));
 
     case num of
-      16,20,21,30,31,32,33,38:ennemi.stats.boss:=True
+      30..38:ennemi.stats.boss:=True
     else ennemi.stats.boss:=False;
     end;
 
@@ -435,7 +435,7 @@ begin
     10:begin
         if (ennemi.anim.etat='tir') and (ennemi.anim.currentFrame=20) and (ennemi.stats.compteurAction<=601) then
         begin
-        CreerRayon(typeobjet(1),12,ennemi.stats.force,1,false,ennemi.image.rect.x+250,ennemi.image.rect.y+350,1200,300,ennemi.image.rect.x-60,ennemi.image.rect.y+350,-(y-(ennemi.image.rect.y+350))/280,100,50,ennemi.stats.nomAttaque,obj);
+        CreerRayon(typeobjet(1),80,ennemi.stats.force,1,false,ennemi.image.rect.x+250,ennemi.image.rect.y+350,1200,300,ennemi.image.rect.x-60,ennemi.image.rect.y+350,-(y-(ennemi.image.rect.y+350))/280,100,50,ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj)
         end;
         if (ennemi.anim.etat='chase') and (ennemi.anim.currentFrame mod 5 =2) and (ennemi.anim.currentFrame<>2) then
@@ -1335,14 +1335,14 @@ begin
 setLength(ennemis,0);
 // Adjusted stats for balanced enemies
 //***le numéro peut être changé selon la convénience, sans répercussions importantes
-initStatEnnemi(1,'slime',8,10,1,0,0,0,90,90,6,8,3,4,4,90,45,5,40,'boule');
-initStatEnnemi(2,'livre',12,20,1,0,2,1,180,90,7,12,4,0,12,60,90,60,0,'eclair');
-initStatEnnemi(3,'feu_follet',6,20,3,1,1,0,100,100,7,9,0,0,6,70,70,15,15,'flamme');
-initStatEnnemi(4,'grenouille',8,20,1,0,2,0,90,90,7,6,4,4,7,54,90,5,0,'boule');
-initStatEnnemi(5,'chevalier',5,10,10,0,1,3,90,90,5,6,3,10,5,54,90,5,0,'rayonAbysse');
-initStatEnnemi(6,'elementaire_astral',4,20,2,0,1,1,100,100,9,12,5,6,7,80,80,10,10,'etoile');
-initStatEnnemi(7,'elementaire_temps',0,20,2,5,1,1,100,100,18,12,0,0,6,80,80,10,10,'');
-initStatEnnemi(8,'elementaire_spectral',4,20,2,0,0,0,100,100,8,7,13,13,8,80,80,10,10,'rayon_spectral');
+initStatEnnemi(1,'slime',8,30,1,0,0,0,90,90,6,8,3,4,4,90,45,5,40,'boule');
+initStatEnnemi(2,'livre',12,30,1,0,2,1,180,90,7,12,4,0,12,60,90,60,0,'eclair');
+initStatEnnemi(3,'feu_follet',6,30,3,1,1,0,100,100,7,9,0,0,6,70,70,15,15,'flamme');
+initStatEnnemi(4,'grenouille',8,30,1,0,2,0,90,90,7,6,4,4,7,54,90,5,0,'boule');
+initStatEnnemi(5,'chevalier',5,30,10,0,1,3,90,90,5,6,3,10,5,54,90,5,0,'rayonAbysse');
+initStatEnnemi(6,'elementaire_astral',4,30,2,0,1,1,100,100,9,12,5,6,7,80,80,10,10,'etoile');
+initStatEnnemi(7,'elementaire_temps',0,30,2,5,1,1,100,100,18,12,0,0,6,80,80,10,10,'');
+initStatEnnemi(8,'elementaire_spectral',4,30,2,0,0,0,100,100,8,7,13,13,8,80,80,10,10,'rayon_spectral');
 initStatEnnemi(9,'elementaire_lumiere',1,50,2,0,4,3,300,300,12,11,6,0,8,60,60,120,120,'rayon');
 initStatEnnemi(10,'elementaire_ombre',1,50,2,0,4,3,300,300,11,12,9,0,10,60,60,120,120,'rayon_spectral');
 initStatEnnemi(11,'elementaire_tempete',3,50,0,5,0,2,150,150,10,8,4,0,10,100,150,25,0,'');
@@ -1354,9 +1354,9 @@ initStatEnnemi(16,'invocateur',12,50,0,0,0,0,120,132,12,8,3,0,5,80,100,30,20,'ra
 initStatEnnemi(17,'diablotin',4,10,1,0,0,3,80,80,4,6,4,5,4,50,50,15,0,'eclairR');
 initStatEnnemi(18,'Akr',4,150,2,0,-20,1,384,256,14,9,9,8,16,200,96,80,150,'kamui');
 initStatEnnemi(19,'main',3,50,0,5,0,1,150,150,8,16,8,0,15,150,150,0,0,'');
-initStatEnnemi(20,'armure',7,400,0,0,10,0,384,256,7,2,13,9,16,192,192,96,64,'justice');
-initStatEnnemi(21,'undrixel',3,50,5,2,0,1,288,192,4,10,4,0,10,200,128,10,40,'eclairR');
-initStatEnnemi(22,'altegh',1,50,2,0,4,3,192,192,3,6,4,0,14,160,96,16,96,'rayonAL');
+initStatEnnemi(20,'armure',7,400,8,0,10,0,384,256,7,2,13,9,16,192,192,96,64,'justice');
+initStatEnnemi(21,'undrixel',3,50,5,30,0,1,288,192,4,10,4,0,10,200,128,10,40,'eclairR');
+initStatEnnemi(22,'altegh',1,50,2,0,4,2,192,192,3,6,4,0,14,160,96,16,96,'rayonAL');
 InitstatEnnemi(23,'Leo',13,150,8,2,5,0,300,300,14,8,7,10,8,100,150,100,150,'eclairL');
 InitstatEnnemi(24,'Leo_Transe',14,150,20,5,2,1,300,300,13,16,6,22,10,200,250,50,25,'geyser_feu');
 initStatEnnemi(25,'UNKNOWN',4,150,2,0,-20,0,128,128,8,12,8,4,8,64,114,32,14,'Roue');
