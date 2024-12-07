@@ -87,15 +87,17 @@ begin
         end
 end;
 
-function choisirennemi(avancement:Integer):TObjet;
-alea:Integer;
+function choisirennemi(avancement:Integer):integer; //choisit un ennemi adapté à la salle actuelle
+var alea:Integer;av2:Integer;
 begin
     alea:=random(10);
     if (avancement<MAXSALLES div 4) then
         case alea of
+        1..9:choisirennemi:=random(1)
+        end;
 end;
-procedure choisirEnnemis(boss:Boolean);
-var j : integer;
+procedure choisirEnnemis(avancement:Integer;boss:Boolean);
+var j,nb : integer;
 begin
     writeln(high(ennemis),',',high(LObjets));
     if high(ennemis)>1 then
@@ -113,20 +115,21 @@ begin
     vagueFinie:=True;
     combatFini:=False;
     randomize;
-    initDecor(2+statsJoueur.avancement div 10);
+    initDecor(2+avancement div 10);
     indiceMusiqueJouee:=(statsJoueur.avancement div 3)+2;
+    nb:=(avancement mod (maxSalles div 4));
     writeln('choix des ennemis');
     //###partie à modifier : choix des ennemis et de leur nombre
     if not boss then begin
-        setlength(ennemis,statsJoueur.avancement+1);
-        for j:=1 to statsJoueur.avancement do
+        setlength(ennemis,nb+1);
+        for j:=1 to nb do
             begin
-            ennemis[j]:=choisirEnnemi(statsJoueur.avancement);
-            ennemis[j].stats.vie :=     round((0.5+statsJoueur.avancement/MAXSALLES)*ennemis[j].stats.vie    );
-            ennemis[j].stats.vieMax :=  round((0.5+statsJoueur.avancement/MAXSALLES)*ennemis[j].stats.vieMax );
-            ennemis[j].stats.force :=   round((0.5+statsJoueur.avancement/MAXSALLES)*ennemis[j].stats.force  );
-            ennemis[j].stats.defense := round((0.5+statsJoueur.avancement/MAXSALLES)*ennemis[j].stats.defense);
-            ennemis[j].stats.vitesse := round((0.5+statsJoueur.avancement/MAXSALLES)*ennemis[j].stats.vitesse);
+            ennemis[j]:=templatesennemis[choisirEnnemi(avancement)];
+            ennemis[j].stats.vie :=     round((0.5+avancement/MAXSALLES)*ennemis[j].stats.vie    );
+            ennemis[j].stats.vieMax :=  round((0.5+avancement/MAXSALLES)*ennemis[j].stats.vieMax );
+            ennemis[j].stats.force :=   round((0.5+avancement/MAXSALLES)*ennemis[j].stats.force  );
+            ennemis[j].stats.defense := round((0.5+avancement/MAXSALLES)*ennemis[j].stats.defense);
+            ennemis[j].stats.vitesse := round((0.5+avancement/MAXSALLES)*ennemis[j].stats.vitesse);
             end;
     end;
     writeln('ennemis choisis')
@@ -137,7 +140,7 @@ procedure LancementSalleCombat();
 begin
 
 writeln('Lancement de salle Combat');
-choisirEnnemis(false);
+choisirEnnemis(statsJoueur.avancement,false);
 statsJoueur.avancement := statsJoueur.avancement+1;
 ClearScreen;
 SDL_RenderClear(sdlRenderer);
@@ -165,8 +168,9 @@ procedure LancementSalleBoss;
 var j : integer;
 begin
     writeln('Lancement de salle Boss');
+    choisirEnnemis(statsJoueur.avancement,true);
     statsJoueur.avancement := statsJoueur.avancement+1;
-    choisirEnnemis(true);
+    
     ClearScreen;
     SDL_RenderClear(sdlRenderer);
     SceneActive := 'Jeu';
