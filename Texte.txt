@@ -118,7 +118,7 @@
 <DESC_REL_3>Cet étrange cristal semble battre avec le coeur de son porteur. Il lui donne une endurance surnaturelle.;
 <DESC_REL_4>Un tome de magie blanche, qui améliore les pouvoirs de régénération de l'utilisateur.;
 <DESC_REL_5>Une relique venue de la guerre qui a séparé les dieux et les dragons dans une ère révolue. Elle ruisselle d'une magie incommensurable.;
-<DESC_REL_6>Le sceptre d'une mage qui aurait vécu il y a bien longtemps, et affronté les dieux. Elle n'a donc pas réellement servi;
+<DESC_REL_6>Le sceptre d'une mage qui aurait vécu il y a bien longtemps, et affronté les dieux. Il n'a donc pas réellement servi, les dieux n'ayant pas été battus à proprement parler.;
 <DESC_REL_7>Une cape tissée d'un matériau inconnu, qui protège son porteur grâce aux runes qui y sont brodées.;
 <COMM_REL_1>;
 <COMM_REL_2>J'espère bien que si j'ai été jugée méritante, ce n'est pas uniquement parce que j'ai affronté les serviteurs des dieux.;
@@ -137,7 +137,7 @@
 
 <GAMEOVER_1>Quelle terrible prémonition! Il ne tient qu'à moi de faire en sorte qu'elle ne se réalise pas.;
 <GAMEOVER_2>Non... Est-ce vraiment ce à quoi je me destine?;
-<GAMEOVER_3>J'ai déjà lu mon propre destin, ce n'est pas comme ça que les choses se passeront.    Recommençons.;
+<GAMEOVER_3>J'ai déjà lu mon propre destin, ce n'est pas comme ça que les choses se passeront.      Recommençons.;
 <GAMEOVER_4>...;
 <GAMEOVER_5>Qu'est-ce que le destin cherche à me montrer? Que puis-je apprendre de cet échec?;
 
@@ -196,23 +196,23 @@
 <MARCHAND_DISCUSSION_1>Au fait saviez vous 
 
 <INTRO_1>Dans les temps immémoriaux, l'univers n'était que chaos et désolation.;
-<INTRO_2>Aucune matière, aucun concept, aucune vie...;
-<INTRO_3>Pourtant, il ne fallut que d'un instant pour voir naître de ces abîmes deux familles de créatures : les dragons et les dieux.;
-<INTRO_4_1>Les premiers créant le monde et donnant la vie.;
-<INTRO_4_2>Les seconds insufflant l'âme et créant la magie.;
-<INTRO_5>Ensemble, ils travaillèrent à façonner le monde et donnèrent naissance à l'humanité.;
-<INTRO_6>La paix et l'harmonie perdurera pendant cent millénaires...;
+<INTRO_2>Aucune matière, aucun concept, aucune vie... ;
+<INTRO_3>Pourtant, il ne fallut que d'un instant pour voir naître de ces abîmes deux familles de créatures : les dragons et les dieux. ;
+<INTRO_4_1>Les premiers créant le monde et donnant la vie. ;
+<INTRO_4_2>Les seconds insufflant l'âme et créant la magie. ;
+<INTRO_5>Ensemble, ils travaillèrent à façonner le monde et donnèrent naissance à l'humanité. ;
+<INTRO_6>La paix et l'harmonie perdurèrent pendant cent millénaires... ;
 <INTRO_7>Jusqu'au jour où les dragons et les dieux voulurent prendre le contrôle de l'univers.;
 <INTRO_8_1>Les premiers voulant rétablir l'ordre de la matière et faire disparaitre la magie.;
 <INTRO_8_2>Les seconds voulant affranchir les humains de leur enveloppe pour libérer leur esprit.;
 <INTRO_9>Les deux camps se livrèrent alors une guerre dont l'issue déciderait du sort de l'humanité.;
 <INTRO_10>Seulement, les humains décidèrent de prendre en main leur destinée.;
-<INTRO_11>À l'unisson, ils décidèrent de tuer les dieux en les jettant dans les fosses de l'oubli : libérant leur énergie arcanique;
+<INTRO_11>À l'unisson, ils décidèrent de tuer les dieux en les jetant dans les fosses de l'oubli, libérant leur énergie arcanique.;
 <INTRO_12>L'humanité utilisa l'énergie des seconds pour sceller les premiers.;
 <INTRO_13>L'humanité, une fois libérée, fut enfin maîtresse de la vie, de la magie et de son histoire.;
 <INTRO_14>L'an I avait sonné.;
 
-<PRISON_CELLULE_0>AN |VI • M| DCCIX , geôles du ministère de la magie.;
+<PRISON_CELLULE_0>AN |VI * M| DCCIX , geôles du ministère de la magie.;
 <PRISON_CELLULE_1>*Soupir*;
 <PRISON_CELLULE_2>Quelle idée d'avoir diviné cela. On m'avait pourant mise en garde à l'école de magie de ce genre de choses.;
 <PRISON_CELLULE_3>Me voilà à croupir dans cette cellule pour le prochain millénaire...;
@@ -231,5 +231,25 @@
 <PRISON_CELLULE_16>Hein ? Le garde vient de faire tomber quelque-chose.;
 <PRISON_CELLULE_17>Fantastique, des cartes d'atouts du tarot. J'ai de la chance que ce jeu soit si populaire.;
 <PRISON_CELLULE_18>Bon... c'est pas un jeu de cartes enchanté, mais je devrais pouvoir m'en servir pour sortir de là.;
-<PRISON_CELLULE_19>Quels idiots ! Il ne savent pas la puissance que contient réellement ces cartes.;
+<PRISON_CELLULE_19>Quels idiots ! Ils ne savent pas la puissance que contient réellement ces cartes.;
 
+<DIALOGUE_BOSS4_1_1>Nymera Amarisse. Vous êtes en état d'arrestation... Non plus pour incitation au terrorisme, mais pour haute trahison!;
+<DIALOGUE_BOSS4_1_2>Alors c'est vous qui rendez la justice, maintenant? On aura tout vu.;
+<DIALOGUE_BOSS4_1_3>Vous savez, en arrivant ici je n'étais pas certaine de ce que j'avais à faire. Mais il n'y a plus aucun doute possible. Je vais en finir!;
+<DIALOGUE_BOSS4_1_4>Vous n'êtes qu'une enfant... Pensez-vous vraiment pouvoir me tuer?;
+<DIALOGUE_BOSS4_1_5>Ne vous en prenez qu'à vous-même. Les épreuves que vous avez mises dans mon chemin m'ont rendue bien plus forte.;
+<DIALOGUE_BOSS4_2_1>Me voilà maintenant une véritable criminelle...;
+<DIALOGUE_BOSS4_2_2>Je ne chercherai en rien à me dédouaner de mes actions. C'est ce que j'ai choisi.;
+<DIALOGUE_BOSS4_2_3>... Nous n'en avons pas encore fini...;
+<DIALOGUE_BOSS4_2_4>À moi, puissance de l'ancien temps, zénith de la vie! Accorde-moi ta force!;
+<DIALOGUE_BOSS4_2_5>Oh? C'est mauvais signe... Je dois rester sur mes gardes!;
+
+
+<VICTOIRE_1>Comme quoi... Ces cartes ont l'air de bien fonctionner.;
+<VICTOIRE_2>Ouf! On dirait que je m'en sors plutôt pas mal!;
+<VICTOIRE_3>Ce n'est que le début.;
+<VICTOIRE_4>;
+<VICTOIRE_11>Eh bien, si c'est ce que vaut l'école de magie, il vous faut plus d'efforts!;
+<VICTOIRE_12>Bon, au moins je ne ferai pas plus de victimes humaines s'ils s'enfuient comme ça.;
+<VICTOIRE_13>;
+<VICTOIRE_14>;

@@ -55,13 +55,7 @@ end;
 
 
 
-procedure InitDecorMap;
-begin
-    randomize;
-	sdl_freesurface(fond.imgSurface);
-	sdl_destroytexture(fond.imgTexture);
-    CreateRawImage(fond,88,-80,900,900,StringToPChar('Sprites/Game/floor/map_Bg.bmp'));
-end;
+
 
 procedure InitDialogues;
 begin
@@ -76,10 +70,8 @@ var faucheuse : TObjet;i:Integer;
 	begin
 		randomize();
 		scenePrec:='Jeu';
-		//writeln('actualiserJeu, taille de LObjets:',high(lobjets));
 		SDL_PumpEvents;
 		afficherTout;
-		//UpdateDialogueBox(box);
 		MAJCollisions();
 		UpdateAnimations();
 		UpdateAttaques();
@@ -103,8 +95,6 @@ var faucheuse : TObjet;i:Integer;
 					if not (LObjets[i].anim.etat='dodge') then
 						LObjets[i].col.estActif:=True;
 					IAEnnemi(LObjets[i],LObjets[0]);
-
-
 					end;
 			end;
 		if (Lobjets[0].stats.vie <= 0) then 
@@ -116,20 +106,20 @@ var faucheuse : TObjet;i:Integer;
 			InitAnimation(Lobjets[High(LObjets)].anim,'death','walking',10,True);
 			SceneActive := 'mortJoueur';
 		end;
-		if vagueFinie then ajoutVague;
-		if combatFini then 
-			victoire(statsJoueur,boss);
 		if statsJoueur.avancement = 2 then
 			begin
-
 			if (sdl_getTicks-UpdateTimeTuto>3500) then
 				begin
 				UpdateTimeTuto:=sdl_getTicks;
 				indiceTuto:=indiceTuto+1;
 				if indiceTuto>4 then indiceTuto:=1;
 				end;
-			RenderText(TexteTutos[indiceTuto]);
+			//RenderText(TexteTutos[indiceTuto]);
 			end;
+		if vagueFinie then ajoutVague;
+		if combatFini then 
+			victoire(statsJoueur,boss);
+		
 	end;
 
 procedure ActualiserMenuEnJeu;
@@ -259,22 +249,106 @@ begin
   end;
 end;
 
-procedure Intro;
+procedure actualiserIntro(var updateTime:UInt32;var i:Integer);
+var delai,j:Integer;
 begin
-	//initDialogueBox();
-
+	renderRawImage(fond,false);
+	effetDeFondu;
+	case i of
+		3,11,12,13,4,8:delai:=7000;
+		1,2:delai:=3000;
+		else delai:=4000;
+		end;
+	if (i<>8) and (i<>4) then
+		updateDialogueBox(dialogues[1])
+	else
+		begin
+		updateDialogueBox(dialogues[2]);
+		updateDialogueBox(dialogues[3]);
+		end;
+	if (sdl_getTicks-updateTime>delai) then
+		begin
+		DeclencherFondu(True,2000);
+		for j:=1 to 200 do
+			begin
+			sdl_delay(10);
+			autoMusique(indiceMusiqueJouee);
+			renderRawImage(fond,false);
+			if (i<>8) and (i<>4) then
+				updateDialogueBox(dialogues[1]);
+			EffetDeFondu;
+			
+			sdl_renderpresent(sdlrenderer);
+			end;
+		DeclencherFondu(False,2000);
+		i:=i+1;
+		if i=15 then
+			sceneActive:='Menu'
+		else
+			begin
+			case i of
+			4,8:begin
+				supprimeDialogue(2);
+				supprimeDialogue(3);
+				end
+			else supprimeDialogue(1);
+			end;
+			sdl_destroytexture(fond.imgtexture);
+			sdl_freeSurface(fond.imgsurface);
+			createRawImage(fond,fond.rect.x,fond.rect.y,fond.rect.w,fond.rect.h,StringToPChar('Sprites/Intro/illustrations_intro_'+intToSTR(i)+'.bmp'));
+			updateTime:=sdl_getTicks;
+			end;
+		end;
 end;
+
+procedure Intro;
+var updateTime:UInt32;indice:Integer;
+begin
+	sceneActive:='Intro';
+	updateTime:=sdl_getTicks;
+	InitDialogueBox(dialogues[1],nil,nil,0,windowHeight div 3 + 250,windowWidth+200,300,extractionTexte('INTRO_1'),30);
+	InitDialogueBox(dialogues[2],nil,nil,-50,windowHeight div 3 + 250,windowWidth div 3+250,300,'',30);
+	InitDialogueBox(dialogues[3],nil,nil,windowWidth div 2-100,windowHeight div 3 + 250,windowWidth div 3+250,300,'',30);
+	for indice:=2 to 14 do
+		if (indice<>4) and (indice<>8) then ajoutDialogue(nil,extractionTexte('INTRO_'+intToSTR(indice)))
+			else 
+				begin
+				ajoutDialogue(nil,extractionTexte('INTRO_'+intToSTR(indice)+'_1'));
+				ajoutDialogue(nil,extractionTexte('INTRO_'+intToSTR(indice)+'_2'));
+				end;
+	indice:=1;
+	black_color.r:=255;black_color.b:=255;black_color.g:=255;
+	indiceMusiquePrec:=0;
+	indiceMusiqueJouee:=1;
+	autoMusique(indiceMusiqueJouee);
+	MusiqueJouee:=mix_loadMUS(OST[1].dir);
+	mix_playmusic(musiqueJouee,0);
+	Mix_VolumeMusic(40);
+	createRawImage(fond,120,0,814,530,'Sprites/Intro/illustrations_intro_1.bmp');
+	while sceneActive='Intro' do
+	begin
+		sdl_renderclear(sdlrenderer);
+		sdl_delay(10);
+		actualiserIntro(updateTime,indice);
+		sdl_renderpresent(sdlrenderer);
+		while SDL_PollEvent(EventSystem)=1 do
+			if EventSystem^.type_=SDL_mousebuttondown then
+				sceneActive:='Menu'
+	end;
+	while high(queueDialogues)>-1 do
+		supprimeDialogue(1);
+end;
+
+
 
 procedure GameUpdate;
 var i:Integer;son,boss:Boolean;cardHover:Array [1..3] of Boolean;
 begin
-  new(EventSystem);
    while True do
   begin
   sdl_delay(10);
   sdl_renderclear(sdlRenderer);
   autoMusique(indiceMusiqueJouee);
-    //Mouvement Joueur
 	case SceneActive of
 		'Credits':Credits;
 		'Deck':
@@ -349,40 +423,30 @@ begin
 		'Event':
 		begin
 		UpdateDialogueBox(dialogues[1]);
-		while (SDL_PollEvent( EventSystem ) = 1) do
-    		begin
-      			case EventSystem^.type_ of
-					SDL_mousebuttondown:if (dialogues[1].letterdelay=0) then 
-					begin
-						if high(queueDialogues)>-1 then
-							supprimeDialogue(1)
-						else 
-							activationEvent(sceneSuiv);
-						end
-						 else dialogues[1].LetterDelay:=0;
-					end;
-				end;
-			end;
+		end;
   		'Cutscene':
 		begin
 		affichertout;
 		UpdateDialogueBox(dialogues[2]);
 		updateanimation(LObjets[0].anim,LObjets[0].image);
-		if LObjets[1].anim.objectName<>'Leo_Transe' then
+		if (LObjets[1].anim.etat<>'apparition') then
 			updateanimation(LObjets[1].anim,LObjets[1].image);
 		
 		if LObjets[1].anim.objectName='Béhémoth' then fond.rect.x:=88-4+random(9);
 		while (SDL_PollEvent( EventSystem ) = 1) do
     		begin
       			case EventSystem^.type_ of
-					SDL_mousebuttondown:if (dialogues[2].letterdelay=0) then begin
+					SDL_mousebuttondown:if (dialogues[2].complete) then begin
 						if high(queueDialogues)>-1 then
 							supprimeDialogue(2)
 						else begin
 							if (LObjets[1].anim.objectName='Leo_Transe') and (LObjets[1].anim.etat='mort') then victoire(statsJoueur,23)
 							else
 								sceneActive:='Jeu';
-							if LObjets[1].anim.objectName='Béhémoth' then indiceMusiqueJouee:=11;
+							if LObjets[1].anim.objectName='Béhémoth' then begin
+							indiceMusiqueJouee:=11;
+							mix_resumeMusic;
+							end
 							end;
 						end
 						 else dialogues[2].LetterDelay:=0;
@@ -423,7 +487,10 @@ begin
         		case EventSystem^.key.keysym.sym of
           			SDLK_UP:  LObjets[0].stats.vie := LObjets[0].stats.vie +10;
 					SDLK_DOWN: LObjets[0].stats.vie := LObjets[0].stats.vie-10;
-					SDLK_ESCAPE : if sceneActive<>'Menu' then menuEnJeu;
+					SDLK_ESCAPE : begin
+						if sceneActive='Event' then activationEvent(sceneSuiv)
+						else if sceneActive<>'Menu' then menuEnJeu;
+						end;
 					SDLK_SPACE:begin
 						leMonde:=not(leMonde);
 						LObjets[0].stats.compteurLeMonde:=100;
@@ -448,6 +515,14 @@ begin
 			SDL_mousebuttondown : 
 				begin 
 				case sceneActive of
+				'Event':if (dialogues[1].complete) then 
+					begin
+						if high(queueDialogues)>-1 then
+							supprimeDialogue(1)
+						else 
+							activationEvent(sceneSuiv);
+						end
+						 else dialogues[1].LetterDelay:=0;
 				'Leo_Menu':for i:=1 to 3 do
 					begin
 					OnMouseClick(boutons[i], EventSystem^.motion.x, EventSystem^.motion.y);
@@ -471,7 +546,7 @@ begin
                     HandleButtonClick(boutons[1].button, EventSystem^.motion.x, EventSystem^.motion.y);
 					end;
 				'map':begin 
-					//writeln('Mouse button pressed at (', EventSystem^.motion.x, ',', EventSystem^.motion.y, ')');
+					writeln('Mouse button pressed at (', EventSystem^.motion.x, ',', EventSystem^.motion.y, ')');
                     writeln(salles[1].image.button.rect.x);
 					for i:=1 to 3 do
 						begin
@@ -574,8 +649,12 @@ end;
 
 procedure StartGame;
 begin
+	new(EventSystem);
     IndiceMusiqueJouee:=1;
+	updatetimemusique:=sdl_getticks;
     Mix_VolumeMusic(VOLUME_MUSIQUE);
+	Intro;
+	black_color.r:=0;black_color.b:=0;black_color.g:=0;
     SceneActive := 'Menu';
 	sdlKeyboardState := SDL_GetKeyboardState(nil);
     InitMenuPrincipal;

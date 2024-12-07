@@ -10,7 +10,7 @@ const TAILLE_OST=50;
         VOLUME_SON=20;
         MAX_CHAINES = 8;
 type TMus=record
-    duree:Integer;
+    duree:real;
     nom:String;
     dir:PChar;
 end;
@@ -61,7 +61,7 @@ function chargerOST(nomFichier:PChar):PMix_Music;
     Mix_VolumeMusic(VOLUME_MUSIQUE);
     end;
 
-procedure defMus(indice:Integer;dir:Pchar;nom:String;duree:Integer);
+procedure defMus(indice:Integer;dir:Pchar;nom:String;duree:real);
 
 begin
     OST[indice].dir:=dir;
@@ -150,7 +150,7 @@ begin
             if (indice>15) and (indice<30) then
                 indice:=indice+14
             else
-                mix_rewindMusic();
+                mix_playMusic(musiquejouee,0);
             updatetimeMusique := SDL_GetTicks();
             end;
         {if leMonde and (tempsTemp=0) and not(enFondu) then
@@ -184,11 +184,12 @@ begin
 indiceMusiquePrec:=0;
 tempsTemp:=0;
 chaineActuelle:=0;
+updatetimeMusique := SDL_GetTicks();
 Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT,
     MIX_DEFAULT_CHANNELS, 4096);
 
     //Ecran titre
-    defMus(1,'OST/Project_TITLE.wav','Cards of Fortune',102);
+    defMus(1,'OST/Project_TITLE.wav','Cards of Fortune',101.6);
     //Combats normaux
     defMus(2,'OST/C1.ogg','W-O-A-Y v0',51);
     defMus(3,'OST/C2.wav','W-O-A-Y V2',48);

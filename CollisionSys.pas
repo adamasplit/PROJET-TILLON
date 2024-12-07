@@ -219,6 +219,8 @@ end;
 function PseudoColMurs(var obj:TObjet):Boolean;
 var colx1,colx2,coly1,coly2:Integer; //4 coins de l'objet
 begin
+  if not isAttack(obj) then
+  begin
   colx1:=obj.image.rect.x+obj.col.offset.x;
   colx2:=obj.image.rect.x+obj.col.offset.x+obj.col.dimensions.w;
   coly1:=obj.image.rect.y+obj.col.offset.y;
@@ -244,6 +246,7 @@ begin
     obj.image.rect.y:=murs[3].image.rect.y-obj.col.offset.y-obj.col.dimensions.h;
     pseudoColMurs:=True;
     end;
+  end;
 
 end;
 

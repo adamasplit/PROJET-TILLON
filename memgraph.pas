@@ -59,7 +59,7 @@ type
     portrait:TImage;
     font:PTTF_Font;
     fontsize:Integer;
-    Complete: Boolean;              
+    Complete,Complete2: Boolean;              
   end;
   
 {Variables}
@@ -99,6 +99,8 @@ procedure InitDialogueBox(var Box: TDialogueBox; ImgPath,portraitPath: PChar; X,
 procedure InitDialogueBox(var Box: TDialogueBox; ImgPath,portraitPath: PChar; X, Y, W, H: Integer; const DialogueText: string; Delay: UInt32;font:PTTF_Font;fontsize:Integer);overload;
 procedure UpdateDialogueBox(var Box: TDialogueBox);
 procedure RenderDialogueText(var Box: TDialogueBox);
+
+function boiteFinie(box:TDialogueBox):Boolean;
 
 
 
@@ -254,7 +256,10 @@ begin
   
 end;
 
-
+function boiteFinie(box:TDialogueBox):Boolean;
+begin
+  boiteFinie:=(box.RemainingText='');
+end;
 procedure RenderRawImage(var image: Timage;alpha:Integer; flip : Boolean); overload;
 var imgRect: TSDL_Rect;
 begin
@@ -397,15 +402,11 @@ procedure InitDialogueBox(var Box: TDialogueBox; ImgPath,portraitPath: PChar; X,
 begin
   sdl_destroytexture(box.BackgroundImage.imgtexture);
   sdl_destroytexture(box.portrait.imgtexture);
-  
-  if ImgPath <> nil then CreateRawImage(Box.BackgroundImage, X, Y, W, H, ImgPath) else begin Box.BackgroundImage.rect.x := X; Box.BackgroundImage.rect.y := Y end;
-  if portraitPath <> nil then 
-    begin
+  CreateRawImage(Box.BackgroundImage, X, Y, W, H, ImgPath);
     if portraitPath='Sprites/Menu/portraitB.bmp' then
       CreateRawImage(Box.portrait, X, Y, W div 4, W div 4, portraitPath)
     else
       CreateRawImage(Box.portrait, X+(W div 20), Y+(H div 6), H div 2+ (H div 10), H div 2+(H div 10), portraitPath);
-    end;
   box.w:=W;
   Box.RemainingText := DialogueText;
   Box.DisplayedLetters := 0;
@@ -437,6 +438,7 @@ begin
   
   box.w:=W;
   Box.RemainingText := DialogueText;
+  
   Box.DisplayedLetters := 0;
   Box.CurrentLine := 1;
   Box.LastUpdateTime := SDL_GetTicks();
@@ -457,36 +459,42 @@ procedure UpdateDialogueBox(var Box: TDialogueBox); // C'est la la scene de crim
 var
   CurrentTime: UInt32;
   TimeDiff: UInt32;
-  test:Boolean;
+  test,done:Boolean;
 begin
   CurrentTime := SDL_GetTicks();
   
   if Box.Complete then RenderDialogueText(box);
-  
   if Box.BackgroundImage.imgTexture <> nil then RenderRawImage(Box.BackgroundImage, 255, False);
   if Box.portrait.imgTexture <> nil then RenderRawImage(Box.portrait, 255, False);
 
   TimeDiff := CurrentTime - Box.LastUpdateTime;
-  test:=timediff>box.letterdelay;
-
-  if (Box.DisplayedLetters < Length(Box.Lines[Box.CurrentLine])) then
+  test:=timediff>=box.letterdelay;
+  done:=False;
+  while ((box.letterDelay=0) and not box.complete) or (not done) do
   begin
-    if test=false then
-      begin
-      end
-    else
+    done:=True;
+    if (Box.DisplayedLetters <= Length(Box.Lines[Box.CurrentLine])) then
     begin
-      Inc(Box.DisplayedLetters);
-      if box.portrait.directory=nil then
+      if test=false then
         begin
-        //jouerSon('SFX/Dialogues/texte.wav')
+        done:=True;
         end
       else
-        jouerSon(StringToPChar('SFX/Dialogues/'+box.portrait.directory+'.wav'));
-      Box.LastUpdateTime := CurrentTime;
+      begin
+        Inc(Box.DisplayedLetters);
+        if box.portrait.directory=nil then
+          begin
+          //jouerSon('SFX/Dialogues/texte.wav')
+          end
+        else
+          jouerSon(StringToPChar('SFX/Dialogues/'+box.portrait.directory+'.wav'));
+        Box.LastUpdateTime := CurrentTime;
+        done:=True;
+      end;
     end;
+    if box.displayedLetters<>0 then RenderDialogueText(Box);
   end;
-  if box.displayedLetters<>0 then RenderDialogueText(Box);
+
 end;
 
 procedure RenderTextLine(const Text: string; x, y,offsetX,offsetY: Integer;Font:PTTF_Font);
@@ -523,14 +531,17 @@ begin
     else
       RenderTextLine(DisplayedText, Box.BackgroundImage.rect.x, Box.BackgroundImage.rect.y + (i - 1) * 40,100,60,box.font);
   end;
-
-  if (Box.Lines[Box.CurrentLine+1] <> '') and (Box.DisplayedLetters = Length(Box.Lines[Box.CurrentLine])) and (Box.CurrentLine < 7) then
+  if ((Box.Lines[Box.CurrentLine+1] <> '') and (Box.DisplayedLetters >= Length(Box.Lines[Box.CurrentLine])) and (Box.CurrentLine <= 7)) then
   begin
     Inc(Box.CurrentLine);
     Box.DisplayedLetters := 0;
-  end
-  else if (Box.CurrentLine = 7) and (Box.DisplayedLetters = Length(Box.Lines[6])) then
+  end;
+  if (box.lines[box.currentLine+1]='') and (box.displayedletters>=length(box.lines[box.currentline])) then
+    box.complete:=True
+  else if box.letterdelay=0 then inc(box.displayedLetters);
+  if ((Box.CurrentLine = 7) and (Box.DisplayedLetters = Length(Box.Lines[7]))) then
   begin
+    box.displayedLetters:=length(box.lines[box.currentLine]);
     Box.Complete := True;
   end;
 end;
