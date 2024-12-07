@@ -168,6 +168,8 @@ begin
       alpha := 255   // Fin du fondu entrant, opacité maximale
     else
       alpha := 0;    // Fin du fondu sortant, opacité nulle
+    SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, alpha);
+    SDL_RenderFillRect(sdlRenderer, nil);
   end
   else
   begin
@@ -177,7 +179,6 @@ begin
       alpha := Round(255 * (1 - (cos(progression * PI) * 0.5 + 0.5)))  // Interpolation pour le fondu entrant (avec geogebra sa mère)
     else
       alpha := Round(255 * (cos(progression * PI) * 0.5 + 0.5));       // Interpolation pour le fondu sortant
-
     SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, alpha);
     SDL_RenderFillRect(sdlRenderer, nil);
   end;

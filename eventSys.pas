@@ -122,9 +122,9 @@ begin
       renderRawImage(combatUI[6],255,False);
       end;
     //Vie
-    DrawRect(black_color,255, 30, 350, 30, 2*stats.vieMax);
+    DrawRect(black_color,255, 30, 550-2*stats.vieMax, 30, 2*stats.vieMax);
     if stats.vie>0 then
-      DrawRect(red_color,255, 35, 355+190-Round(190*(stats.vie/stats.vieMax)), 20, Round(190*(stats.vie/stats.vieMax)) );
+      DrawRect(red_color,255, 35, 355+190-Round(1.9*stats.vie), 20, Round(1.9*stats.vie) );
     //Mana
     DrawRect(black_color,255,95, 350, 30, 200);
     if stats.manaMax<10 then

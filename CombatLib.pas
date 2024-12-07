@@ -287,6 +287,8 @@ begin
         rayon.image.rect.y:=round(rayon.image.rect.y+rayon.stats.vecty*(rayon.image.rect.w div 2));
         end;
     initAngle(rayon.stats.vectX,rayon.stats.vectY,rayon.stats.angle);
+    rayon.stats.xreel:=x-(l div 2);
+    rayon.stats.yreel:=y-64;
     //sdl_settexturealphamod(rayon.image.imgtexture,0);
 end;
 
@@ -345,6 +347,18 @@ begin
                 rayon.image.rect.x:=round(rayon.stats.xreel+rayon.stats.vectX*(rayon.image.rect.w div 2));
                 rayon.image.rect.y:=round(rayon.stats.yreel+rayon.stats.vecty*(rayon.image.rect.w div 2));
                 end
+        else
+            begin
+                if (rayon.stats.vitRotation<>0) and (rayon.stats.delai<=0) and not(leMonde) then
+                begin
+                writeln('/?');
+                //mise à jour du vecteur de direction
+                rayon.stats.vectX:=cos(rayon.stats.angle+(rayon.stats.vitRotation/180));
+                rayon.stats.vectY:=sin(rayon.stats.angle+(rayon.stats.vitRotation/180)); 
+                rayon.image.rect.x:=round(rayon.stats.xreel+rayon.stats.vectX*(rayon.image.rect.w div 2));
+                rayon.image.rect.y:=round(rayon.stats.yreel+rayon.stats.vecty*(rayon.image.rect.w div 2));
+                end
+            end
             end;
         end;
 end;

@@ -10,7 +10,7 @@ uses
 
 
 const MAXSALLES=40; //nombre de salles total pour finir le jeu
-  MAXENNEMIS=37; //nombre d'ennemis ayant une entrée dans le bestiaire
+  MAXENNEMIS=38; //nombre d'ennemis ayant une entrée dans le bestiaire
   MAXCARTES=60; //taille max du deck
 
 var whiteCol,b_color,bf_color,f_color,navy_color,red_color,black_col,yellowCol: TSDL_Color;
@@ -195,7 +195,8 @@ function trouverCentreY(var obj:TObjet):Integer;
 
 procedure ajoutDialogue(portrait:PChar;texte:String);
 procedure supprimeDialogue(i:Integer);
-procedure InitDecor;
+procedure InitDecor;overload;
+procedure InitDecor(i:Integer);overload;
 procedure InitDecorCartes;
 
 implementation
@@ -204,6 +205,12 @@ begin
 	sdl_freesurface(fond.imgSurface);
 	sdl_destroytexture(fond.imgTexture);
   CreateRawImage(fond,88,-80,900,900,StringToPChar('Sprites/Game/floor/Floor'+ IntToStr(Random(5)) +'.bmp'));
+end;
+procedure InitDecor(i:Integer);
+begin
+	//if fond.imgSurface<>nil then sdl_freesurface(fond.imgSurface);
+	if fond.imgTexture<>nil then sdl_destroytexture(fond.imgTexture);
+  CreateRawImage(fond,88,-80,900,900,StringToPChar('Sprites/Game/floor/Floor'+ intToSTR(i) +'.bmp'));
 end;
 
 procedure InitDecorCartes;

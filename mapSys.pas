@@ -40,7 +40,6 @@ procedure actualiserReposRisque;
 procedure actualiserFeuCamp;
 procedure actualiserDefausse;
 procedure ReposRisque;
-procedure choisirEnnemis;
 procedure LancementSalleHasard;
 procedure LancementSalleBoss;
 procedure LancementSalleMarchand;
@@ -88,38 +87,49 @@ begin
         end
 end;
 
-procedure choisirEnnemis;
-var j,alea : integer;
+function choisirennemi(avancement:Integer):TObjet;
+alea:Integer;
 begin
-    {if high(ennemis)>1 then
+    alea:=random(10);
+    if (avancement<MAXSALLES div 4) then
+        case alea of
+end;
+procedure choisirEnnemis(boss:Boolean);
+var j : integer;
+begin
+    writeln(high(ennemis),',',high(LObjets));
+    if high(ennemis)>1 then
         repeat
             sdl_freeSurface(ennemis[high(ennemis)].image.imgSurface);
             SDL_DestroyTexture(ennemis[high(ennemis)].image.imgTexture);
             setlength(ennemis,high(ennemis));
-        until high(ennemis)=0;}
+        until high(ennemis)=0;
+    if high(LOBjets)>0 then repeat 
+        supprimeObjet(LObjets[1]);
+    until high(LObjets)=0;
+    writeln('listes vidées');
     initStatsCombat(statsJoueur,LObjets[0].stats);
-    if high(LOBjets)>0 then repeat supprimeObjet(LObjets[1]) until high(LObjets)=0;
+    writeln('stats initialisées');
     vagueFinie:=True;
     combatFini:=False;
     randomize;
+    initDecor(2+statsJoueur.avancement div 10);
     indiceMusiqueJouee:=(statsJoueur.avancement div 3)+2;
-    initDecor;
-
+    writeln('choix des ennemis');
     //###partie à modifier : choix des ennemis et de leur nombre
-    setlength(ennemis,statsJoueur.avancement+1);
-    for j:=1 to statsJoueur.avancement do
-        begin
-        alea:=random(31)+1;
-        if (alea=20) or (alea=21) then
-            ennemis[j]:=templatesEnnemis[32]
-        else
-            ennemis[j]:=templatesEnnemis[alea];
-        ennemis[j].stats.vie := ennemis[j].stats.vie + (statsJoueur.avancement * 2);
-        ennemis[j].stats.vieMax := ennemis[j].stats.vieMax + (statsJoueur.avancement * 2);
-        ennemis[j].stats.force := ennemis[j].stats.force + (statsJoueur.avancement div 2);
-        ennemis[j].stats.defense := ennemis[j].stats.defense + (statsJoueur.avancement div 3);
-        ennemis[j].stats.vitesse := ennemis[j].stats.vitesse + (statsJoueur.avancement div 5);
-        end;
+    if not boss then begin
+        setlength(ennemis,statsJoueur.avancement+1);
+        for j:=1 to statsJoueur.avancement do
+            begin
+            ennemis[j]:=choisirEnnemi(statsJoueur.avancement);
+            ennemis[j].stats.vie :=     round((0.5+statsJoueur.avancement/MAXSALLES)*ennemis[j].stats.vie    );
+            ennemis[j].stats.vieMax :=  round((0.5+statsJoueur.avancement/MAXSALLES)*ennemis[j].stats.vieMax );
+            ennemis[j].stats.force :=   round((0.5+statsJoueur.avancement/MAXSALLES)*ennemis[j].stats.force  );
+            ennemis[j].stats.defense := round((0.5+statsJoueur.avancement/MAXSALLES)*ennemis[j].stats.defense);
+            ennemis[j].stats.vitesse := round((0.5+statsJoueur.avancement/MAXSALLES)*ennemis[j].stats.vitesse);
+            end;
+    end;
+    writeln('ennemis choisis')
 
 end;
 
@@ -127,7 +137,7 @@ procedure LancementSalleCombat();
 begin
 
 writeln('Lancement de salle Combat');
-choisirEnnemis;
+choisirEnnemis(false);
 statsJoueur.avancement := statsJoueur.avancement+1;
 ClearScreen;
 SDL_RenderClear(sdlRenderer);
@@ -156,12 +166,13 @@ var j : integer;
 begin
     writeln('Lancement de salle Boss');
     statsJoueur.avancement := statsJoueur.avancement+1;
+    choisirEnnemis(true);
     ClearScreen;
     SDL_RenderClear(sdlRenderer);
     SceneActive := 'Jeu';
     vagueFinie:=False;
     setlength(LObjets,2);
-    indiceMusiqueJouee:=random(4)+11;
+    indiceMusiqueJouee:=random(4)+10;
     for j:=1 to 1 do
     begin
         randomize;  
@@ -772,6 +783,14 @@ begin
     affichageSalle(salle3,X2,Y3);
 end;
 
+procedure InitDecorMap;
+begin
+    randomize;
+	sdl_freesurface(fond.imgSurface);
+	sdl_destroytexture(fond.imgTexture);
+    //CreateRawImage(fond,88,-80,900,900,StringToPChar('Sprites/Game/floor/map_Bg.bmp'));
+end;
+
 procedure choixSalle();
     
 begin
@@ -782,6 +801,7 @@ begin
     sdl_renderclear(sdlrenderer);
     SceneActive := 'map';
     ScenePrec:='map';
+    InitDecorMap;
     writeln('Initializing rooms...');
     
     generationChoix(salles[1], salles[2], salles[3]);
@@ -796,6 +816,7 @@ end;
 procedure actualiserMap();
 begin
     SDL_PumpEvents();
+    //renderRawImage(fond,True);
     RenderButtonGroup(salles[1].image);
     RenderButtonGroup(salles[2].image);
     RenderButtonGroup(salles[3].image);
@@ -809,6 +830,8 @@ end;
 
 procedure activationEvent(scene:String);
 begin
+    while high(queueDialogues)>-1 do
+		supprimeDialogue(1);
     case scene of
         'Leo':LancementSalleHasardLeo;
         'Ophiucus':lancementSalleHasardOph;
@@ -834,6 +857,5 @@ end;
 
 begin
 statsJoueur.avancement:=1;
-//
 writeln('MapSys ready')
 end.
