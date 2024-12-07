@@ -125,7 +125,6 @@ begin
     writeln(high(ennemis),',',high(LObjets));
     if high(ennemis)>1 then
         repeat
-            //sdl_freeSurface(ennemis[high(ennemis)].image.imgSurface);
             SDL_DestroyTexture(ennemis[high(ennemis)].image.imgTexture);
             setlength(ennemis,high(ennemis));
         until high(ennemis)=0;
