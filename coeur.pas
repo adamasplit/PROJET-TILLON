@@ -87,7 +87,7 @@ type TStats=record //(version variable)
           nbFramesApparition:Integer;
           typeIA_MVT:Byte; //détermine la façon dont l'ennemi se déplace et agit
           degatsContact:Integer; //permet d'infliger des dégâts au contact avec le joueur
-          cooldown:Byte; //limite les dégâts au contact par le temps
+          cooldown:Integer; //limite les dégâts au contact par le temps
           vitessePoursuite:Integer; //indique la vitesse où l'ennemi peut suivre le joueur
           nomAttaque:PCHar;//pour le sprite utilisé par le projectile ou rayon
           boss:Boolean;//détermine ce que l'on obtient à l'issue d'un combat avec l'ennemi
@@ -208,7 +208,7 @@ begin
 end;
 procedure InitDecor(i:Integer);
 begin
-	//if fond.imgSurface<>nil then sdl_freesurface(fond.imgSurface);
+	if fond.imgSurface<>nil then sdl_freesurface(fond.imgSurface);
 	if fond.imgTexture<>nil then sdl_destroytexture(fond.imgTexture);
   CreateRawImage(fond,88,-80,900,900,StringToPChar('Sprites/Game/floor/Floor'+ intToSTR(i) +'.bmp'));
 end;

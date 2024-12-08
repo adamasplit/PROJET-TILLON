@@ -202,7 +202,7 @@ afficherTout;
 						sdl_renderpresent(sdlrenderer);
 						end;
 					DeclencherFondu(False, 5000);
-					indiceMusiqueJouee:=33;
+					indiceMusiqueJouee:=46;
 					supprimeObjet(Lobjets[High(LObjets)]);
 					sceneActive := 'GameOver';
 					initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,1080,350,extractionTexte('GAMEOVER_'+intToSTr(random(5)+1)),40);
@@ -319,9 +319,9 @@ begin
 	indice:=1;
 	black_color.r:=255;black_color.b:=255;black_color.g:=255;
 	indiceMusiquePrec:=0;
-	indiceMusiqueJouee:=1;
+	indiceMusiqueJouee:=0;
 	autoMusique(indiceMusiqueJouee);
-	MusiqueJouee:=mix_loadMUS(OST[1].dir);
+	MusiqueJouee:=mix_loadMUS(OST[0].dir);
 	mix_playmusic(musiqueJouee,0);
 	Mix_VolumeMusic(40);
 	createRawImage(fond,120,0,814,530,'Sprites/Intro/illustrations_intro_1.bmp');
@@ -444,7 +444,7 @@ begin
 							else
 								sceneActive:='Jeu';
 							if LObjets[1].anim.objectName='Béhémoth' then begin
-							indiceMusiqueJouee:=11;
+							indiceMusiqueJouee:=13;
 							mix_resumeMusic;
 							end
 							end;
@@ -501,6 +501,7 @@ begin
 					SDLK_F2:begin
 						statsJoueur.force:=statsJoueur.force+1;
 						LObjets[0].stats.force:=LObjets[0].stats.force+1;
+						LObjets[0].stats.multiplicateurDegat:=LObjets[0].stats.multiplicateurDegat+10;
 						end;
 					SDLK_F3:modeDebug:=not(modeDebug);
 					SDLK_F4:for i:=1 to MAXENNEMIS do
@@ -650,7 +651,7 @@ end;
 procedure StartGame;
 begin
 	new(EventSystem);
-    IndiceMusiqueJouee:=1;
+    IndiceMusiqueJouee:=0;
 	updatetimemusique:=sdl_getticks;
     Mix_VolumeMusic(VOLUME_MUSIQUE);
 	Intro;

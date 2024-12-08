@@ -27,6 +27,7 @@ implementation
 procedure transformation(var ennemi:TObjet;num:Integer); //remplace un ennemi par un autre tout en conservant sa position
 var x,y:Integer;
 begin
+  statsJoueur.bestiaire[ennemi.stats.numero]:=True;
   x:=ennemi.image.rect.x;
   y:=ennemi.image.rect.y;
   sdl_destroytexture(ennemi.image.imgTexture);
@@ -115,7 +116,9 @@ begin
     ennemi.stats.angle:=0;
     InitAnimation(ennemi.anim,nom,'apparition', ennemi.stats.nbFramesApparition,False);
     //writeln('accès au fichier ',getframePath(ennemi.anim));
-    CreateRawImage(ennemi.image,(random(20)+5)*20,0,w,h,getFramePath(ennemi.anim));
+    CreateRawImage(ennemi.image,(random(20)+5)*20,0,w,h,getframePath(ennemi.anim));
+    //UpdateAnimation(ennemi.anim,ennemi.image);
+    
 
     case num of
       30..38:ennemi.stats.boss:=True
@@ -246,11 +249,27 @@ begin
   if sqrt(distx**2+disty**2)>100 then
   if abs(distx)>abs(disty) then
     begin
-    ennemi.stats.ycible:=trouverCentreY(ennemi);ennemi.stats.xcible:=max(200,x);
+    if random(2)=0 then 
+      begin
+      ennemi.stats.ycible:=trouverCentreY(ennemi);
+      ennemi.stats.xcible:=200+random(2)*600;
+      end
+    else
+      begin
+      ennemi.stats.ycible:=trouverCentreY(ennemi);
+      ennemi.stats.xcible:=max(200,x);
+      end
     end
   else
+    if random(2)=0 then 
+      begin
+      ennemi.stats.xcible:=trouverCentrex(ennemi);
+      ennemi.stats.ycible:=200+random(2)*400;
+      end
+    else
     begin
-    ennemi.stats.xcible:=trouverCentreX(ennemi);ennemi.stats.ycible:=y;
+    ennemi.stats.xcible:=trouverCentreX(ennemi);
+    ennemi.stats.ycible:=y;
     end;
   ennemi.stats.compteurAction:=0;
 end;
@@ -708,7 +727,7 @@ begin
             AIPathFollow(ennemi,joueur,ennemi.stats.vitessePoursuite,true,true);
           if (ennemi.anim.etat='rewarp') and animFinie(ennemi.anim) then
             InitAnimation(ennemi.anim,ennemi.anim.objectName,'chase', ennemi.stats.nbFrames1,True);
-          if animFinie(ennemi.anim) and (ennemi.anim.etat='chase') and (random(15)=0)  then 
+          if (animFinie(ennemi.anim) and (ennemi.anim.etat='chase') and (random(15)=0)) or ((ennemi.anim.objectName='Archimage') and (ennemi.stats.compteurAction>50))  then 
             begin
               jouerSonEnn(ennemi.anim.objectName);
               IATeleport(ennemi,joueur.image.rect.x,joueur.image.rect.y);
@@ -826,7 +845,9 @@ begin
           initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
           end;
         end;
-      11:begin
+      11:begin //ennemi qui peut se déplacer vers le joueur ou s'en éloigner, ou encore lancer une attaque
+        if (ennemi.anim.etat='chase') then
+          flyUpdate(ennemi,20);
         if (ennemi.anim.etat='chase') and (random(100)=0) then
           if random(2)=0 then
               initAnimation(ennemi.anim,ennemi.anim.objectName,'cast',ennemi.stats.nbFrames3,False)
@@ -836,17 +857,26 @@ begin
           begin
           AIPathFollow(ennemi,joueur,2,True,True);
           if (random(100)=0) then
-            begin
-            initAnimation(ennemi.anim,ennemi.anim.objectName,'cast',ennemi.stats.nbFrames3,false);
-            ennemi.stats.compteurAction:=0;
-            end;
+            if random(2)=0 then
+              begin
+              initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
+              IAVol(ennemi,trouverCentreX(joueur),trouverCentreY(joueur));
+              end
+            else
+              begin
+              initAnimation(ennemi.anim,ennemi.anim.objectName,'cast',ennemi.stats.nbFrames3,false);
+              ennemi.stats.compteurAction:=0;
+              end;
           end;
         if (ennemi.anim.etat='cast') then
           begin
           ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
           if ennemi.stats.compteurAction>200 then
             if random(2)=0 then
-              initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True)
+              begin
+              initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
+              IAVol(ennemi,trouverCentreX(joueur),trouverCentreY(joueur));
+              end
             else
               initAnimation(ennemi.anim,ennemi.anim.objectName,'walk',ennemi.stats.nbFrames2,True)
           end;
@@ -1364,7 +1394,7 @@ initStatEnnemi(26,'chaos',12,60,1,3,5,2,200,200,9,11,6,0,6,100,200,50,0,'rayonAb
 initStatEnnemi(27,'Archimage',4,100,2,0,6,0,128,128,10,6,6,6,4,70,100,24,14,'projectile');
 initStatEnnemi(28,'liche',5,50,2,0,4,1,128,128,9,6,5,16,10,70,110,19,7,'rayonMort');
 initStatEnnemi(29,'expurgateur',6,20,3,1,1,0,128,128,13,12,0,0,7,128,104,0,24,'eclairR');
-initStatEnnemi(30,'dracomage',2,100,2,5,6,1,192,192,34,12,8,8,26,128,164,32,28,'eclairR');
+initStatEnnemi(30,'dracomage',2,300,2,5,6,1,192,192,34,12,8,8,26,128,164,32,28,'eclairR');
 initStatEnnemi(31,'geolier',18,300,10,0,-10,2,500,400,4,12,20,4,6,100,200,200,200,'arcane');
 initStatEnnemi(32,'geolier2',19,300,10,0,-10,1,500,400,32,18,10,10,14,200,200,150,200,'chaine');
 initStatEnnemi(33,'Spectre',12,100,1,10,0,1,300,400,8,22,8,0,13,160,300,70,50,'oeil');
@@ -1372,7 +1402,7 @@ InitstatEnnemi(34,'vestige',11,1000,3,15,5,1,400,400,16,16,12,10,7,250,400,75,0,
 initStatEnnemi(35,'gardien',16,500,2,1,0,1,300,300,8,16,0,0,23,250,120,25,120,'rayon_main');
 initStatEnnemi(36,'Geist',17,200,10,0,-10,4,300,300,21,24,3,7,9,80,80,110,160,'rayonAL');
 initStatEnnemi(37,'creature',20,1000,1,0,0,0,600,560,46,12,14,14,20,500,460,50,50,'arcane');
-initStatEnnemi(38,'Béhémoth',10,15000,20,10,10,5,463,614,12,32,40,12,39,400,307,63,307,'rayonRykor');
+initStatEnnemi(38,'Béhémoth',10,1000,20,10,10,5,463,614,12,32,40,12,39,400,307,63,307,'rayonRykor');
 
 
 

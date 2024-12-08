@@ -583,6 +583,7 @@ begin
     if (victime.stats.genre=joueur) and (victime.stats.lamort) and (degats>victime.stats.vie) then
         victime.stats.vie:=1
     else
+    begin
         victime.stats.vie:=victime.stats.vie-degats;
     if not (victime.stats.inamovible) then
         begin
@@ -605,6 +606,7 @@ begin
             begin popUpColor.r:=255;popUpColor.g:=51;popUpColor.b:=51;popUpColor.a:=255; end
         else begin popUpColor.r:=51;popUpColor.g:=255;popUpColor.b:=51;popUpColor.a:=255; end;
         CreateDamagePopUp(trouverCentreX(victime),trouverCentreY(victime),StringToPChar(IntToStr(abs(degats))),popUpColor);
+    end;
     end;
 end;
 

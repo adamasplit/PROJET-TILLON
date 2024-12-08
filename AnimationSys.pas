@@ -96,23 +96,31 @@ begin
       end;
 
       // Mettre à jour le répertoire de l'image pour charger la nouvelle frame
-      if image.directory<>nil then 
+      {if (image.directory<>getframePath(anim)) then 
       begin
+        if (image.directory<>nil) then
+          begin
+          writeln(image.directory);
+          
+          end;
+        writeln('fini');
+        image.directory:=getframePath(anim);
+        writeln('image rechargée');
+      end;}
+      if (anim.etat<>'apparition') and (anim.etat<>'mort') then
+        begin
         SDL_DestroyTexture(image.imgtexture);
-        {if image.imgSurface<>nil then 
-          begin 
-          writeln('destruction surface');
-          sdl_freeSurface(image.imgSurface); 
-          end}
-      end;
-      image.directory := GetFramePath(anim);
+        sdl_freeSurface(image.imgSurface);
+        end; 
+      image.directory:=getframePath(anim);
+      CreateRawImage(image, image.rect.x, image.rect.y, image.rect.w, image.rect.h, image.directory);
       
       
       
       // Mettre à jour l'image avec la nouvelle frame
       {WriteLn('Animation : Changing directory to : ',image.directory);
       WriteLn(anim.isLooping);}
-      CreateRawImage(image, image.rect.x, image.rect.y, image.rect.w, image.rect.h, image.directory);
+      
 
       // Mettre à jour le temps de la dernière mise à jour
       anim.LastUpdateTime := currentTime;
