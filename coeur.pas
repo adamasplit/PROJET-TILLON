@@ -125,6 +125,19 @@ type
   end;
 
 type
+  TDecorParallax = record
+    images: array of TImage;       // Images des plans actuels
+    offsets: array of TSDL_Point;  // Offsets initiaux pour chaque plan
+    scales: array of Real;         // Échelles initiales pour chaque plan
+    oscillation: Real;             // Phase d’oscillation pour l’effet de marche
+    currentPlan: Integer;          // Index du plan actuel
+    plans: array of String;        // Liste des noms des décors à afficher
+  end;
+
+
+
+
+type
   TButtonGroup = record
     button: TButton;       // Bouton de base
     image: TImage;         // Image de fond animée (taille et alpha)

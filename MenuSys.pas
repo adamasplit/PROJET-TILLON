@@ -20,8 +20,10 @@ uses
 //Image
 	var menuBook,bgImage,characterImage,cardsImage : TImage;
 	menuBookAnim : TAnimation;
+	DecorCredits : TDecorParallax;
 
 var iEnn,ideckprec:Integer;carteDeck,ennAff:TImage;
+	changementDecor : Boolean;
 
 procedure AfficherTout();
 procedure victoire(var statsJ:TStats;boss:Boolean);
@@ -84,6 +86,48 @@ begin
 		chargerSauvegarde(statsJoueur);
 end;
 
+procedure InitDecorParallax(var decor: TDecorParallax; NomDecor: String; totalDecors: Integer);
+var
+  i: Integer;
+  profondeur: Real;
+  width, height: Integer;
+begin
+  profondeur := 1.1; // Coefficient de profondeur
+
+  SetLength(decor.images, totalDecors);
+  SetLength(decor.offsets, totalDecors);
+  SetLength(decor.scales, totalDecors);
+
+  for i := 0 to totalDecors - 1 do
+  begin
+    // Calcul de l'échelle initiale en fonction de la profondeur
+    decor.scales[i] := 1 / profondeur;
+
+    // Dimensions calculées à partir de l'échelle
+    width := Round(1080 * profondeur);
+    height := Round(720 * profondeur);
+	writeln(width);
+    // Création de l'image
+    CreateRawImage(decor.images[i], 0, 0, width, height,StringToPChar('Sprites\Menu\DecorsCredits\' + NomDecor + '-' + IntToStr(totalDecors - i) + '.bmp'));
+
+    // Centrage initial des images
+    decor.images[i].rect.x := (1080- width);  // Centrer horizontalement
+    decor.images[i].rect.y := (720 - height); // Centrer verticalement
+
+    // Définition des offsets
+    decor.offsets[i].x := decor.images[i].rect.x;
+    decor.offsets[i].y := decor.images[i].rect.y;
+	writeln('Position initiale : (', decor.images[i].rect.x, ',', decor.images[i].rect.y, ')');
+    // Ajuster la profondeur pour les plans suivants
+    profondeur := profondeur * 1.2;
+  end;
+
+  decor.oscillation := 0; // Réinitialisation de l'oscillation
+end;
+
+
+
+
 function NextOrSkipDialogue(i : Integer) : Boolean;
 begin
 	NextOrSkipDialogue:=False;
@@ -143,11 +187,80 @@ procedure jouer;
 		//ActualiserJeu;
 end;
 
+procedure UpdateCameraParallax(var decor: TDecorParallax; avance: Boolean);
+
+var
+  i,taillePlan: Integer;
+  newWidth, newHeight: Integer;
+  offsetY: Integer;
+begin
+  // Effet de marche
+  if avance then
+  begin
+    decor.oscillation := decor.oscillation + 0.1; // Phase de l'oscillation
+    if decor.oscillation > 2 * Pi then
+      decor.oscillation := decor.oscillation - 2 * Pi;
+  end;
+
+  for i := 0 to High(decor.images) do
+  begin
+    if avance then
+    begin
+
+      newWidth := Round(decor.images[i].rect.w + (1+decor.scales[i]/100));
+      newHeight := Round(decor.images[i].rect.h + (1+decor.scales[i]/100));
+
+      // Recentrage des positions après zoom
+      decor.images[i].rect.x := decor.offsets[i].x - (newWidth - decor.images[i].rect.w) div 2;
+      decor.images[i].rect.y := decor.offsets[i].y - (newHeight - decor.images[i].rect.h) div 2;
+
+      // Applique les nouvelles dimensions
+      decor.images[i].rect.w := newWidth;
+    	decor.images[i].rect.h := newHeight;
+	  //writeln('Plan ', i, ' Scale: ', decor.scales[i]:0:4, ' NewWidth: ', newWidth, ' NewHeight: ', newHeight);
+	  sdl_delay(10);
+    end
+	else decor.oscillation:=0;
+
+    // Oscillation verticale pour l’effet de marche
+    offsetY := Round(Sin(decor.oscillation) * 10); // Amplitude de marche fixée à 5
+    decor.images[i].rect.y := decor.images[i].rect.y + offsetY;
+
+    // Affiche l’image
+    RenderRawImage(decor.images[i], False);
+  end;
+
+  // Vérifie si un changement de décor est requis
+  //writeln('decor.images[0].rect.w ', decor.images[0].rect.w, ' fonduActif: ', fonduActif);
+  if fonduActif = False and changementDecor then
+  begin
+  writeln(decor.currentPlan);
+    decor.currentPlan := (decor.currentPlan + 1) mod Length(decor.plans); // Décor suivant
+	case decor.currentPlan of
+	0:taillePlan :=5;
+	1:taillePlan :=6;
+	2:taillePlan :=7;
+	3:taillePlan :=4
+	end;
+    InitDecorParallax(decor, decor.plans[decor.currentPlan], taillePlan);
+    //DeclencherFondu(False, 2000); // Déclenche le fondu d’entrée
+	changementDecor:=False;
+  end;
+
+  if (decor.images[0].rect.w > 1350) and fonduActif = False then
+  begin
+    DeclencherFondu(True, 1000); // Déclenche le fondu de sortie
+	changementDecor := True;
+  end;
+  effetDeFondu;
+end;
+
+
+
+
 procedure Credits;
 	begin
-
 		SceneActive := 'Credits';
-		ClearScreen;
 		
 		
 		boutons[3].button.estVisible := false;
@@ -155,11 +268,10 @@ procedure Credits;
         boutons[2].button.estVisible := false;
 		boutons[1].button.estVisible := false;
 		
+		UpdateCameraParallax(DecorCredits,sdlKeyboardState[SDL_SCANCODE_W] = 1);
 		
 		OnMouseHover(button_retour_menu,GetMouseX,GetMouseY);
-		OnMouseClick(button_retour_menu,GetMouseX,GetMouseY);
 		RenderButtonGroup(button_retour_menu);
-		SDL_RenderPresent(sdlRenderer);
 end;
 
 procedure ParallaxMenuInit;
@@ -401,6 +513,12 @@ end;
 procedure InitCredits;
 begin
 	InitButtonGroup(button_retour_menu, 850, 625, 200, 75,'Sprites\Menu\Button1.bmp','Menu',retour_menu);
+	SetLength(DecorCredits.plans, 4);
+  	DecorCredits.plans[0] := 'Plains';
+  	DecorCredits.plans[1] := 'Forest';
+	DecorCredits.plans[2] := 'Winter';
+	DecorCredits.plans[3] := 'Flowers';
+	InitDecorParallax(DecorCredits,DecorCredits.plans[0],5);
 end;
 
 procedure InitTutorial;
@@ -453,6 +571,7 @@ begin
 		end;
 	
 end;
+
 
 procedure acquisitionCarte(carte:TCarte;var stats:TStats);
 begin
@@ -601,4 +720,5 @@ begin
 end;
 
 begin
+changementDecor := False;
 end.

@@ -523,6 +523,7 @@ begin
 							activationEvent(sceneSuiv);
 						end
 						 else dialogues[1].LetterDelay:=0;
+				'Credits':begin OnMouseClick(button_retour_menu,GetMouseX,GetMouseY); HandleButtonClick(button_retour_menu.button, EventSystem^.motion.x, EventSystem^.motion.y) end;
 				'Leo_Menu':for i:=1 to 3 do
 					begin
 					OnMouseClick(boutons[i], EventSystem^.motion.x, EventSystem^.motion.y);
