@@ -442,8 +442,8 @@ begin
         //ajustement de la position: le projectile avance
         proj.stats.xreel:=proj.stats.xreel+(proj.stats.vectX);
         proj.stats.yreel:=proj.stats.yreel+(proj.stats.vectY);
-        proj.image.rect.x:=round(proj.stats.xreel)-25;
-        proj.image.rect.y:=round(proj.stats.yreel)-25;
+        proj.image.rect.x:=round(proj.stats.xreel)-(proj.image.rect.w div 2);
+        proj.image.rect.y:=round(proj.stats.yreel)-(proj.image.rect.h div 2);
         end;
         end
 end;    
@@ -583,6 +583,7 @@ begin
     if (victime.stats.genre=joueur) and (victime.stats.lamort) and (degats>victime.stats.vie) then
         victime.stats.vie:=1
     else
+    begin
         victime.stats.vie:=victime.stats.vie-degats;
     if not (victime.stats.inamovible) then
         begin
@@ -605,6 +606,7 @@ begin
             begin popUpColor.r:=255;popUpColor.g:=51;popUpColor.b:=51;popUpColor.a:=255; end
         else begin popUpColor.r:=51;popUpColor.g:=255;popUpColor.b:=51;popUpColor.a:=255; end;
         CreateDamagePopUp(trouverCentreX(victime),trouverCentreY(victime),StringToPChar(IntToStr(abs(degats))),popUpColor);
+    end;
     end;
 end;
 
@@ -842,7 +844,7 @@ end;
         for i := 0 to high(LOBjets) do
             if LOBjets[i].stats.genre=ennemi then
             begin
-                subirDegats(LObjets[i].stats,1,trouverCentreX(LObjets[i]),trouverCentreY(LObjets[i]));
+                subirDegats(LObjets[i].stats,degat(1,s.force,LObjets[i].stats.defense,s.multiplicateurDegat),trouverCentreX(LObjets[i]),trouverCentreY(LObjets[i]));
                 creerEffet(LObjets[i].image.rect.x+LObjets[i].col.offset.x,LObjets[i].image.rect.y+LObjets[i].col.offset.x,LObjets[i].col.dimensions.w,LObjets[i].col.dimensions.h,7,'impact_solaire',False,eff);
                 ajoutObjet(eff);
             end;

@@ -305,7 +305,7 @@ end;
 procedure direction_menu;
 begin
     SceneActive := 'Menu';
-	indiceMusiqueJouee:=1;
+	indiceMusiqueJouee:=0;
 
     // Activer les boutons du menu principal
     boutons[2].button.estVisible := true;
@@ -630,7 +630,10 @@ var i:Integer;
 begin
 	if indiceMusiqueJouee<14 then indiceMusiqueJouee:=indiceMusiqueJouee+18;
 	StatsJ.vie:=LObjets[0].stats.vie;
-	InitDialogueBox(dialogues[1],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('VICTOIRE_'+intToSTR(random(4)+1+10*(statsJ.avancement div 10))),10);
+	if (statsJ.avancement-1) mod 10 = 0 then
+		InitDialogueBox(dialogues[1],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('VICTOIRE_'+intToSTR(10*(statsJ.avancement div 10))),10)
+	else
+		InitDialogueBox(dialogues[1],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('VICTOIRE_'+intToSTR(random(4)+1+10*(statsJ.avancement div 10))),10);
 	InitDecorCartes;
     sceneActive:='victoire';
     for i:=1 to 3 do
@@ -655,6 +658,7 @@ var i:Integer;
 begin
 	if indiceMusiqueJouee<14 then indiceMusiqueJouee:=indiceMusiqueJouee+18;
 	StatsJoueur.vie:=LObjets[0].stats.vie;
+	InitDialogueBox(dialogues[1],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('VICTOIRE_0'),10);
 	InitDecorCartes;
     sceneActive:='victoire';
     for i:=1 to 3 do

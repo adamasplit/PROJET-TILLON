@@ -58,7 +58,7 @@ procedure generationChoix(var salle1,salle2,salle3:TSalle);
 var alea:Integer;
 begin
     writeln('Actuellement en salle : ',statsJoueur.avancement);
-    if ((statsJoueur.avancement mod 5) = 0) then 
+    if ((statsJoueur.avancement mod (MAXSALLES div 4)) = 0) then 
         begin
             salle1.evenement:=rien;
             salle2.evenement:=boss;
@@ -88,21 +88,51 @@ begin
 end;
 
 function choisirennemi(avancement:Integer):integer; //choisit un ennemi adapté à la salle actuelle
-var alea:Integer;av2:Integer;
+var alea:Integer;
 begin
-    alea:=random(10);
-    if (avancement<MAXSALLES div 4) then
+    alea:=random(10)+1;
+    if (avancement<=MAXSALLES div 4) then
         case alea of
-        1..9:choisirennemi:=random(1)
+        1..7:choisirennemi:=random(5)+1;
+        8..10:choisirennemi:=random(2)+6;
+        end
+    else if (avancement<=MAXSALLES div 2) then
+        case alea of
+        1..6:choisirennemi:=random(4)+13;
+        7..9:choisirennemi:=random(3)+6;
+        10:choisirennemi:=11;
+        end
+    else if (avancement<=(MAXSALLES - MAXSALLES div 4)) then
+        case alea of
+        1..8:choisirennemi:=random(5)+18;
+        9:choisirennemi:=random(2)+9;
+        10:choisirennemi:=25;
+        end
+    else if (avancement<=MAXSALLES) then
+        case alea of
+        1,2:choisirennemi:=26;
+        3..6:choisirennemi:=random(2)+28;
+        7..8:choisirennemi:=random(4)+13;
+        9:choisirennemi:=random(7)+6;
+        10:if random(2)=0 then choisirennemi:=36
+            else choisirennemi:=35
         end;
 end;
+
+function choisirMusique(avancement:Integer):Integer;
+begin
+    case avancement div (MAXSALLES div 6) of
+        0..4:choisirMusique:=(avancement div (MAXSALLES div 6))+random(2)+1;
+        else choisirMusique:=random(4)+5
+        end
+end;
+
 procedure choisirEnnemis(avancement:Integer;boss:Boolean);
 var j,nb : integer;
 begin
     writeln(high(ennemis),',',high(LObjets));
     if high(ennemis)>1 then
         repeat
-            sdl_freeSurface(ennemis[high(ennemis)].image.imgSurface);
             SDL_DestroyTexture(ennemis[high(ennemis)].image.imgTexture);
             setlength(ennemis,high(ennemis));
         until high(ennemis)=0;
@@ -115,28 +145,27 @@ begin
     vagueFinie:=True;
     combatFini:=False;
     randomize;
-    initDecor(2+avancement div 10);
-    indiceMusiqueJouee:=(statsJoueur.avancement div 3)+2;
-    nb:=(avancement mod (maxSalles div 4));
+    initDecor((avancement-1) div 10);
+    indiceMusiqueJouee:=choisirMusique(avancement);
+    nb:=(avancement mod (maxSalles div 4))+((avancement mod (maxSalles div 4)) div 6);
     writeln('choix des ennemis');
-    //###partie à modifier : choix des ennemis et de leur nombre
     if not boss then begin
         setlength(ennemis,nb+1);
         for j:=1 to nb do
             begin
             ennemis[j]:=templatesennemis[choisirEnnemi(avancement)];
-            ennemis[j].stats.vie :=     round((0.5+avancement/MAXSALLES)*ennemis[j].stats.vie    );
-            ennemis[j].stats.vieMax :=  round((0.5+avancement/MAXSALLES)*ennemis[j].stats.vieMax );
-            ennemis[j].stats.force :=   round((0.5+avancement/MAXSALLES)*ennemis[j].stats.force  );
-            ennemis[j].stats.defense := round((0.5+avancement/MAXSALLES)*ennemis[j].stats.defense);
-            ennemis[j].stats.vitesse := round((0.5+avancement/MAXSALLES)*ennemis[j].stats.vitesse);
+            ennemis[j].stats.vie :=     round((avancement/MAXSALLES+0.2)*ennemis[j].stats.vie    );
+            ennemis[j].stats.vieMax :=  round((avancement/MAXSALLES+0.2)*ennemis[j].stats.vieMax );
+            ennemis[j].stats.force :=   round((avancement/MAXSALLES+0.2)*ennemis[j].stats.force  );
+            ennemis[j].stats.defense := round((avancement/MAXSALLES+0.2)*ennemis[j].stats.defense);
+            ennemis[j].stats.vitesse := round((avancement/MAXSALLES+0.2)*ennemis[j].stats.vitesse);
             end;
     end;
     writeln('ennemis choisis')
 
 end;
 
-procedure LancementSalleCombat();
+procedure LancementSalleCombat(); //déclenche une salle de combat normal
 begin
 
 writeln('Lancement de salle Combat');
@@ -146,10 +175,9 @@ ClearScreen;
 SDL_RenderClear(sdlRenderer);
 
 SceneActive := 'Jeu';
-//indiceMusiqueJouee:=random(4)+2;
 end;
 
-procedure LancementVSLeo();
+procedure LancementVSLeo(); //active le combat contre Leo
 begin
     initStatsCombat(statsJoueur,LObjets[0].stats);
     if high(LOBjets)>0 then repeat supprimeObjet(LObjets[1]) until high(LObjets)=0;
@@ -158,34 +186,40 @@ begin
     setlength(ennemis,2);
     indiceMusiqueJouee:=9;
     initDecor;
-    ennemis[1]:=templatesEnnemis[12];
+    ennemis[1]:=templatesEnnemis[23];
     sceneActive:='Jeu';
 end;
 
+procedure choixBoss(avancement:Integer); //choisit parmi la liste l'ennemi à mettre dans une salle de boss
+begin
+    setlength(LObjets,2);
+    indiceMusiqueJouee:=min(12,((avancement-1) div (maxSalles div 4))+10);
+    if (avancement<=MAXSALLES div 4) then
+        LObjets[1]:=templatesEnnemis[31]
+    else if (avancement<=MAXSALLES div 2) then
+        LObjets[1]:=templatesennemis[33]
+    else if (avancement<=(MAXSALLES - MAXSALLES div 4)) then
+        LObjets[1]:=templatesennemis[37]
+    else if (avancement<=MAXSALLES) then
+        begin
+        setlength(ennemis,3);
+        LObjets[1]:=TemplatesEnnemis[27];
+        ennemis[2]:=templatesEnnemis[30];
+        ennemis[1]:=templatesEnnemis[38];
+        end;
+end;
 
-
-procedure LancementSalleBoss;
-var j : integer;
+procedure LancementSalleBoss; //active une salle où le joueur combattra un unique ennemi plus puissant
 begin
     writeln('Lancement de salle Boss');
     choisirEnnemis(statsJoueur.avancement,true);
-    statsJoueur.avancement := statsJoueur.avancement+1;
-    
     ClearScreen;
     SDL_RenderClear(sdlRenderer);
     SceneActive := 'Jeu';
     vagueFinie:=False;
-    setlength(LObjets,2);
-    indiceMusiqueJouee:=random(4)+10;
-    for j:=1 to 1 do
-    begin
-        randomize;  
-        LObjets[j]:=TemplatesEnnemis[2];
-    end;
-    setlength(ennemis,3);
-    ennemis[2]:=templatesEnnemis[19];
-    ennemis[1]:=templatesEnnemis[20];
-    writeln('ennemis choisis (boss)')
+    choixBoss(statsJoueur.avancement);
+    writeln('ennemis choisis (boss)');
+    statsJoueur.avancement := statsJoueur.avancement+1;
 end;
 
 function ajouterCarteAleatoireRarete(rarete : Trarete):TCarte;
@@ -792,7 +826,7 @@ begin
     randomize;
 	sdl_freesurface(fond.imgSurface);
 	sdl_destroytexture(fond.imgTexture);
-    //CreateRawImage(fond,88,-80,900,900,StringToPChar('Sprites/Game/floor/map_Bg.bmp'));
+    CreateRawImage(fond,0,-80,1080,900,StringToPChar('Sprites/Game/floor/map_Bg.bmp'));
 end;
 
 procedure choixSalle();
@@ -820,7 +854,8 @@ end;
 procedure actualiserMap();
 begin
     SDL_PumpEvents();
-    //renderRawImage(fond,True);
+    drawrect(black_col,255,0,0,WINDOWWIDTH,windowHeight);
+    renderRawImage(fond,True);
     RenderButtonGroup(salles[1].image);
     RenderButtonGroup(salles[2].image);
     RenderButtonGroup(salles[3].image);

@@ -53,9 +53,18 @@
 <DESC_ENN_5>Cet être semble vide.;
 <DESC_ENN_6>L'élémentaire des astres incarne l'infini, hors de portée de l'humanité.;
 <DESC_ENN_7>Un élémentaire symbolisant le passage du temps, capable d'impacter la perception du temps des autres êtres.;
+<DESC_ENN_8>Spectre de ceux qui sont mort avec des regrets dans leur coeur, il continue à se manifester pour tenter de prendre un nouveau corps.;
+<DESC_ENN_9>;
+<DESC_ENN_10>;
+<DESC_ENN_11>;
 <DESC_ENN_12>Cet élémentaire, né de l'union de la lumière et des ténèbres, les maîtrise tous deux pour abattre ses ennemis.;
+<DESC_ENN_13>L'un des deux principaux domaines de magie: la magie noire implique un désir de destruction.;
+<DESC_ENN_14>L'un des deux principaux domaines de magie: la magie blanche a pour but de protéger, mais aussi rendre justice.;
 <DESC_ENN_15>L'école de la magie rouge implique une très stricte discipline sur soi-même.;
+<DESC_ENN_16>Des élèves particulièrement brillants peuvent apprendre la magie d'invocation, arts arcaniques de communication avec un autre monde.;
+<DESC_ENN_17>;
 <DESC_ENN_18>Un horrible amalgame fait à partir de multiples âmes. Son corps est extrêmement instable.;
+<DESC_ENN_19>;
 <DESC_ENN_20>Une relique des temps anciens qui est maintenant utilisée comme garde. Elle semble pourtant dotée d'une forme d'intelligence.;
 <DESC_ENN_21>Cette imposante machine, alimentée par magie, sert de moyen de transport mais également de sentinelle pour garder le donjon. L'alliage de ces deux fonctions lui donne une grande vitesse.;
 <DESC_ENN_22>Des animaux qui, à l'état sauvage, sont incapables de manipuler leur important mana. Ils ont donc été capturés par les mages, avides d'utiliser cette énergie. Leur armure leur permet de contrôler leur pouvoir, notamment sous forme de rayons dévastateurs.;
@@ -69,7 +78,9 @@
 <DESC_ENN_30>Un archimage ayant utilisé un sort interdit pour acquérir un grand pouvoir, tout en altérant son propre corps. Il a donc perdu la rapidité de sa magie, mais a gagné en force.;
 <DESC_ENN_31>Votre geôlier accomplit rigoureusement la tâche qui lui a été confiée il y a bien longtemps.;
 <DESC_ENN_32>L'échec a activé le pacte que le geôlier avait conclu, le condamnant à une souffrance éternelle qui lui donne pourtant de la force.;
+<DESC_ENN_33>Un ancien mage, qui a bravé les interdits pour faire subsister son âme au-delà de la matière. Sa frustration est devenue de la folie.;
 <DESC_ENN_34>Une trace du passage des dieux en ce monde. Sa simple présence suffit à détruire un mortel.;
+<DESC_ENN_35>;
 <DESC_ENN_36>Un être créé pour surpasser la mort. Il fait donc tout pour survivre.;
 <DESC_ENN_37>Une immense créature faite de toutes pièces. Le fait qu'elle soit encore en vie est un miracle... ou une malédiction.;
 <DESC_ENN_38>Un dragon des temps anciens, oublié de tous. Suite à sa réincarnation, il cherche sa vengeance sur le monde qui l'a abattu. Sa puissance dépasse de loin celle de n'importe quelle autre forme de vie.;
@@ -80,6 +91,7 @@
 <COMM_ENN_4>J'imagine que recevoir le don de la magie a grandement aidé les autres formes de vie.;
 <COMM_ENN_5>Je n'ai jamais vu une créature pareille. Elle semble avoir une emprise sur les ténèbres.;
 <COMM_ENN_6>Et dire que nous continuons à nous battre ici-bas. Il y a tant d'espace, tant de choses à faire... et si peu de temps...;
+<COMM_ENN_8>;
 <COMM_ENN_7>Le temps... J'en ai déjà bien assez perdu, m'est-il encore possible d'atteindre mes objectifs?;
 <COMM_ENN_9>Il y a bien longtemps que je n'ai pas vu la lumière. Mais ma détermination ne faillira pas cette fois-ci, car ce conflit dépasse largement les individus comme moi.;
 <COMM_ENN_10>L'ombre n'est ni fondamentalement bonne ou mauvaise. Après tout, certains y trouvent le confort et le repos.;
@@ -87,6 +99,7 @@
 <COMM_ENN_12>Pourquoi cet élémentaire est-il si agressif, ne représente-t-il pas l'équilibre ? Ou bien... est-ce que je menace cet équilibre ?;
 <COMM_ENN_14>Je ne pourrais supporter d'être dévouée aux autres de la sorte. Leurs croyances sont soit admirables, soit stupides.;
 <COMM_ENN_15>Leurs sorts sont certes bien plus perfectionnés que les miens, mais peu importe. Manifestement, la discipline n'équivaut pas à la victoire.;
+<COMM_ENN_17>;
 <COMM_ENN_18>...Quelle atrocité...;
 <COMM_ENN_19>C'est une construction étrange. Est-ce un membre d'une entité plus grande encore, ou bien est-ce une fin en soi?;
 <COMM_ENN_20>Ce n'est pas qu'une simple machine, c'est un vestige des dieux! Et ils l'utilisent comme simple geôlier? C'est inadmissible!;
@@ -102,6 +115,7 @@
 <COMM_ENN_30>Ce symbole! Il doit donc s'agir d'un genre de pacte. Mais pourquoi aller aussi loin pour le pouvoir? Suis-je une telle menace?;
 <COMM_ENN_31>Un ennemi puissant, mais il n'aurait pas dû se mettre en travers de mon chemin.;
 <COMM_ENN_32>Pourquoi...Pourquoi soumettre quelqu'un à un sort si cruel?;
+<COMM_ENN_33>Je n'ai jamais été très croyante, mais... Est-ce le genre de dessein que les dieux avaient pour l'humanité?;
 <COMM_ENN_34>On dit que la véritable forme des dieux est bien au-delà de l'imagination humaine. Pourquoi cette chose s'est-elle manifestée face à moi? Est-ce un présage, ou bien...;
 <COMM_ENN_35>Est-ce une machine animée d'une âme? Je ne sais pas si je devrais être impressionnée ou terrifiée.;
 <COMM_ENN_36>Je comprends la volonté de s'accrocher à la vie. Mais...;
@@ -200,8 +214,8 @@
 <MARCHAND_ACCUEIL_1>Bienvenue chez Wizgamoth !;
 <MARCHAND_ACCUEIL_2>De retour ? Mes produits doivent vous plaire !;
 <MARCHAND_ACCUEIL_3>Approchez jeune aventurière !;
-<MARCHAND_ACCUEIL_4>Il est frai mon étalage, il est frai !;
-<MARCHAND_DISCUSSION_1>Au fait saviez vous 
+<MARCHAND_ACCUEIL_4>Il est frais mon étalage, il est frais !;
+<MARCHAND_DISCUSSION_1>Au fait saviez vous ;
 
 <INTRO_1>Dans les temps immémoriaux, l'univers n'était que chaos et désolation.;
 <INTRO_2>Aucune matière, aucun concept, aucune vie... ;
@@ -256,8 +270,20 @@
 <VICTOIRE_1>Comme quoi... Ces cartes ont l'air de bien fonctionner.;
 <VICTOIRE_2>Ouf! On dirait que je m'en sors plutôt pas mal!;
 <VICTOIRE_3>Ce n'est que le début.;
-<VICTOIRE_4>;
+<VICTOIRE_4>Ces cachots ne m'arrêteront pas longtemps!;
+<VICTOIRE_10>Je sais que vous ne faisiez que votre devoir. Je suis désolée.;
 <VICTOIRE_11>Eh bien, si c'est ce que vaut l'école de magie, il vous faut plus d'efforts!;
 <VICTOIRE_12>Bon, au moins je ne ferai pas plus de victimes humaines s'ils s'enfuient comme ça.;
-<VICTOIRE_13>;
-<VICTOIRE_14>;
+<VICTOIRE_13>Est-ce que c'est ça qu'on vous enseigne ici?;
+<VICTOIRE_14>Ces couloirs sont vraiment infestés d'étudiants.;
+<VICTOIRE_20>Vouloir surpasser la mort, c'est s'opposer à la vie.;
+<VICTOIRE_21>Un tel centre d'expérimentations... Comment tous peuvent-ils ignorer son existence?;
+<VICTOIRE_22>;
+<VICTOIRE_23>;
+<VICTOIRE_24>;
+<VICTOIRE_30>............;
+<VICTOIRE_31>Je suis allée trop loin pour mourir maintenant.;
+<VICTOIRE_32>Le destin est de mon côté.;
+<VICTOIRE_33>J'approche de mon but! Surtout, ne pas baisser ma garde.;
+<VICTOIRE_34>Je suis entourée de mes ennemis désormais.;
+<VICTOIRE_40>Je ne dois pas me faire d'illusions... La paix n'est pas restaurée pour autant. Mais je continuerai à me battre aussi longtemps qu'il le faudra!;
