@@ -24,6 +24,8 @@ uses
 
 var iEnn,ideckprec:Integer;carteDeck,ennAff:TImage;
 	changementDecor : Boolean;
+var
+  creditsText: TImage;
 
 procedure AfficherTout();
 procedure victoire(var statsJ:TStats;boss:Boolean);
@@ -42,6 +44,7 @@ procedure goSeekHelp;
 procedure Credits;
 procedure NouvellePartieIntro;
 procedure menuEnJeu;
+procedure retourMenu;
 function NextOrSkipDialogue(i : Integer) : Boolean;
 procedure actualiserDeck();
 procedure actualiserBestiaire();
@@ -112,7 +115,6 @@ begin
     // Dimensions calculées à partir de l'échelle
     width := Round(1080 * profondeur);
     height := Round(720 * profondeur);
-	writeln(width);
     // Création de l'image
     CreateRawImage(decor.images[i], 0, 0, width, height,StringToPChar('Sprites\Menu\DecorsCredits\' + NomDecor + '-' + IntToStr(totalDecors - i) + '.bmp'));
 
@@ -123,7 +125,6 @@ begin
     // Définition des offsets
     decor.offsets[i].x := decor.images[i].rect.x;
     decor.offsets[i].y := decor.images[i].rect.y;
-	writeln('Position initiale : (', decor.images[i].rect.x, ',', decor.images[i].rect.y, ')');
     // Ajuster la profondeur pour les plans suivants
     profondeur := profondeur * 1.2;
   end;
@@ -193,6 +194,10 @@ procedure jouer;
 		//ActualiserJeu;
 end;
 
+procedure InitCreditsText;
+begin
+  CreateRawImage(creditsText, windowWidth div 2 - 540, windowHeight, 1080, 4000,'Sprites\Menu\Credits.bmp');
+end;
 procedure UpdateCameraParallax(var decor: TDecorParallax; avance: Boolean);
 
 var
@@ -213,6 +218,9 @@ begin
     if avance then
     begin
 
+		if creditsText.rect.y >= -3325 then
+			creditsText.rect.y := Round(creditsText.rect.y - 0.55);
+		
       newWidth := Round(decor.images[i].rect.w + (1+decor.scales[i]/100));
       newHeight := Round(decor.images[i].rect.h + (1+decor.scales[i]/100));
 
@@ -224,23 +232,22 @@ begin
       decor.images[i].rect.w := newWidth;
     	decor.images[i].rect.h := newHeight;
 	  //writeln('Plan ', i, ' Scale: ', decor.scales[i]:0:4, ' NewWidth: ', newWidth, ' NewHeight: ', newHeight);
-	  sdl_delay(10);
     end
 	else decor.oscillation:=0;
 
     // Oscillation verticale pour l’effet de marche
-    offsetY := Round(Sin(decor.oscillation) * 10); // Amplitude de marche fixée à 5
+    offsetY := Round(Sin(decor.oscillation) * 10); // Amplitude fixée à 10
     decor.images[i].rect.y := decor.images[i].rect.y + offsetY;
 
     // Affiche l’image
     RenderRawImage(decor.images[i], False);
+	sdl_delay(7);
   end;
 
   // Vérifie si un changement de décor est requis
   //writeln('decor.images[0].rect.w ', decor.images[0].rect.w, ' fonduActif: ', fonduActif);
   if fonduActif = False and changementDecor then
   begin
-  writeln(decor.currentPlan);
     decor.currentPlan := (decor.currentPlan + 1) mod Length(decor.plans); // Décor suivant
 	case decor.currentPlan of
 	0:taillePlan :=5;
@@ -249,16 +256,17 @@ begin
 	3:taillePlan :=4
 	end;
     InitDecorParallax(decor, decor.plans[decor.currentPlan], taillePlan);
-    //DeclencherFondu(False, 2000); // Déclenche le fondu d’entrée
+    DeclencherFondu(False, 2000); // Déclenche le fondu d’entrée
 	changementDecor:=False;
   end;
 
-  if (decor.images[0].rect.w > 1350) and fonduActif = False then
+  if (decor.images[0].rect.w > 1460) and fonduActif = False then
   begin
     DeclencherFondu(True, 1000); // Déclenche le fondu de sortie
 	changementDecor := True;
   end;
   effetDeFondu;
+  RenderRawImage(creditsText,False);
 end;
 
 
@@ -268,6 +276,7 @@ procedure Credits;
 	begin
 		SceneActive := 'Credits';
 		
+		indiceMusiqueJouee:=43;
 		
 		boutons[3].button.estVisible := false;
 		boutons[4].button.estVisible := false;
@@ -312,6 +321,7 @@ procedure direction_menu;
 begin
     SceneActive := 'Menu';
 	indiceMusiqueJouee:=0;
+
 
     // Activer les boutons du menu principal
     boutons[2].button.estVisible := true;
@@ -362,6 +372,7 @@ begin
 
   // Shutting down video subsystem (A laisser imperativement)
   SDL_Quit;
+  QUITGAME:= True;
 end;
 
 procedure continuer();
@@ -369,6 +380,21 @@ begin
 	initJoueur(true);
 	choixSalle;
 end;
+
+procedure retourMenu;
+begin
+	SDL_DestroyTexture(boutons[1].image.imgTexture);
+	SDL_freeSurface(boutons[1].image.imgSurface);
+	SDL_DestroyTexture(boutons[2].image.imgTexture);	
+	SDL_freeSurface(boutons[2].image.imgSurface);
+	SDL_DestroyTexture(boutons[3].image.imgTexture);	
+	SDL_freeSurface(boutons[3].image.imgSurface);
+	SDL_DestroyTexture(boutons[4].image.imgTexture);	
+	SDL_freeSurface(boutons[4].image.imgSurface);
+	InitMenuPrincipal;
+	direction_menu;
+end;
+
 procedure InitMenuPrincipal;
 begin
     // Créer des boutons
@@ -376,7 +402,7 @@ begin
     quitter:=@annihiler;
     Pjouer:=@jouer;
     PCredits:=@Credits;
-    retour_menu:=@direction_menu;
+    retour_menu:=@retourMenu;
     PopenSettings := @openSettings;
     PgoSeekHelp := @goSeekHelp;
 	PNouvellePartieIntro := @NouvellePartieIntro;
@@ -509,11 +535,27 @@ begin
 	reactualiserBestiaire;
 end;
 
+procedure InitTutorial;
+begin
+	CreateText(TexteTutos[1], windowWidth div 2-250, windowHeight div 2 + 50, 300, 250, 'ZQSD pour se deplacer',Fantasy30, b_color);
+	CreateText(TexteTutos[2], windowWidth div 2-250, windowHeight div 2 + 50, 300, 250, 'Echap pour ouvrir le menu',Fantasy30, b_color);
+	CreateText(TexteTutos[3], windowWidth div 2-250, windowHeight div 2 + 50, 300, 250, 'Scroll pour choisir une carte',Fantasy30, b_color);
+	CreateText(TexteTutos[4], windowWidth div 2-250, windowHeight div 2 + 50, 300, 250, 'Clic droit pour utiliser une carte',Fantasy30, b_color);
+end;
+procedure InitTutorialMenu;
+begin
+	CreateText(TexteTutosMenu[1], windowWidth div 2-380, windowHeight div 3 - 120, 300, 250, 'Scroll pour défiler les pages (deck ou bestiaire)',Fantasy30, b_color);
+	CreateText(TexteTutosMenu[2], windowWidth div 2-400, windowHeight div 3 - 120, 300, 250, 'Les pages se débloquent au fur et à mesure dans le jeu !',Fantasy30, b_color);
+	CreateText(TexteTutosMenu[3], windowWidth div 2-450, windowHeight div 3 - 120, 300, 250, 'Chaque rencontre ou carte obtenue est notée dans le livre.',Fantasy30, b_color);
+	CreateText(TexteTutosMenu[4], windowWidth div 2-350, windowHeight div 3 - 120, 300, 250, 'Echap pour quitter le menu',Fantasy30, b_color);
+end;
+
 procedure InitMenuEnJeu;
 begin
   //Menu en Jeu
 	InitButtonGroup(boutons[8], 210, 320, 240, 50,nil,'Deck',@ouvrirDeck);
 	InitButtonGroup(boutons[9], 210, 390, 240, 50,nil,'Bestiaire',@ouvrirBestiaire);
+	InitTutorialMenu;
 end;
 
 procedure InitCredits;
@@ -524,15 +566,8 @@ begin
   	DecorCredits.plans[1] := 'Forest';
 	DecorCredits.plans[2] := 'Winter';
 	DecorCredits.plans[3] := 'Flowers';
+	InitCreditsText;
 	InitDecorParallax(DecorCredits,DecorCredits.plans[0],5);
-end;
-
-procedure InitTutorial;
-begin
-	CreateText(TexteTutos[1], windowWidth div 2-250, windowHeight div 2 + 50, 300, 250, 'ZQSD pour se deplacer',Fantasy30, whiteCol);
-	CreateText(TexteTutos[2], windowWidth div 2-250, windowHeight div 2 + 50, 300, 250, 'Echap pour ouvrir le menu',Fantasy30, whiteCol);
-	CreateText(TexteTutos[3], windowWidth div 2-250, windowHeight div 2 + 50, 300, 250, 'Scroll pour choisir une carte',Fantasy30, whiteCol);
-	CreateText(TexteTutos[4], windowWidth div 2-250, windowHeight div 2 + 50, 300, 250, 'Clic droit pour utiliser une carte',Fantasy30, whiteCol);
 end;
 
 procedure AfficherTout(); //affiche tout (en combat)

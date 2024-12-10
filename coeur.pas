@@ -169,9 +169,12 @@ statsJoueur: TStats;
 queueDialogues:array of InfoBoiteDialogues;
 var modeDebug:Boolean;
 
+QUITGAME : Boolean;
+
 PDeck:TDeck; //deck pointé par les stats du joueur
 
 Title : TText;
+TexteTutosMenu : Array [1..10] of TText;
 TexteTutos : Array [1..10] of TText;
 ImagesMenu : Array [1..7] of TImage;
 // Boutons
