@@ -217,7 +217,49 @@
 <MARCHAND_ACCUEIL_2>De retour ? Mes produits doivent vous plaire !;
 <MARCHAND_ACCUEIL_3>Approchez jeune aventurière !;
 <MARCHAND_ACCUEIL_4>Il est frais mon étalage, il est frais !;
-<MARCHAND_DISCUSSION_1>Au fait saviez vous ;
+
+<MARCHAND_DISCUSSION_1_1>Je vous reconnais ! Vous êtes la rebelle qui a causé les événements terroristes restants.;
+<MARCHAND_DISCUSSION_1_2>Décidément je suis une vraie star... Malgré moi. Qu'est ce que vous savez de moi ?;
+<MARCHAND_DISCUSSION_1_3>Eh bien que vous manipulez l'opinion pour faire croire qu'une guerre allait ce déclencher...;
+<MARCHAND_DISCUSSION_1_4>Finalement, cela a causé la guerre civile et les attentats druides.;
+<MARCHAND_DISCUSSION_1_5>Pour ma défense, j'ai lue dans les astres que le président du conseil allait déclarer la guerre aux druides.;
+<MARCHAND_DISCUSSION_1_6>Vous savez, jeune fille, que de telles choses sont très graves. On ne dévoile pas ce genre d'info en publique.;
+<MARCHAND_DISCUSSION_1_7>Certe, mais un millénaire en taule ça fait chère la divination...
+
+<MARCHAND_DISCUSSION_2_1>Vous étiez au courant qu'il y a une recrudescence de chasseur de prime dans le pays ?;
+<MARCHAND_DISCUSSION_2_2>C'est à cause des événements je suppose ?;
+<MARCHAND_DISCUSSION_2_3>Je ne pense pas. Cela date de la mise en place de la liste.;
+<MARCHAND_DISCUSSION_2_4>Donc certaines personnes paies des assassins pour que leur famille remonte dans la liste ?;
+<MARCHAND_DISCUSSION_2_5>Oui... Et c'est souvent ceux qui ont du pouvoir et de l'argent.;
+<MARCHAND_DISCUSSION_2_6>Décidément, quel monde de merde. Je regrette encore que l'on ai réussit à stopper le vieillisement;
+
+<MARCHAND_DISCUSSION_3_1>Au fait, comment se débrouillent les autre peuples avec leur population ? Ont-ils aussi une 'liste' ?;
+<MARCHAND_DISCUSSION_3_2>Cela dépend du peuple en question. Les druides n'ont pas encore prit de mesures car ils n'ont pas de problème de population.;
+<MARCHAND_DISCUSSION_3_3>Les barbares du sud par contre c'est une autre histoire.;
+<MARCHAND_DISCUSSION_3_4>Après 100 ans ils considère que si tu n'es pas mort au combat, tu es un couard.;
+<MARCHAND_DISCUSSION_3_5>Donc ils s'occupent de ton cas...;
+<MARCHAND_DISCUSSION_3_6>Charmant.;
+
+<MARCHAND_DISCUSSION_4_1>Tu m'avais dit que le président du conseil voulait déclencher une guerre. Tu connais la raison ?;
+<MARCHAND_DISCUSSION_4_2>Je n'ai pas la capacité de sonder l'esprit des gens, la télékinésie n'était pas ma matière de prédilection à l'école.;
+<MARCHAND_DISCUSSION_4_3>Mais j'ai mon idée de pourquoi. Le territoire des druides est riche en ressources. Sachant qu'ils sont peu nombreux...;
+<MARCHAND_DISCUSSION_4_4>...il serait facile de les attaquer pour leur prendre du territoire.;
+<MARCHAND_DISCUSSION_4_5>Mais nous sommes la nation la plus puissance du continent. Pourquoi faire cela ?;
+<MARCHAND_DISCUSSION_4_6>Parceque qu'on a la puissance de le faire. La communauté serait bien démunie.;
+
+<MARCHAND_DISCUSSION_5_1>Mais dit moi, Nymera, pourquoi tu ne pouvais pas attendre tranquillement 1000 ans en geôle ?;
+<MARCHAND_DISCUSSION_5_2>C'est long un millénaire tu sais. Mes études ont durée 9 ans et cela m'a déjà paru une éternitée.;
+<MARCHAND_DISCUSSION_5_3>Oui mais en t'échappant, tu risques de te faire poursuivre par les services secrets du conseil.;
+<MARCHAND_DISCUSSION_5_4>Contrairement au reste de la population j'ai choisi de ne pas utiliser la magie pour rallonger ma vie.;
+<MARCHAND_DISCUSSION_5_5>Continuer au dela des 95 ans n'apporte rien de bon. Regarde, on en vient à controler les naissances avec une liste.;
+<MARCHAND_DISCUSSION_5_6>Et on fait des guerres pour s'accaparer les ressources. Je préfère ne pas faire de vieux os, surtout dans ce monde.;
+
+<MARCHAND_DISCUSSION_6_1>Au fait Wizgamoth, comment fais-tu pour toujours être là quand on a besoin de toi ?;
+<MARCHAND_DISCUSSION_6_2>C'est la magie du commerce ma chère ! Rien arrète l'appel de l'argent. Le marchandage c'est mon dada.;
+<MARCHAND_DISCUSSION_6_3>D'accord mais je ne comprends toujours pas comment tu fais pour avoir autant d'échoppes dans tant de localisations.;
+<MARCHAND_DISCUSSION_6_4>Ahhhh mais c'est très simple ! Les portes que tu empreintes pour venir chez moi sont magiques !;
+<MARCHAND_DISCUSSION_6_5>J'ai une seule échoppe mais BEAUCOUPS de ces portes pour être partout et surtout au moment où l'on a le plus besoin de moi.;
+<MARCHAND_DISCUSSION_6_6>Bref, la gobalisation dans toute sa splendeur.;
 
 <INTRO_1>Dans les temps immémoriaux, l'univers n'était que chaos et désolation.;
 <INTRO_2>Aucune matière, aucun concept, aucune vie... ;
@@ -256,6 +298,42 @@
 <PRISON_CELLULE_17>Fantastique, des cartes d'atouts du tarot. J'ai de la chance que ce jeu soit si populaire.;
 <PRISON_CELLULE_18>Bon... c'est pas un jeu de cartes enchanté, mais je devrais pouvoir m'en servir pour sortir de là.;
 <PRISON_CELLULE_19>Quels idiots ! Ils ne savent pas la puissance que contient réellement ces cartes.;
+
+<DIALOGUE_BOSS1_1_1>Hmm ?? GRUUuuuhhhh ! Comment toi échappé ?!
+<DIALOGUE_BOSS1_1_2>Et bien un de tes idiots de garde a simplement laissé tomber des cartes par terre et me voilà !
+<DIALOGUE_BOSS1_1_3>Grumph ! Toi retourne cage, maintenant !
+<DIALOGUE_BOSS1_1_4>Non, je ne crois pas non.
+<DIALOGUE_BOSS1_1_5>Pourquoi ?
+<DIALOGUE_BOSS1_1_6>Pas envie.
+<DIALOGUE_BOSS1_1_6>...
+<DIALOGUE_BOSS1_1_7>...
+<DIALOGUE_BOSS1_1_8>Toi obéir moi ! 
+<DIALOGUE_BOSS1_1_9>C'est ce qu'on va voir mon gros !
+
+<DIALOGUE_BOSS1_2_1>ROOOAAARRRRRHHHHH ! NON ! PAS POSSIBLE !;
+<DIALOGUE_BOSS1_2_1>Maître... aidez... moi...;
+<DIALOGUE_BOSS1_2_1>Désolé de devoir faire ça mais je dois sortir de se trou à rats.;
+<DIALOGUE_BOSS1_2_1>Le cyclope portail la clef de la prison. Vous l'utilisez pour sortir de là.;
+<DIALOGUE_BOSS1_2_1>Une fois dehors, vous cherchez à vous réfugiez dans un bâtiment à l'abri des regards;
+<DIALOGUE_BOSS1_2_1>Vous marchez discrètement dans les rues jusqu'à tomber sur l'université d'alchimie et de magie de la capitale.;
+<DIALOGUE_BOSS1_2_1>Bon... eh bien je vais devoir retourner en cours visiblement. Comme je suis encore encore jeune je pourrais me fondre dans la foule.;
+<DIALOGUE_BOSS1_2_1>Une fois entrée dans le batiment, vous entendez une sirène se délencher et un dôme magique vient confiner tout le bâtiment.;
+<DIALOGUE_BOSS1_2_1>Bon sang, je me suis faite avoir ! Je suis trop reconnaissable maintenant !;
+<DIALOGUE_BOSS1_2_1>Je vais devoir trouver une autre issue.;
+
+<DIALOGUE_BOSS2_1_1>HO HO HO ! Qui vient me déranger dans mes recherches ?
+<DIALOGUE_BOSS2_1_2>Je suis Nym...;
+<DIALOGUE_BOSS2_1_3>mera Amarisse, cartomancienne de Sarkota ayant étudié la cartomancie à Clamsofort et fameuse cheffe des événements.
+<DIALOGUE_BOSS2_1_4>Comment savez-vous cela ?
+<DIALOGUE_BOSS2_1_5>HO HO HO ! Je sais tout ce qu'il y a à savoir. Ma connaissance n'a de limite que vôtre imagination !
+<DIALOGUE_BOSS2_1_6>Comment pouvez-vous être si sûr de cela ? 
+<DIALOGUE_BOSS2_1_7>Je suis un ancien d'avant l'an I. J'ai plus de 6 millénaires d'études sur le pouvoir magique des dieux.
+<DIALOGUE_BOSS2_1_8>Donc vous savez tout ce qui s'est passé dans l'histoire ?;
+<DIALOGUE_BOSS2_1_9>On peut dire cela oui HO HO !
+<DIALOGUE_BOSS2_1_10>Dans de cas, est-ce vrai que le président du conseil voulait s'accapaer les terres des druides par la guerre ?;
+<DIALOGUE_BOSS2_1_11>Hmph... Tu sais jeune fille, tout le secrets n'ont pas besoin d'être révelé au grand jour.;
+<DIALOGUE_BOSS2_1_12>Je vais prendre ça pour un oui 
+
 
 <DIALOGUE_BOSS4_1_1>Nymera Amarisse. Vous êtes en état d'arrestation... Non plus pour incitation au terrorisme, mais pour haute trahison!;
 <DIALOGUE_BOSS4_1_2>Alors c'est vous qui rendez la justice, maintenant? On aura tout vu.;
