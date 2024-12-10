@@ -15,7 +15,7 @@ uses
   sonoSys,
   SysUtils;
 
-const TAILLE_VAGUE=3;
+const TAILLE_VAGUE=2;
 var templatesEnnemis:array[1..MAXENNEMIS] of TObjet;
     ennemis:Array of TOBjet;
 //procedure initStatEnnemi(nom:PChar;typeIA_MVT,vie,att,dmg,def,vitesse,w,h,framesA,frames1,frames2,frames3,framesM:Integer;var ennemi:TObjet;wcol,hcol,offx,offy:Integer;nomAttaques:PChar);
@@ -195,7 +195,7 @@ procedure IAVol(var ennemi:TObjet;targetx,targety:Integer);
 var xdest,ydest:Integer;
 begin
   //fonctionne de façon similaire à IATeleport, sans initialiser l'animation de téléportation
-  jouerSonEnn('fly');
+  if ennemi.anim.objectName<>'Spectre' then jouerSonEnn('fly');
   repeat
   xdest:=random(10)*100;
   until (xdest<=800) and (xdest>=200) and (abs(xdest-targetx)>100) and (abs(xdest-ennemi.image.rect.x)>100);
@@ -466,7 +466,8 @@ begin
     11:begin
       if (ennemi.anim.etat='cast') and (ennemi.stats.compteurAction mod 5=0) and (ennemi.stats.compteurAction<100) then
         begin
-        CreerRayon(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,trouverCentreX(ennemi),ennemi.image.rect.y,1000,200,ennemi.stats.xcible-100+random(20)*10,ennemi.stats.ycible,0,10,50,'rayon',obj);
+        alea1:=random(20);
+        CreerRayon(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,trouverCentreX(ennemi),ennemi.image.rect.y,1000,200,ennemi.stats.xcible,ennemi.stats.ycible-100+alea1*10,-1+alea1/10,10,50,'rayon',obj);
         ajoutObjet(obj);
         end;
       if random(80)=0 then begin
@@ -727,9 +728,10 @@ begin
             AIPathFollow(ennemi,joueur,ennemi.stats.vitessePoursuite,true,true);
           if (ennemi.anim.etat='rewarp') and animFinie(ennemi.anim) then
             InitAnimation(ennemi.anim,ennemi.anim.objectName,'chase', ennemi.stats.nbFrames1,True);
-          if (animFinie(ennemi.anim) and (ennemi.anim.etat='chase') and (random(15)=0)) or ((ennemi.anim.objectName='Archimage') and (ennemi.stats.compteurAction>50))  then 
+          if (animFinie(ennemi.anim) and (ennemi.anim.etat='chase') and (random(15)=0)) or ((ennemi.anim.objectName='Archimage') and (ennemi.stats.compteurAction>80))  then 
             begin
               jouerSonEnn(ennemi.anim.objectName);
+              ennemi.stats.compteurAction:=0;
               IATeleport(ennemi,joueur.image.rect.x,joueur.image.rect.y);
             end;
           if (ennemi.anim.etat='warp') then
@@ -1246,9 +1248,9 @@ begin
     begin
     if (ennemi.anim.objectName='Béhémoth')  then
     begin
-	    InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS4_1'),100);
+	    InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/portraitB.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS4_1'),100);
       ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_2'));
-      ajoutDialogue('Sprites\Menu\portraitB.bmp',extractionTexte('DIALOGUE_BOSS4_3'));
+      ajoutDialogue('Sprites\Portraits/portraitB.bmp',extractionTexte('DIALOGUE_BOSS4_3'));
       ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_4'));
       sceneActive:='Cutscene';
       jouersonenn('dragon');
@@ -1266,7 +1268,7 @@ begin
       end;
     if (ennemi.anim.objectName='Leo') then
       begin
-        InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portrait_Leo7.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_EVENT_BOSS_1'),10);
+        InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/portrait_Leo7.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_EVENT_BOSS_1'),10);
         sceneActive:='Cutscene';
         ennemi.stats.compteurAction:=1;
       end;
@@ -1297,8 +1299,8 @@ begin
 		else
       if (animFinie(ennemi.anim)) and (ennemi.anim.etat='mort') then
         if ennemi.anim.objectName='Leo' then begin
-          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portrait_Leo8.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_EVENT_BOSS_2'),10);
-          ajoutDialogue('Sprites/Menu/portrait_Leo7.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_3'));
+          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/portrait_Leo8.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_EVENT_BOSS_2'),10);
+          ajoutDialogue('Sprites/Portraits/portrait_Leo7.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_3'));
           ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_4'));
           sceneActive:='Cutscene';
           transformation(ennemi,24);
@@ -1309,9 +1311,9 @@ begin
         else if (ennemi.anim.objectName='Leo_Transe') and (ennemi.stats.compteurAction=-1) then begin
           sceneActive:='Cutscene';
           ennemi.stats.compteurAction:=0;
-          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portrait_Leo2.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_EVENT_BOSS_5'),10);
-          ajoutDialogue('Sprites/Menu/portrait_Leo6.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_6'));
-          ajoutDialogue('Sprites/Menu/portrait_Leo6.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_7'));
+          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/portrait_Leo2.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_EVENT_BOSS_5'),10);
+          ajoutDialogue('Sprites/Portraits/portrait_Leo6.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_6'));
+          ajoutDialogue('Sprites/Portraits/portrait_Leo6.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_7'));
           ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_8'));
           end
           
@@ -1354,7 +1356,7 @@ begin
           jouerSonEnn('dragon2');
           statsJoueur.bestiaire[ennemi.stats.numero]:=True;
           initAnimation(ennemi.anim,ennemi.anim.objectName,'mortRep',ennemi.stats.nbframes3,True);
-          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Menu\portraitB.bmp',0,-70,windowWidth,300,extractionTexte('DIALOGUE_BOSS4_0'),100);       sceneActive:='Behemoth_Mort';
+          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/portraitB.bmp',0,-70,windowWidth,300,extractionTexte('DIALOGUE_BOSS4_0'),100);       sceneActive:='Behemoth_Mort';
           end;
     end
 end;
@@ -1401,8 +1403,8 @@ initStatEnnemi(33,'Spectre',12,100,1,10,0,1,300,400,8,22,8,0,13,160,300,70,50,'o
 InitstatEnnemi(34,'vestige',11,1000,3,15,5,1,400,400,16,16,12,10,7,250,400,75,0,'geyser_lumiere');
 initStatEnnemi(35,'gardien',16,500,2,1,0,1,300,300,8,16,0,0,23,250,120,25,120,'rayon_main');
 initStatEnnemi(36,'Geist',17,200,10,0,-10,4,300,300,21,24,3,7,9,80,80,110,160,'rayonAL');
-initStatEnnemi(37,'creature',20,1000,1,0,0,0,600,560,46,12,14,14,20,500,460,50,50,'arcane');
-initStatEnnemi(38,'Béhémoth',10,1000,20,10,10,5,463,614,12,32,40,12,39,400,307,63,307,'rayonRykor');
+initStatEnnemi(37,'creature',20,1000,15,0,0,0,600,560,46,12,14,14,20,500,460,50,50,'arcane');
+initStatEnnemi(38,'Béhémoth',10,1500,20,10,10,5,463,614,12,32,40,12,39,400,307,63,307,'rayonRykor');
 
 
 
