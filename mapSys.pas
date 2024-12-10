@@ -537,6 +537,43 @@ InitButtonGroup(boutons[4],  415, 580, 250, 100, 'Sprites/Menu/button1.bmp','Ech
 boutons[4].parametresSpeciaux:=3;boutons[4].procEch:=@trade;
 end;
 
+procedure rerollDialogueMarchand;
+var portrait:PCHar;
+begin
+    
+    case statsJoueur.nbMarchand of
+        1:case numDialogue of
+            1,3,4,6:portrait:='Sprites/Portraits/marchand.bmp';
+            else portrait:='Sprites/Menu/combatUI_5.bmp'
+            end;
+        2:case numDialogue of
+            1,3,5:portrait:='Sprites/Portraits/marchand.bmp';
+            else portrait:='Sprites/Menu/combatUI_5.bmp'
+            end;
+        3:case numDialogue of
+            2,3,4,5:portrait:='Sprites/Portraits/marchand.bmp';
+            else portrait:='Sprites/Menu/combatUI_5.bmp'
+            end;
+        4:case numDialogue of
+            1,4,5:portrait:='Sprites/Portraits/marchand.bmp';
+            else portrait:='Sprites/Menu/combatUI_5.bmp'
+            end;
+        5:case numDialogue of
+            1,3:portrait:='Sprites/Portraits/marchand.bmp';
+            else portrait:='Sprites/Menu/combatUI_5.bmp'
+            end;
+        6:case numDialogue of
+            2,4,5,6:portrait:='Sprites/Portraits/marchand.bmp';
+            else portrait:='Sprites/Menu/combatUI_5.bmp'
+            end;
+    end;
+    numDialogue:=numDialogue+1;
+    if (numDialogue>8) or ((numDialogue>7) and (statsJoueur.nbMarchand<>1)) then
+        numDialogue:=numDialogue-1
+    else
+        initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp',portrait,0,450,1080,300,extractionTexte('MARCHAND_DISCUSSION_'+intToStr(statsJoueur.nbMarchand)+'_'+intToSTR(numDialogue-1)),10);
+end;
+
 procedure LancementSalleMarchand; //###
 begin
     sceneActive := 'marchand';
@@ -547,14 +584,16 @@ begin
         echangeFait:=True;
     if not entree then
         begin
+        numDialogue:=1;
+        if statsJoueur.nbMarchand<6 then statsJoueur.nbMarchand := statsJoueur.nbMarchand+1;
         statsJoueur.avancement := statsJoueur.avancement+1;
         entree:=True;
         end;
     if not echangeFait then
     InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/button1.bmp','Marchandage',@Echange);
-    InitButtonGroup(boutons[2],  440, 200, 200, 100, 'Sprites/Menu/button1.bmp','Discussion',@LancementSalleMarchand);
+    InitButtonGroup(boutons[2],  440, 200, 200, 100, 'Sprites/Menu/button1.bmp','Discussion',@rerollDialogueMarchand);
     InitButtonGroup(boutons[3],  465, 300, 150, 100, 'Sprites/Menu/button1.bmp','Partir',@choixSalle);
-    initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp',nil,0,450,1080,300,extractionTexte('DIALOGUE_MARCHAND_'+intToStr(random(9)+1)),10);
+    initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Portraits/marchand.bmp',0,450,1080,300,extractionTexte('MARCHAND_ACCUEIL_'+intToStr(min(statsJoueur.nbMarchand,4))),10);
     
     
 end;
@@ -916,6 +955,7 @@ begin
             black_color.b := 0;
             ChoixSalle;
             end;
+        'Map':ChoixSalle;
         else sceneActive := sceneSuiv;
     end;
 end;

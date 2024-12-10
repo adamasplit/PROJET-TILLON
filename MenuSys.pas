@@ -80,6 +80,7 @@ begin
 		statsJoueur.collection[j]:=Cartes[1];
 	statsJoueur.collection[j]:=Cartes[4];
 	statsJoueur.relique:=0;
+	statsJoueur.nbMarchand := 0;
 	statsJoueur.vie:=100;statsJoueur.vieMax:=100;
 	statsJoueur.multiplicateurSoin:=1;
 	initStatsCombat(statsJoueur,LObjets[0].stats);
@@ -298,7 +299,7 @@ begin
 	sceneActive:='Event';
 	for i:=1 to 19 do
 		case i of
-		5,7,9,11,14:ajoutDialogue('Sprites/Portraits/portraitGarde.bmp',extractionTexte('PRISON_CELLULE_'+intToStr(i)))
+		5,7,9,11,14:ajoutDialogue('Sprites/Portraits/portraitGarde1.bmp',extractionTexte('PRISON_CELLULE_'+intToStr(i)))
 		else ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('PRISON_CELLULE_'+intToStr(i)));
 		end;
 	sceneSuiv:='Intro';
@@ -579,13 +580,40 @@ begin
 end;
 
 
+procedure finirCombat(stats:TStats);
+var i:Integer;
+begin
+	if (stats.avancement-1) mod (MAXSALLES div 4) = 0 then
+		case (stats.avancement div (MAXSALLES div 4)) of
+		1:	begin
+			sceneActive:='Event';
+			InitDialogueBox(dialogues[1],nil,'Sprites/Menu/combatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('FIN_BOSS1_1'),10);
+			sceneSuiv:='Map';
+			for i:=2 to 8 do
+			case i of
+				2,3,4,6:ajoutDialogue(nil,extractionTexte('FIN_BOSS1_'+intToStr(i)))
+				else ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('FIN_BOSS1_'+intToStr(i)));
+			end;
+			end;
+		2:	begin
+			choixSalle;
+			end;
+		3:	begin
+			choixsalle;
+			end;
+		4:Credits;
+		end
+	else choixSalle;
+end;
+
+
 procedure acquisitionCarte(carte:TCarte;var stats:TStats);
 begin
     stats.tailleCollection:=stats.tailleCollection+1;
     stats.collection[stats.tailleCollection]:=carte;
-    if stats.avancement>MAXSALLES then sceneActive:='Credits'
-	else choixSalle;
+    finirCombat(stats)
 end;
+
 
 procedure desequiperRelique(var stats:TStats);
 begin
@@ -629,8 +657,7 @@ begin
 	end;
 
 	stats.relique:=rel;
-	if stats.avancement>MAXSALLES then sceneActive:='Credits'
-	else choixSalle;
+	finirCombat(stats)
 end;
 
 procedure victoire(var statsJ:TStats;boss:Boolean); //censé contenir le choix+obtention d'une carte après un combat

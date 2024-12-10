@@ -75,6 +75,7 @@ type TStats=record //(version variable)
           compteurLeMonde:Integer;
           laMort,leFou:Boolean;
           nbJustice : Integer;
+          nbMarchand: Integer;
           relique:Integer);// numéro de la relique équipée
         
         ennemi:(

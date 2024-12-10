@@ -80,10 +80,10 @@ begin
           begin
           //writeln('tentative d"ajout d"un ennemi');
           LObjets[i]:=ennemis[taille];
+          LObjets[i].image.rect.x:=((i-1)+(2-high(ennemis)))*round(600/(TAILLE_VAGUE))+180;
+          LObjets[i].image.rect.y:=50;
           supprimeEnn(ennemis[taille],taille);
           taille:=taille-1;
-          LObjets[i].image.rect.x:=(i-1)*round(600/TAILLE_VAGUE)+180;
-          LObjets[i].image.rect.y:=50;
           jouerSonEnn(LObjets[i].anim.objectName+'_apparition');
           if LObjets[i].anim.objectName='dracomage' then
             begin
@@ -1237,6 +1237,16 @@ begin
     begin
     InitAnimation(ennemi.anim,ennemi.anim.objectName,'chase', ennemi.stats.nbFrames1,True);
     ennemi.col.estActif:=True;
+    if (ennemi.anim.objectName='dracomage') then
+      begin
+        sceneActive:='Cutscene';
+        InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites/Portraits/dracomage1.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS4_3_1'),100);
+        for i:=2 to 4 do
+          case i of
+          1,2,4:ajoutDialogue('Sprites\Portraits/dracomage1.bmp',extractionTexte('DIALOGUE_BOSS4_3_'+intToStr(i)))
+          else ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_3_'+intToStr(i)));
+        end;
+      end;
     end;
   if ennemi.anim.objectname='Béhémoth' then
     begin
@@ -1246,14 +1256,36 @@ begin
     ennemi.image.rect.y:=-50;
   if (ennemi.anim.etat='apparition') and (ennemi.stats.compteurAction=0) then
     begin
+    if (ennemi.anim.objectName='geolier') then
+    begin
+      InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/portraitGarde2.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS1_1_1'),100);
+      for i:=2 to 10 do
+			case i of
+				1,3,5,7,9:ajoutDialogue('Sprites\Portraits/portraitGarde2.bmp',extractionTexte('DIALOGUE_BOSS1_1_'+intToStr(i)))
+				else ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS1_1_'+intToStr(i)));
+      end;
+      sceneActive:='Cutscene';
+      ennemi.stats.compteurAction:=1;
+    end;
+    if (ennemi.anim.objectName='Spectre') then
+    begin
+      InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/spectre.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS2_1_1'),100);
+      for i:=2 to 12 do
+			case i of
+				3,5,7,9,11:ajoutDialogue('Sprites\Portraits/spectre.bmp',extractionTexte('DIALOGUE_BOSS2_1_'+intToStr(i)))
+				else ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS2_1_'+intToStr(i)));
+      end;
+      sceneActive:='Cutscene';
+      ennemi.stats.compteurAction:=1;
+    end;
     if (ennemi.anim.objectName='Béhémoth')  then
     begin
 	    InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/portraitB.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS4_1'),100);
       ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_2'));
       ajoutDialogue('Sprites\Portraits/portraitB.bmp',extractionTexte('DIALOGUE_BOSS4_3'));
       ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_4'));
-      sceneActive:='Cutscene';
       jouersonenn('dragon');
+      sceneActive:='Cutscene';
       ennemi.stats.compteurAction:=1;
     end;
     if (ennemi.anim.objectName='dracomage') then
@@ -1305,7 +1337,16 @@ begin
           sceneActive:='Cutscene';
           transformation(ennemi,24);
           end
-        else if ennemi.anim.objectName='geolier' then begin
+        else if ennemi.anim.objectName='geolier' then 
+          begin
+          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/portraitGarde3.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS1_2_1'),100);
+          for i:=2 to 5 do
+          case i of
+            1,3,4:ajoutDialogue('Sprites\Portraits/portraitGarde3.bmp',extractionTexte('DIALOGUE_BOSS1_2_'+intToStr(i)))
+            else ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS1_2_'+intToStr(i)));
+          end;
+          sceneActive:='Cutscene';
+          ennemi.stats.compteurAction:=1;
           transformation(ennemi,32)
           end
         else if (ennemi.anim.objectName='Leo_Transe') and (ennemi.stats.compteurAction=-1) then begin
@@ -1346,6 +1387,21 @@ begin
           jouerSonEnn(ennemi.anim.objectName+'_mort');
           if ennemi.anim.objectName='Leo_Transe' then ennemi.stats.compteurAction:=-1;
           InitAnimation(ennemi.anim,ennemi.anim.objectName,'mort',ennemi.stats.nbFramesMort,False);
+          if (ennemi.anim.objectName='dracomage') then 
+            begin
+            sceneActive:='Cutscene';
+            InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/dracomage2.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS4_4_1'),100);
+            ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_4_2'));
+            ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_4_3'));
+            ajoutDialogue('Sprites\Portraits/dracomage3.bmp',extractionTexte('DIALOGUE_BOSS4_4_4'));
+            ajoutDialogue('Sprites\Portraits/dracomage3.bmp',extractionTexte('DIALOGUE_BOSS4_4_5'));
+            end;
+          if (ennemi.anim.objectName='geolier2') then
+            begin
+            sceneActive:='Cutscene';
+            InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/portraitGarde4.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS1_3_1'),100);
+            ajoutDialogue('Sprites\Portraits/portraitGarde4.bmp',extractionTexte('DIALOGUE_BOSS1_3_2'));
+            end;
           ennemi.col.estActif:=False;
           statsJoueur.bestiaire[ennemi.stats.numero]:=True;
           end;
@@ -1365,8 +1421,6 @@ begin
 // !!format : numéro dans TemplatesEnnemis, nom,mvt,vie,att,dmg,def,vit,w,h,nbFrames(apparition,chase,action1,action2,mort),collisions(w,h,offsetX,offsetY),nom de l'attaque
 //(mvt: type de mouvement, dmg: dégâts au contact)
 setLength(ennemis,0);
-// Adjusted stats for balanced enemies
-//***le numéro peut être changé selon la convénience, sans répercussions importantes
 initStatEnnemi(1,'slime',8,30,1,0,0,0,90,90,6,8,3,4,4,90,45,5,40,'boule');
 initStatEnnemi(2,'livre',12,30,1,0,2,1,180,90,7,12,4,0,12,60,90,60,0,'eclair');
 initStatEnnemi(3,'feu_follet',6,30,3,1,1,0,100,100,7,9,0,0,6,70,70,15,15,'flamme');
