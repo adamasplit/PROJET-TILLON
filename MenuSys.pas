@@ -73,10 +73,15 @@ begin
 	statsJoueur.tailleCollection:=4;
 	statsJoueur.Vitesse:=5;
 	statsJoueur.multiplicateurMana:=1;
+	statsJoueur.force:=1;
+	statsJoueur.defense:=1;
 	statsJoueur.multiplicateurDegat:=1;
+	statsJoueur.avancement:=1;
+	for j:=1 to MAXENNEMIS do
+		statsJoueur.bestiaire[j]:=False;
 	for j:=1 to 4 do 
 		statsJoueur.collection[j]:=Cartes[1];
-	statsJoueur.collection[j]:=Cartes[10];
+	statsJoueur.collection[j]:=Cartes[4];
 	statsJoueur.relique:=0;
 	statsJoueur.vie:=100;statsJoueur.vieMax:=100;
 	statsJoueur.multiplicateurSoin:=1;
@@ -302,7 +307,7 @@ begin
 	sceneActive:='Event';
 	for i:=1 to 19 do
 		case i of
-		5,7,9,11,14:ajoutDialogue('Sprites/Menu/portraitGarde.bmp',extractionTexte('PRISON_CELLULE_'+intToStr(i)))
+		5,7,9,11,14:ajoutDialogue('Sprites/Portraits/portraitGarde.bmp',extractionTexte('PRISON_CELLULE_'+intToStr(i)))
 		else ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('PRISON_CELLULE_'+intToStr(i)));
 		end;
 	sceneSuiv:='Intro';
@@ -410,13 +415,13 @@ begin
 	if iDeck=statsJoueur.tailleCollection+1 then
 		begin
 		createRawImage(carteDeck,200,200,300,300,StringToPChar('Sprites/Reliques/reliques'+intToStr(statsJoueur.relique)+'.bmp'));
-		initDialogueBox(dialogues[4],nil,nil,460,120,380,600,extractionTexte('DESC_REL_'+intToStr(statsJoueur.relique)),10,Fantasy20,25);
+		initDialogueBox(dialogues[4],nil,nil,460,120,500,600,extractionTexte('DESC_REL_'+intToStr(statsJoueur.relique)),10,Fantasy20,25);
 		initDialogueBox(dialogues[3],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_REL_'+intToStr(statsJoueur.relique)),10);
 		end
 	else
 		begin
 		createRawImage(carteDeck,200,200,300,300,statsJoueur.collection[iDeck].dir);
-		initDialogueBox(dialogues[4],nil,nil,460,120,380,600,extractionTexte('DESC_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),10,Fantasy20,25);
+		initDialogueBox(dialogues[4],nil,nil,460,120,500,600,extractionTexte('DESC_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),10,Fantasy20,25);
 		initDialogueBox(dialogues[3],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),10);
 		end;
 end;
@@ -452,7 +457,7 @@ end;
 procedure reactualiserBestiaire();
 begin
 	createRawImage(ennAff,200,200,300,300,StringToPChar('Sprites/Bestiaire/illustrations_bestiaire_'+intToStr(ienn)+'.bmp'));
-	initDialogueBox(dialogues[4],nil,nil,460,120,380,600,extractionTexte('DESC_ENN_'+intToStr(ienn)),10,Fantasy20,25);
+	initDialogueBox(dialogues[4],nil,nil,460,120,500,600,extractionTexte('DESC_ENN_'+intToStr(ienn)),10,Fantasy20,25);
 	initDialogueBox(dialogues[3],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_ENN_'+intToStr(ienn)),10);
 end;
 procedure trouverBestiaire(var i:Integer;avance:Boolean);
@@ -579,7 +584,8 @@ begin
 			RenderRawImage(LObjets[0].image, LObjets[0].anim.isFliped);
 			RenderRawImage(LObjets[High(Lobjets)].image, False);
 			end;
-		end;
+		end
+	else renderRawImage(fond,255,False);
 	
 end;
 
@@ -588,14 +594,15 @@ procedure acquisitionCarte(carte:TCarte;var stats:TStats);
 begin
     stats.tailleCollection:=stats.tailleCollection+1;
     stats.collection[stats.tailleCollection]:=carte;
-    choixSalle;
+    if stats.avancement>MAXSALLES then sceneActive:='Credits'
+	else choixSalle;
 end;
 
 procedure desequiperRelique(var stats:TStats);
 begin
 	case stats.relique of
 	1:
-	stats.vitesse:=stats.vitesse-5;
+	stats.vitesse:=stats.vitesse-3;
 	2:
 	stats.manaMax:=stats.manaMax-4;
 	3:	
@@ -616,7 +623,7 @@ begin
 	if stats.relique<>0 then desequiperRelique(stats);
 	case rel of
 	1:
-	stats.vitesse:=stats.vitesse+5;
+	stats.vitesse:=stats.vitesse+3;
 	2:
 	stats.manaMax:=stats.manaMax+4;
 	3:	
@@ -633,7 +640,8 @@ begin
 	end;
 
 	stats.relique:=rel;
-	choixSalle;
+	if stats.avancement>MAXSALLES then sceneActive:='Credits'
+	else choixSalle;
 end;
 
 procedure victoire(var statsJ:TStats;boss:Boolean); //censé contenir le choix+obtention d'une carte après un combat
@@ -644,21 +652,22 @@ begin
 	if (statsJ.avancement-1) mod 10 = 0 then
 		InitDialogueBox(dialogues[1],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('VICTOIRE_'+intToSTR(10*(statsJ.avancement div 10))),10)
 	else
-		InitDialogueBox(dialogues[1],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('VICTOIRE_'+intToSTR(random(4)+1+10*(statsJ.avancement div 10))),10);
+		InitDialogueBox(dialogues[1],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('VICTOIRE_'+intToSTR(random(4)+1+10*((statsJ.avancement-1) div 10))),10);
 	InitDecorCartes;
+	randomize;
     sceneActive:='victoire';
     for i:=1 to 3 do
 		if boss and (random(2)=0) then
 			begin
 			boutons[i].parametresSpeciaux:=4;
-			boutons[i].relique:=random(7)+1; //###c'est cette partie qui est à remplacer pour déterminer les cartes que l'on peut obtenir
+			boutons[i].relique:=random(7)+1; //###c'est cette partie qui est à remplacer pour déterminer les reliques que l'on peut obtenir
 			InitButtonGroup(boutons[i],200+300*(i-1),200,128,128,StringToPChar('Sprites/Reliques/reliques'+intToStr(boutons[i].relique)+'.bmp'),' ',btnProc);
 			boutons[i].procRel:=@equiperRelique; 
 			end
 		else
 			begin
 			boutons[i].parametresSpeciaux:=1;
-			boutons[i].carte:=cartes[random(22)+1]; //###c'est cette partie qui est à remplacer pour déterminer les cartes que l'on peut obtenir
+			boutons[i].carte:=dropCarte(statsJ.avancement,boss); //###c'est cette partie qui est à remplacer pour déterminer les cartes que l'on peut obtenir
 			InitButtonGroup(boutons[i],200+300*(i-1),200,128,128,boutons[i].carte.dir,' ',btnProc);
 			boutons[i].procCarte:=@acquisitionCarte; 
 			end;

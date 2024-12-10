@@ -203,6 +203,8 @@ afficherTout;
 						end;
 					DeclencherFondu(False, 5000);
 					indiceMusiqueJouee:=46;
+					initJoueur(False);
+					sauvegarder(statsJoueur);
 					supprimeObjet(Lobjets[High(LObjets)]);
 					sceneActive := 'GameOver';
 					initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,1080,350,extractionTexte('GAMEOVER_'+intToSTr(random(5)+1)),40);
