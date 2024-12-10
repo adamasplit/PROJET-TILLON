@@ -344,3 +344,5 @@ begin
   dureeFondu := 0;
   WriteLn('AnimationSys ready ⋆｡°✩');
 end.
+
+end.

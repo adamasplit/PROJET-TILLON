@@ -71,6 +71,7 @@ var
   black_color: TSDL_Color;
   sdlWindow1 : PSDL_Window;
   sdlRenderer : PSDL_Renderer;
+
 const
   windowWidth = 1080;
   windowHeight = 720;
