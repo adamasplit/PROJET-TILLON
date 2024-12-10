@@ -24,6 +24,9 @@ uses
 
 var iEnn,ideckprec:Integer;carteDeck,ennAff:TImage;
 	changementDecor : Boolean;
+var
+  creditsText: TImage;
+  creditsPositionY: Integer;
 
 procedure AfficherTout();
 procedure victoire(var statsJ:TStats;boss:Boolean);
@@ -106,7 +109,6 @@ begin
     // Dimensions calculées à partir de l'échelle
     width := Round(1080 * profondeur);
     height := Round(720 * profondeur);
-	writeln(width);
     // Création de l'image
     CreateRawImage(decor.images[i], 0, 0, width, height,StringToPChar('Sprites\Menu\DecorsCredits\' + NomDecor + '-' + IntToStr(totalDecors - i) + '.bmp'));
 
@@ -117,7 +119,6 @@ begin
     // Définition des offsets
     decor.offsets[i].x := decor.images[i].rect.x;
     decor.offsets[i].y := decor.images[i].rect.y;
-	writeln('Position initiale : (', decor.images[i].rect.x, ',', decor.images[i].rect.y, ')');
     // Ajuster la profondeur pour les plans suivants
     profondeur := profondeur * 1.2;
   end;
@@ -187,6 +188,10 @@ procedure jouer;
 		//ActualiserJeu;
 end;
 
+procedure InitCreditsText;
+begin
+  CreateRawImage(creditsText, windowWidth div 2 - 540, windowHeight, 1080, 4000,'Sprites\Menu\Credits.bmp');
+end;
 procedure UpdateCameraParallax(var decor: TDecorParallax; avance: Boolean);
 
 var
@@ -207,6 +212,9 @@ begin
     if avance then
     begin
 
+		if creditsText.rect.y >= -3325 then
+			creditsText.rect.y := Round(creditsText.rect.y - 0.55);
+		
       newWidth := Round(decor.images[i].rect.w + (1+decor.scales[i]/100));
       newHeight := Round(decor.images[i].rect.h + (1+decor.scales[i]/100));
 
@@ -218,23 +226,22 @@ begin
       decor.images[i].rect.w := newWidth;
     	decor.images[i].rect.h := newHeight;
 	  //writeln('Plan ', i, ' Scale: ', decor.scales[i]:0:4, ' NewWidth: ', newWidth, ' NewHeight: ', newHeight);
-	  sdl_delay(10);
     end
 	else decor.oscillation:=0;
 
     // Oscillation verticale pour l’effet de marche
-    offsetY := Round(Sin(decor.oscillation) * 10); // Amplitude de marche fixée à 5
+    offsetY := Round(Sin(decor.oscillation) * 10); // Amplitude fixée à 10
     decor.images[i].rect.y := decor.images[i].rect.y + offsetY;
 
     // Affiche l’image
     RenderRawImage(decor.images[i], False);
+	sdl_delay(7);
   end;
 
   // Vérifie si un changement de décor est requis
   //writeln('decor.images[0].rect.w ', decor.images[0].rect.w, ' fonduActif: ', fonduActif);
   if fonduActif = False and changementDecor then
   begin
-  writeln(decor.currentPlan);
     decor.currentPlan := (decor.currentPlan + 1) mod Length(decor.plans); // Décor suivant
 	case decor.currentPlan of
 	0:taillePlan :=5;
@@ -243,16 +250,17 @@ begin
 	3:taillePlan :=4
 	end;
     InitDecorParallax(decor, decor.plans[decor.currentPlan], taillePlan);
-    //DeclencherFondu(False, 2000); // Déclenche le fondu d’entrée
+    DeclencherFondu(False, 2000); // Déclenche le fondu d’entrée
 	changementDecor:=False;
   end;
 
-  if (decor.images[0].rect.w > 1350) and fonduActif = False then
+  if (decor.images[0].rect.w > 1460) and fonduActif = False then
   begin
     DeclencherFondu(True, 1000); // Déclenche le fondu de sortie
 	changementDecor := True;
   end;
   effetDeFondu;
+  RenderRawImage(creditsText,False);
 end;
 
 
@@ -262,6 +270,7 @@ procedure Credits;
 	begin
 		SceneActive := 'Credits';
 		
+		indiceMusiqueJouee:=43;
 		
 		boutons[3].button.estVisible := false;
 		boutons[4].button.estVisible := false;
@@ -356,6 +365,7 @@ begin
 
   // Shutting down video subsystem (A laisser imperativement)
   SDL_Quit;
+  QUITGAME:= True;
 end;
 
 procedure continuer();
@@ -518,6 +528,7 @@ begin
   	DecorCredits.plans[1] := 'Forest';
 	DecorCredits.plans[2] := 'Winter';
 	DecorCredits.plans[3] := 'Flowers';
+	InitCreditsText;
 	InitDecorParallax(DecorCredits,DecorCredits.plans[0],5);
 end;
 

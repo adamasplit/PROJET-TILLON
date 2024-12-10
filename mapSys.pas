@@ -826,7 +826,7 @@ begin
     randomize;
 	sdl_freesurface(fond.imgSurface);
 	sdl_destroytexture(fond.imgTexture);
-    CreateRawImage(fond,0,-80,1080,900,StringToPChar('Sprites/Game/floor/map_Bg.bmp'));
+    CreateRawImage(fond,0,-80,1080,900,StringToPChar('Sprites\Menu\fond_cartes.bmp'));
 end;
 
 procedure choixSalle();

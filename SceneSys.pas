@@ -344,7 +344,7 @@ end;
 procedure GameUpdate;
 var i:Integer;son,boss:Boolean;cardHover:Array [1..3] of Boolean;
 begin
-   while True do
+   while not QUITGAME do
   begin
   sdl_delay(10);
   sdl_renderclear(sdlRenderer);
@@ -673,6 +673,7 @@ begin
 end;
 
 begin
+	QUITGAME := False;
   WriteLn('SceneSys ready !');
 end.
 
