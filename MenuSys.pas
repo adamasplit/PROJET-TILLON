@@ -24,6 +24,9 @@ uses
 
 var iEnn,ideckprec:Integer;carteDeck,ennAff:TImage;
 	changementDecor : Boolean;
+var
+  creditsText: TImage;
+  creditsPositionY: Integer;
 
 procedure AfficherTout();
 procedure victoire(var statsJ:TStats;boss:Boolean);
@@ -70,10 +73,15 @@ begin
 	statsJoueur.tailleCollection:=4;
 	statsJoueur.Vitesse:=5;
 	statsJoueur.multiplicateurMana:=1;
+	statsJoueur.force:=1;
+	statsJoueur.defense:=1;
 	statsJoueur.multiplicateurDegat:=1;
+	statsJoueur.avancement:=1;
+	for j:=1 to MAXENNEMIS do
+		statsJoueur.bestiaire[j]:=False;
 	for j:=1 to 4 do 
 		statsJoueur.collection[j]:=Cartes[1];
-	statsJoueur.collection[j]:=Cartes[10];
+	statsJoueur.collection[j]:=Cartes[4];
 	statsJoueur.relique:=0;
 	statsJoueur.vie:=100;statsJoueur.vieMax:=100;
 	statsJoueur.multiplicateurSoin:=1;
@@ -106,7 +114,6 @@ begin
     // Dimensions calculées à partir de l'échelle
     width := Round(1080 * profondeur);
     height := Round(720 * profondeur);
-	writeln(width);
     // Création de l'image
     CreateRawImage(decor.images[i], 0, 0, width, height,StringToPChar('Sprites\Menu\DecorsCredits\' + NomDecor + '-' + IntToStr(totalDecors - i) + '.bmp'));
 
@@ -117,7 +124,6 @@ begin
     // Définition des offsets
     decor.offsets[i].x := decor.images[i].rect.x;
     decor.offsets[i].y := decor.images[i].rect.y;
-	writeln('Position initiale : (', decor.images[i].rect.x, ',', decor.images[i].rect.y, ')');
     // Ajuster la profondeur pour les plans suivants
     profondeur := profondeur * 1.2;
   end;
@@ -187,6 +193,10 @@ procedure jouer;
 		//ActualiserJeu;
 end;
 
+procedure InitCreditsText;
+begin
+  CreateRawImage(creditsText, windowWidth div 2 - 540, windowHeight, 1080, 4000,'Sprites\Menu\Credits.bmp');
+end;
 procedure UpdateCameraParallax(var decor: TDecorParallax; avance: Boolean);
 
 var
@@ -207,6 +217,9 @@ begin
     if avance then
     begin
 
+		if creditsText.rect.y >= -3325 then
+			creditsText.rect.y := Round(creditsText.rect.y - 0.55);
+		
       newWidth := Round(decor.images[i].rect.w + (1+decor.scales[i]/100));
       newHeight := Round(decor.images[i].rect.h + (1+decor.scales[i]/100));
 
@@ -218,23 +231,22 @@ begin
       decor.images[i].rect.w := newWidth;
     	decor.images[i].rect.h := newHeight;
 	  //writeln('Plan ', i, ' Scale: ', decor.scales[i]:0:4, ' NewWidth: ', newWidth, ' NewHeight: ', newHeight);
-	  sdl_delay(10);
     end
 	else decor.oscillation:=0;
 
     // Oscillation verticale pour l’effet de marche
-    offsetY := Round(Sin(decor.oscillation) * 10); // Amplitude de marche fixée à 5
+    offsetY := Round(Sin(decor.oscillation) * 10); // Amplitude fixée à 10
     decor.images[i].rect.y := decor.images[i].rect.y + offsetY;
 
     // Affiche l’image
     RenderRawImage(decor.images[i], False);
+	sdl_delay(7);
   end;
 
   // Vérifie si un changement de décor est requis
   //writeln('decor.images[0].rect.w ', decor.images[0].rect.w, ' fonduActif: ', fonduActif);
   if fonduActif = False and changementDecor then
   begin
-  writeln(decor.currentPlan);
     decor.currentPlan := (decor.currentPlan + 1) mod Length(decor.plans); // Décor suivant
 	case decor.currentPlan of
 	0:taillePlan :=5;
@@ -243,16 +255,17 @@ begin
 	3:taillePlan :=4
 	end;
     InitDecorParallax(decor, decor.plans[decor.currentPlan], taillePlan);
-    //DeclencherFondu(False, 2000); // Déclenche le fondu d’entrée
+    DeclencherFondu(False, 2000); // Déclenche le fondu d’entrée
 	changementDecor:=False;
   end;
 
-  if (decor.images[0].rect.w > 1350) and fonduActif = False then
+  if (decor.images[0].rect.w > 1460) and fonduActif = False then
   begin
     DeclencherFondu(True, 1000); // Déclenche le fondu de sortie
 	changementDecor := True;
   end;
   effetDeFondu;
+  RenderRawImage(creditsText,False);
 end;
 
 
@@ -262,6 +275,7 @@ procedure Credits;
 	begin
 		SceneActive := 'Credits';
 		
+		indiceMusiqueJouee:=43;
 		
 		boutons[3].button.estVisible := false;
 		boutons[4].button.estVisible := false;
@@ -293,7 +307,7 @@ begin
 	sceneActive:='Event';
 	for i:=1 to 19 do
 		case i of
-		5,7,9,11,14:ajoutDialogue('Sprites/Menu/portraitGarde.bmp',extractionTexte('PRISON_CELLULE_'+intToStr(i)))
+		5,7,9,11,14:ajoutDialogue('Sprites/Portraits/portraitGarde.bmp',extractionTexte('PRISON_CELLULE_'+intToStr(i)))
 		else ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('PRISON_CELLULE_'+intToStr(i)));
 		end;
 	sceneSuiv:='Intro';
@@ -356,6 +370,7 @@ begin
 
   // Shutting down video subsystem (A laisser imperativement)
   SDL_Quit;
+  QUITGAME:= True;
 end;
 
 procedure continuer();
@@ -400,13 +415,13 @@ begin
 	if iDeck=statsJoueur.tailleCollection+1 then
 		begin
 		createRawImage(carteDeck,200,200,300,300,StringToPChar('Sprites/Reliques/reliques'+intToStr(statsJoueur.relique)+'.bmp'));
-		initDialogueBox(dialogues[4],nil,nil,460,120,380,600,extractionTexte('DESC_REL_'+intToStr(statsJoueur.relique)),10,Fantasy20,25);
+		initDialogueBox(dialogues[4],nil,nil,460,120,500,600,extractionTexte('DESC_REL_'+intToStr(statsJoueur.relique)),10,Fantasy20,25);
 		initDialogueBox(dialogues[3],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_REL_'+intToStr(statsJoueur.relique)),10);
 		end
 	else
 		begin
 		createRawImage(carteDeck,200,200,300,300,statsJoueur.collection[iDeck].dir);
-		initDialogueBox(dialogues[4],nil,nil,460,120,380,600,extractionTexte('DESC_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),10,Fantasy20,25);
+		initDialogueBox(dialogues[4],nil,nil,460,120,500,600,extractionTexte('DESC_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),10,Fantasy20,25);
 		initDialogueBox(dialogues[3],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),10);
 		end;
 end;
@@ -442,7 +457,7 @@ end;
 procedure reactualiserBestiaire();
 begin
 	createRawImage(ennAff,200,200,300,300,StringToPChar('Sprites/Bestiaire/illustrations_bestiaire_'+intToStr(ienn)+'.bmp'));
-	initDialogueBox(dialogues[4],nil,nil,460,120,380,600,extractionTexte('DESC_ENN_'+intToStr(ienn)),10,Fantasy20,25);
+	initDialogueBox(dialogues[4],nil,nil,460,120,500,600,extractionTexte('DESC_ENN_'+intToStr(ienn)),10,Fantasy20,25);
 	initDialogueBox(dialogues[3],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_ENN_'+intToStr(ienn)),10);
 end;
 procedure trouverBestiaire(var i:Integer;avance:Boolean);
@@ -518,6 +533,7 @@ begin
   	DecorCredits.plans[1] := 'Forest';
 	DecorCredits.plans[2] := 'Winter';
 	DecorCredits.plans[3] := 'Flowers';
+	InitCreditsText;
 	InitDecorParallax(DecorCredits,DecorCredits.plans[0],5);
 end;
 
@@ -568,7 +584,8 @@ begin
 			RenderRawImage(LObjets[0].image, LObjets[0].anim.isFliped);
 			RenderRawImage(LObjets[High(Lobjets)].image, False);
 			end;
-		end;
+		end
+	else renderRawImage(fond,255,False);
 	
 end;
 
@@ -577,14 +594,15 @@ procedure acquisitionCarte(carte:TCarte;var stats:TStats);
 begin
     stats.tailleCollection:=stats.tailleCollection+1;
     stats.collection[stats.tailleCollection]:=carte;
-    choixSalle;
+    if stats.avancement>MAXSALLES then sceneActive:='Credits'
+	else choixSalle;
 end;
 
 procedure desequiperRelique(var stats:TStats);
 begin
 	case stats.relique of
 	1:
-	stats.vitesse:=stats.vitesse-5;
+	stats.vitesse:=stats.vitesse-3;
 	2:
 	stats.manaMax:=stats.manaMax-4;
 	3:	
@@ -605,7 +623,7 @@ begin
 	if stats.relique<>0 then desequiperRelique(stats);
 	case rel of
 	1:
-	stats.vitesse:=stats.vitesse+5;
+	stats.vitesse:=stats.vitesse+3;
 	2:
 	stats.manaMax:=stats.manaMax+4;
 	3:	
@@ -622,7 +640,8 @@ begin
 	end;
 
 	stats.relique:=rel;
-	choixSalle;
+	if stats.avancement>MAXSALLES then sceneActive:='Credits'
+	else choixSalle;
 end;
 
 procedure victoire(var statsJ:TStats;boss:Boolean); //censé contenir le choix+obtention d'une carte après un combat
@@ -633,21 +652,22 @@ begin
 	if (statsJ.avancement-1) mod 10 = 0 then
 		InitDialogueBox(dialogues[1],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('VICTOIRE_'+intToSTR(10*(statsJ.avancement div 10))),10)
 	else
-		InitDialogueBox(dialogues[1],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('VICTOIRE_'+intToSTR(random(4)+1+10*(statsJ.avancement div 10))),10);
+		InitDialogueBox(dialogues[1],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('VICTOIRE_'+intToSTR(random(4)+1+10*((statsJ.avancement-1) div 10))),10);
 	InitDecorCartes;
+	randomize;
     sceneActive:='victoire';
     for i:=1 to 3 do
 		if boss and (random(2)=0) then
 			begin
 			boutons[i].parametresSpeciaux:=4;
-			boutons[i].relique:=random(7)+1; //###c'est cette partie qui est à remplacer pour déterminer les cartes que l'on peut obtenir
+			boutons[i].relique:=random(7)+1; //###c'est cette partie qui est à remplacer pour déterminer les reliques que l'on peut obtenir
 			InitButtonGroup(boutons[i],200+300*(i-1),200,128,128,StringToPChar('Sprites/Reliques/reliques'+intToStr(boutons[i].relique)+'.bmp'),' ',btnProc);
 			boutons[i].procRel:=@equiperRelique; 
 			end
 		else
 			begin
 			boutons[i].parametresSpeciaux:=1;
-			boutons[i].carte:=cartes[random(22)+1]; //###c'est cette partie qui est à remplacer pour déterminer les cartes que l'on peut obtenir
+			boutons[i].carte:=dropCarte(statsJ.avancement,boss); //###c'est cette partie qui est à remplacer pour déterminer les cartes que l'on peut obtenir
 			InitButtonGroup(boutons[i],200+300*(i-1),200,128,128,boutons[i].carte.dir,' ',btnProc);
 			boutons[i].procCarte:=@acquisitionCarte; 
 			end;

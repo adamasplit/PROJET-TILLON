@@ -226,10 +226,10 @@ Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT,
     defMus(41,'OST/Boss0_VictoireRep.wav','',71);
     defMus(42,'OST/Boss1_VictoireRep.wav','',81);
     defMus(45,'OST/Boss2_VictoireRep.wav','',81);
-    defMus(43,'OST/Boss3_VictoireRep.wav','',74);
+    defMus(43,'OST/Boss3_VictoireRep.wav','',99);
     defMus(44,'OST/Boss4_VictoireRep.wav','',27);
     //Mort
-    defMus(45,'OST\Project_DEATH.wav','',24);
+    defMus(47,'OST\Project_DEATH.wav','',24);
     defMus(46,'OST\Project_DEATH2.wav','',72);
 
 

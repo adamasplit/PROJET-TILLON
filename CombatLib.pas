@@ -47,7 +47,7 @@ implementation
 
 
 
-procedure InitAngle(vectX,vectY:Real;var angle:Real);
+procedure InitAngle(vectX,vectY:Real;var angle:Real); //calcule un angle à partir d'un vecteur de direction
 begin
     if round(vectX*1000)=0 then
         if vectY>0 then
@@ -56,8 +56,6 @@ begin
             angle:=-pi/2
     else
         angle:=arctan(vectY/vectX);
-    //writeln('X:',vectX,',Y:',vectY);
-    //writeln('angle:',angle);
 end;
 
 //Fonction de calcul des dégats
@@ -66,7 +64,7 @@ begin
 
     degat := math.ceil((flat + force - defense)*multiplicateurDegat);
     if degat < 1 then
-        degat := 1;
+        degat := 1; 
 end;
 
 
@@ -82,7 +80,7 @@ begin
         currentTime := SDL_GetTicks(); //récupère le temps
         if (( (currentTime - LastUpdateTime)*multiplicateurMana)>= 1000) AND (mana < manaMax) then //attendre 1sec/mult avant +1 mana
         begin
-            mana := mana + 1;
+            mana := mana + 1; //régénère le mana
             LastUpdateTime := currentTime;
     end;
 
@@ -112,7 +110,7 @@ begin
     end;
 end;
 
-// retire la dernière carte du paquet
+// retire la dernière carte du paquet+réduit sa taille
 procedure circoncision  (var deck : Tdeck);
 begin
     sdl_destroytexture(deck[high(deck)].image.imgTexture);
@@ -150,6 +148,7 @@ procedure cycle (var deck : TDeck ; i: Integer); // i = indice de la carte joué
 var j : Integer;
     mem : TCarte;
 begin
+    //retire une carte de la collection (pour certaines cartes à usage unique)
     if (deck[i].numero=13) or (deck[i].numero=15) then
         begin
         supprimerCarte(statsJoueur,deck[i].numero);
@@ -162,17 +161,18 @@ begin
     if high(deck)=3 then
         j:=3
     else
-        for j:= 3 to High(deck)-1 do
+        for j:= 3 to High(deck)-1 do //décale toutes les cartes du deck
             begin
             deck[j] := deck[j+1];
             end;
 
-    if mem.discard then
+    if mem.discard then //certaines cartes sont mises dans la défausse (deck réduit jusqu'à la fin du combat)
         begin
         circoncision(deck);
         end
     else
         begin
+        //carte envoyée au fond du deck
         deck[high(deck)] := mem ;
         deck[high(deck)].active:=False;
         deck[high(deck)].charges:=deck[high(deck)].chargesMax;
@@ -260,6 +260,7 @@ begin
     for i:=0 to 3 do
         rayon.col.collisionsFaites[i]:=False;
 
+    //initialisation du vecteur de direction, basée sur la destination
     destination['X']:=xdest;
     destination['Y']:=ydest;
     distance['X']:=destination['X']-x;
@@ -274,8 +275,6 @@ begin
         rayon.stats.vectY:=0;
         writeln('le rayon n"a pas pu être créé')
         end;
-    //rayon.stats.vectX:=cos(arctan(rayon.stats.vectY/rayon.stats.vectX)-(40/180));
-    //rayon.stats.vectY:=sin(arctan(rayon.stats.vectY/rayon.stats.vectX)-(40/180));
     if rayon.stats.vectX<0 then
         begin
         rayon.image.rect.x:=round(rayon.image.rect.x+rayon.stats.vectX*(rayon.image.rect.w div 2));
@@ -451,6 +450,7 @@ end;
 procedure multiProjs(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,w,h,vitesse,nb,range,angleDepart:Integer;nom:PChar);
 var proj:TObjet;i:Integer;
 begin
+    //crée un nombre nb de projectiles envoyés en cercle ou arc de cercle
     for i:=0 to nb-1 do
         begin
         creerBoule(origine,degats,force,mult,x,y,w,h,vitesse,x+round(100*cos((i*2*pi+(angleDepart*pi/180))/(nb*360/range))),y+round(100*sin((i*2*pi+(angleDepart*pi/180))/(nb*360/range))),nom,proj);
@@ -461,6 +461,7 @@ end;
 procedure multiLasers(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,l,w,vitesse,nb,range,angleDepart,duree,delai:Integer;nom:PChar);
 var rayon:TObjet;i:Integer;
 begin
+    //crée un nombre nb de rayons répartis en cercle
     for i:=0 to nb-1 do
         begin
         CreerRayon(origine,degats,force,mult,False,x,y,l,w,x+round(100*cos((i*2*pi+(angleDepart*pi/180))/((nb)*360/range))),y+round(100*sin((i*2*pi+(angleDepart*pi/180))/((nb)*360/range))),vitesse,duree,delai,nom,rayon);
@@ -471,7 +472,9 @@ end;
 procedure InitJustice(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,xCible,yCible,vitesse,delai:Integer;dir:PChar);
 var justice:TObjet;
 begin
+    //initialisation comme un projectile
     creerBoule(origine,degats,force,mult,x,y,200,100,vitesse,xCible,yCible,dir,justice);
+    //modification de l'image utilisée
     InitAnimation(justice.anim,justice.anim.objectname,'start',9,False);
     justice.anim.estActif:=True;
     justice.anim.currentFrame:=2;
@@ -484,6 +487,7 @@ begin
     justice.col.offset.y := 30;
     justice.col.nom := 'Justice';
     justice.col.estActif:=False;
+    //initialisation des caractéristiques
     justice.stats.xreel:=x;
     justice.stats.yreel:=y;
     justice.stats.genre:=epee;
@@ -506,21 +510,21 @@ procedure UpdateJustice(var justice:TObjet);
 var angleDepart:Real;i:Integer;
 begin
     if justice.stats.delai>0 then 
+        //phase initiale: 
         begin
         initAngle(justice.stats.vectX,justice.stats.vectY,angleDepart);
         justice.stats.angle:=angleDepart-2*pi*sqrt(1-((justice.stats.delai)/(justice.stats.delaiInit+1))**3);
         justice.image.rect.x:=round(justice.stats.xreel+justice.stats.vectX*(justice.stats.angle-angleDepart));
         justice.image.rect.y:=round(justice.stats.yreel+justice.stats.vecty*(justice.stats.angle-angleDepart));
         justice.stats.delai:=justice.stats.delai-1;
-        //if justice.anim.currentFrame<>(50-justice.stats.delai) then
         updateAnimation(justice.anim,justice.image);
         
         
         end
-    else if (justice.stats.delai=0) and not (leMonde) then
+    else if (justice.stats.delai=0) and not (leMonde) then //si la justice a fini sa préparation, elle s'active
         begin
-        justice.stats.xreel:=justice.image.rect.x;
-        justice.stats.yreel:=justice.image.rect.y;
+        justice.stats.xreel:=trouvercentrex(justice);
+        justice.stats.yreel:=trouvercentrey(justice);
         justice.stats.delai:=-1;
         justice.col.estActif:=True;
         InitAnimation(justice.anim,justice.anim.objectName,'active',10,false);
@@ -534,38 +538,36 @@ begin
     else
     if not leMonde then
         begin
+        //fait avancer la justice
         updateAnimation(justice.anim,justice.image);
         justice.stats.xreel:=justice.stats.xreel+(justice.stats.vectX);
         justice.stats.yreel:=justice.stats.yreel+(justice.stats.vectY);
-        justice.image.rect.x:=round(justice.stats.xreel);
-        justice.image.rect.y:=round(justice.stats.yreel);
-        //justice.stats.angle:=justice.stats.angle+1;
+        justice.image.rect.x:=round(justice.stats.xreel)-(justice.image.rect.w div 2);
+        justice.image.rect.y:=round(justice.stats.yreel)-(justice.image.rect.h div 2);
         end;
     //vérifie si le projectile sort de l'écran
     if (justice.stats.xreel>1200) or (justice.stats.xreel<-100) or (justice.stats.yreel>1000) or (justice.stats.yreel<-200) then 
         begin
-        //initJustice(typeobjet(0),1,1,1,justice.image.rect.x,justice.image.rect.y,getmouseX,getmouseY,37,25);
         supprimeObjet(justice);
         end
     
 end;
 
-procedure updateAttaques();
+procedure updateAttaques(); //met à jour tous les objets autres que le joueur et les ennemis
 var i:Integer;
 begin
 for i:=2 to High(LObjets) do
       if (i<=High(LObjets)) then
 	  	begin
+            LObjets[i].stats.indice:=i;
 			case LObjets[i].stats.genre of 
-        	projectile:begin
-        		if i<>LObjets[i].stats.indice then writeln('conflit à l"indice',i);
-				LObjets[i].stats.indice:=i;
-        		updateBoule(LObjets[i]);
-        		end;
-			laser:updateRayon(LObjets[i]);
-			epee:UpdateJustice(LObjets[i]);
+        	projectile:updateBoule(LObjets[i]); //fait avancer un projectile en ligne droite
+			laser:updateRayon(LObjets[i]); //met à jour un rayon
+			epee:UpdateJustice(LObjets[i]); //prépare ou fait avancer une épée
+
 			effet:if (LObjets[i].stats.fixeJoueur) and (not (leMonde) or (LObjets[i].anim.objectName='monde')) then 
 				begin
+                //si l'effet suit le joueur, il se fixe à sa position
 				LObjets[i].image.rect.x:=LObjets[0].image.rect.x+50-(LObjets[i].image.rect.w div 2);
 				LObjets[i].image.rect.y:=LObjets[0].image.rect.y+50-(LObjets[i].image.rect.h div 2);
 				end;
@@ -576,43 +578,52 @@ end;
 procedure subirDegats(var victime:TObjet;degats,knockbackX,knockbackY:Integer);overload;
 var popUpColor : TSDL_Color;
 begin
-    if (victime.anim.etat<>'degats') then begin
-    if (victime.stats.genre=joueur) and (victime.stats.leFou) then
-        victime.stats.leFou:=False
-    else
-    if (victime.stats.genre=joueur) and (victime.stats.lamort) and (degats>victime.stats.vie) then
-        victime.stats.vie:=1
-    else
-    begin
-        victime.stats.vie:=victime.stats.vie-degats;
-    if not (victime.stats.inamovible) then
+    if (victime.anim.etat<>'degats') then 
+    begin //inflige des dégâts seulement si la victime n'est pas déjà immobilisée
+        if (victime.stats.genre=joueur) and (victime.stats.leFou) then //gère les effets d'immunité
+            victime.stats.leFou:=False 
+        else
+        if (victime.stats.genre=joueur) and (victime.stats.lamort) and (degats>victime.stats.vie) then //protège le joueur de la mort si la carte correspondante a été activée
+            victime.stats.vie:=1
+        else
         begin
-        knockbackX:=max(min(knockbackX*2,5),-5);
-        knockbackY:=max(min(knockbackY*2,5),-5);
-        end
-    else
-        begin
-        knockbackX:=0;knockbackY:=0;
+            victime.stats.vie:=victime.stats.vie-degats; //inflige les dégâts
+
+            if not (victime.stats.inamovible) then
+            //calcule le recul infligé 
+                begin
+                knockbackX:=max(min(knockbackX*2,5),-5);
+                knockbackY:=max(min(knockbackY*2,5),-5);
+                end
+            else
+                begin
+                knockbackX:=0;knockbackY:=0;
+                end;
+            //fait reculer la victime
+            victime.image.rect.x:=victime.image.rect.x+knockbackX;
+            victime.image.rect.y:=victime.image.rect.y+knockbackY;
+            //mémorise l'état de l'animation si l'objet a une animation de dégâts subis
+            victime.stats.etatPrec:=victime.anim;
+            if victime.stats.genre=TypeObjet(0) then
+                initAnimation(victime.anim,victime.anim.objectname,'degats',4,False);
+            //accélère les actions de certains ennemis
+            if (victime.stats.genre=TypeObjet(1)) and (victime.anim.etat='chase') then
+                victime.stats.compteurAction:=victime.stats.compteurAction+1;
+            //fait apparaître le chiffre des dégâts infligés
+            if degats >= 0 then
+                // rouge (dégâts subis)
+                begin popUpColor.r:=255;popUpColor.g:=51;popUpColor.b:=51;popUpColor.a:=255; end
+                //vert (soin)
+            else begin popUpColor.r:=51;popUpColor.g:=255;popUpColor.b:=51;popUpColor.a:=255; end;
+            CreateDamagePopUp(trouverCentreX(victime),trouverCentreY(victime),StringToPChar(IntToStr(abs(degats))),popUpColor);
         end;
-     
-        victime.stats.etatPrec:=victime.anim;
-        victime.image.rect.x:=victime.image.rect.x+knockbackX;
-        victime.image.rect.y:=victime.image.rect.y+knockbackY;
-        if victime.stats.genre=TypeObjet(0) then
-            initAnimation(victime.anim,victime.anim.objectname,'degats',4,False);
-        if (victime.stats.genre=TypeObjet(1)) and (victime.anim.etat='chase') then
-            victime.stats.compteurAction:=victime.stats.compteurAction+1;
-        if degats >= 0 then
-            begin popUpColor.r:=255;popUpColor.g:=51;popUpColor.b:=51;popUpColor.a:=255; end
-        else begin popUpColor.r:=51;popUpColor.g:=255;popUpColor.b:=51;popUpColor.a:=255; end;
-        CreateDamagePopUp(trouverCentreX(victime),trouverCentreY(victime),StringToPChar(IntToStr(abs(degats))),popUpColor);
-    end;
     end;
 end;
 
 procedure subirDegats(var stats:TStats;degats,x,y:Integer);overload;
 var popUpColor : TSDL_Color;
 begin
+    //inflige des dégâts directement, crée le chiffre de dégâts
     stats.vie:=stats.vie-degats;
     if degats >= 0 then
         begin popUpColor.r:=255;popUpColor.g:=51;popUpColor.b:=51;popUpColor.a:=255; end
@@ -687,7 +698,6 @@ end;
     var eff:TObjet;
     begin
         s.defense := s.defense + 3;
-        //### à supprimer apres jouer
         creerEffet(0,0,140,140,12,'chariot2',True,eff);
         ajoutObjet(eff);
     end; 
@@ -695,10 +705,10 @@ end;
     //8 la justice 
     procedure VIII(var sPerm, sCombat :Tstats;x,y,charges:Integer);
     begin
-        if charges>=scombat.nbjustice then
+        if charges>=scombat.nbjustice then //incrémente le compteur d'utilisations de la carte
             begin
             sPerm.nbJustice := sPerm.nbJustice + 1;
-            sCombat.nbJustice := sCombat.nbJustice + 1;   //### à initialiser à 0 en début de partie 
+            sCombat.nbJustice := sCombat.nbJustice + 1;  
             end;
         initJustice(typeObjet(0),1,scombat.force,sCombat.multiplicateurDegat,x,y,getmousex,getmousey,28,50,'justice');
     end;
@@ -710,7 +720,6 @@ end;
         s.multiplicateurMana := s.multiplicateurMana * 1.2;
         creerEffet(0,0,100,140,20,'ermite',True,eff);
         ajoutObjet(eff);
-        //### à supprimer apres jouer
 
     end;
 
@@ -721,7 +730,7 @@ end;
         randomize;
         rdm := random(10)+1;
 
-        case rdm of
+        case rdm of //active un effet au hasard
             1,2,3 : subirDegats(s, 5,Lobjets[0].image.rect.x,Lobjets[0].image.rect.y); //-5pv
             4 : begin
                 s.force := s.force + 3;
@@ -758,9 +767,6 @@ end;
         jouerSonEff('pendu');
         //inverser les contrôles
         s.pendu := not(s.pendu); 
-        //### mono usage
-
-
     end;
 
     //13 La mort
@@ -830,6 +836,7 @@ end;
             12 : begin flat := 144 ; vitesse := 10;end;
             13 : begin flat := 233 ; vitesse := 10;end;
             14 : begin flat := 377 ; vitesse := 10;end;
+            else begin flat:=510;vitesse:=20;end;
         end;
         creerBoule(joueur, flat, s.force, s.multiplicateurDegat, x, y,s.mana*30,s.mana*30, vitesse, getmouseX, getmouseY, 'projectile', proj);
         s.mana:=0; //consomme tout le mana

@@ -23,14 +23,14 @@
 <DESC_CAR_23>Cette carte porte le symbole du Lion. Elle appelle la puissance de son épée flamboyante.;
 <DESC_CAR_24>Cette carte porte le symbole du Serpentaire. Elle renferme une grande puissance qui ne peut pas être utilisée offensivement.;
 <COMM_CAR_1>Il faut bien commencer quelque part. J'accepte l'aide que les cartes m'accorderont.;
-<COMM_CAR_2>;
+<COMM_CAR_2>Je manque encore d'expérience, c'est vrai, mais je ne serai pas naïve.;
 <COMM_CAR_3>;
 <COMM_CAR_4>Je n'ai pas l'intention de commander... Je ne suis qu'une marionnette aux fils du destin. Mais il est de mon devoir d'achever cette tyrannie.;
 <COMM_CAR_5>J'ai foi en moi. Et je compte bien mettre fin à ces illusions.;
 <COMM_CAR_6>Si je persiste, c'est avant tout grâce à mon amour pour l'humanité. Je veux rétablir l'harmonie en ce monde.;
 <COMM_CAR_7>;
 <COMM_CAR_8>J'imagine que mon rôle dans cet endroit est de rendre justice. Dans ce cas, je l'accomplirai avec fierté.;
-<COMM_CAR_9>;
+<COMM_CAR_9>En me concentrant suffisamment, je peux atteindre de grandes choses!;
 <COMM_CAR_10>Il faut bien s'en remettre au destin parfois... Bien sûr, ce n'est pas la seule chose sur laquelle je peux compter.;
 <COMM_CAR_11>Ma détermination m'a amenée jusqu'ici et elle m'en sortira.;
 <COMM_CAR_12>Je ne dois pas me laisser désorienter, je n'ai pas choisi de me sacrifier pour mes objectifs.;
@@ -53,21 +53,21 @@
 <DESC_ENN_5>Cet être semble vide.;
 <DESC_ENN_6>L'élémentaire des astres incarne l'infini, hors de portée de l'humanité.;
 <DESC_ENN_7>Un élémentaire symbolisant le passage du temps, capable d'impacter la perception du temps des autres êtres.;
-<DESC_ENN_8>Spectre de ceux qui sont mort avec des regrets dans leur coeur, il continue à se manifester pour tenter de prendre un nouveau corps.;
-<DESC_ENN_9>;
-<DESC_ENN_10>;
-<DESC_ENN_11>;
+<DESC_ENN_8>Spectre de ceux qui sont morts avec des regrets dans leur coeur, il continue à se manifester pour tenter de prendre un nouveau corps.;
+<DESC_ENN_9>L'élémentaire de la lumière brille implacablement, et tente d'éloigner les ténèbres.;
+<DESC_ENN_10>L'élémentaire de l'ombre affronte inlassablement la lumière qui le lui rend.;
+<DESC_ENN_11>Un élémentaire qui apparaît uniquement lors de fortes tempêtes, ou après une utilisation abusive de magie.;
 <DESC_ENN_12>Cet élémentaire, né de l'union de la lumière et des ténèbres, les maîtrise tous deux pour abattre ses ennemis.;
 <DESC_ENN_13>L'un des deux principaux domaines de magie: la magie noire implique un désir de destruction.;
 <DESC_ENN_14>L'un des deux principaux domaines de magie: la magie blanche a pour but de protéger, mais aussi rendre justice.;
 <DESC_ENN_15>L'école de la magie rouge implique une très stricte discipline sur soi-même.;
 <DESC_ENN_16>Des élèves particulièrement brillants peuvent apprendre la magie d'invocation, arts arcaniques de communication avec un autre monde.;
-<DESC_ENN_17>;
+<DESC_ENN_17>Des démons inférieurs avec qui des invocateurs sont parvenus à pactiser. Manquant de stratégie, ils ne peuvent que foncer sur leurs adversaires.;
 <DESC_ENN_18>Un horrible amalgame fait à partir de multiples âmes. Son corps est extrêmement instable.;
-<DESC_ENN_19>;
+<DESC_ENN_19>Une machine mystérieuse dont le créateur a disparu il y a longtemps. Si elle est rattachée à un autre édifice, nul ne l'a jamais vu.;
 <DESC_ENN_20>Une relique des temps anciens qui est maintenant utilisée comme garde. Elle semble pourtant dotée d'une forme d'intelligence.;
 <DESC_ENN_21>Cette imposante machine, alimentée par magie, sert de moyen de transport mais également de sentinelle pour garder le donjon. L'alliage de ces deux fonctions lui donne une grande vitesse.;
-<DESC_ENN_22>Des animaux qui, à l'état sauvage, sont incapables de manipuler leur important mana. Ils ont donc été capturés par les mages, avides d'utiliser cette énergie. Leur armure leur permet de contrôler leur pouvoir, notamment sous forme de rayons dévastateurs.;
+<DESC_ENN_22>Des animaux qui, à l'état sauvage, sont incapables de manipuler leur important mana. Ils ont donc été capturés par les mages, avides d'utiliser cette énergie.;
 <DESC_ENN_23>Un être artificiel créé à partir de l'âme d'un mort. Sa volonté a fini par le transformer en sorte d'esprit du zodiaque.;
 <DESC_ENN_24>Une forme avancée de l'être du Lion, laissant libre cours à ses instincts pour déchaîner sa force.;
 <DESC_ENN_25>Un être artificiel créé par les mages.;
@@ -80,7 +80,7 @@
 <DESC_ENN_32>L'échec a activé le pacte que le geôlier avait conclu, le condamnant à une souffrance éternelle qui lui donne pourtant de la force.;
 <DESC_ENN_33>Un ancien mage, qui a bravé les interdits pour faire subsister son âme au-delà de la matière. Sa frustration est devenue de la folie.;
 <DESC_ENN_34>Une trace du passage des dieux en ce monde. Sa simple présence suffit à détruire un mortel.;
-<DESC_ENN_35>;
+<DESC_ENN_35>Gardienne du ministère de la magie, cette machine dispose d'un arsenal magique impressionnant.;
 <DESC_ENN_36>Un être créé pour surpasser la mort. Il fait donc tout pour survivre.;
 <DESC_ENN_37>Une immense créature faite de toutes pièces. Le fait qu'elle soit encore en vie est un miracle... ou une malédiction.;
 <DESC_ENN_38>Un dragon des temps anciens, oublié de tous. Suite à sa réincarnation, il cherche sa vengeance sur le monde qui l'a abattu. Sa puissance dépasse de loin celle de n'importe quelle autre forme de vie.;
@@ -91,15 +91,17 @@
 <COMM_ENN_4>J'imagine que recevoir le don de la magie a grandement aidé les autres formes de vie.;
 <COMM_ENN_5>Je n'ai jamais vu une créature pareille. Elle semble avoir une emprise sur les ténèbres.;
 <COMM_ENN_6>Et dire que nous continuons à nous battre ici-bas. Il y a tant d'espace, tant de choses à faire... et si peu de temps...;
-<COMM_ENN_8>;
 <COMM_ENN_7>Le temps... J'en ai déjà bien assez perdu, m'est-il encore possible d'atteindre mes objectifs?;
+<COMM_ENN_8>Je ne dois pas m'attarder avec ces fantômes du passé, il est de mon devoir de continuer à avancer.;
 <COMM_ENN_9>Il y a bien longtemps que je n'ai pas vu la lumière. Mais ma détermination ne faillira pas cette fois-ci, car ce conflit dépasse largement les individus comme moi.;
 <COMM_ENN_10>L'ombre n'est ni fondamentalement bonne ou mauvaise. Après tout, certains y trouvent le confort et le repos.;
 <COMM_ENN_11>C'est seulement au coeur de la tempête que l'on trouve le calme le plus absolu.;
 <COMM_ENN_12>Pourquoi cet élémentaire est-il si agressif, ne représente-t-il pas l'équilibre ? Ou bien... est-ce que je menace cet équilibre ?;
+<COMM_ENN_13>La nouvelle génération... Ce sont mes futurs ennemis. Mais pour l'instant, il serait injuste de leur donner la mort.;
 <COMM_ENN_14>Je ne pourrais supporter d'être dévouée aux autres de la sorte. Leurs croyances sont soit admirables, soit stupides.;
 <COMM_ENN_15>Leurs sorts sont certes bien plus perfectionnés que les miens, mais peu importe. Manifestement, la discipline n'équivaut pas à la victoire.;
-<COMM_ENN_17>;
+<COMM_ENN_16>L'invocation permet de se faire des bons alliés, mais espèrent-ils vraiment battre quelqu'un qui a pour allié le destin?;
+<COMM_ENN_17>Je ne sais quel prix ils reçoivent en échange de leur loyauté. Peut-être que les invocateurs sont de particulièrement bons négociateurs.;
 <COMM_ENN_18>...Quelle atrocité...;
 <COMM_ENN_19>C'est une construction étrange. Est-ce un membre d'une entité plus grande encore, ou bien est-ce une fin en soi?;
 <COMM_ENN_20>Ce n'est pas qu'une simple machine, c'est un vestige des dieux! Et ils l'utilisent comme simple geôlier? C'est inadmissible!;
@@ -148,7 +150,7 @@
 <COMM_REL_4>;
 <COMM_REL_5>On raconte qu'il y a bien longtemps...le sang d'un dieu aurait coulé sur une griffe de dragon, unissant leurs pouvoirs en quelque chose de bien plus grand. Mais comment ont-ils mis la main sur une chose pareille?;
 
-<DIALOGUE_BOSS1_1>Prisonnière. Votre peine n'est pas accomplie.;
+<DIALOGUE_BOSS1_1>Prisonnière. Ta peine n'est pas accomplie.;
 <DIALOGUE_BOSS1_2>Je suis désolée... Je ne peux pas vous laisser m'arrêter à nouveau!;
 
 <DIALOGUE_BOSS4_1>Enfin! Longtemps j'ai attendu ce moment... L'humanité connaîtra mon courroux pour ces millénaires de souffrance.;
@@ -159,7 +161,7 @@
 
 <GAMEOVER_1>Quelle terrible prémonition! Il ne tient qu'à moi de faire en sorte qu'elle ne se réalise pas.;
 <GAMEOVER_2>Non... Est-ce vraiment ce à quoi je me destine?;
-<GAMEOVER_3>J'ai déjà lu mon propre destin, ce n'est pas comme ça que les choses se passeront.      Recommençons.;
+<GAMEOVER_3>J'ai déjà lu mon propre destin, ce n'est pas comme ça que les choses se passeront. Recommençons.;
 <GAMEOVER_4>...;
 <GAMEOVER_5>Qu'est-ce que le destin cherche à me montrer? Que puis-je apprendre de cet échec?;
 
@@ -337,12 +339,16 @@
 <DIALOGUE_BOSS4_1_2>Alors c'est vous qui rendez la justice, maintenant? On aura tout vu.;
 <DIALOGUE_BOSS4_1_3>Vous savez, en arrivant ici je n'étais pas certaine de ce que j'avais à faire. Mais il n'y a plus aucun doute possible. Je vais en finir!;
 <DIALOGUE_BOSS4_1_4>Vous n'êtes qu'une enfant... Pensez-vous vraiment pouvoir me tuer?;
-<DIALOGUE_BOSS4_1_5>Ne vous en prenez qu'à vous-même. Les épreuves que vous avez mises dans mon chemin m'ont rendue bien plus forte.;
+<DIALOGUE_BOSS4_1_5>On dirait bien que vous me sous-estimez.;
+<DIALOGUE_BOSS4_1_6>Ne vous en prenez qu'à vous-même. Les épreuves que vous avez mises dans mon chemin m'ont rendue bien plus forte.;
 <DIALOGUE_BOSS4_2_1>Me voilà maintenant une véritable criminelle...;
 <DIALOGUE_BOSS4_2_2>Je ne chercherai en rien à me dédouaner de mes actions. C'est ce que j'ai choisi.;
 <DIALOGUE_BOSS4_2_3>... Nous n'en avons pas encore fini...;
 <DIALOGUE_BOSS4_2_4>À moi, puissance de l'ancien temps, zénith de la vie! Accorde-moi ta force!;
 <DIALOGUE_BOSS4_2_5>Oh? C'est mauvais signe... Je dois rester sur mes gardes!;
+<DIALOGUE_BOSS4_3_1>Ngh! Qu'est-ce que...;
+<DIALOGUE_BOSS4_3_2>(Hein? Il est en train de perdre le contrôle... Mais en faveur de quoi?);
+<DIALOGUE_BOSS4_3_3>.................;
 
 
 <VICTOIRE_1>Comme quoi... Ces cartes ont l'air de bien fonctionner.;
@@ -352,7 +358,7 @@
 <VICTOIRE_10>Je sais que vous ne faisiez que votre devoir. Je suis désolée.;
 <VICTOIRE_11>Eh bien, si c'est ce que vaut l'école de magie, il vous faut plus d'efforts!;
 <VICTOIRE_12>Bon, au moins je ne ferai pas plus de victimes humaines s'ils s'enfuient comme ça.;
-<VICTOIRE_13>Est-ce que c'est ça qu'on vous enseigne ici?;
+<VICTOIRE_13>Est-ce que c'est ça que l'on vous enseigne ici?;
 <VICTOIRE_14>Ces couloirs sont vraiment infestés d'étudiants.;
 <VICTOIRE_20>Vouloir surpasser la mort, c'est s'opposer à la vie.;
 <VICTOIRE_21>Un tel centre d'expérimentations... Comment tous peuvent-ils ignorer son existence?;

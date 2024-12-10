@@ -168,6 +168,8 @@ statsJoueur: TStats;
 queueDialogues:array of InfoBoiteDialogues;
 var modeDebug:Boolean;
 
+QUITGAME : Boolean;
+
 PDeck:TDeck; //deck pointé par les stats du joueur
 
 Title : TText;

@@ -35,6 +35,7 @@ procedure actualiserMarchand();
 procedure actualiserEchange();
 procedure actualiserSalleLeo;
 procedure brulerCarte(carte:TCarte ; var stats : Tstats);
+function dropCarte(avancement:Integer;boss:Boolean):TCarte;
 procedure LancementSalleHasardReposRisque;
 procedure actualiserReposRisque;
 procedure actualiserFeuCamp;
@@ -147,18 +148,18 @@ begin
     randomize;
     initDecor((avancement-1) div 10);
     indiceMusiqueJouee:=choisirMusique(avancement);
-    nb:=(avancement mod (maxSalles div 4))+((avancement mod (maxSalles div 4)) div 6);
+    nb:=1+((avancement mod (maxSalles div 4)) div 6);
     writeln('choix des ennemis');
     if not boss then begin
         setlength(ennemis,nb+1);
         for j:=1 to nb do
             begin
             ennemis[j]:=templatesennemis[choisirEnnemi(avancement)];
-            ennemis[j].stats.vie :=     round((avancement/MAXSALLES+0.2)*ennemis[j].stats.vie    );
-            ennemis[j].stats.vieMax :=  round((avancement/MAXSALLES+0.2)*ennemis[j].stats.vieMax );
-            ennemis[j].stats.force :=   round((avancement/MAXSALLES+0.2)*ennemis[j].stats.force  );
-            ennemis[j].stats.defense := round((avancement/MAXSALLES+0.2)*ennemis[j].stats.defense);
-            ennemis[j].stats.vitesse := round((avancement/MAXSALLES+0.2)*ennemis[j].stats.vitesse);
+            ennemis[j].stats.vie :=     round((avancement/MAXSALLES+1)*ennemis[j].stats.vie    );
+            ennemis[j].stats.vieMax :=  round((avancement/MAXSALLES+1)*ennemis[j].stats.vieMax );
+            ennemis[j].stats.force :=   round((avancement/MAXSALLES+1)*ennemis[j].stats.force  );
+            ennemis[j].stats.defense := round((avancement/MAXSALLES+1)*ennemis[j].stats.defense);
+            ennemis[j].stats.vitesse := round((avancement/MAXSALLES+1)*ennemis[j].stats.vitesse);
             end;
     end;
     writeln('ennemis choisis')
@@ -221,11 +222,9 @@ begin
     writeln('ennemis choisis (boss)');
     statsJoueur.avancement := statsJoueur.avancement+1;
 end;
-
 function ajouterCarteAleatoireRarete(rarete : Trarete):TCarte;
 var rdm : integer;
 begin
-    randomize;
     case rarete of 
     commune :  
     begin
@@ -284,6 +283,41 @@ begin
     end;
 end;
 
+function dropCarte(avancement:Integer;boss:Boolean):TCarte;
+var alea:Integer;
+begin
+    alea:=random(100)+1;
+    if boss then
+        if random(4)<=avancement div (MAXSALLES div 4) then
+            dropCarte:=ajouterCarteAleatoireRarete(legendaire)
+        else
+            dropCarte:=ajouterCarteAleatoireRarete(epique)
+    else
+    case (avancement div (MAXSALLES div 4))+1 of //sépare le jeu en 4 "sections" selon l'avancement
+        1:case alea of
+            1..85  :dropCarte:=ajouterCarteAleatoireRarete(commune);
+            86..95 :dropCarte:=ajouterCarteAleatoireRarete(rare);
+            96..100:dropCarte:=ajouterCarteAleatoireRarete(epique);
+            end;
+        2:case alea of
+            1..65  :dropCarte:=ajouterCarteAleatoireRarete(commune);
+            66..94 :dropCarte:=ajouterCarteAleatoireRarete(rare);
+            95..100:dropCarte:=ajouterCarteAleatoireRarete(epique);
+            end;
+        3:case alea of
+            1..40  :dropCarte:=ajouterCarteAleatoireRarete(commune);
+            46..87 :dropCarte:=ajouterCarteAleatoireRarete(rare);
+            88..98 :dropCarte:=ajouterCarteAleatoireRarete(epique);
+            99..100:dropCarte:=ajouterCarteAleatoireRarete(legendaire);
+            end;
+        4:case alea of
+            1..25  :dropCarte:=ajouterCarteAleatoireRarete(commune);
+            26..50 :dropCarte:=ajouterCarteAleatoireRarete(rare);
+            51..90 :dropCarte:=ajouterCarteAleatoireRarete(epique);
+            91..100:dropCarte:=ajouterCarteAleatoireRarete(legendaire);
+            end;
+        end;
+end;
 
 procedure trade(carte1, carte2 : TCarte ; Var stats : Tstats); //#### table de proba à finir
 var rdm : Integer;carte:TCarte;
@@ -587,7 +621,7 @@ begin
     SDL_RenderClear(sdlRenderer);
     InitButtonGroup(boutons[1],  415, 50, 250, 100, 'Sprites/Menu/button1.bmp','Annuler',@lancementSalleCamp);
     InitButtonGroup(boutons[2],  540-125, 250, 250, 250, 'Sprites/Menu/button1.bmp','X',btnProc);
-    InitButtonGroup(boutons[3],  415, 580, 250, 100, 'Sprites/Menu/button1.bmp','brulerCarte',btnProc);
+    InitButtonGroup(boutons[3],  415, 580, 250, 100, 'Sprites/Menu/button1.bmp','Bruler',btnProc);
     boutons[3].parametresSpeciaux:=1;boutons[3].procCarte:=@brulerCarte;
 end;
 
@@ -622,7 +656,7 @@ begin
         numDialogue:=numDialogue+1;
     case numDialogue of
     0,2,4,5:
-        initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/portrait_Leo1.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT_'+intToStr(numDialogue)),10)
+        initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Portraits/portrait_Leo1.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT_'+intToStr(numDialogue)),10)
     else
         initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT_'+intToStr(numDialogue)),10);
     end;
@@ -645,9 +679,9 @@ begin
         numDialogue:=numDialogue+1;
     case numDialogue of
     0,2,4,5,13,15:
-        initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/portrait_Ophiucus1.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT2_'+intToStr(numDialogue)),10);
+        initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Portraits/portrait_Ophiucus1.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT2_'+intToStr(numDialogue)),10);
     7..11:
-        initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/portrait_Ophiucus2.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT2_'+intToStr(numDialogue)),10);
+        initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Portraits/portrait_Ophiucus2.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT2_'+intToStr(numDialogue)),10);
     else
         initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT2_'+intToStr(numDialogue)),10);
     end;
@@ -663,7 +697,7 @@ begin
     InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/button1.bmp','Affronter',@LancementVSLeo);
     InitButtonGroup(boutons[2],  440, 200, 200, 100, 'Sprites/Menu/button1.bmp','Discussion',@rerollDialogueLeo);
     InitButtonGroup(boutons[3],  465, 300, 150, 100, 'Sprites/Menu/button1.bmp','Partir',@choixSalle);
-    initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/portrait_Leo3.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT_0'),10);
+    initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Portraits/portrait_Leo3.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT_0'),10);
 end;
 
 procedure LancementSalleHasardOph;
@@ -676,7 +710,7 @@ begin
     //InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/button1.bmp','Affronter',@LancementVSLeo);
     InitButtonGroup(boutons[2],  440, 200, 200, 100, 'Sprites/Menu/button1.bmp','Discussion',@rerollDialogueOph);
     InitButtonGroup(boutons[3],  465, 300, 150, 100, 'Sprites/Menu/button1.bmp','Partir',@choixSalle);
-    initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/portrait_Ophiucus4.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT2_0'),10);
+    initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Portraits/portrait_Ophiucus4.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT2_0'),10);
 end;
 
 procedure LancementSalleHasardReposRisque;
@@ -720,7 +754,7 @@ begin
 end;
 procedure ReposRisque;
 begin
-    statsJoueur.avancement := statsJoueur.avancement+1;
+    //statsJoueur.avancement := statsJoueur.avancement+1;
     case random(2)+1 of
     1 : begin
         StatsJoueur.vie := StatsJoueur.vie + 15;
@@ -753,7 +787,7 @@ case random(2)+1 of
     if trouverCarte(statsJoueur,23) then
         begin
         sceneActive:='Event';
-        InitDialogueBox(dialogues[1],nil,nil,-50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('INTRO_EVENT3_1'),100);
+        InitDialogueBox(dialogues[1],nil,nil,-50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('INTRO_EVENT2_1'),100);
         ajoutDialogue(nil,extractionTexte('INTRO_EVENT2_2'));
         sceneSuiv:='Ophiucus';
         end
@@ -826,7 +860,7 @@ begin
     randomize;
 	sdl_freesurface(fond.imgSurface);
 	sdl_destroytexture(fond.imgTexture);
-    CreateRawImage(fond,0,-80,1080,900,StringToPChar('Sprites/Game/floor/map_Bg.bmp'));
+    CreateRawImage(fond,0,-80,1080,900,StringToPChar('Sprites\Menu\fond_cartes.bmp'));
 end;
 
 procedure choixSalle();
@@ -895,6 +929,5 @@ end;
 
 
 begin
-statsJoueur.avancement:=1;
 writeln('MapSys ready')
 end.

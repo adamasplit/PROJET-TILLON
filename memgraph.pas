@@ -357,18 +357,27 @@ StringToPChar := StrAlloc(Length(s)+1);
 StrPCopy(StringToPChar, s);
 end;
 
+function NextWordLength(text:String;i:Integer):Integer;
+begin
+  nextWordLength:=0;
+  repeat
+    nextWordLength:=nextWordLength+1;
+  until (text[i+nextWordLength]=' ') or (text[i+nextWordLength]='!') or (text[i+nextWordLength]='.') or (text[i+nextWordLength]='?');
+end;
+
 function WidthBasedLineLength(Font: PTTF_Font;size:Integer; const Text: string;width:Integer): Integer;
 var
-  LineWidth, i: Integer;
+  LineWidth,maxLength, i: Integer;
   TempText: string;
 begin
   TempText := '';
   LineWidth:= 0;
+  maxLength:=(width*30) div (size*20);
   for i := 1 to Length(Text) do
   begin
     LineWidth:= Length(TempText);
     TempText := TempText + Text[i];
-    if (LineWidth >= (width*30) div (size*25)) and (text[i]=' ')  then
+    if (text[i]=' ') and (LineWidth+NextWordLength(text,i) >= maxLength) then
       begin
       Exit(i - 1);
       end;
@@ -404,7 +413,7 @@ begin
   sdl_destroytexture(box.BackgroundImage.imgtexture);
   sdl_destroytexture(box.portrait.imgtexture);
   CreateRawImage(Box.BackgroundImage, X, Y, W, H, ImgPath);
-    if portraitPath='Sprites/Menu/portraitB.bmp' then
+    if portraitPath='Sprites/Portraits/portraitB.bmp' then
       CreateRawImage(Box.portrait, X, Y, W div 4, W div 4, portraitPath)
     else
       CreateRawImage(Box.portrait, X+(W div 20), Y+(H div 6), H div 2+ (H div 10), H div 2+(H div 10), portraitPath);
@@ -430,7 +439,7 @@ begin
   if ImgPath <> nil then CreateRawImage(Box.BackgroundImage, X, Y, W, H, ImgPath) else begin Box.BackgroundImage.rect.x := X; Box.BackgroundImage.rect.y := Y end;
   if portraitPath <> nil then 
     begin
-    if portraitPath='Sprites/Menu/portraitB.bmp' then
+    if portraitPath='Sprites/Portraits/portraitB.bmp' then
       CreateRawImage(Box.portrait, X, Y, W div 4, W div 4, portraitPath)
     else
       CreateRawImage(Box.portrait, X, Y, W div 4-(W div 5), W div 4-(W div 5), portraitPath);
