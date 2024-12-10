@@ -26,7 +26,6 @@ var iEnn,ideckprec:Integer;carteDeck,ennAff:TImage;
 	changementDecor : Boolean;
 var
   creditsText: TImage;
-  creditsPositionY: Integer;
 
 procedure AfficherTout();
 procedure victoire(var statsJ:TStats;boss:Boolean);
@@ -45,6 +44,7 @@ procedure goSeekHelp;
 procedure Credits;
 procedure NouvellePartieIntro;
 procedure menuEnJeu;
+procedure retourMenu;
 function NextOrSkipDialogue(i : Integer) : Boolean;
 procedure actualiserDeck();
 procedure actualiserBestiaire();
@@ -321,6 +321,7 @@ begin
     SceneActive := 'Menu';
 	indiceMusiqueJouee:=0;
 
+
     // Activer les boutons du menu principal
     boutons[2].button.estVisible := true;
     boutons[1].button.estVisible := true;
@@ -378,6 +379,21 @@ begin
 	initJoueur(true);
 	choixSalle;
 end;
+
+procedure retourMenu;
+begin
+	SDL_DestroyTexture(boutons[1].image.imgTexture);
+	SDL_freeSurface(boutons[1].image.imgSurface);
+	SDL_DestroyTexture(boutons[2].image.imgTexture);	
+	SDL_freeSurface(boutons[2].image.imgSurface);
+	SDL_DestroyTexture(boutons[3].image.imgTexture);	
+	SDL_freeSurface(boutons[3].image.imgSurface);
+	SDL_DestroyTexture(boutons[4].image.imgTexture);	
+	SDL_freeSurface(boutons[4].image.imgSurface);
+	InitMenuPrincipal;
+	direction_menu;
+end;
+
 procedure InitMenuPrincipal;
 begin
     // Créer des boutons
@@ -385,7 +401,7 @@ begin
     quitter:=@annihiler;
     Pjouer:=@jouer;
     PCredits:=@Credits;
-    retour_menu:=@direction_menu;
+    retour_menu:=@retourMenu;
     PopenSettings := @openSettings;
     PgoSeekHelp := @goSeekHelp;
 	PNouvellePartieIntro := @NouvellePartieIntro;
@@ -518,11 +534,27 @@ begin
 	reactualiserBestiaire;
 end;
 
+procedure InitTutorial;
+begin
+	CreateText(TexteTutos[1], windowWidth div 2-250, windowHeight div 2 + 50, 300, 250, 'ZQSD pour se deplacer',Fantasy30, b_color);
+	CreateText(TexteTutos[2], windowWidth div 2-250, windowHeight div 2 + 50, 300, 250, 'Echap pour ouvrir le menu',Fantasy30, b_color);
+	CreateText(TexteTutos[3], windowWidth div 2-250, windowHeight div 2 + 50, 300, 250, 'Scroll pour choisir une carte',Fantasy30, b_color);
+	CreateText(TexteTutos[4], windowWidth div 2-250, windowHeight div 2 + 50, 300, 250, 'Clic droit pour utiliser une carte',Fantasy30, b_color);
+end;
+procedure InitTutorialMenu;
+begin
+	CreateText(TexteTutosMenu[1], windowWidth div 2-380, windowHeight div 3 - 120, 300, 250, 'Scroll pour défiler les pages (deck ou bestiaire)',Fantasy30, b_color);
+	CreateText(TexteTutosMenu[2], windowWidth div 2-400, windowHeight div 3 - 120, 300, 250, 'Les pages se débloquent au fur et à mesure dans le jeu !',Fantasy30, b_color);
+	CreateText(TexteTutosMenu[3], windowWidth div 2-450, windowHeight div 3 - 120, 300, 250, 'Chaque rencontre ou carte obtenue est notée dans le livre.',Fantasy30, b_color);
+	CreateText(TexteTutosMenu[4], windowWidth div 2-350, windowHeight div 3 - 120, 300, 250, 'Echap pour quitter le menu',Fantasy30, b_color);
+end;
+
 procedure InitMenuEnJeu;
 begin
   //Menu en Jeu
 	InitButtonGroup(boutons[8], 210, 320, 240, 50,nil,'Deck',@ouvrirDeck);
 	InitButtonGroup(boutons[9], 210, 390, 240, 50,nil,'Bestiaire',@ouvrirBestiaire);
+	InitTutorialMenu;
 end;
 
 procedure InitCredits;
@@ -535,14 +567,6 @@ begin
 	DecorCredits.plans[3] := 'Flowers';
 	InitCreditsText;
 	InitDecorParallax(DecorCredits,DecorCredits.plans[0],5);
-end;
-
-procedure InitTutorial;
-begin
-	CreateText(TexteTutos[1], windowWidth div 2-250, windowHeight div 2 + 50, 300, 250, 'ZQSD pour se deplacer',Fantasy30, whiteCol);
-	CreateText(TexteTutos[2], windowWidth div 2-250, windowHeight div 2 + 50, 300, 250, 'Echap pour ouvrir le menu',Fantasy30, whiteCol);
-	CreateText(TexteTutos[3], windowWidth div 2-250, windowHeight div 2 + 50, 300, 250, 'Scroll pour choisir une carte',Fantasy30, whiteCol);
-	CreateText(TexteTutos[4], windowWidth div 2-250, windowHeight div 2 + 50, 300, 250, 'Clic droit pour utiliser une carte',Fantasy30, whiteCol);
 end;
 
 procedure AfficherTout(); //affiche tout (en combat)

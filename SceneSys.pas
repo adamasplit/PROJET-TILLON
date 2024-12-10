@@ -114,7 +114,7 @@ var faucheuse : TObjet;i:Integer;
 				indiceTuto:=indiceTuto+1;
 				if indiceTuto>4 then indiceTuto:=1;
 				end;
-			//RenderText(TexteTutos[indiceTuto]);
+			RenderText(TexteTutos[indiceTuto]);
 			end;
 		if vagueFinie then ajoutVague;
 		if combatFini then 
@@ -131,19 +131,20 @@ procedure ActualiserMenuEnJeu;
 			begin
 			RenderButtonGroup(boutons[8]);
 			RenderButtonGroup(boutons[9]);
-			//RenderButtonGroup(boutons[10]);
+			OnMouseHover(button_retour_menu,GetMouseX,GetMouseY);
+			RenderButtonGroup(button_retour_menu);
 			end;
+		if (sdl_getTicks-UpdateTimeTuto>3500) then
+				begin
+				UpdateTimeTuto:=sdl_getTicks;
+				indiceTuto:=indiceTuto+1;
+				if indiceTuto>4 then indiceTuto:=1;
+				end;
+		RenderText(TexteTutosMenu[indiceTuto]);
 	end;
 
 //Initialisations
 
-
-
-procedure retourMenu;
-begin
-	InitMenuPrincipal;
-	direction_menu;
-end;
 procedure InitGameOver();
 begin
 	initButtonGroup(boutons[1],1080-540-270,200,540,180,'Sprites/Menu/button1.bmp','Menu principal',@retourmenu);
@@ -618,6 +619,8 @@ begin
 					HandleButtonClick(boutons[8].button,EventSystem^.motion.x,EventSystem^.motion.y);
 				if boutons[9].button.estVisible then
 					HandleButtonClick(boutons[9].button,EventSystem^.motion.x,EventSystem^.motion.y);
+				if button_retour_menu.button.estVisible then
+					HandleButtonClick(button_retour_menu.button,EventSystem^.motion.x,EventSystem^.motion.y);
 				end;
 				end;
 			SDL_MOUSEWHEEL:begin
