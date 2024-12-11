@@ -895,16 +895,18 @@ end;
     end;
 
     procedure XXIII(origine:typeObjet;s:TStats;x,y,xcible,ycible,delai:Integer);
-    var distX,distY:Integer;
+    var distX,distY:Integer;dmg:Integer;
     begin
         jouerSonEff('XXIII');
         distX:=xcible-x;
         distY:=ycible-y;
+        dmg:=5;
+        if s.relique=10 then dmg:=7;
         //lance 4 épées autour de la cible
-        initJustice(origine,5,s.force,s.multiplicateurDegat,xcible,ycible,xcible-distx,ycible-disty,18,delai,'Lionheart');
-        initJustice(origine,5,s.force,s.multiplicateurDegat,xcible,ycible,xcible+distx,ycible+disty,18,delai,'Lionheart');
-        initJustice(origine,5,s.force,s.multiplicateurDegat,xcible,ycible,xcible+disty,ycible-distx,18,delai,'Lionheart');
-        initJustice(origine,5,s.force,s.multiplicateurDegat,xcible,ycible,xcible-disty,ycible+distx,18,delai,'Lionheart');
+        initJustice(origine,dmg,s.force,s.multiplicateurDegat,xcible,ycible,xcible-distx,ycible-disty,18,delai,'Lionheart');
+        initJustice(origine,dmg,s.force,s.multiplicateurDegat,xcible,ycible,xcible+distx,ycible+disty,18,delai,'Lionheart');
+        initJustice(origine,dmg,s.force,s.multiplicateurDegat,xcible,ycible,xcible+disty,ycible-distx,18,delai,'Lionheart');
+        initJustice(origine,dmg,s.force,s.multiplicateurDegat,xcible,ycible,xcible-disty,ycible+distx,18,delai,'Lionheart');
     end;
 
     procedure XXIV(s:TStats;x,y:Integer);
@@ -920,7 +922,7 @@ end;
 //###"La procédure ultime. On raconte que son accomplissement entraîne la fin de l'univers."
 procedure JouerCarte(var stats:TStats;x,y:Integer;i:Integer); 
 
-var tempCarte:TCarte;j,reps:Integer;
+var tempCarte:TCarte;
 
 begin
     tempCarte:=stats.deck^[i];

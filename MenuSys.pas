@@ -706,11 +706,12 @@ begin
 		stats.multiplicateurDegat:=stats.multiplicateurDegat-0.5;
 		stats.vieMax:=stats.vieMax-20;
 		end;
+	10:InitDialogueBox(dialogues[1],'Sprites/Menu/button1.bmp','Sprites/Portraits/portrait_Leo6.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('VICTOIRE_-1'),10);
 	end;
 	
 
 	stats.relique:=rel;
-	finirCombat(stats)
+	if rel<>10 then finirCombat(stats);
 end;
 
 procedure victoire(var statsJ:TStats;boss:Boolean); //censé contenir le choix+obtention d'une carte après un combat

@@ -65,6 +65,13 @@ begin
             salle2.evenement:=boss;
             salle3.evenement:=rien
         end
+    else 
+        if statsJoueur.avancement<4 then
+            begin
+            salle1.evenement:=combat;
+            salle2.evenement:=combat;
+            salle3.evenement:=combat;
+            end
     else begin
         randomize();
         alea:=random(2)+1;
@@ -819,10 +826,10 @@ end;
 procedure LancementSalleHasard;
 begin
 writeln('Lancement de salle Hasard');
-statsJoueur.avancement := statsJoueur.avancement+1;
+//statsJoueur.avancement := statsJoueur.avancement+1;
 ClearScreen;
 SDL_RenderClear(sdlRenderer);
-case random(2)+1 of
+case random(5)+1 of
 1:  if trouverCarte(statsJoueur,24) then lancementSalleHasard
     else
     if trouverCarte(statsJoueur,23) then
@@ -847,6 +854,9 @@ case random(2)+1 of
     ajoutDialogue(nil,extractionTexte('INTRO_EVENT3_2'));
     sceneSuiv:='HReposRisque';
     end;
+3: lancementSalleCamp;
+4: lancementSalleCombat;
+5: lancementSalleMarchand;
 else begin
     end;
 end;

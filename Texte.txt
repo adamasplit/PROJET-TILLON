@@ -403,6 +403,7 @@
 <DIALOGUE_BOSS4_4>Nous ne sommes pas vos pions. L'humanité a largement dépassé ses créateurs, que vous le vouliez ou non!;
 <DIALOGUE_BOSS4_0>Non... Emprisonné à nouveau? Vous ne perdez rien pour attendre, humains!;
 
+<VICTOIRE_-1>Alors ça! On ne m'a jamais fait ce coup-là. Mais vous savez quoi? Prenez-la. Je pense que vous en êtes digne! Enfin, on verra bien.;
 <VICTOIRE_0>Je me souviendrai de vous comme d'un être particulièrement fort.;
 <VICTOIRE_1>Comme quoi... Ces cartes ont l'air de bien fonctionner.;
 <VICTOIRE_2>Ouf! On dirait que je m'en sors plutôt pas mal!;
