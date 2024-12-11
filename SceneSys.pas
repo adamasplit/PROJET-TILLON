@@ -499,10 +499,9 @@ begin
 						LObjets[0].stats.compteurLeMonde:=100;
 						updateTimeMonde:=sdl_getTicks;
 						end;
-					SDLK_O:LOBjets[0].stats.multiplicateurMana:=LOBjets[0].stats.multiplicateurMana+10;
+					SDLK_O:LOBjets[0].stats.multiplicateurMana:=LOBjets[0].stats.multiplicateurMana+100;
 					SDLK_H : choixSalle();
 					SDLK_F2:begin
-						statsJoueur.force:=statsJoueur.force+1;
 						LObjets[0].stats.force:=LObjets[0].stats.force+1;
 						LObjets[0].stats.multiplicateurDegat:=LObjets[0].stats.multiplicateurDegat+10;
 						end;
@@ -671,6 +670,7 @@ begin
 	initDecor;
 	InitDialogues;
 	InitTutorial;
+	indiceTuto:=1;
 	setlength(LObjets,1);
 	writeln('essai d''actualisation...');
 	DeclencherFondu(False, 3000);

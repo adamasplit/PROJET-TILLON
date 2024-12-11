@@ -199,7 +199,7 @@ Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT,
     defMus(12,'OST/Boss4.wav','',133);
     //Map/évènements
     defMus(14,'OST/Map.wav','',163);
-    defMus(15,'OST/Event.wav','',49);
+    defMus(15,'OST/Event.wav','',51);
     //Fanfares de victoire
     defMus(19,'OST/C0_VictoireIntro.wav','',4);
     defMus(20,'OST/C1_VictoireIntro.wav','',5);

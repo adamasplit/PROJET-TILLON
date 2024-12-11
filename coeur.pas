@@ -97,7 +97,7 @@ type TStats=record //(version variable)
         projectile,laser,epee:(degats:Integer;
         origine:typeObjet;
         vectX,vectY,vitRotation:Real;
-        dureeVie,dureeVieInit,delai,delaiInit:Integer;
+        dureeVie,dureeVieInit,delai,delaiInit,targetX,targetY,vitDep:Integer;
         volVie:Boolean); //soigne le joueur si jamais l'attaque touche une cible
 
         effet:(fixeJoueur:Boolean);//si l'effet suit le joueur ou non

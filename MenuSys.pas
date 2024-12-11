@@ -84,7 +84,10 @@ begin
 	statsJoueur.collection[j]:=Cartes[4];
 	statsJoueur.relique:=0;
 	statsJoueur.nbMarchand := 0;
+	statsJoueur.nbJustice:=0;
 	statsJoueur.vie:=100;statsJoueur.vieMax:=100;
+	statsJoueur.mana:=0;statsJoueur.manaMax:=10;
+	statsJoueur.manaDebutCombat:=0;
 	statsJoueur.multiplicateurSoin:=1;
 	initStatsCombat(statsJoueur,LObjets[0].stats);
 	iCarteChoisie:=1;
@@ -622,7 +625,7 @@ begin
 		case (stats.avancement div (MAXSALLES div 4)) of
 		1:	begin
 			sceneActive:='Event';
-			InitDialogueBox(dialogues[1],nil,'Sprites/Menu/combatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('FIN_BOSS1_1'),10);
+			InitDialogueBox(dialogues[1],'Sprites/Menu/button1.bmp','Sprites/Menu/combatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('FIN_BOSS1_1'),10);
 			sceneSuiv:='Map';
 			for i:=2 to 8 do
 			case i of
@@ -662,11 +665,18 @@ begin
 	stats.vieMax:=stats.vieMax-20;
 	end;
 	4:
-	stats.multiplicateurSoin:=stats.multiplicateurSoin-0.3;
+	stats.multiplicateurSoin:=stats.multiplicateurSoin-0.5;
 	5:
+	begin
 	stats.manaDebutCombat:=0;
+	stats.multiplicateurMana:=stats.multiplicateurMana-0.3
+	end;
 	6:stats.force:=stats.force-5;
 	7:stats.defense:=stats.defense-4;
+	8:begin
+		stats.multiplicateurDegat:=stats.multiplicateurDegat-0.5;
+		stats.vieMax:=stats.vieMax+20;
+		end;
 	end;
 end;
 
@@ -684,12 +694,20 @@ begin
 	stats.vie:=stats.vie+20;
 	end;
 	4:
-	stats.multiplicateurSoin:=stats.multiplicateurSoin+0.3;
+	stats.multiplicateurSoin:=stats.multiplicateurSoin+0.5;
 	5:
+	begin
 	stats.manaDebutCombat:=10;
+	stats.multiplicateurMana:=stats.multiplicateurMana+0.3;
+	end;
 	6:stats.force:=stats.force+5;
 	7:stats.defense:=stats.defense+4;
+	8:begin
+		stats.multiplicateurDegat:=stats.multiplicateurDegat-0.5;
+		stats.vieMax:=stats.vieMax-20;
+		end;
 	end;
+	
 
 	stats.relique:=rel;
 	finirCombat(stats)
@@ -698,8 +716,8 @@ end;
 procedure victoire(var statsJ:TStats;boss:Boolean); //censé contenir le choix+obtention d'une carte après un combat
 var i:Integer;
 begin
-	if indiceMusiqueJouee<14 then indiceMusiqueJouee:=indiceMusiqueJouee+18;
-	StatsJ.vie:=LObjets[0].stats.vie;
+	if indiceMusiqueJouee<14 then indiceMusiqueJouee:=indiceMusiqueJouee+18; //donne une fanfare de victoire adaptée
+	StatsJ.vie:=LObjets[0].stats.vie;//synchronise la vie
 	if (statsJ.avancement-1) mod 10 = 0 then
 		InitDialogueBox(dialogues[1],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('VICTOIRE_'+intToSTR(10*(statsJ.avancement div 10))),10)
 	else
@@ -711,14 +729,14 @@ begin
 		if boss and (random(2)=0) then
 			begin
 			boutons[i].parametresSpeciaux:=4;
-			boutons[i].relique:=random(7)+1; //###c'est cette partie qui est à remplacer pour déterminer les reliques que l'on peut obtenir
+			boutons[i].relique:=random(9)+1; //###c'est cette partie qui est à remplacer pour déterminer les reliques que l'on peut obtenir
 			InitButtonGroup(boutons[i],200+300*(i-1),200,128,128,StringToPChar('Sprites/Reliques/reliques'+intToStr(boutons[i].relique)+'.bmp'),' ',btnProc);
 			boutons[i].procRel:=@equiperRelique; 
 			end
 		else
 			begin
 			boutons[i].parametresSpeciaux:=1;
-			boutons[i].carte:=dropCarte(statsJ.avancement,boss); //###c'est cette partie qui est à remplacer pour déterminer les cartes que l'on peut obtenir
+			boutons[i].carte:=dropCarte(statsJ.avancement-1,boss); 
 			InitButtonGroup(boutons[i],200+300*(i-1),200,128,128,boutons[i].carte.dir,' ',btnProc);
 			boutons[i].procCarte:=@acquisitionCarte; 
 			end;
@@ -733,12 +751,17 @@ begin
 	InitDecorCartes;
     sceneActive:='victoire';
     for i:=1 to 3 do
+		if i<>2 then
         begin
 	    boutons[i].carte:=cartes[num];
 	    InitButtonGroup(boutons[i],200+300*(i-1),200,128,128,boutons[i].carte.dir,' ',nil);
         boutons[i].procCarte:=@acquisitionCarte;
         boutons[i].parametresSpeciaux:=1;
         end;
+			boutons[2].parametresSpeciaux:=4;
+			boutons[2].relique:=10;
+			InitButtonGroup(boutons[2],200+300*(2-1),200,128,128,StringToPChar('Sprites/Reliques/reliques'+intToStr(boutons[2].relique)+'.bmp'),' ',btnProc);
+			boutons[2].procRel:=@equiperRelique; 
 end;
 
 procedure RenderParallaxMenu(bgImage,characterImage,cardsImage : TImage);

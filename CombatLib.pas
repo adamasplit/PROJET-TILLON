@@ -490,10 +490,13 @@ begin
     //initialisation des caractéristiques
     justice.stats.xreel:=x;
     justice.stats.yreel:=y;
+    justice.stats.targetx:=xcible;
+    justice.stats.targety:=ycible;
     justice.stats.genre:=epee;
     justice.stats.origine:=origine;
     justice.stats.delai:=delai;
     justice.stats.delaiInit:=delai;
+    justice.stats.vitDep:=vitesse;
     justice.stats.volvie:=False;
     ajoutObjet(justice);
 end;
@@ -513,13 +516,11 @@ begin
         //phase initiale: 
         begin
         initAngle(justice.stats.vectX,justice.stats.vectY,angleDepart);
-        justice.stats.angle:=angleDepart-2*pi*sqrt(1-((justice.stats.delai)/(justice.stats.delaiInit+1))**3);
+        justice.stats.angle:=angleDepart-2*pi*sqrt(1-((justice.stats.delai)/(justice.stats.delaiInit+1))**2);
         justice.image.rect.x:=round(justice.stats.xreel+justice.stats.vectX*(justice.stats.angle-angleDepart));
         justice.image.rect.y:=round(justice.stats.yreel+justice.stats.vecty*(justice.stats.angle-angleDepart));
         justice.stats.delai:=justice.stats.delai-1;
         updateAnimation(justice.anim,justice.image);
-        
-        
         end
     else if (justice.stats.delai=0) and not (leMonde) then //si la justice a fini sa préparation, elle s'active
         begin
@@ -533,6 +534,11 @@ begin
             justice.col.collisionsFaites[i]:=False;
         justice.anim.currentFrame:=1;
         justice.col.estActif:=True;
+        if (justice.anim.objectName='justice') then
+            begin
+            justice.stats.vectX:=justice.stats.vitDep*(justice.stats.targetX-justice.stats.xreel)/sqrt((justice.stats.targetX-justice.stats.xreel)**2+(justice.stats.targetY-justice.stats.yreel)**2);
+            justice.stats.vectY:=justice.stats.vitDep*(justice.stats.targetY-justice.stats.yreel)/sqrt((justice.stats.targetX-justice.stats.xreel)**2+(justice.stats.targetY-justice.stats.yreel)**2);
+            end;
         initAngle(justice.stats.vectX,justice.stats.vectY,justice.stats.angle);
         end
     else
@@ -666,7 +672,7 @@ end;
     procedure IV(s : TStats ; x,y : Integer);
     var proj : TObjet;
     begin
-        creerBoule(joueur, 3, s.force, s.multiplicateurDegat, x, y,100,100, {vitesse} 7, getmouseX, getmouseY, 'projectile', proj);
+        creerBoule(joueur, 5, s.force, s.multiplicateurDegat, x, y,100,100, {vitesse} 29, getmouseX, getmouseY, 'projectile', proj);
         ajoutObjet(proj);
     end;
 
@@ -705,7 +711,7 @@ end;
     //8 la justice 
     procedure VIII(var sPerm, sCombat :Tstats;x,y,charges:Integer);
     begin
-        if charges>=scombat.nbjustice then //incrémente le compteur d'utilisations de la carte
+        if (charges>=scombat.nbjustice) and (sCombat.nbJustice<10) then //incrémente le compteur d'utilisations de la carte
             begin
             sPerm.nbJustice := sPerm.nbJustice + 1;
             sCombat.nbJustice := sCombat.nbJustice + 1;  
@@ -873,7 +879,7 @@ end;
     var eff:TObjet;
     begin
         s.compteurLemonde := s.compteurLemonde +1;
-        leMonde:=True;
+        leMonde:=True; //arrête le temps
         updateTimeMonde:=sdl_getticks;
         creerEffet(0,0,150,150,6,'monde',True,eff);
         ajoutObjet(eff);
@@ -894,6 +900,7 @@ end;
         jouerSonEff('XXIII');
         distX:=xcible-x;
         distY:=ycible-y;
+        //lance 4 épées autour de la cible
         initJustice(origine,5,s.force,s.multiplicateurDegat,xcible,ycible,xcible-distx,ycible-disty,18,delai,'Lionheart');
         initJustice(origine,5,s.force,s.multiplicateurDegat,xcible,ycible,xcible+distx,ycible+disty,18,delai,'Lionheart');
         initJustice(origine,5,s.force,s.multiplicateurDegat,xcible,ycible,xcible+disty,ycible-distx,18,delai,'Lionheart');
@@ -913,7 +920,7 @@ end;
 //###"La procédure ultime. On raconte que son accomplissement entraîne la fin de l'univers."
 procedure JouerCarte(var stats:TStats;x,y:Integer;i:Integer); 
 
-var tempCarte:TCarte;
+var tempCarte:TCarte;j,reps:Integer;
 
 begin
     tempCarte:=stats.deck^[i];
@@ -929,8 +936,9 @@ begin
                 end;
             stats.deck^[i].charges:=stats.deck^[i].chargesMax;
             end;
-        stats.deck^[i].charges:=stats.deck^[i].charges-1;
-        if stats.deck^[i].charges<=0 then
+            if (stats.relique<>9) or (random(2)=0) then //la relique n°9 permet de lancer 2 fois les sorts parfois
+                stats.deck^[i].charges:=stats.deck^[i].charges-1;
+        if stats.deck^[i].charges<=0 then //si la carte est consommée, elle est renvoyée à la fin du paquet (ou non)
             cycle(stats.deck^,i);
         //Partie principale : tous les effets de cartes y seront répertoriés
         case tempCarte.numero of
@@ -956,6 +964,7 @@ begin
             20: XX(stats);
             21: XXI(stats);
             22: __(stats);
+            //Cartes bonus
             23: XXIII(joueur,stats,x,y,getmouseX,getmousey,60);
             24: XXIV(stats,getmouseX,getmouseY);
             else 

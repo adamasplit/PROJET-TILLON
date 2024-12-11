@@ -222,6 +222,7 @@ begin
     writeln('ennemis choisis (boss)');
     statsJoueur.avancement := statsJoueur.avancement+1;
 end;
+
 function ajouterCarteAleatoireRarete(rarete : Trarete):TCarte;
 var rdm : integer;
 begin
@@ -287,6 +288,7 @@ function dropCarte(avancement:Integer;boss:Boolean):TCarte;
 var alea:Integer;
 begin
     alea:=random(100)+1;
+    dropCarte.numero:=0;
     if boss then
         if random(4)<=avancement div (MAXSALLES div 4) then
             dropCarte:=ajouterCarteAleatoireRarete(legendaire)
@@ -317,6 +319,7 @@ begin
             91..100:dropCarte:=ajouterCarteAleatoireRarete(legendaire);
             end;
         end;
+    if dropCarte.numero=0 then dropCarte:=Cartes[random(24)+1];
 end;
 
 procedure trade(carte1, carte2 : TCarte ; Var stats : Tstats); //#### table de proba à finir
@@ -340,10 +343,10 @@ begin
     begin
         rdm := 1 + random(100);
         case rdm of 
-            1:      ajouterCarteAleatoireRarete(commune);
-            2..94:  ajouterCarteAleatoireRarete(rare);
-            95..99: ajouterCarteAleatoireRarete(epique);
-            100:    ajouterCarteAleatoireRarete(legendaire);
+            1:      carte:=ajouterCarteAleatoireRarete(commune);
+            2..94:  carte:=ajouterCarteAleatoireRarete(rare);
+            95..99: carte:=ajouterCarteAleatoireRarete(epique);
+            100:    carte:=ajouterCarteAleatoireRarete(legendaire);
         end;
     end
 
@@ -443,7 +446,6 @@ begin
         end;
     end;
 
-    
     supprimerCarte(stats,carte1.numero);
     supprimerCarte(stats,carte2.numero);
     echangeFait:=True;
@@ -464,7 +466,7 @@ begin
 		else
 			i:=i+1
 	else
-		if i<=2 then
+		if i<=1 then
             i:=imax
 		else
 			i:=i-1;
@@ -500,12 +502,8 @@ end;
 procedure actualiserEchange();
 begin
     renderRawImage(fond,false);
-    highlight(boutons[2],getmousex,getmousey);
-    highlight(boutons[3],getmousex,getmousey);
-    sdl_destroytexture(imgCar1.imgTexture);
-    sdl_freeSurface(imgCar1.imgSurface);
-    sdl_destroytexture(imgCar2.imgTexture);
-    sdl_freeSurface(imgCar2.imgSurface);
+    if etatChoix then highlight(boutons[3],getmousex,getmousey)
+    else highlight(boutons[2],getmousex,getmousey);
     //writeln(ichoix1);
     renderButtonGroup(boutons[1]);
     renderButtonGroup(boutons[2]);
@@ -516,6 +514,10 @@ begin
     renderRawImage(imgCar1,False);
     createRawImage(imgCar2,boutons[3].image.rect.x,boutons[3].image.rect.y,boutons[3].image.rect.w,boutons[3].image.rect.h,StringToPChar('Sprites/Cartes/carte'+intToStr(statsJoueur.collection[iChoix2].numero)+'.bmp'));
     renderRawImage(imgCar2,False);
+    sdl_destroytexture(imgCar1.imgTexture);
+    sdl_freeSurface(imgCar1.imgSurface);
+    sdl_destroytexture(imgCar2.imgTexture);
+    sdl_freeSurface(imgCar2.imgSurface);
 end;
 
 procedure confirmer();
@@ -955,7 +957,9 @@ begin
             black_color.b := 0;
             ChoixSalle;
             end;
-        'Map':ChoixSalle;
+        'Map':begin
+            ChoixSalle;
+            end;
         else sceneActive := sceneSuiv;
     end;
 end;

@@ -163,10 +163,10 @@ var
   alpha: Integer;
 begin
 
-  if not fonduActif and not modeDebug then 
-  begin 
-  SDL_RenderFillRect(sdlRenderer, nil);
-  exit;
+  if (not fonduActif) and (not modeDebug) and (fonduEntrant) then 
+    begin 
+    SDL_RenderFillRect(sdlRenderer, nil);
+    exit;
   end;
 
   // Calcul du temps écoulé depuis le début du fondu
@@ -181,7 +181,7 @@ begin
     else
       alpha := 0;    // Fin du fondu sortant, opacité nulle
     SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, alpha);
-    SDL_RenderFillRect(sdlRenderer, nil);
+    if fonduEntrant then SDL_RenderFillRect(sdlRenderer, nil);
   end
   else
   begin
@@ -192,7 +192,7 @@ begin
     else
       alpha := Round(255 * (cos(progression * PI) * 0.5 + 0.5));       // Interpolation pour le fondu sortant
     SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, alpha);
-    SDL_RenderFillRect(sdlRenderer, nil);
+    if fonduEntrant then SDL_RenderFillRect(sdlRenderer, nil);
   end;
 end;
 

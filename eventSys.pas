@@ -126,11 +126,11 @@ begin
     if stats.vie>0 then
       DrawRect(red_color,255, 35, 355+190-Round(1.9*stats.vie), 20, Round(1.9*stats.vie) );
     //Mana
-    DrawRect(black_color,255,95, 350, 30, 200);
+    DrawRect(black_color,255,95, 550-20*stats.manaMax, 30, 20*stats.manaMax);
     if stats.manaMax<10 then
       writeln('Attention, le mana max est à ',stats.manaMax);
     if stats.manaMax>0 then
-      DrawRect(b_color,255, 100, 355+190-Round(190* (stats.mana/stats.manaMax)), 20, Round(190* (stats.mana/stats.manaMax)) );
+      DrawRect(b_color,255, 100, 355+190-Round(19* (stats.mana)), 20, Round(19* (stats.mana)) );
     //Portrait
     RenderRawImage(CombatUI[4],255,False);
     RenderRawImage(CombatUI[5],255,False);
