@@ -80,10 +80,10 @@ begin
           begin
           //writeln('tentative d"ajout d"un ennemi');
           LObjets[i]:=ennemis[taille];
-          LObjets[i].image.rect.x:=((i-1)+(2-high(ennemis)))*round(600/(TAILLE_VAGUE))+180;
-          LObjets[i].image.rect.y:=50;
           supprimeEnn(ennemis[taille],taille);
           taille:=taille-1;
+          LObjets[i].image.rect.x:=(i-1)*round(600/TAILLE_VAGUE)+180;
+          LObjets[i].image.rect.y:=50;
           jouerSonEnn(LObjets[i].anim.objectName+'_apparition');
           if LObjets[i].anim.objectName='dracomage' then
             begin
@@ -594,7 +594,7 @@ begin
     19:begin
       if (ennemi.anim.etat='cast') and (ennemi.stats.compteurAction mod 60 = 59) then
         multiProjs(typeObjet(1),1,ennemi.stats.force,ennemi.stats.multiplicateurDegat,trouverCentreX(ennemi)-50,trouverCentreY(ennemi)-150,180,180,3,10,360,ennemi.stats.compteurAction*10,'flamme');
-      if (ennemi.anim.etat='rage') and (ennemi.stats.compteurAction mod 10=0) then
+      if (ennemi.anim.etat='rage') and (ennemi.stats.compteurAction mod 14=0) then
         begin
         if random(2)=0 then
           begin
@@ -728,7 +728,7 @@ begin
             AIPathFollow(ennemi,joueur,ennemi.stats.vitessePoursuite,true,true);
           if (ennemi.anim.etat='rewarp') and animFinie(ennemi.anim) then
             InitAnimation(ennemi.anim,ennemi.anim.objectName,'chase', ennemi.stats.nbFrames1,True);
-          if (animFinie(ennemi.anim) and (ennemi.anim.etat='chase') and (random(15)=0)) or ((ennemi.anim.objectName='Archimage') and (ennemi.stats.compteurAction>80))  then 
+          if (animFinie(ennemi.anim) and (ennemi.anim.etat='chase') and (random(15)=0)) or ((ennemi.anim.objectName='Archimage') and (ennemi.stats.compteurAction>70))  then 
             begin
               jouerSonEnn(ennemi.anim.objectName);
               ennemi.stats.compteurAction:=0;
@@ -1136,7 +1136,7 @@ begin
           else
             begin
             initAnimation(ennemi.anim,ennemi.anim.objectName,'dash',ennemi.stats.nbFrames3,False);
-            ennemi.stats.degatsContact:=10;
+            ennemi.stats.degatsContact:=25;
             ennemi.stats.xcible:=trouverCentreX(joueur);
             ennemi.stats.ycible:=trouverCentreY(joueur);
             end;
@@ -1237,16 +1237,6 @@ begin
     begin
     InitAnimation(ennemi.anim,ennemi.anim.objectName,'chase', ennemi.stats.nbFrames1,True);
     ennemi.col.estActif:=True;
-    if (ennemi.anim.objectName='dracomage') then
-      begin
-        sceneActive:='Cutscene';
-        InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites/Portraits/dracomage1.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS4_3_1'),100);
-        for i:=2 to 4 do
-          case i of
-          1,2,4:ajoutDialogue('Sprites\Portraits/dracomage1.bmp',extractionTexte('DIALOGUE_BOSS4_3_'+intToStr(i)))
-          else ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_3_'+intToStr(i)));
-        end;
-      end;
     end;
   if ennemi.anim.objectname='Béhémoth' then
     begin
@@ -1256,36 +1246,14 @@ begin
     ennemi.image.rect.y:=-50;
   if (ennemi.anim.etat='apparition') and (ennemi.stats.compteurAction=0) then
     begin
-    if (ennemi.anim.objectName='geolier') then
-    begin
-      InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/portraitGarde2.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS1_1_1'),100);
-      for i:=2 to 10 do
-			case i of
-				1,3,5,7,9:ajoutDialogue('Sprites\Portraits/portraitGarde2.bmp',extractionTexte('DIALOGUE_BOSS1_1_'+intToStr(i)))
-				else ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS1_1_'+intToStr(i)));
-      end;
-      sceneActive:='Cutscene';
-      ennemi.stats.compteurAction:=1;
-    end;
-    if (ennemi.anim.objectName='Spectre') then
-    begin
-      InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/spectre.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS2_1_1'),100);
-      for i:=2 to 12 do
-			case i of
-				3,5,7,9,11:ajoutDialogue('Sprites\Portraits/spectre.bmp',extractionTexte('DIALOGUE_BOSS2_1_'+intToStr(i)))
-				else ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS2_1_'+intToStr(i)));
-      end;
-      sceneActive:='Cutscene';
-      ennemi.stats.compteurAction:=1;
-    end;
     if (ennemi.anim.objectName='Béhémoth')  then
     begin
 	    InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/portraitB.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS4_1'),100);
       ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_2'));
       ajoutDialogue('Sprites\Portraits/portraitB.bmp',extractionTexte('DIALOGUE_BOSS4_3'));
       ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_4'));
-      jouersonenn('dragon');
       sceneActive:='Cutscene';
+      jouersonenn('dragon');
       ennemi.stats.compteurAction:=1;
     end;
     if (ennemi.anim.objectName='dracomage') then
@@ -1337,16 +1305,7 @@ begin
           sceneActive:='Cutscene';
           transformation(ennemi,24);
           end
-        else if ennemi.anim.objectName='geolier' then 
-          begin
-          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/portraitGarde3.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS1_2_1'),100);
-          for i:=2 to 5 do
-          case i of
-            1,3,4:ajoutDialogue('Sprites\Portraits/portraitGarde3.bmp',extractionTexte('DIALOGUE_BOSS1_2_'+intToStr(i)))
-            else ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS1_2_'+intToStr(i)));
-          end;
-          sceneActive:='Cutscene';
-          ennemi.stats.compteurAction:=1;
+        else if ennemi.anim.objectName='geolier' then begin
           transformation(ennemi,32)
           end
         else if (ennemi.anim.objectName='Leo_Transe') and (ennemi.stats.compteurAction=-1) then begin
@@ -1387,21 +1346,6 @@ begin
           jouerSonEnn(ennemi.anim.objectName+'_mort');
           if ennemi.anim.objectName='Leo_Transe' then ennemi.stats.compteurAction:=-1;
           InitAnimation(ennemi.anim,ennemi.anim.objectName,'mort',ennemi.stats.nbFramesMort,False);
-          if (ennemi.anim.objectName='dracomage') then 
-            begin
-            sceneActive:='Cutscene';
-            InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/dracomage2.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS4_4_1'),100);
-            ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_4_2'));
-            ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_4_3'));
-            ajoutDialogue('Sprites\Portraits/dracomage3.bmp',extractionTexte('DIALOGUE_BOSS4_4_4'));
-            ajoutDialogue('Sprites\Portraits/dracomage3.bmp',extractionTexte('DIALOGUE_BOSS4_4_5'));
-            end;
-          if (ennemi.anim.objectName='geolier2') then
-            begin
-            sceneActive:='Cutscene';
-            InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/portraitGarde4.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS1_3_1'),100);
-            ajoutDialogue('Sprites\Portraits/portraitGarde4.bmp',extractionTexte('DIALOGUE_BOSS1_3_2'));
-            end;
           ennemi.col.estActif:=False;
           statsJoueur.bestiaire[ennemi.stats.numero]:=True;
           end;
@@ -1421,44 +1365,47 @@ begin
 // !!format : numéro dans TemplatesEnnemis, nom,mvt,vie,att,dmg,def,vit,w,h,nbFrames(apparition,chase,action1,action2,mort),collisions(w,h,offsetX,offsetY),nom de l'attaque
 //(mvt: type de mouvement, dmg: dégâts au contact)
 setLength(ennemis,0);
-initStatEnnemi(1,'slime',8,30,1,0,0,0,90,90,6,8,3,4,4,90,45,5,40,'boule');
-initStatEnnemi(2,'livre',12,30,1,0,2,1,180,90,7,12,4,0,12,60,90,60,0,'eclair');
-initStatEnnemi(3,'feu_follet',6,30,3,1,1,0,100,100,7,9,0,0,6,70,70,15,15,'flamme');
-initStatEnnemi(4,'grenouille',8,30,1,0,2,0,90,90,7,6,4,4,7,54,90,5,0,'boule');
-initStatEnnemi(5,'chevalier',5,30,10,0,1,3,90,90,5,6,3,10,5,54,90,5,0,'rayonAbysse');
-initStatEnnemi(6,'elementaire_astral',4,30,2,0,1,1,100,100,9,12,5,6,7,80,80,10,10,'etoile');
-initStatEnnemi(7,'elementaire_temps',0,30,2,5,1,1,100,100,18,12,0,0,6,80,80,10,10,'');
-initStatEnnemi(8,'elementaire_spectral',4,30,2,0,0,0,100,100,8,7,13,13,8,80,80,10,10,'rayon_spectral');
-initStatEnnemi(9,'elementaire_lumiere',1,50,2,0,4,3,300,300,12,11,6,0,8,60,60,120,120,'rayon');
-initStatEnnemi(10,'elementaire_ombre',1,50,2,0,4,3,300,300,11,12,9,0,10,60,60,120,120,'rayon_spectral');
-initStatEnnemi(11,'elementaire_tempete',3,50,0,5,0,2,150,150,10,8,4,0,10,100,150,25,0,'');
-initStatEnnemi(12,'elementaire_eclipse',1,250,2,0,4,3,400,400,19,12,7,0,9,60,60,160,160,'eclipse');
-initStatEnnemi(13,'mage_noir',2,50,0,0,0,0,126,120,10,8,9,7,9,80,100,30,20,'flamme');
-initStatEnnemi(14,'mage_blanc',15,40,2,0,0,1,100,120,18,12,3,5,14,60,90,20,30,'rayon');
-initStatEnnemi(15,'mage_rouge',8,50,2,0,2,0,100,200,11,6,4,9,5,60,90,20,110,'rayon_rouge');
-initStatEnnemi(16,'invocateur',12,50,0,0,0,0,120,132,12,8,3,0,5,80,100,30,20,'rayon');
-initStatEnnemi(17,'diablotin',4,10,1,0,0,3,80,80,4,6,4,5,4,50,50,15,0,'eclairR');
-initStatEnnemi(18,'Akr',4,150,2,0,-20,1,384,256,14,9,9,8,16,200,96,80,150,'kamui');
-initStatEnnemi(19,'main',3,50,0,5,0,1,150,150,8,16,8,0,15,150,150,0,0,'');
-initStatEnnemi(20,'armure',7,400,8,0,10,0,384,256,7,2,13,9,16,192,192,96,64,'justice');
-initStatEnnemi(21,'undrixel',3,50,5,30,0,1,288,192,4,10,4,0,10,200,128,10,40,'eclairR');
-initStatEnnemi(22,'altegh',1,50,2,0,4,2,192,192,3,6,4,0,14,160,96,16,96,'rayonAL');
-InitstatEnnemi(23,'Leo',13,150,8,2,5,0,300,300,14,8,7,10,8,100,150,100,150,'eclairL');
-InitstatEnnemi(24,'Leo_Transe',14,150,20,5,2,1,300,300,13,16,6,22,10,200,250,50,25,'geyser_feu');
-initStatEnnemi(25,'UNKNOWN',4,150,2,0,-20,0,128,128,8,12,8,4,8,64,114,32,14,'Roue');
-initStatEnnemi(26,'chaos',12,60,1,3,5,2,200,200,9,11,6,0,6,100,200,50,0,'rayonAbysse');
-initStatEnnemi(27,'Archimage',4,100,2,0,6,0,128,128,10,6,6,6,4,70,100,24,14,'projectile');
-initStatEnnemi(28,'liche',5,50,2,0,4,1,128,128,9,6,5,16,10,70,110,19,7,'rayonMort');
-initStatEnnemi(29,'expurgateur',6,20,3,1,1,0,128,128,13,12,0,0,7,128,104,0,24,'eclairR');
-initStatEnnemi(30,'dracomage',2,300,2,5,6,1,192,192,34,12,8,8,26,128,164,32,28,'eclairR');
-initStatEnnemi(31,'geolier',18,300,10,0,-10,2,500,400,4,12,20,4,6,100,200,200,200,'arcane');
-initStatEnnemi(32,'geolier2',19,300,10,0,-10,1,500,400,32,18,10,10,14,200,200,150,200,'chaine');
-initStatEnnemi(33,'Spectre',12,100,1,10,0,1,300,400,8,22,8,0,13,160,300,70,50,'oeil');
-InitstatEnnemi(34,'vestige',11,1000,3,15,5,1,400,400,16,16,12,10,7,250,400,75,0,'geyser_lumiere');
-initStatEnnemi(35,'gardien',16,500,2,1,0,1,300,300,8,16,0,0,23,250,120,25,120,'rayon_main');
-initStatEnnemi(36,'Geist',17,200,10,0,-10,4,300,300,21,24,3,7,9,80,80,110,160,'rayonAL');
-initStatEnnemi(37,'creature',20,1000,15,0,0,0,600,560,46,12,14,14,20,500,460,50,50,'arcane');
-initStatEnnemi(38,'Béhémoth',10,1500,20,10,10,5,463,614,12,32,40,12,39,400,307,63,307,'rayonRykor');
+// Ajuster les stats des ennemis
+//***le numéro peut être changé selon la convénience, sans répercussions importantes
+//              num,  nom,                    mvt, vie, att, dmg, def, vit, w,   h,   nbFramesApparition, nbFramesChase, nbFramesAction1, nbFramesAction2, nbFramesMort, wcol, hcol, offx, offy, nomAttaques
+initStatEnnemi(1,    'slime',                 8,   30,  1,   0,   0,   0,   90,  90,  6,                 8,             3,               4,               4,           90,   45,   5,    40,   'boule');
+initStatEnnemi(2,    'livre',                 12,  30,  3,   0,   2,   1,   180, 90,  7,                 12,            4,               0,               12,          60,   90,   60,   0,    'eclair');
+initStatEnnemi(3,    'feu_follet',            6,   30,  3,   1,   1,   0,   100, 100, 7,                 9,             0,               0,               6,           70,   70,   15,   15,   'flamme');
+initStatEnnemi(4,    'grenouille',            8,   30,  1,   0,   2,   0,   90,  90,  7,                 6,             4,               4,               7,           54,   90,   5,    0,    'boule');
+initStatEnnemi(5,    'chevalier',             5,   30,  10,  0,   1,   3,   90,  90,  5,                 6,             3,               10,              5,           54,   90,   5,    0,    'rayonAbysse');
+initStatEnnemi(6,    'elementaire_astral',    4,   30,  2,   0,   1,   1,   100, 100, 9,                 12,            5,               6,               7,           80,   80,   10,   10,   'etoile');
+initStatEnnemi(7,    'elementaire_temps',     0,   25,  2,   5,   1,   1,   100, 100, 18,                12,            0,               0,               6,           80,   80,   10,   10,   '');
+initStatEnnemi(8,    'elementaire_spectral',  4,   30,  2,   0,   0,   0,   100, 100, 8,                 7,             13,              13,              8,           80,   80,   10,   10,   'rayon_spectral');
+initStatEnnemi(9,    'elementaire_lumiere',   1,   50,  2,   0,   4,   3,   300, 300, 12,                11,            6,               0,               8,           60,   60,   120,  120,  'rayon');
+initStatEnnemi(10,   'elementaire_ombre',     1,   50,  2,   0,   4,   3,   300, 300, 11,                12,            9,               0,               10,          60,   60,   120,  120,  'rayon_spectral');
+initStatEnnemi(11,   'elementaire_tempete',   3,   50,  0,   5,   0,   2,   150, 150, 10,                8,             4,               0,               10,          100,  150,  25,   0,    '');
+initStatEnnemi(12,   'elementaire_eclipse',   1,   250, 2,   0,   4,   3,   400, 400, 19,                12,            7,               0,               9,           60,   60,   160,  160,  'eclipse');
+initStatEnnemi(13,   'mage_noir',             2,   75,  0,   0,   0,   0,   126, 120, 10,                8,             9,               7,               9,           80,   100,  30,   20,   'flamme');
+initStatEnnemi(14,   'mage_blanc',            15,  40,  4,   0,   0,   1,   100, 120, 18,                12,            3,               5,               14,          60,   90,   20,   30,   'rayon');
+initStatEnnemi(15,   'mage_rouge',            8,   50,  10,  0,   2,   0,   100, 200, 11,                6,             4,               9,               5,           60,   90,   20,   110,  'rayon_rouge');
+initStatEnnemi(16,   'invocateur',            12,  50,  0,   0,   0,   0,   120, 132, 12,                8,             3,               0,               5,           80,   100,  30,   20,   'rayon');
+initStatEnnemi(17,   'diablotin',             4,   10,  1,   0,   0,   3,   80,  80,  4,                 6,             4,               5,               4,           50,   50,   15,   0,    'eclairR');
+initStatEnnemi(18,   'Akr',                   4,   150, 2,   0,   -20, 1,   384, 256, 14,                9,             9,               8,               16,          200,  96,   80,   150,  'kamui');
+initStatEnnemi(19,   'main',                  3,   50,  0,   5,   0,   1,   150, 150, 8,                 16,            8,               0,               15,          150,  150,  0,    0,    '');
+initStatEnnemi(20,   'armure',                7,   400, 8,   0,   10,  0,   384, 256, 7,                 2,             13,              9,               16,          192,  192,  96,   64,   'justice');
+initStatEnnemi(21,   'undrixel',              3,   50,  5,   30,  0,   1,   288, 192, 4,                 10,            4,               0,               10,          200,  128,  10,   40,   'eclairR');
+initStatEnnemi(22,   'altegh',                1,   50,  2,   0,   4,   2,   192, 192, 3,                 6,             4,               0,               14,          160,  96,   16,   96,   'rayonAL');
+initStatEnnemi(23,   'Leo',                   13,  150, 15,  2,   5,   0,   300, 300, 14,                8,             7,               10,              8,           100,  150,  100,  150,  'eclairL');
+initStatEnnemi(24,   'Leo_Transe',            14,  150, 20,  5,   2,   1,   300, 300, 13,                16,            6,               22,              10,          200,  250,  50,   25,   'geyser_feu');
+initStatEnnemi(25,   'UNKNOWN',               4,   150, 2,   0,   -20, 0,   128, 128, 8,                 12,            8,               4,               8,           64,   114,  32,   14,   'Roue');
+initStatEnnemi(26,   'chaos',                 12,  60,  1,   3,   5,   2,   200, 200, 9,                 11,            6,               0,               6,           100,  200,  50,   0,    'rayonAbysse');
+initStatEnnemi(27,   'Archimage',             4,   100, 2,   0,   6,   0,   128, 128, 8,                 12,            8,               4,               8,           64,   128,  128,  10,   'projectile');
+initStatEnnemi(28,   'liche',                 5,   50,  2,   0,   4,   1,   128, 128, 9,                 6,             5,               16,              10,          70,   110,  19,   7,    'rayonMort');
+initStatEnnemi(29,   'expurgateur',           6,   20,  3,   1,   1,   0,   128, 128, 13,                12,            0,               0,               7,           128,  104,  0,    24,   'eclairR');
+initStatEnnemi(30,   'dracomage',             2,   300, 2,   5,   6,   1,   192, 192, 34,                12,            8,               8,               26,          128,  164,  32,   28,   'eclairR');
+initStatEnnemi(31,   'geolier',               18,  300, 10,  0,   -10, 2,   500, 400, 4,                 12,            20,              4,               6,           100,  200,  200,  200,  'arcane');
+initStatEnnemi(32,   'geolier2',              19,  300, 10,  0,   -10, 1,   500, 400, 32,                18,            10,              10,              14,          200,  200,  150,  200,  'chaine');
+initStatEnnemi(33,   'Spectre',               12,  100, 1,   10,  0,   1,   300, 400, 8,                 22,            8,               0,               13,          160,  300,  70,   50,   'oeil');
+initStatEnnemi(34,   'vestige',               11,  1000,3,   15,  5,   1,   400, 400, 16,                16,            12,              10,              7,           250,  400,  75,   0,    'geyser_lumiere');
+initStatEnnemi(35,   'gardien',               16,  500, 2,   1,   0,   1,   300, 300, 8,                 16,            0,               0,               23,          250,  120,  25,   120,  'rayon_main');
+initStatEnnemi(36,   'Geist',                 17,  200, 10,  0,   -10, 4,   300, 300, 21,                24,            3,               7,               9,           80,   80,   110,  160,  'rayonAL');
+initStatEnnemi(37,   'creature',              20,  1000,15,  0,   0,   0,   600, 560, 46,                12,            14,              14,              20,          500,  460,  50,   50,   'arcane');
+initStatEnnemi(38,   'Béhémoth',              10,  1500,20,  10,  10,  5,   463, 614, 12,                32,            40,              12,              39,          400,  307,  63,   307,  'rayonRykor');
 
 
 
