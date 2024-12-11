@@ -1,8 +1,8 @@
-<DESC_CAR_1>Le bateleur, symbole des nouveaux départs, est une carte classique de combat qui permet de projeter son pouvoir.;
+<DESC_CAR_1>Le bateleur, symbole des nouveaux départs, est une carte classique de combat qui permet de lancer un projectile.;
 <DESC_CAR_2>La sagesse de la papesse lui permet de combiner attaque et soin dans un rayon.;
 <DESC_CAR_3>L'impératrice impose sa volonté en pulvérisant ses ennemis, tout en accordant de la vie à ses sujets.;
-<DESC_CAR_4>L'autorité de l'empereur est transmise dans une puissante vague d'énergie.;
-<DESC_CAR_5>Le pape transmet ses enseignements, pour perpétuer la vérité en ce monde.;
+<DESC_CAR_4>L'autorité de l'empereur est transmise dans un puissant projectile d'énergie.;
+<DESC_CAR_5>Le pape transmet ses enseignements, pour perpétuer la vérité en ce monde. Permet de lancer de gros projectiles;
 <DESC_CAR_6>On dit que les cartes s'attirent entre elles, celles des Amants gagnent en puissance en fonction de leur nombre.;
 <DESC_CAR_7>Le chariot donne une protection puissante à son hôte.;
 <DESC_CAR_8>La justice accorde une bénédiction plus importante à ceux qui l'invoquent à plusieurs reprises.;
@@ -16,10 +16,10 @@
 <DESC_CAR_16>Forme une croix d'énergie, conformément au mouvement d'une tour.;
 <DESC_CAR_17>Sous forme d'étoile, la puissance magique de l'utilisateur est envoyée dans toutes les directions.;
 <DESC_CAR_18>L'utilisateur utilise toute son énergie pour annihiler ses ennemis. L'attaque est d'autant plus puissante selon le mana consommé.;
-<DESC_CAR_19>Le soleil darde le mal de ses rayons et protège ceux qui marchent dans la lumière.;
+<DESC_CAR_19>Le soleil darde le mal de ses rayons et protège ceux qui marchent dans sa lumière.;
 <DESC_CAR_20>L'ange passe son jugement et donne son aide à ceux qu'il en juge dignes.;
-<DESC_CAR_21>La carte du Monde donne à l'utilisateur l'autorité sur le temps.;
-<DESC_CAR_22>Permet d'esquiver une fois les attaques.;
+<DESC_CAR_21>La carte du Monde donne à l'utilisateur l'autorité sur le temps. Sa puissance doit être exercée pour être canalisée ;
+<DESC_CAR_22>Lefou arrive toujours à s'en sortir, mais on ne sait jamais trop comment. ;
 <DESC_CAR_23>Cette carte porte le symbole du Lion. Elle appelle la puissance de son épée flamboyante.;
 <DESC_CAR_24>Cette carte porte le symbole du Serpentaire. Elle renferme une grande puissance qui ne peut pas être utilisée offensivement.;
 <COMM_CAR_1>Il faut bien commencer quelque part. J'accepte l'aide que les cartes m'accorderont.;
@@ -334,6 +334,48 @@
 <DIALOGUE_BOSS2_1_10>Dans ce cas, est-ce vrai que le président du conseil voulait s'accaparer les terres des druides par la guerre ?;
 <DIALOGUE_BOSS2_1_11>Hmph... Tu sais jeune fille, tout les secrets n'ont pas besoin d'être révelés au grand jour.;
 <DIALOGUE_BOSS2_1_12>Je vais prendre ça pour un oui ...;
+
+<DIALOGUE_BOSS2_2_1>Haeurk!... Comment est-ce possible ?;
+<DIALOGUE_BOSS2_2_2>Tu ne l'avais pas vu venir celle-là ?;
+<DIALOGUE_BOSS2_2_3>Ma... Ma magie... Elle s'efface... Comment osez-vous tuer un ancien ?;
+<DIALOGUE_BOSS2_2_4>La vie doit être céder à quelqu'un d'autre ! Vous en avez assez profité.;
+<DIALOGUE_BOSS2_2_5>Vous ne comprenez donc pas ! Toute cette connaissance, perdue, à jamais.;
+<DIALOGUE_BOSS2_2_6>Si cela permet d'arreter les desseins du président alors c'est un sacrifice que je suis prête à faire.;
+<DIALOGUE_BOSS2_2_7>Vous ne comprenez... pas... l'erreur que vous... fa...;
+<DIALOGUE_BOSS2_2_8>Le voilà parti.;
+
+<FIN_BOSS2_1>Vous trouvez dans la salle du vieux mage un gros cristal d'énergie. Il a l'air d'alimenter en énergie tout le batiment.
+<FIN_BOSS2_2>Hmm... Je vais devoir briser cela pour pouvoir m'échapper d'ici.;
+<FIN_BOSS2_3>Vous utilisez votre sort le plus puissant sur le cristal qui se brise en une fine pluie de poussière d'étoile.
+<FIN_BOSS2_4>Enfin la libertée !
+<FIN_BOSS2_5>En traversant les couloirs vous entendez des cris venant d'une extention du bâtiment. Vous décidez de vous en approcher.
+<FIN_BOSS2_6>Vous arrivez dans les laboratoires de l'école. Vous entendez des hurlements de panique autour de vous.
+<FIN_BOSS2_7>Des mages, démonistes et nécromanciers sont en train de s'enfuire des laboratoires.
+<FIN_BOSS2_8>Ils sont pourchassés par une armée de créature que vous n'avez encore jamais vu...
+<FIN_BOSS2_9>Ces créature semble être façonnées par la main de l'homme...
+<FIN_BOSS2_10>Merde ! Leurs expériences se sont échappées. Il faut vite que je sorte de là !
+
+<DIALOGUE_BOSS3_1_1>Vous êtes sur le point de vous échapper de l'école quand vous tombez nez-à-nez avec une immence créature.;
+<DIALOGUE_BOSS3_1_2>ARRRRrrrrghhhh.... !;
+<DIALOGUE_BOSS3_1_3>Bon sang ! Il est gigantesque ! Comment les chercheurs ont pu créer cela ?;
+<DIALOGUE_BOSS3_1_4>KRRIIIIIiiiiaaaa ! ;
+<DIALOGUE_BOSS3_1_5>Il à l'air de souffrir le pauvre...;
+<DIALOGUE_BOSS3_1_6>La créature vous repère et commence à vous chasser.;
+<DIALOGUE_BOSS3_1_7>Mince. Il me prend pour un chercheur... Je n'ai plus qu'une solution.;
+<DIALOGUE_BOSS3_1_8>CROOOooooaaaarrr... !!;
+
+<DIALOGUE_BOSS3_2_1>HUUUuurrrgh !;
+<DIALOGUE_BOSS3_2_2>Enfin !;
+<DIALOGUE_BOSS3_2_3>Roarrhh... Roarh.. Rrrr...;
+<DIALOGUE_BOSS3_2_4>...;
+<DIALOGUE_BOSS3_2_5>Il semble s'éteindre en paix. Le pauvre, il a du souffrir de ces expériences.;
+<DIALOGUE_BOSS3_2_6>La liste, la prison, la guerre, et maintenant des créations de nouvels êtres ? C'en est assez ! Le président va payer.;
+
+<FIN_BOSS3_1>Vous sortez de l'école est constatez le chaos dans les rues. Le cristal semblait fournir toute la ville en énergie magique.;
+<FIN_BOSS2_2>Dans l'obscurité de la ville, les créatures de laboratoires sème la terreur.;
+<FIN_BOSS2_2>La population pense à une nouvelle attaque terroriste druide. C'est la pagaille dans la foule.;
+<FIN_BOSS2_3>Vous profitez du désordre ambiant pour vous approcher du ministère de la magie.;
+<FIN_BOSS2_4>Le président doit surmement être en haut de cette grande tour... À moi de jouer !;
 
 <DIALOGUE_BOSS4_1_1>Nymera Amarisse. Vous êtes en état d'arrestation... Non plus pour incitation au terrorisme, mais pour haute trahison!;
 <DIALOGUE_BOSS4_1_2>Alors c'est vous qui rendez la justice, maintenant? On aura tout vu.;
