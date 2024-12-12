@@ -103,7 +103,7 @@ type TStats=record //(version variable)
         effet:(fixeJoueur:Boolean);//si l'effet suit le joueur ou non
 end;
 
-var Cartes:Array[1..24] of TCarte; //preset pour les cartes
+var Cartes:Array[1..26] of TCarte; //preset pour les cartes
 
 // Structure TCol pour la gestion des collisions
 type  TCol = record
@@ -120,9 +120,8 @@ type
   TObjet = record
     image: TImage;          // Image associée à l'objet
     anim: TAnimation;       // Animation associée à l'objet
-    IsTrigger: Boolean;     // Si vrai, ne bloque pas, mais déclenche un événement (ex: un mur n'est pas trigger)
     stats:TStats;           // Caractéristiques de l'objet
-    col:TCol;
+    col:TCol;               // Boîte de collisions de l'objet
   end;
 
 type
@@ -343,7 +342,7 @@ begin
   statsJoueur.multiplicateurMana:=1;
   statsJoueur.nbJustice:=0;
 
-  for i:=1 to 24 do begin
+  for i:=1 to 26 do begin
     cartes[i].numero:=i;
     case i of 
       1:cartes[i].nom:='bateleur';
@@ -370,12 +369,14 @@ begin
       22:cartes[i].nom:='fou';
       23:cartes[i].nom:='lion';
       24:cartes[i].nom:='serpentaire';
+      25:cartes[i].nom:='general celeste';
+      26:cartes[i].nom:='fulgurant';
       end;
     case i of
       1,2,3,4,5,10:cartes[i].rarete:=commune;
       6,7,8,9,11,16,19:cartes[i].rarete:=rare;
       12,14,17,18,20,22,24:cartes[i].rarete:=epique;
-      13,15,21,23:cartes[i].rarete:=legendaire;
+      13,15,21,23,25,26:cartes[i].rarete:=legendaire;
       end;
     case i of
       1,6:cartes[i].cout:=1;
@@ -384,7 +385,7 @@ begin
       3,4,12,14,19:cartes[i].cout:=3;
       11,20:cartes[i].cout:=4;
       8,9,15,21:cartes[i].cout:=5;
-      7:cartes[i].cout:=6;
+      7,25,26:cartes[i].cout:=6;
       end;
     case i of 
     1:cartes[i].dir:='Sprites/Cartes/carte1.bmp';
@@ -411,6 +412,8 @@ begin
     22:cartes[i].dir:='Sprites/Cartes/carte22.bmp';
     23:cartes[i].dir:='Sprites/Cartes/carte23.bmp';
     24:cartes[i].dir:='Sprites/Cartes/carte24.bmp';
+    25:cartes[i].dir:='Sprites/Cartes/carte25.bmp';
+    26:cartes[i].dir:='Sprites/Cartes/carte26.bmp';
     end;
     case i of
       7,9,12,13,15:cartes[i].discard:=True

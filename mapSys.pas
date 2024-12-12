@@ -297,8 +297,16 @@ begin
     alea:=random(100)+1;
     dropCarte.numero:=0;
     if boss then
-        if random(4)<=avancement div (MAXSALLES div 4) then
-            dropCarte:=ajouterCarteAleatoireRarete(legendaire)
+        if alea div 25<=avancement div (MAXSALLES div 4) then
+            begin
+            if alea div 20<>0 then
+                dropCarte:=ajouterCarteAleatoireRarete(legendaire)
+            else
+                if alea div 50=0 then 
+                    dropCarte:=cartes[25]
+                else
+                    dropCarte:=cartes[26]
+            end
         else
             dropCarte:=ajouterCarteAleatoireRarete(epique)
     else

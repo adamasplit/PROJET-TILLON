@@ -417,6 +417,8 @@ begin
       CreateRawImage(Box.portrait, X, Y, W div 4, W div 4, portraitPath)
     else
       CreateRawImage(Box.portrait, X+(W div 20), Y+(H div 6), H div 2+ (H div 10), H div 2+(H div 10), portraitPath);
+  if imgPath=nil then      box.BackgroundImage.directory:=nil;
+  if portraitPath=nil then box.portrait.directory:=nil; 
   box.w:=W;
   Box.RemainingText := DialogueText;
   Box.DisplayedLetters := 0;
@@ -444,7 +446,8 @@ begin
     else
       CreateRawImage(Box.portrait, X, Y, W div 4-(W div 5), W div 4-(W div 5), portraitPath);
     end;
-  
+  if imgPath=nil then      box.BackgroundImage.directory:=nil;
+  if portraitPath=nil then box.portrait.directory:=nil; 
   
   box.w:=W;
   Box.RemainingText := DialogueText;
@@ -474,8 +477,8 @@ begin
   CurrentTime := SDL_GetTicks();
   
   if Box.Complete then RenderDialogueText(box);
-  if Box.BackgroundImage.imgTexture <> nil then RenderRawImage(Box.BackgroundImage, 255, False);
-  if Box.portrait.imgTexture <> nil then RenderRawImage(Box.portrait, 255, False);
+  if Box.BackgroundImage.directory <> nil then RenderRawImage(Box.BackgroundImage, 255, False);
+  if Box.portrait.directory <> nil then RenderRawImage(Box.portrait, 255, False);
 
   TimeDiff := CurrentTime - Box.LastUpdateTime;
   test:=timediff>=box.letterdelay;
