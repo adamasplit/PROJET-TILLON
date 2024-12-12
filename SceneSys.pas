@@ -432,7 +432,7 @@ begin
 		affichertout;
 		UpdateDialogueBox(dialogues[2]);
 		updateanimation(LObjets[0].anim,LObjets[0].image);
-		if (LObjets[1].anim.etat<>'apparition') then
+		if (LObjets[1].anim.etat<>'apparition') and (LObjets[1].anim.etat<>'mort') then
 			updateanimation(LObjets[1].anim,LObjets[1].image);
 		
 		if LObjets[1].anim.objectName='Béhémoth' then fond.rect.x:=88-4+random(9);

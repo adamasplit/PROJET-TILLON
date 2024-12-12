@@ -517,8 +517,8 @@ begin
         begin
         initAngle(justice.stats.vectX,justice.stats.vectY,angleDepart);
         justice.stats.angle:=angleDepart-2*pi*sqrt(1-((justice.stats.delai)/(justice.stats.delaiInit+1))**2);
-        justice.image.rect.x:=round(justice.stats.xreel+justice.stats.vectX*(justice.stats.angle-angleDepart));
-        justice.image.rect.y:=round(justice.stats.yreel+justice.stats.vecty*(justice.stats.angle-angleDepart));
+        justice.image.rect.x:=round(justice.stats.xreel+justice.stats.delaiInit/60*justice.stats.vectX*(justice.stats.angle-angleDepart));
+        justice.image.rect.y:=round(justice.stats.yreel+justice.stats.delaiInit/60*justice.stats.vecty*(justice.stats.angle-angleDepart));
         justice.stats.delai:=justice.stats.delai-1;
         updateAnimation(justice.anim,justice.image);
         end
@@ -895,18 +895,24 @@ end;
     end;
 
     procedure XXIII(origine:typeObjet;s:TStats;x,y,xcible,ycible,delai:Integer);
-    var distX,distY:Integer;dmg:Integer;
+    var distX,distY:Integer;
     begin
         jouerSonEff('XXIII');
         distX:=xcible-x;
         distY:=ycible-y;
-        dmg:=5;
-        if s.relique=10 then dmg:=7;
+        
         //lance 4 épées autour de la cible
-        initJustice(origine,dmg,s.force,s.multiplicateurDegat,xcible,ycible,xcible-distx,ycible-disty,18,delai,'Lionheart');
-        initJustice(origine,dmg,s.force,s.multiplicateurDegat,xcible,ycible,xcible+distx,ycible+disty,18,delai,'Lionheart');
-        initJustice(origine,dmg,s.force,s.multiplicateurDegat,xcible,ycible,xcible+disty,ycible-distx,18,delai,'Lionheart');
-        initJustice(origine,dmg,s.force,s.multiplicateurDegat,xcible,ycible,xcible-disty,ycible+distx,18,delai,'Lionheart');
+        initJustice(origine,5,s.force,s.multiplicateurDegat,xcible,ycible,xcible-distx,ycible-disty,18,delai,'Lionheart');
+        initJustice(origine,5,s.force,s.multiplicateurDegat,xcible,ycible,xcible+distx,ycible+disty,18,delai,'Lionheart');
+        initJustice(origine,5,s.force,s.multiplicateurDegat,xcible,ycible,xcible+disty,ycible-distx,18,delai,'Lionheart');
+        initJustice(origine,5,s.force,s.multiplicateurDegat,xcible,ycible,xcible-disty,ycible+distx,18,delai,'Lionheart');
+        if s.relique=10 then 
+            begin
+            initJustice(origine,5,s.force,s.multiplicateurDegat,xcible,ycible,xcible-distx,ycible-disty,36,delai,'Lionheart');
+            initJustice(origine,5,s.force,s.multiplicateurDegat,xcible,ycible,xcible+distx,ycible+disty,36,delai,'Lionheart');
+            initJustice(origine,5,s.force,s.multiplicateurDegat,xcible,ycible,xcible+disty,ycible-distx,36,delai,'Lionheart');
+            initJustice(origine,5,s.force,s.multiplicateurDegat,xcible,ycible,xcible-disty,ycible+distx,36,delai,'Lionheart');
+            end;
     end;
 
     procedure XXIV(s:TStats;x,y:Integer);
@@ -938,7 +944,7 @@ begin
                 end;
             stats.deck^[i].charges:=stats.deck^[i].chargesMax;
             end;
-            if (stats.relique<>9) or (random(2)=0) then //la relique n°9 permet de lancer 2 fois les sorts parfois
+            if (stats.relique<>9) or (random(5)=0) then //la relique n°9 permet de lancer 2 fois les sorts parfois
                 stats.deck^[i].charges:=stats.deck^[i].charges-1;
         if stats.deck^[i].charges<=0 then //si la carte est consommée, elle est renvoyée à la fin du paquet (ou non)
             cycle(stats.deck^,i);

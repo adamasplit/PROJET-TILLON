@@ -1246,6 +1246,41 @@ begin
     ennemi.image.rect.y:=-50;
   if (ennemi.anim.etat='apparition') and (ennemi.stats.compteurAction=0) then
     begin
+    if (ennemi.anim.objectName='creature') then
+    begin
+      sceneActive:='Cutscene';
+      ennemi.stats.compteurAction:=1;
+      InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp',nil,0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS3_1_1'),100);
+      for i:=2 to 8 do
+      case i of 
+      2:ajoutDialogue('Sprites\Portraits/creature1.bmp',extractionTexte('DIALOGUE_BOSS3_1_'+intToSTR(i)));
+      4,8:ajoutDialogue('Sprites\Portraits/creature2.bmp',extractionTexte('DIALOGUE_BOSS3_1_'+intToSTR(i)));
+      6:ajoutDialogue(nil,extractionTexte('DIALOGUE_BOSS3_1_'+intToSTR(i)));
+      else ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS3_1_'+intToStr(i)));
+      end
+    end;
+    if (ennemi.anim.objectName='Spectre') then
+    begin
+      sceneActive:='Cutscene';
+      ennemi.stats.compteurAction:=1;
+      InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/spectre.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS2_1_1'),100);
+      for i:=2 to 12 do
+      case i of 
+      3,5,7,9,11:ajoutDialogue('Sprites/Portraits/spectre.bmp',extractionTexte('DIALOGUE_BOSS2_1_'+intToSTR(i)));
+      else ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS2_1_'+intToStr(i)));
+      end
+    end;
+    if (ennemi.anim.objectName='geolier') then
+    begin
+      sceneActive:='Cutscene';
+      ennemi.stats.compteurAction:=1;
+      InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/portraitGarde2.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS1_1_1'),100);
+      for i:=2 to 10 do
+      case i of 
+      3,5,7,9:ajoutDialogue('Sprites/Portraits/portraitGarde2.bmp',extractionTexte('DIALOGUE_BOSS1_1_'+intToSTR(i)));
+      else ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS1_1_'+intToStr(i)));
+      end
+    end;
     if (ennemi.anim.objectName='Béhémoth')  then
     begin
 	    InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/portraitB.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS4_1'),100);
@@ -1306,7 +1341,13 @@ begin
           transformation(ennemi,24);
           end
         else if ennemi.anim.objectName='geolier' then begin
-          transformation(ennemi,32)
+          transformation(ennemi,32);
+          sceneActive:='Cutscene';
+          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/portraitGarde3.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS1_2_1'),20);
+          ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS1_2_2'));
+          ajoutDialogue('Sprites\Portraits/portraitGarde3.bmp',extractionTexte('DIALOGUE_BOSS1_2_3'));
+          ajoutDialogue('Sprites\Portraits/portraitGarde3.bmp',extractionTexte('DIALOGUE_BOSS1_2_4'));
+          ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS1_2_5'));
           end
         else if (ennemi.anim.objectName='Leo_Transe') and (ennemi.stats.compteurAction=-1) then begin
           sceneActive:='Cutscene';
@@ -1333,7 +1374,14 @@ begin
       else if ennemi.stats.vie<=0 then
       if (ennemi.anim.objectName='Spectre') then
         begin
-        transformation(ennemi,34)
+        transformation(ennemi,34);
+        sceneActive:='Cutscene';
+        InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/spectre2.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS2_2_1'),100);
+        for i:=2 to 10 do
+        case i of 
+        3,6,7,9,10:ajoutDialogue('Sprites/Portraits/spectre2.bmp',extractionTexte('DIALOGUE_BOSS2_2_'+intToSTR(i)));
+        else ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS2_2_'+intToStr(i)));
+        end
         end
       else
       begin
@@ -1344,7 +1392,35 @@ begin
         if not (ennemi.anim.etat='mort') then 
           begin
           jouerSonEnn(ennemi.anim.objectName+'_mort');
-          if ennemi.anim.objectName='Leo_Transe' then ennemi.stats.compteurAction:=-1;
+          if ennemi.anim.objectName='Leo_Transe' then 
+            ennemi.stats.compteurAction:=-1;
+          if (ennemi.anim.objectName='geolier2') then
+            begin
+              sceneActive:='Cutscene';
+              InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/portraitGarde4.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS1_3_1'),20);
+              ajoutDialogue('Sprites\Portraits/portraitGarde4.bmp',extractionTexte('DIALOGUE_BOSS1_3_2'));
+            end;
+          if (ennemi.anim.objectName='vestige') then
+              begin
+              sceneActive:='Cutscene';
+              InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/spectre4.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS2_4_1'),100);
+              for i:=2 to 8 do
+              case i of 
+              3,5,7:ajoutDialogue('Sprites/Portraits/spectre4.bmp',extractionTexte('DIALOGUE_BOSS2_4_'+intToSTR(i)));
+              else ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS2_4_'+intToStr(i)));
+              end
+              end;
+          if (ennemi.anim.objectName='creature') then
+            begin
+              sceneActive:='Cutscene';
+              InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/creature3.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS3_2_1'),20);
+              for i:=2 to 6 do
+              case i of 
+              3:ajoutDialogue('Sprites\Portraits/creature3.bmp',extractionTexte('DIALOGUE_BOSS3_2_'+intToSTR(i)));
+              4:ajoutDialogue('Sprites\Portraits/creature4.bmp',extractionTexte('DIALOGUE_BOSS3_2_'+intToSTR(i)));
+              else ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS3_2_'+intToStr(i)));
+              end
+            end;
           InitAnimation(ennemi.anim,ennemi.anim.objectName,'mort',ennemi.stats.nbFramesMort,False);
           ennemi.col.estActif:=False;
           statsJoueur.bestiaire[ennemi.stats.numero]:=True;
@@ -1394,7 +1470,7 @@ initStatEnnemi(23,   'Leo',                   13,  150, 15,  2,   5,   0,   300,
 initStatEnnemi(24,   'Leo_Transe',            14,  150, 20,  5,   2,   1,   300, 300, 13,                16,            6,               22,              10,          200,  250,  50,   25,   'geyser_feu');
 initStatEnnemi(25,   'UNKNOWN',               4,   150, 2,   0,   -20, 0,   128, 128, 8,                 12,            8,               4,               8,           64,   114,  32,   14,   'Roue');
 initStatEnnemi(26,   'chaos',                 12,  60,  1,   3,   5,   2,   200, 200, 9,                 11,            6,               0,               6,           100,  200,  50,   0,    'rayonAbysse');
-initStatEnnemi(27,   'Archimage',             4,   100, 2,   0,   6,   0,   128, 128, 8,                 12,            8,               4,               8,           64,   128,  128,  10,   'projectile');
+initStatEnnemi(27,   'Archimage',             4,   100, 2,   0,   6,   0,   128, 128, 8,                 6,             6,               6,               4,           64,   100,  32,  14,   'projectile');
 initStatEnnemi(28,   'liche',                 5,   50,  2,   0,   4,   1,   128, 128, 9,                 6,             5,               16,              10,          70,   110,  19,   7,    'rayonMort');
 initStatEnnemi(29,   'expurgateur',           6,   20,  3,   1,   1,   0,   128, 128, 13,                12,            0,               0,               7,           128,  104,  0,    24,   'eclairR');
 initStatEnnemi(30,   'dracomage',             2,   300, 2,   5,   6,   1,   192, 192, 34,                12,            8,               8,               26,          128,  164,  32,   28,   'eclairR');

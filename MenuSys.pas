@@ -634,10 +634,24 @@ begin
 			end;
 			end;
 		2:	begin
-			choixSalle;
+			sceneActive:='Event';
+			InitDialogueBox(dialogues[1],'Sprites/Menu/button1.bmp',nil,0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('FIN_BOSS2_1'),10);
+			sceneSuiv:='Map';
+			for i:=2 to 10 do
+			case i of
+				3,5,6,7,8,9:ajoutDialogue(nil,extractionTexte('FIN_BOSS2_'+intToStr(i)))
+				else ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('FIN_BOSS2_'+intToStr(i)));
+			end;
 			end;
 		3:	begin
-			choixsalle;
+			sceneActive:='Event';
+			InitDialogueBox(dialogues[1],'Sprites/Menu/button1.bmp',nil,0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('FIN_BOSS3_1'),10);
+			sceneSuiv:='Map';
+			for i:=2 to 10 do
+			case i of
+				2,3,4:ajoutDialogue(nil,extractionTexte('FIN_BOSS3_'+intToStr(i)))
+				else ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('FIN_BOSS3_'+intToStr(i)));
+			end;
 			end;
 		4:Credits;
 		end
