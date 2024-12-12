@@ -469,8 +469,8 @@ begin
 			//Touches de Debug
       		begin
         		case EventSystem^.key.keysym.sym of
-          			SDLK_UP:  LObjets[0].stats.vie := LObjets[0].stats.vie +10;
-					SDLK_DOWN: LObjets[0].stats.vie := LObjets[0].stats.vie-10;
+          			//SDLK_UP:  LObjets[0].stats.vie := LObjets[0].stats.vie +10;
+					//SDLK_DOWN: LObjets[0].stats.vie := LObjets[0].stats.vie-10;
 					SDLK_ESCAPE : begin
 						if sceneActive='Event' then activationEvent(sceneSuiv)
 						else if sceneActive='Cutscene' then 
@@ -482,19 +482,19 @@ begin
 						else if sceneActive<>'Menu' then menuEnJeu;
 						end;
 					SDLK_SPACE:begin
-						leMonde:=not(leMonde);
-						LObjets[0].stats.compteurLeMonde:=100;
-						updateTimeMonde:=sdl_getTicks;
+						if leMonde then leMonde:=False;
+						//LObjets[0].stats.compteurLeMonde:=100;
+						//updateTimeMonde:=sdl_getTicks;
 						end;
-					SDLK_O:LOBjets[0].stats.multiplicateurMana:=LOBjets[0].stats.multiplicateurMana+100;
-					SDLK_H : choixSalle();
-					SDLK_F2:begin
-						LObjets[0].stats.force:=LObjets[0].stats.force+1;
-						LObjets[0].stats.multiplicateurDegat:=LObjets[0].stats.multiplicateurDegat+10;
-						end;
-					SDLK_F3:modeDebug:=not(modeDebug);
-					SDLK_F4:for i:=1 to MAXENNEMIS do
-						statsJoueur.bestiaire[i]:=True;
+					//SDLK_O:LOBjets[0].stats.multiplicateurMana:=LOBjets[0].stats.multiplicateurMana+100;
+					//SDLK_H : choixSalle();
+					//SDLK_F2:begin
+						//LObjets[0].stats.force:=LObjets[0].stats.force+1;
+						//LObjets[0].stats.multiplicateurDegat:=LObjets[0].stats.multiplicateurDegat+10;
+					//	end;
+					//SDLK_F3:modeDebug:=not(modeDebug);
+					//SDLK_F4:for i:=1 to MAXENNEMIS do
+					//	statsJoueur.bestiaire[i]:=True;
         		end;
       		end;
 			
