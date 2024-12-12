@@ -647,7 +647,7 @@ begin
 			sceneActive:='Event';
 			InitDialogueBox(dialogues[1],'Sprites/Menu/button1.bmp',nil,0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('FIN_BOSS3_1'),10);
 			sceneSuiv:='Map';
-			for i:=2 to 10 do
+			for i:=2 to 5 do
 			case i of
 				2,3,4:ajoutDialogue(nil,extractionTexte('FIN_BOSS3_'+intToStr(i)))
 				else ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('FIN_BOSS3_'+intToStr(i)));

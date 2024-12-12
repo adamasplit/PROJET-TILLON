@@ -383,10 +383,10 @@
 <DIALOGUE_BOSS3_2_6>La liste, la prison, la guerre, et maintenant des créations de nouveaux êtres ? C'en est assez ! Le président va payer.;
 
 <FIN_BOSS3_1>Vous sortez de l'école et constatez le chaos dans les rues. Le cristal semblait fournir toute la ville en énergie magique.;
-<FIN_BOSS2_2>Dans l'obscurité de la ville, les créatures de laboratoires sèment la terreur.;
-<FIN_BOSS2_3>La population pense à une nouvelle attaque terroriste druide. C'est la pagaille dans la foule.;
-<FIN_BOSS2_4>Vous profitez du désordre ambiant pour vous approcher du ministère de la magie.;
-<FIN_BOSS2_5>Le président doit surmement être en haut de cette grande tour... À moi de jouer !;
+<FIN_BOSS3_2>Dans l'obscurité de la ville, les créatures de laboratoires sèment la terreur.;
+<FIN_BOSS3_3>La population pense à une nouvelle attaque terroriste druide. C'est la pagaille dans la foule.;
+<FIN_BOSS3_4>Vous profitez du désordre ambiant pour vous approcher du ministère de la magie.;
+<FIN_BOSS3_5>Le président doit sûrement être en haut de cette grande tour... À moi de jouer !;
 
 <DIALOGUE_BOSS4_1_1>Nymera Amarisse. Vous êtes en état d'arrestation... Non plus pour incitation au terrorisme, mais pour haute trahison!;
 <DIALOGUE_BOSS4_1_2>Alors c'est vous qui rendez la justice, maintenant? On aura tout vu.;
