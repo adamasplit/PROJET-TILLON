@@ -436,25 +436,6 @@ begin
 			updateanimation(LObjets[1].anim,LObjets[1].image);
 		
 		if LObjets[1].anim.objectName='Béhémoth' then fond.rect.x:=88-4+random(9);
-		while (SDL_PollEvent( EventSystem ) = 1) do
-    		begin
-      			case EventSystem^.type_ of
-					SDL_mousebuttondown:if (dialogues[2].complete) then begin
-						if high(queueDialogues)>-1 then
-							supprimeDialogue(2)
-						else begin
-							if (LObjets[1].anim.objectName='Leo_Transe') and (LObjets[1].anim.etat='mort') then victoire(statsJoueur,23)
-							else
-								sceneActive:='Jeu';
-							if LObjets[1].anim.objectName='Béhémoth' then begin
-							indiceMusiqueJouee:=13;
-							mix_resumeMusic;
-							end
-							end;
-						end
-						 else dialogues[2].LetterDelay:=0;
-				end
-			end
 		end;
 		'Behemoth_Mort':
 		begin
@@ -488,26 +469,32 @@ begin
 			//Touches de Debug
       		begin
         		case EventSystem^.key.keysym.sym of
-          			SDLK_UP:  LObjets[0].stats.vie := LObjets[0].stats.vie +10;
-					SDLK_DOWN: LObjets[0].stats.vie := LObjets[0].stats.vie-10;
+          			//SDLK_UP:  LObjets[0].stats.vie := LObjets[0].stats.vie +10;
+					//SDLK_DOWN: LObjets[0].stats.vie := LObjets[0].stats.vie-10;
 					SDLK_ESCAPE : begin
 						if sceneActive='Event' then activationEvent(sceneSuiv)
+						else if sceneActive='Cutscene' then 
+							begin
+							sceneActive:='Jeu';
+							while high(queueDialogues)>-1 do
+								supprimeDialogue(1);
+							end
 						else if sceneActive<>'Menu' then menuEnJeu;
 						end;
 					SDLK_SPACE:begin
-						leMonde:=not(leMonde);
-						LObjets[0].stats.compteurLeMonde:=100;
-						updateTimeMonde:=sdl_getTicks;
+						if leMonde then leMonde:=False;
+						//LObjets[0].stats.compteurLeMonde:=100;
+						//updateTimeMonde:=sdl_getTicks;
 						end;
-					SDLK_O:LOBjets[0].stats.multiplicateurMana:=LOBjets[0].stats.multiplicateurMana+100;
-					SDLK_H : choixSalle();
-					SDLK_F2:begin
-						LObjets[0].stats.force:=LObjets[0].stats.force+1;
-						LObjets[0].stats.multiplicateurDegat:=LObjets[0].stats.multiplicateurDegat+10;
-						end;
-					SDLK_F3:modeDebug:=not(modeDebug);
-					SDLK_F4:for i:=1 to MAXENNEMIS do
-						statsJoueur.bestiaire[i]:=True;
+					//SDLK_O:LOBjets[0].stats.multiplicateurMana:=LOBjets[0].stats.multiplicateurMana+100;
+					//SDLK_H : choixSalle();
+					//SDLK_F2:begin
+						//LObjets[0].stats.force:=LObjets[0].stats.force+1;
+						//LObjets[0].stats.multiplicateurDegat:=LObjets[0].stats.multiplicateurDegat+10;
+					//	end;
+					//SDLK_F3:modeDebug:=not(modeDebug);
+					//SDLK_F4:for i:=1 to MAXENNEMIS do
+					//	statsJoueur.bestiaire[i]:=True;
         		end;
       		end;
 			
@@ -518,6 +505,20 @@ begin
 			SDL_mousebuttondown : 
 				begin 
 				case sceneActive of
+				'Cutscene':if (dialogues[2].complete) then begin
+						if high(queueDialogues)>-1 then
+							supprimeDialogue(2)
+						else begin
+							if (LObjets[1].anim.objectName='Leo_Transe') and (LObjets[1].anim.etat='mort') then victoire(statsJoueur,23)
+							else
+								sceneActive:='Jeu';
+							if LObjets[1].anim.objectName='Béhémoth' then begin
+							indiceMusiqueJouee:=13;
+							mix_resumeMusic;
+							end
+							end;
+						end
+						 else dialogues[2].LetterDelay:=0;
 				'Event':if (dialogues[1].complete) then 
 					begin
 						if high(queueDialogues)>-1 then
