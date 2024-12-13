@@ -299,7 +299,7 @@ begin
     if boss then
         if alea div 25<=avancement div (MAXSALLES div 4) then
             begin
-            if alea div 20<>0 then
+            if alea div 20<>4 then
                 dropCarte:=ajouterCarteAleatoireRarete(legendaire)
             else
                 if alea div 50=0 then 
