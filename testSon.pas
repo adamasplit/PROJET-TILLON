@@ -1,5 +1,8 @@
 program SDL_MusicSound;
-uses SDL2, SDL2_mixer,sonSys;
+uses
+  SDL2,
+  SDL2_mixer,
+  sonSys;
 
 var
   sdlWindow: PSDL_Window;
@@ -54,29 +57,29 @@ begin
 
     // Music effect keys
     if sdlKeyboardState[SDL_SCANCODE_1] = 1 then
-      if Mix_PlayMusic(Music, 0) < 0 then Writeln(SDL_GetError);
+      //if Mix_PlayMusic(Music, 0) < 0 then Writeln(SDL_GetError);
     if sdlKeyboardState[SDL_SCANCODE_2] = 1 then Mix_PauseMusic;
     if sdlKeyboardState[SDL_SCANCODE_3] = 1 then Mix_ResumeMusic;
     if sdlKeyboardState[SDL_SCANCODE_4] = 1 then Mix_RewindMusic;
     if sdlKeyboardState[SDL_SCANCODE_5] = 1 then
-      if Mix_FadeInMusic(Music, 10, 3000) = 0 then Writeln(SDL_GetError);
+      //if Mix_FadeInMusic(Music, 10, 3000) = 0 then Writeln(SDL_GetError);
     if sdlKeyboardState[SDL_SCANCODE_6] = 1 then
-      if Mix_FadeOutMusic(3000) = 0 then Writeln(SDL_GetError);
+      //if Mix_FadeOutMusic(3000) = 0 then Writeln(SDL_GetError);
 
     // Sound effect keys
     if sdlKeyboardState[SDL_SCANCODE_7] = 1 then
-      if Mix_PlayChannel(1, Sound, 0) < 0 then Writeln(SDL_GetError);
+      //if Mix_PlayChannel(1, Sound, 0) < 0 then Writeln(SDL_GetError);
     if sdlKeyboardState[SDL_SCANCODE_8] = 1 then
-      if Mix_PlayChannel(-1, Sound, 0) < 0 then Writeln(SDL_GetError);
+      //if Mix_PlayChannel(-1, Sound, 0) < 0 then Writeln(SDL_GetError);
     if sdlKeyboardState[SDL_SCANCODE_9] = 1 then Mix_Pause(-1);
     if sdlKeyboardState[SDL_SCANCODE_0] = 1 then Mix_Resume(-1);
     if sdlKeyboardState[SDL_SCANCODE_A] = 1 then
-      if Mix_FadeInChannel(1, sound, 0, 2000) < 0 then Writeln(SDL_GetError);
+      //if Mix_FadeInChannel(1, sound, 0, 2000) < 0 then Writeln(SDL_GetError);
     if sdlKeyboardState[SDL_SCANCODE_S] = 1 then
-      if Mix_FadeOutChannel(1, 1000) < 0 then Writeln(SDL_GetError);
+      //if Mix_FadeOutChannel(1, 1000) < 0 then Writeln(SDL_GetError);
 
     // Channel effect keys
-     if sdlKeyboardState[SDL_SCANCODE_G] = 1 then
+     {if sdlKeyboardState[SDL_SCANCODE_G] = 1 then
        if Mix_SetPanning( 1, 255, 32 ) = 0 then Writeln(SDL_GetError);
      if sdlKeyboardState[SDL_SCANCODE_H] = 1 then
        if Mix_SetPanning( 1, 255, 255 ) = 0 then Writeln(SDL_GetError);
@@ -87,7 +90,7 @@ begin
      if sdlKeyboardState[SDL_SCANCODE_L] = 1 then
        if Mix_SetPosition( 1, 45, 127 ) = 0 then Writeln(SDL_GetError);
      if sdlKeyboardState[SDL_SCANCODE_M] = 1 then
-       if Mix_SetPosition( 1, 0, 0 ) = 0 then Writeln(SDL_GetError);
+       if Mix_SetPosition( 1, 0, 0 ) = 0 then Writeln(SDL_GetError);}
 
   end;
 

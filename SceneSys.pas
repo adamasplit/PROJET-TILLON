@@ -5,17 +5,17 @@ uses
 	AnimationSys,
 	coeur,
 	CollisionSys,
-	combatLib,
-	enemyLib,
-	eventsys,
+	CombatLib,
+	EnemyLib,
+	eventSys,
 	fichierSys,
-	MapSys,
+	mapSys,
 	memgraph,
-	menuSys,
+	MenuSys,
 	SDL2,
 	SDL2_mixer,
 	SDL2_ttf,
-	sonoSys,
+	SonoSys,
 	SysUtils;
 
 procedure StartGame;
@@ -102,7 +102,7 @@ var faucheuse : TObjet;i:Integer;
 			DeclencherFondu(True, 3000);
 			arretMus(1000);
 			ajoutObjet(faucheuse);
-			CreateRawImage(Lobjets[High(LObjets)].image,1200,Lobjets[0].image.rect.y-50,200,200,'Sprites\Game\death\death_walking_1.bmp');
+			CreateRawImage(Lobjets[High(LObjets)].image,1200,Lobjets[0].image.rect.y-50,200,200,'Sprites/Game/death/death_walking_1.bmp');
 			InitAnimation(Lobjets[High(LObjets)].anim,'death','walking',10,True);
 			SceneActive := 'mortJoueur';
 		end;
@@ -182,18 +182,18 @@ afficherTout;
         			if (not hasDeath) and (Lobjets[0].stats.collection[i].numero = 13) then
 						begin
 							supprimerCarte(Lobjets[0].stats, 13);
-							jouerSon('SFX\Effets\mort.wav');
+							jouerSon('SFX/Effets/mort.wav');
 							sceneActive:='Jeu';
 							DeclencherFondu(false, 500);
 							Lobjets[0].stats.vie := 20;
 							hasDeath := True;
 							supprimeObjet(Lobjets[High(LObjets)]);
-							writeln('objet suprr');
+							//writeln('objet suprr');
 							mix_resumeMusic();
 							end;
 				if not(hasDeath) then
 					begin
-					//jouerSon('SFX\Effets\mort.wav');
+					//jouerSon('SFX/Effets/mort.wav');
 					DeclencherFondu(true,3000);
 					sceneActive:='MortFondu';
 					for i:=1 to 300 do
@@ -233,7 +233,7 @@ begin
   begin
     if Assigned(button.procCarte) then
     begin
-        writeln('procédure spéciale en cours');
+        //writeln('procédure spéciale en cours');
 		button.procCarte(carte,stats);
     end;
   end;
@@ -246,7 +246,7 @@ begin
   begin
     if Assigned(button.procCarte) then
     begin
-        writeln('procédure spéciale en cours');
+        //writeln('procédure spéciale en cours');
 		button.procRel(rel,Stats);
     end;
   end;
@@ -407,7 +407,7 @@ begin
 			for i:=1 to 3 do
 				begin
 				RenderButtonGroup(boutons[i]);
-				OnMouseHover(boutons[i],getMouseX,getMouseY,'SFX\cardHover.wav', cardHover[i]);
+				OnMouseHover(boutons[i],getMouseX,getMouseY,'SFX/cardHover.wav', cardHover[i]);
 				if cardHover[i] then 
 					begin
 						cardHover[i] := False;
@@ -550,8 +550,8 @@ begin
                     HandleButtonClick(boutons[1].button, EventSystem^.motion.x, EventSystem^.motion.y);
 					end;
 				'map':begin 
-					writeln('Mouse button pressed at (', EventSystem^.motion.x, ',', EventSystem^.motion.y, ')');
-                    writeln(salles[1].image.button.rect.x);
+					//writeln('Mouse button pressed at (', EventSystem^.motion.x, ',', EventSystem^.motion.y, ')');
+                    //writeln(salles[1].image.button.rect.x);
 					for i:=1 to 3 do
 						begin
                         OnMouseClick(salles[i].image, EventSystem^.motion.x, EventSystem^.motion.y);
@@ -622,6 +622,7 @@ begin
 					HandleButtonClick(button_retour_menu.button,EventSystem^.motion.x,EventSystem^.motion.y);
 				end;
 				end;
+			SDL_QUITEV:  QUITGAME:=True; 
 			SDL_MOUSEWHEEL:begin
 				if sceneActive='defausse' then
 					scrolldeck(ichoix1,statsJoueur.tailleCollection);
@@ -672,13 +673,13 @@ begin
 	InitTutorial;
 	indiceTuto:=1;
 	setlength(LObjets,1);
-	writeln('essai d''actualisation...');
+	//writeln('essai d''actualisation...');
 	DeclencherFondu(False, 3000);
     GameUpdate;
 end;
 
 begin
 	QUITGAME := False;
-  WriteLn('SceneSys ready !');
+  //WriteLn('SceneSys ready !');
 end.
 

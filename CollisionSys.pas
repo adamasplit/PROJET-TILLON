@@ -6,7 +6,7 @@ uses
   AnimationSys,
   Math,
   memgraph,
-  SDL2,sdl2_mixer,combatLib,eventSys,sonoSys,
+  SDL2,sdl2_mixer,CombatLib,eventSys,SonoSys,
   SysUtils,coeur;
 
   

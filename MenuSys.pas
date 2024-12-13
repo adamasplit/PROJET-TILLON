@@ -4,17 +4,17 @@ unit MenuSys;
 interface
 
 uses
-	animationSys,
+	AnimationSys,
 	coeur,
-	combatlib,
-	enemyLib,
-	eventsys,
+	CombatLib,
+	EnemyLib,
+	eventSys,
 	fichierSys,
-	mapsys,
+	mapSys,
 	memgraph,
 	SDL2,
 	SDL2_ttf,
-	sonoSys,
+	SonoSys,
 	sysutils;
 
 //Image
@@ -91,8 +91,8 @@ begin
 	statsJoueur.multiplicateurSoin:=1;
 	initStatsCombat(statsJoueur,LObjets[0].stats);
 	iCarteChoisie:=1;
-	CreateRawImage(LObjets[0].image, windowWidth div 2-windowWidth div 4, windowHeight div 2, 100, 100, 'Sprites\Game\Joueur\Joueur_idle_1.bmp');
-	CreateRawImage(menuBook,0,0,windowWidth,windowHeight,'Sprites\Game\Book\Book_Opening_1.bmp');
+	CreateRawImage(LObjets[0].image, windowWidth div 2-windowWidth div 4, windowHeight div 2, 100, 100, 'Sprites/Game/Joueur/Joueur_idle_1.bmp');
+	CreateRawImage(menuBook,0,0,windowWidth,windowHeight,'Sprites/Game/Book/Book_Opening_1.bmp');
 	initAnimation(LObjets[0].anim,'Joueur','idle',12,True);
 	if continuer then
 		chargerSauvegarde(statsJoueur);
@@ -119,7 +119,7 @@ begin
     width := Round(1080 * profondeur);
     height := Round(720 * profondeur);
     // Création de l'image
-    CreateRawImage(decor.images[i], 0, 0, width, height,StringToPChar('Sprites\Menu\DecorsCredits\' + NomDecor + '-' + IntToStr(totalDecors - i) + '.bmp'));
+    CreateRawImage(decor.images[i], 0, 0, width, height,StringToPChar('Sprites/Menu/DecorsCredits/' + NomDecor + '-' + IntToStr(totalDecors - i) + '.bmp'));
 
     // Centrage initial des images
     decor.images[i].rect.x := (1080- width);  // Centrer horizontalement
@@ -141,12 +141,12 @@ end;
 function NextOrSkipDialogue(i : Integer) : Boolean;
 begin
 	NextOrSkipDialogue:=False;
-	if dialogues[i].letterdelay<>0 then begin writeln(dialogues[i].letterdelay); end;
+	//if dialogues[i].letterdelay<>0 then begin writeln(dialogues[i].letterdelay); end;
   	  while (SDL_PollEvent( EventSystem ) = 1) do
       			case EventSystem^.type_ of
 					SDL_mousebuttondown:if dialogues[i].letterdelay=0 then NextOrSkipDialogue:=True else dialogues[i].LetterDelay:=0;
 				end;
-	if NextOrSkipDialogue then writeln('next');
+	//if NextOrSkipDialogue then writeln('next');
 end;
 
 procedure menuEnJeu;
@@ -159,7 +159,7 @@ procedure menuEnJeu;
 
 			boutons[8].button.estVisible :=True;
 			boutons[9].button.estVisible := True;
-			jouerSon('SFX\Pausemenu_appear.wav');
+			jouerSon('SFX/Pausemenu_appear.wav');
 			DrawRect(black_color,50, 0, 0, windowWidth,windowHeight);
 			InitAnimation(menuBookAnim,'Book','Opening',5,False);
 
@@ -199,7 +199,7 @@ end;
 
 procedure InitCreditsText;
 begin
-  CreateRawImage(creditsText, windowWidth div 2 - 540, windowHeight, 1080, 4000,'Sprites\Menu\Credits.bmp');
+  CreateRawImage(creditsText, windowWidth div 2 - 540, windowHeight, 1080, 4000,'Sprites/Menu/Credits.bmp');
 end;
 procedure UpdateCameraParallax(var decor: TDecorParallax; avance: Boolean);
 
@@ -294,9 +294,9 @@ end;
 
 procedure ParallaxMenuInit;
 begin
-  CreateRawImage(bgImage,0 , 0,windowWidth+30 ,windowHeight+30 ,'Sprites\Menu\parallax_bg.bmp');
-  CreateRawImage(characterImage,0 , 8,windowWidth+30 ,windowHeight+30 ,'Sprites\Menu\parallax_player.bmp');
-  CreateRawImage(cardsImage,0 , 0,windowWidth ,windowHeight ,'Sprites\Menu\parallax_cards.bmp');
+  CreateRawImage(bgImage,0 , 0,windowWidth+30 ,windowHeight+30 ,'Sprites/Menu/parallax_bg.bmp');
+  CreateRawImage(characterImage,0 , 8,windowWidth+30 ,windowHeight+30 ,'Sprites/Menu/parallax_player.bmp');
+  CreateRawImage(cardsImage,0 , 0,windowWidth ,windowHeight ,'Sprites/Menu/parallax_cards.bmp');
 end;
 
 procedure NouvellePartieIntro;
@@ -414,15 +414,15 @@ begin
     // Game icon (𓈒⟡₊⋆∘ Wowie 𓈒⟡₊⋆∘)
     CreateText(Title, windowWidth div 2-150, 20, 300, 250, 'Les Cartes du Destin',Fantasy30, whiteCol);
 	// Initialisation des boutons principaux (à gauche)
-	InitButtonGroup(boutons[2], 100, windowHeight div 5, 350, 80, 'Sprites\Menu\Button1.bmp', 'Continuer', @continuer);
-    InitButtonGroup(boutons[1], 100, (windowHeight div 5) + 100, 350, 80, 'Sprites\Menu\Button1.bmp', 'Nouvelle Partie', PNouvellePartieIntro);
-    InitButtonGroup(boutons[3], 100, (windowHeight div 5) + 200, 350, 80, 'Sprites\Menu\Button1.bmp', 'Credits', PCredits);
-    InitButtonGroup(boutons[4], 100, (windowHeight div 5) + 300, 350, 80, 'Sprites\Menu\Button1.bmp', 'Quitter', quitter);
+	InitButtonGroup(boutons[2], 100, windowHeight div 5, 350, 80, 'Sprites/Menu/Button1.bmp', 'Continuer', @continuer);
+    InitButtonGroup(boutons[1], 100, (windowHeight div 5) + 100, 350, 80, 'Sprites/Menu/Button1.bmp', 'Nouvelle Partie', PNouvellePartieIntro);
+    InitButtonGroup(boutons[3], 100, (windowHeight div 5) + 200, 350, 80, 'Sprites/Menu/Button1.bmp', 'Credits', PCredits);
+    InitButtonGroup(boutons[4], 100, (windowHeight div 5) + 300, 350, 80, 'Sprites/Menu/Button1.bmp', 'Quitter', quitter);
 
 	// Initialisation des icônes en bas
-	InitButtonGroup(boutons[5], windowWidth div 2 - 300, windowHeight - 100, 100, 100, 'Sprites\Menu\Icon_Settings.bmp', ' ', PopenSettings);
-	InitButtonGroup(button_help, windowWidth div 2, windowHeight - 100, 100, 100, 'Sprites\Menu\Icon_Help.bmp', ' ', PgoSeekHelp);
-	InitButtonGroup(button_home, windowWidth div 2 + 300, windowHeight - 100, 100, 100, 'Sprites\Menu\Icon_Help.bmp', ' ', btnProc);
+	InitButtonGroup(boutons[5], windowWidth div 2 - 300, windowHeight - 100, 100, 100, 'Sprites/Menu/Icon_Settings.bmp', ' ', PopenSettings);
+	InitButtonGroup(button_help, windowWidth div 2, windowHeight - 100, 100, 100, 'Sprites/Menu/Icon_Help.bmp', ' ', PgoSeekHelp);
+	InitButtonGroup(button_home, windowWidth div 2 + 300, windowHeight - 100, 100, 100, 'Sprites/Menu/Icon_Help.bmp', ' ', btnProc);
 
     ParallaxMenuInit;
     
@@ -449,7 +449,7 @@ end;
 procedure ouvrirDeck();
 
 begin
-	writeln('ouverture du deck');
+	//writeln('ouverture du deck');
 	sceneActive:='Deck';
 	iDeck:=1;
 	iDeckPrec:=1;
@@ -509,7 +509,7 @@ end;
 procedure ouvrirBestiaire();
 
 begin
-	writeln('ouverture du deck');
+	//writeln('ouverture du deck');
 	sceneActive:='Bestiaire';
 	iEnn:=1;
 	if not statsJoueur.bestiaire[1] then
@@ -563,7 +563,7 @@ end;
 
 procedure InitCredits;
 begin
-	InitButtonGroup(button_retour_menu, 850, 625, 200, 75,'Sprites\Menu\Button1.bmp','Menu',retour_menu);
+	InitButtonGroup(button_retour_menu, 850, 625, 200, 75,'Sprites/Menu/Button1.bmp','Menu',retour_menu);
 	SetLength(DecorCredits.plans, 4);
   	DecorCredits.plans[0] := 'Plains';
   	DecorCredits.plans[1] := 'Forest';

@@ -1,5 +1,6 @@
 program testUI;
-uses sceneSys;
+uses
+    SceneSys;
 
 begin
 StartGame;

@@ -6,7 +6,7 @@ uses
   math,
   SDL2,
   SDL2_ttf,
-  sonoSys,
+  SonoSys,
   SysUtils;
 
 type
@@ -170,7 +170,7 @@ begin
      (y >= button.rect.y) and (y <= button.rect.y + button.rect.h) then
   begin
     if Assigned(button.OnClick) then
-		writeln('Starting Procedure');
+		//writeln('Starting Procedure');
 		button.OnClick;
   end;
 end;
@@ -248,7 +248,7 @@ begin
   //if image.imgtexture<>nil then SDL_DestroyTexture(image.imgtexture);
   //if image.imgsurface<>nil then SDL_freeSurface(image.imgsurface);
   image.imgSurface := SDL_LoadBMP(image.directory);
-  if image.imgSurface = nil then begin WriteLn('Error in Surface load : ',image.directory);Write(SDL_GetError); HALT end;
+  //if image.imgSurface = nil then begin WriteLn('Error in Surface load : ',image.directory);Write(SDL_GetError); HALT end;
   // Convertion surface --> texture
   
   image.imgTexture := SDL_CreateTextureFromSurface(sdlRenderer, image.imgSurface);
@@ -339,7 +339,7 @@ begin
      (y >= image.rect.y) and (y <= image.rect.y + image.rect.h) then
   begin
     if Assigned(image.OnClick) then
-		writeln('Starting Procedure');
+		//writeln('Starting Procedure');
 		image.OnClick;
   end;
 end;
@@ -563,13 +563,13 @@ end;
 {Debug}
 procedure OnButtonClickDebug;
 begin
-  WriteLn('Button Clicked!');
+  //WriteLn('Button Clicked!');
 end;
 
 {Initialisation de la Fenêtre dans le programme principal}
 BEGIN
   black_color.r := 0; black_color.g := 0; black_color.b := 0;
-  FantasyFontDirectory := 'Fonts\Font_Fantasy_M_Edit.ttf';
+  FantasyFontDirectory := 'Fonts/Font_Fantasy_M_Edit.ttf';
 
   // Initialization of video subsystem
   if SDL_Init(SDL_INIT_VIDEO) < 0 then HALT;

@@ -2,17 +2,17 @@ unit EnemyLib;
 
 interface
 uses
-  animationSys,
+  AnimationSys,
   coeur,
-  collisionSys,
-  combatLib,
-  eventsys,
+  CollisionSys,
+  CombatLib,
+  eventSys,
   fichierSys,
   math,
   memgraph,
   SDL2,
   sdl2_mixer,
-  sonoSys,
+  SonoSys,
   SysUtils;
 
 const TAILLE_VAGUE=2;
@@ -61,7 +61,7 @@ procedure ajoutVague();
 var i,taille:Integer;
 var fini:Boolean;
 begin
-  writeln('tentative d"ajout d"une vague , ennemis restants : ',high(ennemis));
+  //writeln('tentative d"ajout d"une vague , ennemis restants : ',high(ennemis));
   if high(ennemis)<=0 then
     combatFini:=True
   else
@@ -97,8 +97,8 @@ begin
           end;
       end;
     end;
-    writeln('combat fini:',combatFini);
-    writeln('vague ajoutée');
+    //writeln('combat fini:',combatFini);
+    //writeln('vague ajoutée');
 end;
 
 // initialise un ennemi dans TemplatesEnnemis
@@ -1250,11 +1250,11 @@ begin
     begin
       sceneActive:='Cutscene';
       ennemi.stats.compteurAction:=1;
-      InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp',nil,0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS3_1_1'),100);
+      InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp',nil,0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS3_1_1'),100);
       for i:=2 to 8 do
       case i of 
-      2:ajoutDialogue('Sprites\Portraits/creature1.bmp',extractionTexte('DIALOGUE_BOSS3_1_'+intToSTR(i)));
-      4,8:ajoutDialogue('Sprites\Portraits/creature2.bmp',extractionTexte('DIALOGUE_BOSS3_1_'+intToSTR(i)));
+      2:ajoutDialogue('Sprites/Portraits/creature1.bmp',extractionTexte('DIALOGUE_BOSS3_1_'+intToSTR(i)));
+      4,8:ajoutDialogue('Sprites/Portraits/creature2.bmp',extractionTexte('DIALOGUE_BOSS3_1_'+intToSTR(i)));
       6:ajoutDialogue(nil,extractionTexte('DIALOGUE_BOSS3_1_'+intToSTR(i)));
       else ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS3_1_'+intToStr(i)));
       end
@@ -1263,7 +1263,7 @@ begin
     begin
       sceneActive:='Cutscene';
       ennemi.stats.compteurAction:=1;
-      InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/spectre.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS2_1_1'),100);
+      InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/spectre.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS2_1_1'),100);
       for i:=2 to 12 do
       case i of 
       3,5,7,9,11:ajoutDialogue('Sprites/Portraits/spectre.bmp',extractionTexte('DIALOGUE_BOSS2_1_'+intToSTR(i)));
@@ -1274,7 +1274,7 @@ begin
     begin
       sceneActive:='Cutscene';
       ennemi.stats.compteurAction:=1;
-      InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/portraitGarde2.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS1_1_1'),100);
+      InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portraitGarde2.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS1_1_1'),100);
       for i:=2 to 10 do
       case i of 
       3,5,7,9:ajoutDialogue('Sprites/Portraits/portraitGarde2.bmp',extractionTexte('DIALOGUE_BOSS1_1_'+intToSTR(i)));
@@ -1283,9 +1283,9 @@ begin
     end;
     if (ennemi.anim.objectName='Béhémoth')  then
     begin
-	    InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/portraitB.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS4_1'),100);
+	    InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portraitB.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS4_1'),100);
       ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_2'));
-      ajoutDialogue('Sprites\Portraits/portraitB.bmp',extractionTexte('DIALOGUE_BOSS4_3'));
+      ajoutDialogue('Sprites/Portraits/portraitB.bmp',extractionTexte('DIALOGUE_BOSS4_3'));
       ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_4'));
       sceneActive:='Cutscene';
       jouersonenn('dragon');
@@ -1293,26 +1293,26 @@ begin
     end;
     if (ennemi.anim.objectName='dracomage') then
       begin
-        InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites/Menu/combatUI_5.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS4_2_1'),100);
+        InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/combatUI_5.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS4_2_1'),100);
         ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_2_2'));
-        ajoutDialogue('Sprites\Game\Archimage\Archimage_chase_1.bmp',extractionTexte('DIALOGUE_BOSS4_2_3'));
-        ajoutDialogue('Sprites\Game\Archimage\Archimage_chase_1.bmp',extractionTexte('DIALOGUE_BOSS4_2_4'));
+        ajoutDialogue('Sprites/Game/Archimage/Archimage_chase_1.bmp',extractionTexte('DIALOGUE_BOSS4_2_3'));
+        ajoutDialogue('Sprites/Game/Archimage/Archimage_chase_1.bmp',extractionTexte('DIALOGUE_BOSS4_2_4'));
         ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_2_5'));
         sceneActive:='Cutscene';
         ennemi.stats.compteurAction:=1;
       end;
     if (ennemi.anim.objectName='Leo') then
       begin
-        InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/portrait_Leo7.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_EVENT_BOSS_1'),10);
+        InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portrait_Leo7.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_EVENT_BOSS_1'),10);
         sceneActive:='Cutscene';
         ennemi.stats.compteurAction:=1;
       end;
     if (ennemi.anim.objectName='Archimage') then
       begin
-        InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Game\Archimage\Archimage_chase_1.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS4_1_1'),100);
+        InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Game/Archimage/Archimage_chase_1.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS4_1_1'),100);
         ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_1_2'));
         ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_1_3'));
-        ajoutDialogue('Sprites\Game\Archimage\Archimage_chase_1.bmp',extractionTexte('DIALOGUE_BOSS4_1_4'));
+        ajoutDialogue('Sprites/Game/Archimage/Archimage_chase_1.bmp',extractionTexte('DIALOGUE_BOSS4_1_4'));
         ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_1_5'));
         sceneActive:='Cutscene';
         ennemi.stats.compteurAction:=1;
@@ -1334,7 +1334,7 @@ begin
 		else
       if (animFinie(ennemi.anim)) and (ennemi.anim.etat='mort') then
         if ennemi.anim.objectName='Leo' then begin
-          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/portrait_Leo8.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_EVENT_BOSS_2'),10);
+          InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portrait_Leo8.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_EVENT_BOSS_2'),10);
           ajoutDialogue('Sprites/Portraits/portrait_Leo7.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_3'));
           ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_4'));
           sceneActive:='Cutscene';
@@ -1343,16 +1343,16 @@ begin
         else if ennemi.anim.objectName='geolier' then begin
           transformation(ennemi,32);
           sceneActive:='Cutscene';
-          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/portraitGarde3.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS1_2_1'),20);
+          InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portraitGarde3.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS1_2_1'),20);
           ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS1_2_2'));
-          ajoutDialogue('Sprites\Portraits/portraitGarde3.bmp',extractionTexte('DIALOGUE_BOSS1_2_3'));
-          ajoutDialogue('Sprites\Portraits/portraitGarde3.bmp',extractionTexte('DIALOGUE_BOSS1_2_4'));
+          ajoutDialogue('Sprites/Portraits/portraitGarde3.bmp',extractionTexte('DIALOGUE_BOSS1_2_3'));
+          ajoutDialogue('Sprites/Portraits/portraitGarde3.bmp',extractionTexte('DIALOGUE_BOSS1_2_4'));
           ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS1_2_5'));
           end
         else if (ennemi.anim.objectName='Leo_Transe') and (ennemi.stats.compteurAction=-1) then begin
           sceneActive:='Cutscene';
           ennemi.stats.compteurAction:=0;
-          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/portrait_Leo2.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_EVENT_BOSS_5'),10);
+          InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portrait_Leo2.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_EVENT_BOSS_5'),10);
           ajoutDialogue('Sprites/Portraits/portrait_Leo6.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_6'));
           ajoutDialogue('Sprites/Portraits/portrait_Leo6.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_7'));
           ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_8'));
@@ -1376,7 +1376,7 @@ begin
         begin
         transformation(ennemi,34);
         sceneActive:='Cutscene';
-        InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/spectre2.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS2_2_1'),100);
+        InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/spectre2.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS2_2_1'),100);
         for i:=2 to 10 do
         case i of 
         3,6,7,9,10:ajoutDialogue('Sprites/Portraits/spectre2.bmp',extractionTexte('DIALOGUE_BOSS2_2_'+intToSTR(i)));
@@ -1397,13 +1397,13 @@ begin
           if (ennemi.anim.objectName='geolier2') then
             begin
               sceneActive:='Cutscene';
-              InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/portraitGarde4.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS1_3_1'),20);
-              ajoutDialogue('Sprites\Portraits/portraitGarde4.bmp',extractionTexte('DIALOGUE_BOSS1_3_2'));
+              InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portraitGarde4.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS1_3_1'),20);
+              ajoutDialogue('Sprites/Portraits/portraitGarde4.bmp',extractionTexte('DIALOGUE_BOSS1_3_2'));
             end;
           if (ennemi.anim.objectName='vestige') then
               begin
               sceneActive:='Cutscene';
-              InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/spectre4.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS2_4_1'),100);
+              InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/spectre4.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS2_4_1'),100);
               for i:=2 to 8 do
               case i of 
               3,5,7:ajoutDialogue('Sprites/Portraits/spectre4.bmp',extractionTexte('DIALOGUE_BOSS2_4_'+intToSTR(i)));
@@ -1413,11 +1413,11 @@ begin
           if (ennemi.anim.objectName='creature') then
             begin
               sceneActive:='Cutscene';
-              InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/creature3.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS3_2_1'),20);
+              InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/creature3.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS3_2_1'),20);
               for i:=2 to 6 do
               case i of 
-              3:ajoutDialogue('Sprites\Portraits/creature3.bmp',extractionTexte('DIALOGUE_BOSS3_2_'+intToSTR(i)));
-              4:ajoutDialogue('Sprites\Portraits/creature4.bmp',extractionTexte('DIALOGUE_BOSS3_2_'+intToSTR(i)));
+              3:ajoutDialogue('Sprites/Portraits/creature3.bmp',extractionTexte('DIALOGUE_BOSS3_2_'+intToSTR(i)));
+              4:ajoutDialogue('Sprites/Portraits/creature4.bmp',extractionTexte('DIALOGUE_BOSS3_2_'+intToSTR(i)));
               else ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('DIALOGUE_BOSS3_2_'+intToStr(i)));
               end
             end;
@@ -1432,7 +1432,7 @@ begin
           jouerSonEnn('dragon2');
           statsJoueur.bestiaire[ennemi.stats.numero]:=True;
           initAnimation(ennemi.anim,ennemi.anim.objectName,'mortRep',ennemi.stats.nbframes3,True);
-          InitDialogueBox(dialogues[2],'Sprites\Menu\Button1.bmp','Sprites\Portraits/portraitB.bmp',0,-70,windowWidth,300,extractionTexte('DIALOGUE_BOSS4_0'),100);       sceneActive:='Behemoth_Mort';
+          InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portraitB.bmp',0,-70,windowWidth,300,extractionTexte('DIALOGUE_BOSS4_0'),100);       sceneActive:='Behemoth_Mort';
           end;
     end
 end;

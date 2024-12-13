@@ -47,7 +47,7 @@ procedure defMus(indice:Integer;dir:Pchar;nom:String;duree:Integer);
 
 begin
     OST[indice].musique:=Mix_LoadMUS(dir);
-    writeln('OST[',indice,'].musique:=MIX_LoadMUS(',dir,')');
+    //writeln('OST[',indice,'].musique:=MIX_LoadMUS(',dir,')');
     OST[indice].dir:=dir;
     OST[indice].nom:=nom;
     OST[indice].duree:=duree;
@@ -91,7 +91,7 @@ begin
 end;
 
 begin
-writeln('SonSys');
+    //writeln('SonSys');
     defMus(1,'Combat.ogg','Cards of Fortune',50);
 end.
 

@@ -4,12 +4,12 @@ uses
   SDL2,
   SDL2_mixer,
   coeur,
-  eventsys,
-  MapSys,
+  eventSys,
+  mapSys,
   memgraph,
   SysUtils,
-  sonoSys,
-  combatLib;
+  SonoSys,
+  CombatLib;
   var lastUpdateTime1,LastUpdateTime2:UInt32;
   musique:TMus;
 

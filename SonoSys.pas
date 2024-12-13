@@ -133,7 +133,7 @@ begin
                 Mix_FreeMusic(MusiqueJouee);
                 MusiqueJouee:=chargerOST(OST[Indice].dir);
                 mix_playMusic(MusiqueJouee,0);
-                writeln('changing music from ',indiceMusiquePrec,' to ',indice);
+                //writeln('changing music from ',indiceMusiquePrec,' to ',indice);
                 indiceMusiquePrec:=indice;
                 updatetimemusique:=sdl_getticks;
                 end;
@@ -229,8 +229,8 @@ Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT,
     defMus(43,'OST/Boss3_VictoireRep.wav','',99);
     defMus(44,'OST/Boss4_VictoireRep.wav','',27);
     //Mort
-    defMus(47,'OST\Project_DEATH.wav','',24);
-    defMus(46,'OST\Project_DEATH2.wav','',72);
+    defMus(47,'OST/Project_DEATH.wav','',24);
+    defMus(46,'OST/Project_DEATH2.wav','',72);
 
 
 end.

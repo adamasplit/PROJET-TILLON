@@ -3,14 +3,14 @@ unit CombatLib;
 interface
 
 uses
-    animationSys,
+    AnimationSys,
     coeur,
     eventSys,
     math,
     memgraph,
     SDL2,
     sdl2_mixer,
-    sonoSys,
+    SonoSys,
     sysutils;
 
 var updateTimeMonde:UInt32;updateTimeMort:UInt32;
@@ -207,7 +207,7 @@ begin
     statsTemp.deck:=@pDeck;
     statsTemp.compteurLeMonde:=0;
     
-    if statsTemp.deck=NIL then writeln('AVERTISSEMENT: DECK NON DEFINI');
+    if statsTemp.deck=NIL then //writeln('AVERTISSEMENT: DECK NON DEFINI');
     combatFini:=False;
     vagueFinie:=True;
 end;
@@ -273,7 +273,7 @@ begin
     else begin 
         rayon.stats.vectX:=0;
         rayon.stats.vectY:=0;
-        writeln('le rayon n"a pas pu être créé')
+        //writeln('le rayon n"a pas pu être créé')
         end;
     if rayon.stats.vectX<0 then
         begin
@@ -350,7 +350,7 @@ begin
             begin
                 if (rayon.stats.vitRotation<>0) and (rayon.stats.delai<=0) and not(leMonde) then
                 begin
-                writeln('/?');
+                //writeln('/?');
                 //mise à jour du vecteur de direction
                 rayon.stats.vectX:=cos(rayon.stats.angle+(rayon.stats.vitRotation/180));
                 rayon.stats.vectY:=sin(rayon.stats.angle+(rayon.stats.vitRotation/180)); 
@@ -893,7 +893,8 @@ end;
         creerEffet(0,0,100,100,25,'fou',True,eff);
         ajoutObjet(eff);
     end;
-
+    
+    // Cartes bonus
     procedure XXIII(origine:typeObjet;s:TStats;x,y,xcible,ycible,delai:Integer);
     var distX,distY:Integer;
     begin
@@ -921,6 +922,25 @@ end;
         jouerSonEff('XXIV');
         initAngle(getmouseX-x,getMouseY-y,angle);
         multiprojs(joueur, 10 ,s.force , s.multiplicateurDegat , x,y ,100,100, 0,2 ,360 ,round(angle*360),'Roue');
+    end;
+
+    procedure XXV(s:TStats;x,y:Integer);
+    var angle:Real;i:Integer;
+    begin
+        initAngle(getmouseX-x,getMouseY-y,angle);
+        for i:=1 to 5 do
+            multiprojs(joueur, 1 ,s.force , s.multiplicateurDegat , x,y ,100,100, i+4,8 ,360 ,round(angle*180/pi),'onde');
+    end;
+
+    procedure XXVI(s:TStats;x,y:Integer);
+    var i:Integer;alea1:Real;obj:TObjet;
+    begin
+        randomize();
+        for i:=1 to 10 do begin
+            alea1:=random(360)/180*pi;
+            creerRayon(typeObjet(0),2,s.force,s.multiplicateurDegat,false,round(x-cos(alea1)*200),50+round(y-sin(alea1)*200),200,100,x,y,0,20,20,'eclair',obj);
+            ajoutObjet(obj);
+        end;
     end;
 
 //end
@@ -975,8 +995,10 @@ begin
             //Cartes bonus
             23: XXIII(joueur,stats,x,y,getmouseX,getmousey,60);
             24: XXIV(stats,getmouseX,getmouseY);
+            25: XXV(stats,x,y);
+            26: XXVI(stats,getmousex,getmousey);
             else 
-            writeln('???')
+            //writeln('???')
             end;
         end;
 

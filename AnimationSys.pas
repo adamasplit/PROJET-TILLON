@@ -7,7 +7,7 @@ uses
   math,
   memgraph,
   SDL2,
-  sonoSys,
+  SonoSys,
   SysUtils;
 
 const
@@ -55,7 +55,7 @@ function GetFramePath(anim: TAnimation): PChar;
 var
   framePath: PChar;
 begin
-  framePath := PChar(Format('Sprites\Game\%s\%s_%s_%d.bmp', [anim.ObjectName, anim.ObjectName, anim.Etat, anim.CurrentFrame]));
+  framePath := PChar(Format('Sprites/Game/%s/%s_%s_%d.bmp', [anim.ObjectName, anim.ObjectName, anim.Etat, anim.CurrentFrame]));
   GetFramePath := framePath;
 end;
 
@@ -224,7 +224,7 @@ begin
       SDL_SetTextureAlphaMod(btnGroup.image.imgTexture, 180);  // Alpha à 180 pour OnHover
 
       // Jouer le son de hoverr
-      jouerSon('SFX\Button_hover.wav');
+      jouerSon('SFX/Button_hover.wav');
       btnGroup.hoverSoundPlayed := True;
     end;
   end
@@ -290,7 +290,7 @@ begin
   SDL_SetTextureAlphaMod(btnGroup.image.imgTexture, 220);  // Alpha à 220 pour OnClick
 
   // Jouer le son de clic
-  jouerSon('SFX\Button_click.wav');
+  jouerSon('SFX/Button_click.wav');
   end;
 end;
 
@@ -342,7 +342,7 @@ begin
   fonduActif := False;
   fonduEntrant := True;
   dureeFondu := 0;
-  WriteLn('AnimationSys ready ⋆｡°✩');
+  //WriteLn('AnimationSys ready ⋆｡°✩');
 end.
 
 end.

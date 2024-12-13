@@ -4,14 +4,14 @@ interface
 uses
     AnimationSys,
     coeur,
-    combatlib,
+    CombatLib,
     EnemyLib,
-    eventsys,
+    eventSys,
     fichierSys,
     math,
     memgraph,
     SDL2,
-    sonoSys,
+    SonoSys,
     SysUtils;
 var imgs0,imgs1,imgs2,imgs3:TButtonGroup;
 var salleChoisie:TSalle;
@@ -58,7 +58,7 @@ var imgCar1,imgCar2,imgCar3:TImage;
 procedure generationChoix(var salle1,salle2,salle3:TSalle);
 var alea:Integer;
 begin
-    writeln('Actuellement en salle : ',statsJoueur.avancement);
+    ////writeln('Actuellement en salle : ',statsJoueur.avancement);
     if ((statsJoueur.avancement mod (MAXSALLES div 4)) = 0) then 
         begin
             salle1.evenement:=rien;
@@ -138,7 +138,7 @@ end;
 procedure choisirEnnemis(avancement:Integer;boss:Boolean);
 var j,nb : integer;
 begin
-    writeln(high(ennemis),',',high(LObjets));
+    //writeln(high(ennemis),',',high(LObjets));
     if high(ennemis)>1 then
         repeat
             SDL_DestroyTexture(ennemis[high(ennemis)].image.imgTexture);
@@ -147,16 +147,16 @@ begin
     if high(LOBjets)>0 then repeat 
         supprimeObjet(LObjets[1]);
     until high(LObjets)=0;
-    writeln('listes vidées');
+    //writeln('listes vidées');
     initStatsCombat(statsJoueur,LObjets[0].stats);
-    writeln('stats initialisées');
+    //writeln('stats initialisées');
     vagueFinie:=True;
     combatFini:=False;
     randomize;
     initDecor((avancement-1) div 10);
     indiceMusiqueJouee:=choisirMusique(avancement);
     nb:=1+((avancement mod (maxSalles div 4)) div 6);
-    writeln('choix des ennemis');
+    //writeln('choix des ennemis');
     if not boss then begin
         setlength(ennemis,nb+1);
         for j:=1 to nb do
@@ -169,14 +169,14 @@ begin
             ennemis[j].stats.vitesse := round((avancement/MAXSALLES+1)*ennemis[j].stats.vitesse);
             end;
     end;
-    writeln('ennemis choisis')
+    //writeln('ennemis choisis')
 
 end;
 
 procedure LancementSalleCombat(); //déclenche une salle de combat normal
 begin
 
-writeln('Lancement de salle Combat');
+//writeln('Lancement de salle Combat');
 choisirEnnemis(statsJoueur.avancement,false);
 statsJoueur.avancement := statsJoueur.avancement+1;
 ClearScreen;
@@ -219,14 +219,14 @@ end;
 
 procedure LancementSalleBoss; //active une salle où le joueur combattra un unique ennemi plus puissant
 begin
-    writeln('Lancement de salle Boss');
+    //writeln('Lancement de salle Boss');
     choisirEnnemis(statsJoueur.avancement,true);
     ClearScreen;
     SDL_RenderClear(sdlRenderer);
     SceneActive := 'Jeu';
     vagueFinie:=False;
     choixBoss(statsJoueur.avancement);
-    writeln('ennemis choisis (boss)');
+    //writeln('ennemis choisis (boss)');
     statsJoueur.avancement := statsJoueur.avancement+1;
 end;
 
@@ -297,8 +297,16 @@ begin
     alea:=random(100)+1;
     dropCarte.numero:=0;
     if boss then
-        if random(4)<=avancement div (MAXSALLES div 4) then
-            dropCarte:=ajouterCarteAleatoireRarete(legendaire)
+        if alea div 25<=avancement div (MAXSALLES div 4) then
+            begin
+            if alea div 20<>0 then
+                dropCarte:=ajouterCarteAleatoireRarete(legendaire)
+            else
+                if alea div 50=0 then 
+                    dropCarte:=cartes[25]
+                else
+                    dropCarte:=cartes[26]
+            end
         else
             dropCarte:=ajouterCarteAleatoireRarete(epique)
     else
@@ -500,7 +508,7 @@ begin
   begin
     if Assigned(button.procEch) then
     begin
-        writeln('procédure spéciale en cours');
+        //writeln('procédure spéciale en cours');
 		button.procEch(carte1,carte2,stats);
     end;
   end;
@@ -511,7 +519,7 @@ begin
     renderRawImage(fond,false);
     if etatChoix then highlight(boutons[3],getmousex,getmousey)
     else highlight(boutons[2],getmousex,getmousey);
-    //writeln(ichoix1);
+    ////writeln(ichoix1);
     renderButtonGroup(boutons[1]);
     renderButtonGroup(boutons[2]);
     renderButtonGroup(boutons[3]);
@@ -587,7 +595,7 @@ procedure LancementSalleMarchand; //###
 begin
     sceneActive := 'marchand';
     indiceMusiqueJouee:=15;
-    writeln('Lancement de salle Marchand');
+    //writeln('Lancement de salle Marchand');
     createRawImage(fond, 0,0, WINDOWWIDTH, windowHeight,'Sprites/Menu/fondMarchand.bmp');
     if statsJoueur.tailleCollection<4 then
         echangeFait:=True;
@@ -651,7 +659,7 @@ procedure actualiserDefausse;
 begin
     renderRawImage(fond,false);
     highlight(boutons[2],getmousex,getmousey);
-    //writeln(ichoix1);
+    ////writeln(ichoix1);
     renderButtonGroup(boutons[1]);
     renderButtonGroup(boutons[2]);
     renderButtonGroup(boutons[3]);
@@ -825,7 +833,7 @@ end;
 
 procedure LancementSalleHasard;
 begin
-writeln('Lancement de salle Hasard');
+//writeln('Lancement de salle Hasard');
 //statsJoueur.avancement := statsJoueur.avancement+1;
 ClearScreen;
 SDL_RenderClear(sdlRenderer);
@@ -891,7 +899,7 @@ begin
             proc:= @OnButtonClickDebug;
             end
     end;
-    writeln(dir);
+    //writeln(dir);
     InitButtonGroup(salle.image,x,y,128,128,dir,' ',proc);
     RenderButtonGroup(salle.image);
 end;
@@ -911,7 +919,7 @@ begin
     randomize;
 	sdl_freesurface(fond.imgSurface);
 	sdl_destroytexture(fond.imgTexture);
-    CreateRawImage(fond,0,-80,1080,900,StringToPChar('Sprites\Menu\fond_cartes.bmp'));
+    CreateRawImage(fond,0,-80,1080,900,StringToPChar('Sprites/Menu/fond_cartes.bmp'));
 end;
 
 procedure choixSalle();
@@ -925,13 +933,13 @@ begin
     SceneActive := 'map';
     ScenePrec:='map';
     InitDecorMap;
-    writeln('Initializing rooms...');
+    //writeln('Initializing rooms...');
     
     generationChoix(salles[1], salles[2], salles[3]);
-    writeln('Displaying rooms');
+    //writeln('Displaying rooms');
     affichageSalles(salles[1], salles[2], salles[3]);
     
-    writeln('Room choice started');
+    //writeln('Room choice started');
     new(EventSystem);
     
 end;
@@ -983,5 +991,5 @@ end;
 
 
 begin
-writeln('MapSys ready')
+//writeln('mapSys ready')
 end.

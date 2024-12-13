@@ -19,7 +19,7 @@ begin
     rewrite(fichier);
     write(fichier,stats);
     close(fichier);
-    writeln('écriture faite');
+    //writeln('écriture faite');
 end;
 
 procedure chargerSauvegarde(var stats:TStats);
@@ -31,7 +31,7 @@ begin
         reset(fichier);
         read(fichier,stats);
         close(fichier);
-        writeln('sauvegarde chargée');
+        //writeln('sauvegarde chargée');
         end
     else
         begin

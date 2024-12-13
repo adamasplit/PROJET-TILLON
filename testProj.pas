@@ -1,8 +1,8 @@
 program testProj;
 
 uses
-    math,coeur,eventSys,memgraph,animationSys,
-    SDL2,combatLib,collisionSys;
+    math,coeur,eventSys,memgraph,AnimationSys,
+    SDL2,CombatLib,CollisionSys;
 
 var boule:TObjet;
 i:Integer;
@@ -16,7 +16,7 @@ new(TestEvent);
 xpos:=testevent^.motion.x;
 modeDebug:=True;
 stop:=False;
-writeln('starting');
+//writeln('starting');
 setlength(lobjets,1);
 LObjets[0].stats.genre:=ennemi;
 LObjets[0].col.isTrigger := False;

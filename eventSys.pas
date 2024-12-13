@@ -98,7 +98,7 @@ begin
     SDL_FreeSurface(CombatUI[3].imgSurface);
     SDL_DestroyTexture(CombatUI[3].imgTexture);
    
-    if (icarteChoisie>2) or (icarteChoisie<0) then writeln(icarteChoisie);
+    //if (icarteChoisie>2) or (icarteChoisie<0) then writeln(icarteChoisie);
     CreateRawImage(CombatUI[3],min(820,max(GetMouseX-20,140)),GetMouseY-5,100,100,stats.deck^[icarteChoisie].dir);
     if (LObjets[0].stats.mana<LObjets[0].stats.deck^[iCarteChoisie].cout) and not (LObjets[0].stats.deck^[iCarteChoisie].active) then
       begin
@@ -128,7 +128,7 @@ begin
     //Mana
     DrawRect(black_color,255,95, 550-20*stats.manaMax, 30, 20*stats.manaMax);
     if stats.manaMax<10 then
-      writeln('Attention, le mana max est à ',stats.manaMax);
+      //writeln('Attention, le mana max est à ',stats.manaMax);
     if stats.manaMax>0 then
       DrawRect(b_color,255, 100, 355+190-Round(19* (stats.mana)), 20, Round(19* (stats.mana)) );
     //Portrait
