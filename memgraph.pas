@@ -366,7 +366,7 @@ begin
     mot:=mot+text[i+nextWordLength];
     nextWordLength:=nextWordLength+1;
   until (text[i+nextWordLength]=' ') or (text[i+nextWordLength]='!') or (text[i+nextWordLength]='.') or (text[i+nextWordLength]='?');
-  writeln(mot,length(mot));nextWordLength:=length(mot);
+  nextWordLength:=length(mot);
 end;
 
 function WidthBasedLineLength(Font: PTTF_Font;size:Integer; const Text: string;width:Integer): Integer;

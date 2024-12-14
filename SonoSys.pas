@@ -121,6 +121,10 @@ end;
 procedure autoMusique(var indice:integer);
 begin
     SDL_PumpEvents;
+    case indice of
+    1,2:mix_volumemusic(VOLUME_MUSIQUE+VOLUME_MUSIQUE div 2);
+    else mix_volumemusic(VOLUME_MUSIQUE);
+    end;
         if (Indice<>indiceMusiquePrec) then
             if indiceMusiquePrec=0 then
                 begin
