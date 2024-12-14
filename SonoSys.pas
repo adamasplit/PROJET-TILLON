@@ -122,7 +122,8 @@ procedure autoMusique(var indice:integer);
 begin
     SDL_PumpEvents;
     case indice of
-    1,2,7,39,48:mix_volumemusic(VOLUME_MUSIQUE+VOLUME_MUSIQUE div 2);
+    2:mix_volumemusic(VOLUME_MUSIQUE*2);
+    1,7,39,48:mix_volumemusic(VOLUME_MUSIQUE+VOLUME_MUSIQUE div 2);
     33:mix_volumemusic(VOLUME_MUSIQUE-VOLUME_MUSIQUE div 4);
     else mix_volumemusic(VOLUME_MUSIQUE);
     end;

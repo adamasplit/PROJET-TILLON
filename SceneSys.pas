@@ -494,7 +494,7 @@ begin
 							mix_resumeMusic;
 							end
 							end
-						else if sceneActive<>'Menu' then menuEnJeu;
+						else if (sceneActive<>'Menu') and (sceneActive<>'Credits') then menuEnJeu;
 						end;
 					SDLK_SPACE:begin
 						if leMonde then leMonde:=False;

@@ -417,13 +417,24 @@ begin
       begin
       ennemi.anim.isFliped:=(ennemi.stats.xcible>ennemi.image.rect.x);
       if (ennemi.anim.currentFrame=6) and (sdl_getTicks-ennemi.anim.lastUpdateTime<15) then
-        begin
-        if (ennemi.image.rect.x<ennemi.stats.xcible) then
-          CreerRayon(typeobjet(1),2,1,1,false,ennemi.image.rect.x+40,ennemi.image.rect.y+50,1200,100,ennemi.image.rect.x+60,ennemi.image.rect.y+50,0,10,ennemi.stats.vie,ennemi.stats.nomAttaque,obj)
+        if ennemi.anim.objectName='liche' then
+          for i:=1 to 5 do
+          begin
+          alea2:=random(20)*10-100+y;
+          if (ennemi.image.rect.x<ennemi.stats.xcible) then
+            CreerRayon(typeobjet(1),2,1,1,false,ennemi.image.rect.x+40,alea2,1200,100,ennemi.image.rect.x+60,alea2,0,10,ennemi.stats.vie,ennemi.stats.nomAttaque,obj)
+          else
+            CreerRayon(typeobjet(1),2,1,1,false,ennemi.image.rect.x+40,alea2,1200,100,ennemi.image.rect.x-60,alea2,0,10,ennemi.stats.vie,ennemi.stats.nomAttaque,obj);
+          ajoutObjet(obj);
+          end
         else
-          CreerRayon(typeobjet(1),2,1,1,false,ennemi.image.rect.x+40,ennemi.image.rect.y+50,1200,100,ennemi.image.rect.x-60,ennemi.image.rect.y+50,0,10,ennemi.stats.vie,ennemi.stats.nomAttaque,obj);
-        ajoutObjet(obj);
-        end;
+          begin
+          if (ennemi.image.rect.x<ennemi.stats.xcible) then
+            CreerRayon(typeobjet(1),2,1,1,false,ennemi.image.rect.x+40,ennemi.image.rect.y+50,1200,100,ennemi.image.rect.x+60,ennemi.image.rect.y+50,0,10,ennemi.stats.vie,ennemi.stats.nomAttaque,obj)
+          else
+            CreerRayon(typeobjet(1),2,1,1,false,ennemi.image.rect.x+40,ennemi.image.rect.y+50,1200,100,ennemi.image.rect.x-60,ennemi.image.rect.y+50,0,10,ennemi.stats.vie,ennemi.stats.nomAttaque,obj);
+          ajoutObjet(obj);
+          end;
       end;
       end;
     6:
@@ -1446,13 +1457,12 @@ begin
 //(mvt: type de mouvement, dmg: dégâts au contact)
 setLength(ennemis,0);
 // Ajuster les stats des ennemis
-//***le numéro peut être changé selon la convénience, sans répercussions importantes
 //              num,  nom,                    mvt, vie, att, dmg, def, vit, w,   h,   nbFramesApparition, nbFramesChase, nbFramesAction1, nbFramesAction2, nbFramesMort, wcol, hcol, offx, offy, nomAttaques
 initStatEnnemi(1,    'slime',                 8,   30,  1,   0,   0,   0,   90,  90,  6,                 8,             3,               4,               4,           90,   45,   5,    40,   'boule');
 initStatEnnemi(2,    'livre',                 12,  30,  3,   0,   2,   1,   180, 90,  7,                 12,            4,               0,               12,          60,   90,   60,   0,    'eclair');
 initStatEnnemi(3,    'feu_follet',            6,   30,  3,   1,   1,   0,   100, 100, 7,                 9,             0,               0,               6,           70,   70,   15,   15,   'flamme');
 initStatEnnemi(4,    'grenouille',            8,   30,  1,   0,   2,   0,   90,  90,  7,                 6,             4,               4,               7,           54,   90,   5,    0,    'boule');
-initStatEnnemi(5,    'chevalier',             5,   30,  10,  0,   1,   3,   90,  90,  5,                 6,             3,               10,              5,           54,   90,   5,    0,    'rayonAbysse');
+initStatEnnemi(5,    'chevalier',             5,   30,  10,  0,   1,   5,   90,  90,  5,                 6,             3,               10,              5,           54,   90,   5,    0,    'rayonAbysse');
 initStatEnnemi(6,    'elementaire_astral',    4,   30,  2,   0,   1,   1,   100, 100, 9,                 12,            5,               6,               7,           80,   80,   10,   10,   'etoile');
 initStatEnnemi(7,    'elementaire_temps',     0,   25,  2,   5,   1,   1,   100, 100, 18,                12,            0,               0,               6,           80,   80,   10,   10,   '');
 initStatEnnemi(8,    'elementaire_spectral',  4,   30,  2,   0,   0,   0,   100, 100, 8,                 7,             13,              13,              8,           80,   80,   10,   10,   'rayon_spectral');
@@ -1465,9 +1475,9 @@ initStatEnnemi(14,   'mage_blanc',            15,  40,  4,   0,   0,   1,   100,
 initStatEnnemi(15,   'mage_rouge',            8,   50,  10,  0,   2,   0,   100, 200, 11,                6,             4,               9,               5,           60,   90,   20,   110,  'rayon_rouge');
 initStatEnnemi(16,   'invocateur',            12,  50,  0,   0,   0,   0,   120, 132, 12,                8,             3,               0,               5,           80,   100,  30,   20,   'rayon');
 initStatEnnemi(17,   'diablotin',             4,   10,  1,   0,   0,   3,   80,  80,  4,                 6,             4,               5,               4,           50,   50,   15,   0,    'eclairR');
-initStatEnnemi(18,   'Akr',                   4,   150, 2,   0,   -20, 1,   384, 256, 14,                9,             9,               8,               16,          200,  96,   80,   150,  'kamui');
+initStatEnnemi(18,   'Akr',                   4,   250, 2,   0,   -20, 1,   384, 256, 14,                9,             9,               8,               16,          200,  96,   80,   150,  'kamui');
 initStatEnnemi(19,   'main',                  3,   50,  0,   5,   0,   1,   150, 150, 8,                 16,            8,               0,               15,          150,  150,  0,    0,    '');
-initStatEnnemi(20,   'armure',                7,   400, 8,   0,   10,  0,   384, 256, 7,                 2,             13,              9,               16,          192,  192,  96,   64,   'justice');
+initStatEnnemi(20,   'armure',                7,   400, 8,   0,   6 ,  0,   384, 256, 7,                 2,             13,              9,               16,          192,  192,  96,   64,   'justice');
 initStatEnnemi(21,   'undrixel',              3,   50,  5,   30,  0,   1,   288, 192, 4,                 10,            4,               0,               10,          200,  128,  10,   40,   'eclairR');
 initStatEnnemi(22,   'altegh',                1,   50,  2,   0,   4,   2,   192, 192, 3,                 6,             4,               0,               14,          160,  96,   16,   96,   'rayonAL');
 initStatEnnemi(23,   'Leo',                   13,  150, 15,  2,   5,   0,   300, 300, 14,                8,             7,               10,              8,           100,  150,  100,  150,  'eclairL');

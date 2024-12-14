@@ -312,7 +312,7 @@ begin
       //Permet à certains ennemis d'effectuer des dégâts au contact avec le joueur
       if (obj2.stats.genre=typeobjet(1)) and (obj1.stats.genre=typeobjet(0)) and (obj2.stats.degatsContact>0) and (obj2.stats.cooldown=0) then
         begin
-        subirDegats(obj1,max(obj2.stats.degatsContact-(obj1.stats.defense div 3),1),0,0);
+        subirDegats(obj1,max(obj2.stats.degatsContact-(obj1.stats.defense),1),0,0);
         obj2.stats.cooldown:=150
         end;
     end;

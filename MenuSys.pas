@@ -543,7 +543,7 @@ begin
 	CreateText(TexteTutos[1], windowWidth div 2-250, windowHeight div 2 + 50, 300, 250, 'ZQSD pour se deplacer',Fantasy30, b_color);
 	CreateText(TexteTutos[2], windowWidth div 2-250, windowHeight div 2 + 50, 300, 250, 'Echap pour ouvrir le menu',Fantasy30, b_color);
 	CreateText(TexteTutos[3], windowWidth div 2-250, windowHeight div 2 + 50, 300, 250, 'Scroll pour choisir une carte',Fantasy30, b_color);
-	CreateText(TexteTutos[4], windowWidth div 2-250, windowHeight div 2 + 50, 300, 250, 'Clic droit pour utiliser une carte',Fantasy30, b_color);
+	CreateText(TexteTutos[4], windowWidth div 2-250, windowHeight div 2 + 50, 300, 250, 'Clic gauche/droit pour utiliser une carte',Fantasy30, b_color);
 end;
 procedure InitTutorialMenu;
 begin
