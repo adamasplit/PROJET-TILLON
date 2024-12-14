@@ -279,7 +279,7 @@ procedure Credits;
 	begin
 		SceneActive := 'Credits';
 		
-		indiceMusiqueJouee:=43;
+		indiceMusiqueJouee:=48;
 		
 		boutons[3].button.estVisible := false;
 		boutons[4].button.estVisible := false;

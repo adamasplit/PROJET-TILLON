@@ -122,7 +122,7 @@ procedure autoMusique(var indice:integer);
 begin
     SDL_PumpEvents;
     case indice of
-    1,2:mix_volumemusic(VOLUME_MUSIQUE+VOLUME_MUSIQUE div 2);
+    1,2,7,39,48:mix_volumemusic(VOLUME_MUSIQUE+VOLUME_MUSIQUE div 2);
     33:mix_volumemusic(VOLUME_MUSIQUE-VOLUME_MUSIQUE div 4);
     else mix_volumemusic(VOLUME_MUSIQUE);
     end;
@@ -236,6 +236,8 @@ Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT,
     //Mort
     defMus(47,'OST/Project_DEATH.wav','',24);
     defMus(46,'OST/Project_DEATH2.wav','',72);
+    //Crédits
+    defMus(48,'OST/Credits.wav','',180);
 
 
 end.
