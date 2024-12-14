@@ -438,6 +438,8 @@ begin
 		begin
 		affichertout;
 		UpdateDialogueBox(dialogues[2]);
+		if (LObjets[0].anim.etat<>'idle') then
+			initAnimation(LObjets[0].anim,LObjets[0].anim.objectName,'idle',12,True);
 		updateanimation(LObjets[0].anim,LObjets[0].image);
 		if (LObjets[1].anim.etat<>'apparition') and (LObjets[1].anim.etat<>'mort') then
 			updateanimation(LObjets[1].anim,LObjets[1].image);

@@ -123,6 +123,7 @@ begin
     SDL_PumpEvents;
     case indice of
     1,2:mix_volumemusic(VOLUME_MUSIQUE+VOLUME_MUSIQUE div 2);
+    33:mix_volumemusic(VOLUME_MUSIQUE-VOLUME_MUSIQUE div 4);
     else mix_volumemusic(VOLUME_MUSIQUE);
     end;
         if (Indice<>indiceMusiquePrec) then

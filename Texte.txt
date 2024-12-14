@@ -23,14 +23,14 @@
 <DESC_CAR_23>Cette carte porte le symbole du Lion. Elle appelle la puissance de son épée flamboyante.;
 <DESC_CAR_24>Cette carte porte le symbole du Serpentaire. Elle renferme une grande puissance qui ne peut pas être utilisée offensivement.;
 <DESC_CAR_25>Une carte qui représente une créature inconnue. Semblant contrôler le vent, elle envoie un tourbillon de projectiles.;
-<DESC_CAR_26>Une carte qui représente une créature inconnue. Elle contrôle la foudre et peut donc fusiller d'éclairs une cible.;
+<DESC_CAR_26>Une carte qui représente une créature inconnue. Elle contrôle la foudre et peut donc fusiller une cible d'éclairs.;
 <COMM_CAR_1>Il faut bien commencer quelque part. J'accepte l'aide que les cartes m'accorderont.;
 <COMM_CAR_2>Je manque encore d'expérience, c'est vrai, mais je ne serai pas naïve.;
-<COMM_CAR_3>;
+<COMM_CAR_3>Certes, il faut que je me batte, mais je vais faire attention à moi. Si je meurs maintenant, personne ne me pleurera.;
 <COMM_CAR_4>Je n'ai pas l'intention de commander... Je ne suis qu'une marionnette aux fils du destin. Mais il est de mon devoir d'achever cette tyrannie.;
 <COMM_CAR_5>J'ai foi en moi. Et je compte bien mettre fin à ces illusions.;
 <COMM_CAR_6>Si je persiste, c'est avant tout grâce à mon amour pour l'humanité. Je veux rétablir l'harmonie en ce monde.;
-<COMM_CAR_7>;
+<COMM_CAR_7>Il ne s'agit pas que de vaincre mes ennemis, je dois protéger ce qui compte vraiment!;
 <COMM_CAR_8>J'imagine que mon rôle dans cet endroit est de rendre justice. Dans ce cas, je l'accomplirai avec fierté.;
 <COMM_CAR_9>En me concentrant suffisamment, je peux atteindre de grandes choses!;
 <COMM_CAR_10>Il faut bien s'en remettre au destin parfois... Bien sûr, ce n'est pas la seule chose sur laquelle je peux compter.;
@@ -184,7 +184,7 @@
 <DIALOGUE_EVENT2_0>Ah, euh...bonjour. Hum...;
 <DIALOGUE_EVENT2_1>Qu'est-ce que vous voulez?;
 <DIALOGUE_EVENT2_2>Je... Cette carte que vous portez, je peux la voir?;
-<DIALOGUE_EVENT2_3>...;
+<DIALOGUE_EVENT2_3>*Vous montrez la carte du Lion*;
 <DIALOGUE_EVENT2_4>Incroyable, c'est bien celle de Leo! ...J-je vous la rends, bien sûr. Je voulais juste être sûr que j'allais pouvoir le retrouver...;
 <DIALOGUE_EVENT2_5>Bon, merci beaucoup pour l'information. Je peux vous donner ma carte aussi si ça vous intéresse.;
 <DIALOGUE_EVENT2_6>Merci.;
@@ -234,7 +234,7 @@
 <MARCHAND_DISCUSSION_2_3>Je ne pense pas. Cela date de la mise en place de la liste.;
 <MARCHAND_DISCUSSION_2_4>Donc certaines personnes paient des assassins pour que leur famille remonte dans la liste ?;
 <MARCHAND_DISCUSSION_2_5>Oui... Et c'est souvent ceux qui ont du pouvoir et de l'argent.;
-<MARCHAND_DISCUSSION_2_6>Décidément, quel monde de merde. Je regrette encore que l'on ait réussi à stopper le vieillisement;
+<MARCHAND_DISCUSSION_2_6>Décidément, quel monde mal foutu. Je regrette encore que l'on ait réussi à stopper le vieillissement.;
 
 <MARCHAND_DISCUSSION_3_1>Au fait, comment se débrouillent les autres peuples avec leur population ? Ont-ils aussi une 'liste' ?;
 <MARCHAND_DISCUSSION_3_2>Cela dépend du peuple en question. Les druides n'ont pas encore prit de mesures car ils n'ont pas de problème de population.;
@@ -322,7 +322,7 @@
 <DIALOGUE_BOSS1_3_2>Maître... aidez... moi...;
 <FIN_BOSS1_1>Désolée de devoir faire ça, mais je dois sortir de ce trou à rats.;
 <FIN_BOSS1_2>Le cyclope portait la clef de la prison. Vous l'utilisez pour sortir de là.;
-<FIN_BOSS1_3>Une fois dehors, vous cherchez à vous réfugier dans un bâtiment à l'abri des regards;
+<FIN_BOSS1_3>Une fois dehors, vous cherchez à vous réfugier dans un bâtiment à l'abri des regards.;
 <FIN_BOSS1_4>Vous marchez discrètement dans les rues jusqu'à tomber sur l'université d'alchimie et de magie de la capitale.;
 <FIN_BOSS1_5>Bon... eh bien je vais devoir retourner en cours visiblement. Comme je suis encore encore jeune, je pourrais me fondre dans la foule.;
 <FIN_BOSS1_6>Une fois entrée dans le batiment, vous entendez une sirène se déclencher et un dôme magique vient confiner tout le bâtiment.;
@@ -434,10 +434,10 @@
 <VICTOIRE_14>Ces couloirs sont vraiment infestés d'étudiants.;
 <VICTOIRE_20>Vouloir surpasser la mort, c'est s'opposer à la vie.;
 <VICTOIRE_21>Un tel centre d'expérimentations... Comment tous peuvent-ils ignorer son existence?;
-<VICTOIRE_22>;
-<VICTOIRE_23>;
-<VICTOIRE_24>;
-<VICTOIRE_30>............;
+<VICTOIRE_22>Je ne devrais pas me laisser perturber par toutes ces choses.;
+<VICTOIRE_23>...;
+<VICTOIRE_24>Ces créations sont à l'encontre de toute éthique... Cela vaut-il vraiment la puissance qu'elles peuvent apporter?;
+<VICTOIRE_30>.........................;
 <VICTOIRE_31>Je suis allée trop loin pour mourir maintenant.;
 <VICTOIRE_32>Le destin est de mon côté.;
 <VICTOIRE_33>J'approche de mon but! Surtout, ne pas baisser ma garde.;

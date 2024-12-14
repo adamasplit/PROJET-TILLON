@@ -379,12 +379,16 @@ begin
         case random(3) of
         0:begin
           end;
-        1:begin
-          creerBoule(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,trouverCentreX(ennemi),trouverCentreY(ennemi),80,80,4,x,y,'flamme',obj);
+        1:for i:=1 to 5 do begin
+          creerBoule(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,trouverCentreX(ennemi),trouverCentreY(ennemi),80,80,4,x,y-150+i*50,'flamme',obj);
           ajoutObjet(obj)
           end;
         2:begin
-          creerRayon(typeObjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,trouverCentreX(ennemi),trouverCentreY(ennemi),200,100,random(6)*100+200,y,0,30,80,'eclair',obj);
+          alea2:=random(10)*20-100;
+          if random(2)=0 then
+            creerRayon(typeObjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,x-100,y+alea2,200,100,x+200,y+alea2,0,30,80,'eclair',obj)
+          else
+            creerRayon(typeObjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,x+100,y+alea2,200,100,x-200,y+alea2,0,30,80,'eclair',obj);
           ajoutObjet(obj);
           end
         end

@@ -365,7 +365,7 @@ begin
   repeat
     mot:=mot+text[i+nextWordLength];
     nextWordLength:=nextWordLength+1;
-  until (text[i+nextWordLength]=' ') or (text[i+nextWordLength]='!') or (text[i+nextWordLength]='.') or (text[i+nextWordLength]='?');
+  until (text[i+nextWordLength]=' ') or (text[i+nextWordLength]='!') or (text[i+nextWordLength]='.') or (text[i+nextWordLength]='?') or (i+nextWordLength>length(text));
   nextWordLength:=length(mot);
 end;
 
