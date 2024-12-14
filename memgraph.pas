@@ -248,7 +248,7 @@ begin
   //if image.imgtexture<>nil then SDL_DestroyTexture(image.imgtexture);
   //if image.imgsurface<>nil then SDL_freeSurface(image.imgsurface);
   image.imgSurface := SDL_LoadBMP(image.directory);
-  //if image.imgSurface = nil then begin WriteLn('Error in Surface load : ',image.directory);Write(SDL_GetError); HALT end;
+  if image.imgSurface = nil then begin WriteLn('Error in Surface load : ',image.directory);Write(SDL_GetError); HALT end;
   // Convertion surface --> texture
   
   image.imgTexture := SDL_CreateTextureFromSurface(sdlRenderer, image.imgSurface);
@@ -358,11 +358,15 @@ StrPCopy(StringToPChar, s);
 end;
 
 function NextWordLength(text:String;i:Integer):Integer;
+var mot:String;
 begin
-  nextWordLength:=0;
+  nextWordLength:=1;
+  mot:='';
   repeat
+    mot:=mot+text[i+nextWordLength];
     nextWordLength:=nextWordLength+1;
   until (text[i+nextWordLength]=' ') or (text[i+nextWordLength]='!') or (text[i+nextWordLength]='.') or (text[i+nextWordLength]='?');
+  writeln(mot,length(mot));nextWordLength:=length(mot);
 end;
 
 function WidthBasedLineLength(Font: PTTF_Font;size:Integer; const Text: string;width:Integer): Integer;
@@ -372,7 +376,7 @@ var
 begin
   TempText := '';
   LineWidth:= 0;
-  maxLength:=(width*30) div (size*20);
+  maxLength:=(width*30) div (size*22);
   for i := 1 to Length(Text) do
   begin
     LineWidth:= Length(TempText);
@@ -539,7 +543,7 @@ begin
     else
       DisplayedText := Box.Lines[i];
 
-    if box.portrait.imgTexture<>nil then
+    if box.portrait.directory<>nil then
       RenderTextLine(DisplayedText, Box.BackgroundImage.rect.x, Box.BackgroundImage.rect.y + (i - 1) * 40,250,60,box.font)
     else
       RenderTextLine(DisplayedText, Box.BackgroundImage.rect.x, Box.BackgroundImage.rect.y + (i - 1) * 40,100,60,box.font);

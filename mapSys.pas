@@ -13,7 +13,6 @@ uses
     SDL2,
     SonoSys,
     SysUtils;
-var imgs0,imgs1,imgs2,imgs3:TButtonGroup;
 var salleChoisie:TSalle;
 var iDeck,iChoix1,iChoix2:Integer;
 var etatChoix:Boolean;
@@ -21,11 +20,11 @@ echangeFait:Boolean;
 
 CONST 
 windowHeight=720;windowWidth=1080;
-      Y1=(windowHeight div 2)+(windowHeight div 4)-64;           
-      Y2=(windowHeight div 2)-64;
-      Y3=(windowHeight div 2)-(windowHeight div 4)-64;
-      X1=(windowWidth  div 2) - (windowWidth div 2)+128;
-      X2=(windowWidth  div 2) + (windowWidth div 4);
+      X1=(windowWidth div 2)+(windowWidth div 4)-64;           
+      X2=(windowWidth div 2)-64;
+      X3=(windowWidth div 2)-(windowWidth div 4)-64;
+      Y2=(windowHeight  div 2) - (windowHeight div 2)+128;
+      Y1=(windowHeight  div 2) + (windowHeight div 4);
 
 procedure generationChoix(var salle1,salle2,salle3:TSalle);
 procedure affichageSalles(var salle1,salle2,salle3:TSalle);
@@ -122,7 +121,7 @@ begin
         3..6:choisirennemi:=random(2)+28;
         7..8:choisirennemi:=random(4)+13;
         9:choisirennemi:=random(7)+6;
-        10:if random(2)=0 then choisirennemi:=36
+        10:if random(3)=0 then choisirennemi:=36
             else choisirennemi:=35
         end;
 end;
@@ -295,14 +294,15 @@ function dropCarte(avancement:Integer;boss:Boolean):TCarte;
 var alea:Integer;
 begin
     alea:=random(100)+1;
+    //writeln(alea);
     dropCarte.numero:=0;
     if boss then
         if alea div 25<=avancement div (MAXSALLES div 4) then
             begin
-            if alea div 20<>0 then
+            if alea mod 5<>4 then
                 dropCarte:=ajouterCarteAleatoireRarete(legendaire)
             else
-                if alea div 50=0 then 
+                if alea mod 2=0 then 
                     dropCarte:=cartes[25]
                 else
                     dropCarte:=cartes[26]
@@ -547,10 +547,10 @@ ClearScreen;
 etatchoix:=False;
 iChoix1:=1;iChoix2:=2;
 SDL_RenderClear(sdlRenderer);
-InitButtonGroup(boutons[1],  415, 50, 250, 100, 'Sprites/Menu/button1.bmp','Annuler',@LancementSalleMarchand);
-InitButtonGroup(boutons[2],  100, 250, 250, 250, 'Sprites/Menu/button1.bmp','X',@confirmer);
-InitButtonGroup(boutons[3],  1080-255-500, 250, 250, 250, 'Sprites/Menu/button1.bmp','X',@confirmer);
-InitButtonGroup(boutons[4],  415, 580, 250, 100, 'Sprites/Menu/button1.bmp','Echange',btnProc);
+InitButtonGroup(boutons[1],  415, 50, 250, 100, 'Sprites/Menu/Button1.bmp','Annuler',@LancementSalleMarchand);
+InitButtonGroup(boutons[2],  100, 250, 250, 250, 'Sprites/Menu/Button1.bmp','X',@confirmer);
+InitButtonGroup(boutons[3],  1080-255-500, 250, 250, 250, 'Sprites/Menu/Button1.bmp','X',@confirmer);
+InitButtonGroup(boutons[4],  415, 580, 250, 100, 'Sprites/Menu/Button1.bmp','Echange',btnProc);
 boutons[4].parametresSpeciaux:=3;boutons[4].procEch:=@trade;
 end;
 
@@ -561,34 +561,34 @@ begin
     case statsJoueur.nbMarchand of
         1:case numDialogue of
             1,3,4,6:portrait:='Sprites/Portraits/marchand.bmp';
-            else portrait:='Sprites/Menu/combatUI_5.bmp'
+            else portrait:='Sprites/Menu/CombatUI_5.bmp'
             end;
         2:case numDialogue of
             1,3,5:portrait:='Sprites/Portraits/marchand.bmp';
-            else portrait:='Sprites/Menu/combatUI_5.bmp'
+            else portrait:='Sprites/Menu/CombatUI_5.bmp'
             end;
         3:case numDialogue of
             2,3,4,5:portrait:='Sprites/Portraits/marchand.bmp';
-            else portrait:='Sprites/Menu/combatUI_5.bmp'
+            else portrait:='Sprites/Menu/CombatUI_5.bmp'
             end;
         4:case numDialogue of
             1,4,5:portrait:='Sprites/Portraits/marchand.bmp';
-            else portrait:='Sprites/Menu/combatUI_5.bmp'
+            else portrait:='Sprites/Menu/CombatUI_5.bmp'
             end;
         5:case numDialogue of
             1,3:portrait:='Sprites/Portraits/marchand.bmp';
-            else portrait:='Sprites/Menu/combatUI_5.bmp'
+            else portrait:='Sprites/Menu/CombatUI_5.bmp'
             end;
         6:case numDialogue of
             2,4,5,6:portrait:='Sprites/Portraits/marchand.bmp';
-            else portrait:='Sprites/Menu/combatUI_5.bmp'
+            else portrait:='Sprites/Menu/CombatUI_5.bmp'
             end;
     end;
     numDialogue:=numDialogue+1;
     if (numDialogue>8) or ((numDialogue>7) and (statsJoueur.nbMarchand<>1)) then
         numDialogue:=numDialogue-1
     else
-        initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp',portrait,0,450,1080,300,extractionTexte('MARCHAND_DISCUSSION_'+intToStr(statsJoueur.nbMarchand)+'_'+intToSTR(numDialogue-1)),10);
+        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp',portrait,0,450,1080,300,extractionTexte('MARCHAND_DISCUSSION_'+intToStr(statsJoueur.nbMarchand)+'_'+intToSTR(numDialogue-1)),10);
 end;
 
 procedure LancementSalleMarchand; //###
@@ -607,10 +607,10 @@ begin
         entree:=True;
         end;
     if not echangeFait then
-    InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/button1.bmp','Marchandage',@Echange);
-    InitButtonGroup(boutons[2],  440, 200, 200, 100, 'Sprites/Menu/button1.bmp','Discussion',@rerollDialogueMarchand);
-    InitButtonGroup(boutons[3],  465, 300, 150, 100, 'Sprites/Menu/button1.bmp','Partir',@choixSalle);
-    initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Portraits/marchand.bmp',0,450,1080,300,extractionTexte('MARCHAND_ACCUEIL_'+intToStr(min(statsJoueur.nbMarchand,4))),10);
+    InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/Button1.bmp','Marchandage',@Echange);
+    InitButtonGroup(boutons[2],  440, 200, 200, 100, 'Sprites/Menu/Button1.bmp','Discussion',@rerollDialogueMarchand);
+    InitButtonGroup(boutons[3],  465, 300, 150, 100, 'Sprites/Menu/Button1.bmp','Partir',@choixSalle);
+    initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/marchand.bmp',0,450,1080,300,extractionTexte('MARCHAND_ACCUEIL_'+intToStr(min(statsJoueur.nbMarchand,4))),10);
     
     
 end;
@@ -675,9 +675,9 @@ begin
     ClearScreen;
     iChoix1:=1;
     SDL_RenderClear(sdlRenderer);
-    InitButtonGroup(boutons[1],  415, 50, 250, 100, 'Sprites/Menu/button1.bmp','Annuler',@lancementSalleCamp);
-    InitButtonGroup(boutons[2],  540-125, 250, 250, 250, 'Sprites/Menu/button1.bmp','X',btnProc);
-    InitButtonGroup(boutons[3],  415, 580, 250, 100, 'Sprites/Menu/button1.bmp','Bruler',btnProc);
+    InitButtonGroup(boutons[1],  415, 50, 250, 100, 'Sprites/Menu/Button1.bmp','Annuler',@lancementSalleCamp);
+    InitButtonGroup(boutons[2],  540-125, 250, 250, 250, 'Sprites/Menu/Button1.bmp','X',btnProc);
+    InitButtonGroup(boutons[3],  415, 580, 250, 100, 'Sprites/Menu/Button1.bmp','Bruler',btnProc);
     boutons[3].parametresSpeciaux:=1;boutons[3].procCarte:=@brulerCarte;
 end;
 
@@ -691,10 +691,10 @@ begin
         statsJoueur.avancement:=statsJoueur.avancement+1;
         entree:=true;
         end;
-    InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/button1.bmp','Bruler carte',@defaussecarte);
-    InitButtonGroup(boutons[2],  440, 200, 200, 100, 'Sprites/Menu/button1.bmp','Repos',@soinFeuCamp);
-    InitButtonGroup(boutons[3],  465, 300, 150, 100, 'Sprites/Menu/button1.bmp','Partir',@choixSalle);
-    initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,1800,300,extractionTexte('FEU_DE_CAMP_'+intToSTR(random(3)+1)),10);
+    InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/Button1.bmp','Bruler carte',@defaussecarte);
+    InitButtonGroup(boutons[2],  440, 200, 200, 100, 'Sprites/Menu/Button1.bmp','Repos',@soinFeuCamp);
+    InitButtonGroup(boutons[3],  465, 300, 150, 100, 'Sprites/Menu/Button1.bmp','Partir',@choixSalle);
+    initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,1800,300,extractionTexte('FEU_DE_CAMP_'+intToSTR(random(3)+1)),10);
 end;
 
 procedure brulerCarte(carte:TCarte ; var stats : Tstats);
@@ -712,9 +712,9 @@ begin
         numDialogue:=numDialogue+1;
     case numDialogue of
     0,2,4,5:
-        initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Portraits/portrait_Leo1.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT_'+intToStr(numDialogue)),10)
+        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portrait_Leo1.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT_'+intToStr(numDialogue)),10)
     else
-        initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT_'+intToStr(numDialogue)),10);
+        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT_'+intToStr(numDialogue)),10);
     end;
 end;
 
@@ -735,11 +735,11 @@ begin
         numDialogue:=numDialogue+1;
     case numDialogue of
     0,2,4,5,13,15:
-        initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Portraits/portrait_Ophiucus1.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT2_'+intToStr(numDialogue)),10);
+        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portrait_Ophiucus1.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT2_'+intToStr(numDialogue)),10);
     7..11:
-        initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Portraits/portrait_Ophiucus2.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT2_'+intToStr(numDialogue)),10);
+        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portrait_Ophiucus2.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT2_'+intToStr(numDialogue)),10);
     else
-        initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT2_'+intToStr(numDialogue)),10);
+        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT2_'+intToStr(numDialogue)),10);
     end;
 end;
 
@@ -750,10 +750,10 @@ begin
     sdl_freeSurface(fond.imgsurface);
     createRawImage(fond, 0,0, WINDOWWIDTH, windowHeight,'Sprites/Menu/fondMarchand.bmp');
     numDialogue:=0;
-    InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/button1.bmp','Affronter',@LancementVSLeo);
-    InitButtonGroup(boutons[2],  440, 200, 200, 100, 'Sprites/Menu/button1.bmp','Discussion',@rerollDialogueLeo);
-    InitButtonGroup(boutons[3],  465, 300, 150, 100, 'Sprites/Menu/button1.bmp','Partir',@choixSalle);
-    initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Portraits/portrait_Leo3.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT_0'),10);
+    InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/Button1.bmp','Affronter',@LancementVSLeo);
+    InitButtonGroup(boutons[2],  440, 200, 200, 100, 'Sprites/Menu/Button1.bmp','Discussion',@rerollDialogueLeo);
+    InitButtonGroup(boutons[3],  465, 300, 150, 100, 'Sprites/Menu/Button1.bmp','Partir',@choixSalle);
+    initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portrait_Leo3.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT_0'),10);
 end;
 
 procedure LancementSalleHasardOph;
@@ -763,10 +763,10 @@ begin
     sdl_freeSurface(fond.imgsurface);
     createRawImage(fond, 0,0, WINDOWWIDTH, windowHeight,'Sprites/Menu/fondMarchand.bmp');
     numDialogue:=0;
-    //InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/button1.bmp','Affronter',@LancementVSLeo);
-    InitButtonGroup(boutons[2],  440, 200, 200, 100, 'Sprites/Menu/button1.bmp','Discussion',@rerollDialogueOph);
-    InitButtonGroup(boutons[3],  465, 300, 150, 100, 'Sprites/Menu/button1.bmp','Partir',@choixSalle);
-    initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Portraits/portrait_Ophiucus4.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT2_0'),10);
+    //InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/Button1.bmp','Affronter',@LancementVSLeo);
+    InitButtonGroup(boutons[2],  440, 200, 200, 100, 'Sprites/Menu/Button1.bmp','Discussion',@rerollDialogueOph);
+    InitButtonGroup(boutons[3],  465, 300, 150, 100, 'Sprites/Menu/Button1.bmp','Partir',@choixSalle);
+    initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portrait_Ophiucus4.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT2_0'),10);
 end;
 
 procedure LancementSalleHasardReposRisque;
@@ -776,9 +776,9 @@ begin
     sdl_freeSurface(fond.imgsurface);
     createRawImage(fond, 0,0, WINDOWWIDTH, windowHeight,'Sprites/Menu/fondMarchand.bmp');
     numDialogue:=0;
-    InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/button1.bmp','Se reposer',@ReposRisque);
-    InitButtonGroup(boutons[2],  465, 300, 150, 100, 'Sprites/Menu/button1.bmp','Partir',@choixSalle);
-    initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp',nil,0,450,1080,300,extractionTexte('DIALOGUE_EVENT_0'),10);
+    InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/Button1.bmp','Se reposer',@ReposRisque);
+    InitButtonGroup(boutons[2],  465, 300, 150, 100, 'Sprites/Menu/Button1.bmp','Partir',@choixSalle);
+    initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp',nil,0,450,1080,300,extractionTexte('DIALOGUE_EVENT_0'),10);
 end;
 
 
@@ -887,7 +887,7 @@ begin
             proc:= @LancementSalleBoss;
             end;
         marchand:begin
-            dir:='Sprites/Menu/salle_Marchand.bmp';
+            dir:='Sprites/Menu/salle_marchand.bmp';
             proc:= @LancementSalleMarchand;
             end;
         camp:begin 
@@ -908,10 +908,10 @@ procedure affichageSalles(var salle1,salle2,salle3:TSalle);
 var depart:TSalle;
 begin
     depart.evenement:=rien;
-    affichageSalle(depart,X1,Y2);
-    affichageSalle(salle1,X2,Y1);
+    affichageSalle(depart,X2,Y1);
+    affichageSalle(salle1,X1,Y2);
     affichageSalle(salle2,X2,Y2);
-    affichageSalle(salle3,X2,Y3);
+    affichageSalle(salle3,X3,Y2);
 end;
 
 procedure InitDecorMap;
@@ -962,6 +962,9 @@ end;
 
 procedure activationEvent(scene:String);
 begin
+    black_color.r := 0; 
+    black_color.g := 0; 
+    black_color.b := 0;
     while high(queueDialogues)>-1 do
 		supprimeDialogue(1);
     case scene of
@@ -970,9 +973,6 @@ begin
         'HReposRisque':lancementSalleHasardReposRisque;
         'Intro':
             begin 
-            black_color.r := 0; 
-            black_color.g := 0; 
-            black_color.b := 0;
             ChoixSalle;
             end;
         'Map':begin

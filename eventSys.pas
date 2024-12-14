@@ -128,7 +128,7 @@ begin
     //Mana
     DrawRect(black_color,255,95, 550-20*stats.manaMax, 30, 20*stats.manaMax);
     if stats.manaMax<10 then
-      //writeln('Attention, le mana max est à ',stats.manaMax);
+      writeln('Attention, le mana max est à ',stats.manaMax);
     if stats.manaMax>0 then
       DrawRect(b_color,255, 100, 355+190-Round(19* (stats.mana)), 20, Round(19* (stats.mana)) );
     //Portrait

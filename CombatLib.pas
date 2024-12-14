@@ -24,7 +24,8 @@ procedure circoncision  (var deck : Tdeck);
 procedure initStatsCombat(statsPerm:TStats;var statsTemp:TStats);
 procedure CreerBoule(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,w,h,vitesse,xdest,ydest:Integer;nom:PChar;var proj:TObjet);
 procedure updateBoule(var proj:TObjet);
-procedure multiProjs(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,w,h,vitesse,nb,range,angleDepart:Integer;nom:PChar);
+procedure multiProjs(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,w,h,vitesse,nb,range,angleDepart:Integer;nom:PChar);overload;
+procedure multiProjs(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,w,h,vitesse,nb,range:Integer;angleDepart:Real;nom:PChar);overload;
 procedure multiLasers(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,l,w,vitesse,nb,range,angleDepart,duree,delai:Integer;nom:PChar);
 procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;volVie:Boolean;x,y,l,w,xdest,ydest:Integer;vitRotation:Real;dureeVie,delai:Integer;nom:PChar;var rayon:TObjet);
 procedure updateRayon(var rayon:TObjet);
@@ -206,7 +207,8 @@ begin
     //Initialisation du deck pointé
     statsTemp.deck:=@pDeck;
     statsTemp.compteurLeMonde:=0;
-    
+    LObjets[0].image.rect.x:=WINDOWWIDTH div 2 - 50;
+    LObjets[0].image.rect.y:=WINDOWHEIGHT div 2 + 50;
     if statsTemp.deck=NIL then //writeln('AVERTISSEMENT: DECK NON DEFINI');
     combatFini:=False;
     vagueFinie:=True;
@@ -453,7 +455,19 @@ begin
     //crée un nombre nb de projectiles envoyés en cercle ou arc de cercle
     for i:=0 to nb-1 do
         begin
-        creerBoule(origine,degats,force,mult,x,y,w,h,vitesse,x+round(100*cos((i*2*pi+(angleDepart*pi/180))/(nb*360/range))),y+round(100*sin((i*2*pi+(angleDepart*pi/180))/(nb*360/range))),nom,proj);
+        creerBoule(origine,degats,force,mult,x,y,w,h,vitesse,x+round(100*cos((i*2*pi)/(nb*360/range)+(angleDepart*pi/180))),y+round(100*sin((i*2*pi)/(nb*360/range)+(angleDepart*pi/180))),nom,proj);
+        ajoutObjet(proj);
+        end;
+end;
+
+//même chose avec un angle de départ en radians
+procedure multiProjs(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,w,h,vitesse,nb,range:Integer;angleDepart:Real;nom:PChar);
+var proj:TObjet;i:Integer;
+begin
+    //crée un nombre nb de projectiles envoyés en cercle ou arc de cercle
+    for i:=0 to nb-1 do
+        begin
+        creerBoule(origine,degats,force,mult,x,y,w,h,vitesse,x+round(100*cos((i*2*pi)/(nb*360/range)+angleDepart)),y+round(100*sin((i*2*pi)/(nb*360/range)+angleDepart)),nom,proj);
         ajoutObjet(proj);
         end;
 end;
@@ -919,6 +933,7 @@ end;
     procedure XXIV(s:TStats;x,y:Integer);
     var angle:Real;
     begin
+        //crée une barrière qui bloque les attaques
         jouerSonEff('XXIV');
         initAngle(getmouseX-x,getMouseY-y,angle);
         multiprojs(joueur, 10 ,s.force , s.multiplicateurDegat , x,y ,100,100, 0,2 ,360 ,round(angle*360),'Roue');
@@ -927,9 +942,10 @@ end;
     procedure XXV(s:TStats;x,y:Integer);
     var angle:Real;i:Integer;
     begin
+    //lance des ondes
         initAngle(getmouseX-x,getMouseY-y,angle);
-        for i:=1 to 5 do
-            multiprojs(joueur, 1 ,s.force , s.multiplicateurDegat , x,y ,100,100, i+4,8 ,360 ,round(angle*180/pi),'onde');
+        for i:=0 to 4 do
+            multiprojs(joueur, 1 ,s.force , s.multiplicateurDegat , x,y ,100,100, 8-i,6 ,360 ,angle+(i/pi*8),'onde');
     end;
 
     procedure XXVI(s:TStats;x,y:Integer);
@@ -964,7 +980,7 @@ begin
                 end;
             stats.deck^[i].charges:=stats.deck^[i].chargesMax;
             end;
-            if (stats.relique<>9) or (random(5)=0) then //la relique n°9 permet de lancer 2 fois les sorts parfois
+            if (stats.relique<>9) or (random(5)<>0) then //la relique n°9 permet de lancer 2 fois les sorts parfois
                 stats.deck^[i].charges:=stats.deck^[i].charges-1;
         if stats.deck^[i].charges<=0 then //si la carte est consommée, elle est renvoyée à la fin du paquet (ou non)
             cycle(stats.deck^,i);
@@ -997,7 +1013,6 @@ begin
             24: XXIV(stats,getmouseX,getmouseY);
             25: XXV(stats,x,y);
             26: XXVI(stats,getmousex,getmousey);
-            else 
             //writeln('???')
             end;
         end;

@@ -19,9 +19,11 @@
 <DESC_CAR_19>Le soleil darde le mal de ses rayons et protège ceux qui marchent dans sa lumière.;
 <DESC_CAR_20>L'ange passe son jugement et donne son aide à ceux qu'il en juge dignes.;
 <DESC_CAR_21>La carte du Monde donne à l'utilisateur l'autorité sur le temps. Sa puissance doit être exercée pour être canalisée ;
-<DESC_CAR_22>Lefou arrive toujours à s'en sortir, mais on ne sait jamais trop comment. ;
+<DESC_CAR_22>Le fou arrive toujours à s'en sortir, mais on ne sait jamais trop comment. ;
 <DESC_CAR_23>Cette carte porte le symbole du Lion. Elle appelle la puissance de son épée flamboyante.;
 <DESC_CAR_24>Cette carte porte le symbole du Serpentaire. Elle renferme une grande puissance qui ne peut pas être utilisée offensivement.;
+<DESC_CAR_25>Une carte qui représente une créature inconnue. Semblant contrôler le vent, elle envoie un tourbillon de projectiles.;
+<DESC_CAR_26>Une carte qui représente une créature inconnue. Elle contrôle la foudre et peut donc fusiller d'éclairs une cible.;
 <COMM_CAR_1>Il faut bien commencer quelque part. J'accepte l'aide que les cartes m'accorderont.;
 <COMM_CAR_2>Je manque encore d'expérience, c'est vrai, mais je ne serai pas naïve.;
 <COMM_CAR_3>;
@@ -46,6 +48,8 @@
 <COMM_CAR_22>Au fond, je suis libre de mes actions. Mais cela n'implique pas d'être imprudente.;
 <COMM_CAR_23>Quelle étrange carte... Mais après tout, lire l'avenir dans les étoiles ou dans les cartes, cela revient au même.;
 <COMM_CAR_24>Hmm, cette carte semble contenir une forte volonté de protéger, un désir de se sacrifier pour les autres... et, accessoirement, un sort qui scelle la magie.;
+<COMM_CAR_25>Le "général céleste"? De quoi peut-il donc s'agir? Une sorte de divinité, peut-être? Tout cela est bien étrange... Mais quelle puissance!;
+<COMM_CAR_26>L'être qui est représenté ici... Existe-t-il vraiment? Sinon, quel genre d'artiste fou a pu créer de pareilles cartes?;
 <DESC_ENN_1>Cette gelée s'est formée de souillure et de magie.;
 <DESC_ENN_2>Un grimoire à qui la puissante magie qu'il contient a conféré une sorte de conscience.;
 <DESC_ENN_3>L'esprit d'un innocent tué par la guerre. Sa tristesse a fini par devenir de la haine.;
@@ -146,14 +150,17 @@
 <DESC_REL_7>Une cape tissée d'un matériau inconnu, qui protège son porteur grâce aux runes qui y sont brodées.;
 <DESC_REL_8>Un sacrifice offert au Diable laisse une marque permanente sur celui qui le fait: une profonde soif de puissance.;
 <DESC_REL_9>Symboles de la dualité, les lames jumelles de l'Eclipse permettent parfois de lancer deux sorts.;
-<DESC_REL_10>La légendaire lame incandescente, Lionheart. Nul ne peut la manier sauf celui qui l'a extraite de son propre coeur : Leo.;
-<COMM_REL_1>;
+<DESC_REL_10>La légendaire lame incandescente, Lionheart. En théorie, nul ne peut la manier sauf celui qui l'a extraite de son propre coeur.;
+<COMM_REL_1>Eh bien, c'est un effet simple mais toujours utile. Je ne les utiliserai pas pour fuir.;
 <COMM_REL_2>J'espère bien que si j'ai été jugée méritante, ce n'est pas uniquement parce que j'ai affronté les serviteurs des dieux.;
 <COMM_REL_3>Je ne reconnais pas cette matière. Et... est-ce mon propre sang?;
 <COMM_REL_4>La magie blanche est une discipline très difficile qui recquiert du dévouement. Voilà pourquoi malgré la simplicité de cet ouvrage, bien rares sont ceux capables de l'utiliser.;
 <COMM_REL_5>On raconte qu'il y a bien longtemps...le sang d'un dieu aurait coulé sur une griffe de dragon, unissant leurs pouvoirs en quelque chose de bien plus grand. Mais comment ont-ils mis la main sur une chose pareille?;
-<COMM_REL_6>Ce sceptre n'a pas dû réellement servir, les dieux n'ayant pas été battus à proprement parler. ;
-<COMM_REL_7>;
+<COMM_REL_6>Ce sceptre n'a pas dû réellement servir, les dieux n'ayant pas été battus à proprement parler.;
+<COMM_REL_7>Je n'ai pas appris à lire ces glyphes, mais j'imagine qu'il doit s'agir d'un adage de bon augure.;
+<COMM_REL_8>Je ne me considère pas comme prête à tout pour accomplir mes objectifs.;
+<COMM_REL_9>La dualité est la base d'un certain nombre de chose. L'histoire de notre monde, les domaines de la magie... les guerres...;
+<COMM_REL_10>Quelle volonté m'a poussé à lui prendre sa propre arme? C'est étrange... Et je la sens brûler ardemment même entre mes mains.;
 
 <GAMEOVER_1>Quelle terrible prémonition! Il ne tient qu'à moi de faire en sorte qu'elle ne se réalise pas.;
 <GAMEOVER_2>Non... Est-ce vraiment ce à quoi je me destine?;

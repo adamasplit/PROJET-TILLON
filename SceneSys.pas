@@ -147,7 +147,7 @@ procedure ActualiserMenuEnJeu;
 
 procedure InitGameOver();
 begin
-	initButtonGroup(boutons[1],1080-540-270,200,540,180,'Sprites/Menu/button1.bmp','Menu principal',@retourmenu);
+	initButtonGroup(boutons[1],1080-540-270,200,540,180,'Sprites/Menu/Button1.bmp','Menu principal',@retourmenu);
 end;
 
 procedure OnPlayerDeath(var son:Boolean);
@@ -208,7 +208,7 @@ afficherTout;
 					sauvegarder(statsJoueur);
 					supprimeObjet(Lobjets[High(LObjets)]);
 					sceneActive := 'GameOver';
-					initDialogueBox(dialogues[2],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,1080,350,extractionTexte('GAMEOVER_'+intToSTr(random(5)+1)),40);
+					initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,1080,350,extractionTexte('GAMEOVER_'+intToSTr(random(5)+1)),40);
 					InitGameOver();
 				end;
 			end;
@@ -425,6 +425,13 @@ begin
 		'GameOver': GameOver;
 		'Event':
 		begin
+		if dialogues[1].BackgroundImage.directory=nil then 
+			begin
+			black_color.r := 255; 
+    		black_color.g := 255; 
+    		black_color.b := 255;
+			end;
+		drawrect(bk_col,255,0,0,windowWidth,windowHeight);
 		UpdateDialogueBox(dialogues[1]);
 		end;
   		'Cutscene':
@@ -475,9 +482,15 @@ begin
 						if sceneActive='Event' then activationEvent(sceneSuiv)
 						else if sceneActive='Cutscene' then 
 							begin
-							sceneActive:='Jeu';
+							if (LObjets[1].anim.objectName='Leo_Transe') and (LObjets[1].anim.etat='mort') then victoire(statsJoueur,23)
+							else
+								sceneActive:='Jeu';
 							while high(queueDialogues)>-1 do
 								supprimeDialogue(1);
+							if LObjets[1].anim.objectName='Béhémoth' then begin
+							indiceMusiqueJouee:=13;
+							mix_resumeMusic;
+							end
 							end
 						else if sceneActive<>'Menu' then menuEnJeu;
 						end;
@@ -486,15 +499,15 @@ begin
 						//LObjets[0].stats.compteurLeMonde:=100;
 						//updateTimeMonde:=sdl_getTicks;
 						end;
-					//SDLK_O:LOBjets[0].stats.multiplicateurMana:=LOBjets[0].stats.multiplicateurMana+100;
-					//SDLK_H : choixSalle();
-					//SDLK_F2:begin
-						//LObjets[0].stats.force:=LObjets[0].stats.force+1;
-						//LObjets[0].stats.multiplicateurDegat:=LObjets[0].stats.multiplicateurDegat+10;
-					//	end;
+					SDLK_O:LOBjets[0].stats.multiplicateurMana:=LOBjets[0].stats.multiplicateurMana+100;
+					SDLK_H : choixSalle();
+					SDLK_F2:begin
+						LObjets[0].stats.force:=LObjets[0].stats.force+1;
+						LObjets[0].stats.multiplicateurDegat:=LObjets[0].stats.multiplicateurDegat+10;
+						end;
 					//SDLK_F3:modeDebug:=not(modeDebug);
-					//SDLK_F4:for i:=1 to MAXENNEMIS do
-					//	statsJoueur.bestiaire[i]:=True;
+					//SDLK_F4:for i:=1 to MAXENNEMIS do	statsJoueur.bestiaire[i]:=True;
+					//SDLK_F5:begin statsJoueur.tailleCollection:=26; for i:=1 to 26 do statsJoueur.collection[i]:=Cartes[i]; end;
         		end;
       		end;
 			
@@ -669,7 +682,7 @@ begin
     InitMenuEnJeu;
     InitCredits;
 	initUICombat;
-	initDecor;
+	//initDecor;
 	InitDialogues;
 	InitTutorial;
 	indiceTuto:=1;

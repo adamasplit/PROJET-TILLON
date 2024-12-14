@@ -192,7 +192,7 @@ begin
     else
       alpha := Round(255 * (cos(progression * PI) * 0.5 + 0.5));       // Interpolation pour le fondu sortant
     SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, alpha);
-    if fonduEntrant then SDL_RenderFillRect(sdlRenderer, nil);
+    SDL_RenderFillRect(sdlRenderer, nil);
   end;
 end;
 

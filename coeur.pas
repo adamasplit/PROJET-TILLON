@@ -13,7 +13,7 @@ const MAXSALLES=40; //nombre de salles total pour finir le jeu
   MAXENNEMIS=38; //nombre d'ennemis ayant une entrée dans le bestiaire
   MAXCARTES=60; //taille max du deck
 
-var whiteCol,b_color,bf_color,f_color,navy_color,red_color,black_col,yellowCol: TSDL_Color;
+var whiteCol,b_color,bf_color,f_color,navy_color,red_color,black_col,yellowCol,bk_col: TSDL_Color;
 
 type TRarete=(commune,rare,epique,legendaire);
 type evenements=(combat,marchand,hasard,camp,rien,boss);
@@ -306,6 +306,7 @@ begin
   navy_color.r :=53; navy_color.g :=114; navy_color.b :=239;
   red_color.r := 255; red_color.g := 0; red_color.b := 50;
   black_col.r:=0;black_col.g:=0;black_col.b:=0;
+  bk_col.r:=0;bk_col.g:=0;bk_col.b:=0;
 
 
   //initialisation des murs

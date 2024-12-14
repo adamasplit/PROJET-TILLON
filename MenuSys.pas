@@ -307,12 +307,12 @@ begin
 	SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
 	//black_color.r := 255; black_color.g := 255; black_color.b := 255;
 	
-	InitDialogueBox(dialogues[1],'Sprites/Menu/button1.bmp',nil,0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('PRISON_CELLULE_0'),10);
+	InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp',nil,0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('PRISON_CELLULE_0'),10);
 	sceneActive:='Event';
 	for i:=1 to 19 do
 		case i of
 		5,7,9,11,14:ajoutDialogue('Sprites/Portraits/portraitGarde1.bmp',extractionTexte('PRISON_CELLULE_'+intToStr(i)))
-		else ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('PRISON_CELLULE_'+intToStr(i)));
+		else ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('PRISON_CELLULE_'+intToStr(i)));
 		end;
 	sceneSuiv:='Intro';
 	initjoueur(false);
@@ -436,13 +436,13 @@ begin
 		begin
 		createRawImage(carteDeck,200,200,300,300,StringToPChar('Sprites/Reliques/reliques'+intToStr(statsJoueur.relique)+'.bmp'));
 		initDialogueBox(dialogues[4],nil,nil,460,120,500,600,extractionTexte('DESC_REL_'+intToStr(statsJoueur.relique)),10,Fantasy20,25);
-		initDialogueBox(dialogues[3],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_REL_'+intToStr(statsJoueur.relique)),10);
+		initDialogueBox(dialogues[3],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_REL_'+intToStr(statsJoueur.relique)),10);
 		end
 	else
 		begin
 		createRawImage(carteDeck,200,200,300,300,statsJoueur.collection[iDeck].dir);
 		initDialogueBox(dialogues[4],nil,nil,460,120,500,600,extractionTexte('DESC_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),10,Fantasy20,25);
-		initDialogueBox(dialogues[3],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),10);
+		initDialogueBox(dialogues[3],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),10);
 		end;
 end;
 
@@ -478,7 +478,7 @@ procedure reactualiserBestiaire();
 begin
 	createRawImage(ennAff,200,200,300,300,StringToPChar('Sprites/Bestiaire/illustrations_bestiaire_'+intToStr(ienn)+'.bmp'));
 	initDialogueBox(dialogues[4],nil,nil,460,120,500,600,extractionTexte('DESC_ENN_'+intToStr(ienn)),10,Fantasy20,25);
-	initDialogueBox(dialogues[3],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_ENN_'+intToStr(ienn)),10);
+	initDialogueBox(dialogues[3],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_ENN_'+intToStr(ienn)),10);
 end;
 procedure trouverBestiaire(var i:Integer;avance:Boolean);
 var compte:Integer;
@@ -625,32 +625,32 @@ begin
 		case (stats.avancement div (MAXSALLES div 4)) of
 		1:	begin
 			sceneActive:='Event';
-			InitDialogueBox(dialogues[1],'Sprites/Menu/button1.bmp','Sprites/Menu/combatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('FIN_BOSS1_1'),10);
+			InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('FIN_BOSS1_1'),10);
 			sceneSuiv:='Map';
 			for i:=2 to 8 do
 			case i of
 				2,3,4,6:ajoutDialogue(nil,extractionTexte('FIN_BOSS1_'+intToStr(i)))
-				else ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('FIN_BOSS1_'+intToStr(i)));
+				else ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('FIN_BOSS1_'+intToStr(i)));
 			end;
 			end;
 		2:	begin
 			sceneActive:='Event';
-			InitDialogueBox(dialogues[1],'Sprites/Menu/button1.bmp',nil,0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('FIN_BOSS2_1'),10);
+			InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp',nil,0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('FIN_BOSS2_1'),10);
 			sceneSuiv:='Map';
 			for i:=2 to 10 do
 			case i of
 				3,5,6,7,8,9:ajoutDialogue(nil,extractionTexte('FIN_BOSS2_'+intToStr(i)))
-				else ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('FIN_BOSS2_'+intToStr(i)));
+				else ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('FIN_BOSS2_'+intToStr(i)));
 			end;
 			end;
 		3:	begin
 			sceneActive:='Event';
-			InitDialogueBox(dialogues[1],'Sprites/Menu/button1.bmp',nil,0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('FIN_BOSS3_1'),10);
+			InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp',nil,0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('FIN_BOSS3_1'),10);
 			sceneSuiv:='Map';
 			for i:=2 to 5 do
 			case i of
 				2,3,4:ajoutDialogue(nil,extractionTexte('FIN_BOSS3_'+intToStr(i)))
-				else ajoutDialogue('Sprites/Menu/combatUI_5.bmp',extractionTexte('FIN_BOSS3_'+intToStr(i)));
+				else ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('FIN_BOSS3_'+intToStr(i)));
 			end;
 			end;
 		4:Credits;
@@ -720,7 +720,7 @@ begin
 		stats.multiplicateurDegat:=stats.multiplicateurDegat-0.5;
 		stats.vieMax:=stats.vieMax-20;
 		end;
-	10:InitDialogueBox(dialogues[1],'Sprites/Menu/button1.bmp','Sprites/Portraits/portrait_Leo6.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('VICTOIRE_-1'),10);
+	10:InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portrait_Leo6.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('VICTOIRE_-1'),10);
 	end;
 	
 
@@ -734,9 +734,9 @@ begin
 	if indiceMusiqueJouee<14 then indiceMusiqueJouee:=indiceMusiqueJouee+18; //donne une fanfare de victoire adaptée
 	StatsJ.vie:=LObjets[0].stats.vie;//synchronise la vie
 	if (statsJ.avancement-1) mod 10 = 0 then
-		InitDialogueBox(dialogues[1],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('VICTOIRE_'+intToSTR(10*(statsJ.avancement div 10))),10)
+		InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('VICTOIRE_'+intToSTR(10*(statsJ.avancement div 10))),10)
 	else
-		InitDialogueBox(dialogues[1],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('VICTOIRE_'+intToSTR(random(4)+1+10*((statsJ.avancement-1) div 10))),10);
+		InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('VICTOIRE_'+intToSTR(random(4)+1+10*((statsJ.avancement-1) div 10))),10);
 	InitDecorCartes;
 	randomize;
     sceneActive:='victoire';
@@ -762,7 +762,7 @@ var i:Integer;
 begin
 	if indiceMusiqueJouee<14 then indiceMusiqueJouee:=indiceMusiqueJouee+18;
 	StatsJoueur.vie:=LObjets[0].stats.vie;
-	InitDialogueBox(dialogues[1],'Sprites/Menu/button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('VICTOIRE_0'),10);
+	InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('VICTOIRE_0'),10);
 	InitDecorCartes;
     sceneActive:='victoire';
     for i:=1 to 3 do
