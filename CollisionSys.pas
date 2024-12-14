@@ -312,7 +312,7 @@ begin
       //Permet à certains ennemis d'effectuer des dégâts au contact avec le joueur
       if (obj2.stats.genre=typeobjet(1)) and (obj1.stats.genre=typeobjet(0)) and (obj2.stats.degatsContact>0) and (obj2.stats.cooldown=0) then
         begin
-        subirDegats(obj1,obj2.stats.degatsContact,0,0);
+        subirDegats(obj1,max(obj2.stats.degatsContact-(obj1.stats.defense div 3),1),0,0);
         obj2.stats.cooldown:=150
         end;
     end;
@@ -390,11 +390,16 @@ begin
         if (LObjets[i].anim.objectName='Roue') then 
           begin 
           if isAttack(LObjets[j]) and (LObjets[j].stats.origine<>LObjets[i].stats.origine) and collisionAngle(LObjets[i],LObjets[j]) then
-          begin
-          supprimeObjet(LObjets[i]);
-          creerEffet(LObjets[j-1].image.rect.x,LObjets[j-1].image.rect.y,100,100,5,'roue_impact',False,LObjets[j-1]);
-          destructionI:=True;
-          end
+            begin
+            supprimeObjet(LObjets[i]);
+            creerEffet(LObjets[j-1].image.rect.x,LObjets[j-1].image.rect.y,100,100,5,'roue_impact',False,LObjets[j-1]);
+            destructionI:=True;
+            end
+          else if (LObjets[j].stats.genre=ennemi) and (LObjets[j].stats.degatsContact>0) and (LObjets[j].stats.cooldown<150) and collisionAngle(LObjets[i],LObjets[j]) then
+            begin
+            creerEffet(LObjets[i].image.rect.x,LObjets[i].image.rect.y,100,100,5,'roue_impact',False,LObjets[i]);
+            LObjets[j].stats.cooldown:=LObjets[j].stats.cooldown+10;
+            end;
           end
         else
         if (LObjets[j].anim.objectName='Roue') then 
@@ -405,6 +410,11 @@ begin
             creerEffet(LObjets[j-1].image.rect.x,LObjets[j-1].image.rect.y,100,100,5,'roue_impact',False,LObjets[j-1]);
             destructionI:=True;
             end
+          else if (LObjets[i].stats.genre=ennemi) and (LObjets[i].stats.degatsContact>0) and (LObjets[i].stats.cooldown<150) and collisionAngle(LObjets[i],LObjets[j]) then
+            begin
+            creerEffet(LObjets[j].image.rect.x,LObjets[j].image.rect.y,100,100,5,'roue_impact',False,LObjets[j]);
+            LObjets[i].stats.cooldown:=LObjets[i].stats.cooldown+10;
+            end;
           end
         else
           // Si l'autre objet est aussi actif pour les collisions

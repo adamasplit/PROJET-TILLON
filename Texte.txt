@@ -159,7 +159,7 @@
 <COMM_REL_6>Ce sceptre n'a pas dû réellement servir, les dieux n'ayant pas été battus à proprement parler.;
 <COMM_REL_7>Je n'ai pas appris à lire ces glyphes, mais j'imagine qu'il doit s'agir d'un adage de bon augure.;
 <COMM_REL_8>Je ne me considère pas comme prête à tout pour accomplir mes objectifs.;
-<COMM_REL_9>La dualité est la base d'un certain nombre de chose. L'histoire de notre monde, les domaines de la magie... les guerres...;
+<COMM_REL_9>La dualité est la base d'un certain nombre de choses. L'histoire de notre monde, les domaines de la magie... les guerres...;
 <COMM_REL_10>Quelle volonté m'a poussé à lui prendre sa propre arme? C'est étrange... Et je la sens brûler ardemment même entre mes mains.;
 
 <GAMEOVER_1>Quelle terrible prémonition! Il ne tient qu'à moi de faire en sorte qu'elle ne se réalise pas.;
@@ -349,17 +349,17 @@
 <DIALOGUE_BOSS2_2_6>Oh, je ne crois pas que tu puisses connaître tous mes secrets à ton jeune âge!;
 <DIALOGUE_BOSS2_2_7>Mais la fortune sourit aux audacieux: tu auras l'immense honneur de voir la puissance des dieux!;
 <DIALOGUE_BOSS2_2_8>Les dieux? Vous ne valez pas mieux que les druides, si vous cherchez à les ressusciter...;
-<DIALOGUE_BOSS2_2_9>Qui parle de les ressusciter? Je prendrai tout leur pouvoir!;
+<DIALOGUE_BOSS2_2_9>Qui parle de les ressusciter? Je vais prendre tout leur pouvoir!;
 <DIALOGUE_BOSS2_2_10>Assez parlé! Observe... et tu comprendras tout dans ta prochaine vie.;
 <DIALOGUE_BOSS2_3_1>;
 <DIALOGUE_BOSS2_3_2>;
 <DIALOGUE_BOSS2_4_1>Haeurk!... Comment est-ce possible ?;
-<DIALOGUE_BOSS2_4_2>Tu ne l'avais pas vu venir celle-là ?;
-<DIALOGUE_BOSS2_4_3>Ma... Ma magie... Elle s'efface... Comment osez-vous tuer un ancien ?;
+<DIALOGUE_BOSS2_4_2>Vous ne l'aviez pas vue venir celle-là ?;
+<DIALOGUE_BOSS2_4_3>Ma... Ma magie... Elle s'efface... Comment oses-tu tuer un ancien ?;
 <DIALOGUE_BOSS2_4_4>La vie doit être cédée à quelqu'un d'autre ! Vous en avez assez profité.;
-<DIALOGUE_BOSS2_4_5>Vous ne comprenez donc pas ! Toute cette connaissance, perdue, à jamais.;
+<DIALOGUE_BOSS2_4_5>Tu ne comprends donc pas ! Toute cette connaissance, perdue à jamais.;
 <DIALOGUE_BOSS2_4_6>Si cela permet d'arrêter les desseins du président alors c'est un sacrifice que je suis prête à faire.;
-<DIALOGUE_BOSS2_4_7>Vous ne comprenez... pas... l'erreur que vous... fa...;
+<DIALOGUE_BOSS2_4_7>Tu ne comprends... pas... l'erreur que tu... fa...;
 <DIALOGUE_BOSS2_4_8>Le voilà parti.;
 
 <FIN_BOSS2_1>Vous trouvez dans la salle du vieux mage un gros cristal d'énergie. Il a l'air d'alimenter en énergie tout le batiment.;

@@ -199,7 +199,7 @@ end;
 
 procedure InitCreditsText;
 begin
-  CreateRawImage(creditsText, windowWidth div 2 - 540, windowHeight, 1080, 4000,'Sprites/Menu/Credits.bmp');
+  CreateRawImage(creditsText, windowWidth div 2 - 540, windowHeight, 1080, 4800,'Sprites/Menu/Credits.bmp');
 end;
 procedure UpdateCameraParallax(var decor: TDecorParallax; avance: Boolean);
 
@@ -221,7 +221,7 @@ begin
     if avance then
     begin
 
-		if creditsText.rect.y >= -3325 then
+		if creditsText.rect.y >= -4025 then
 			creditsText.rect.y := Round(creditsText.rect.y - 0.55);
 		
       newWidth := Round(decor.images[i].rect.w + (1+decor.scales[i]/100));
@@ -729,7 +729,7 @@ begin
 end;
 
 procedure victoire(var statsJ:TStats;boss:Boolean); //censé contenir le choix+obtention d'une carte après un combat
-var i:Integer;
+var i,nbReliques:Integer;
 begin
 	if indiceMusiqueJouee<14 then indiceMusiqueJouee:=indiceMusiqueJouee+18; //donne une fanfare de victoire adaptée
 	StatsJ.vie:=LObjets[0].stats.vie;//synchronise la vie
@@ -739,14 +739,16 @@ begin
 		InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('VICTOIRE_'+intToSTR(random(4)+1+10*((statsJ.avancement-1) div 10))),10);
 	InitDecorCartes;
 	randomize;
+	nbReliques:=0;
     sceneActive:='victoire';
     for i:=1 to 3 do
-		if boss and (random(2)=0) then
+		if boss and (random(2)=0) and (nbReliques<2) then
 			begin
 			boutons[i].parametresSpeciaux:=4;
-			boutons[i].relique:=random(9)+1; //###c'est cette partie qui est à remplacer pour déterminer les reliques que l'on peut obtenir
+			boutons[i].relique:=random(9)+1;
 			InitButtonGroup(boutons[i],200+300*(i-1),200,128,128,StringToPChar('Sprites/Reliques/reliques'+intToStr(boutons[i].relique)+'.bmp'),' ',btnProc);
 			boutons[i].procRel:=@equiperRelique; 
+			nbReliques:=nbReliques+1; //pour empêcher d'avoir uniquement des reliques lors du choix
 			end
 		else
 			begin
