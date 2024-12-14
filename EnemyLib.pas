@@ -411,8 +411,8 @@ begin
       else
         multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+(ennemi.image.rect.w div 2),ennemi.image.rect.y+(ennemi.image.rect.h div 2),100,100,5,3,360,random(18)*10,ennemi.stats.nomAttaque);
     5: begin
-      if (ennemi.anim.etat='chase') and (ennemi.stats.compteurAction mod 150 = 0) and (ennemi.anim.objectName='liche') then
-        multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+(ennemi.image.rect.w div 2),ennemi.image.rect.y+(ennemi.image.rect.h div 2),100,100,5,3,360,random(18)*10,'kamui');
+      if (ennemi.anim.etat='chase') and (ennemi.stats.compteurAction mod 50 = 0) and (ennemi.anim.objectName='liche') then
+        multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+(ennemi.image.rect.w div 2),ennemi.image.rect.y+(ennemi.image.rect.h div 2),100,100,5,3,360,ennemi.stats.compteurAction/180*pi,'kamui');
       if (ennemi.anim.etat='strike')then
       begin
       ennemi.anim.isFliped:=(ennemi.stats.xcible>ennemi.image.rect.x);
@@ -786,7 +786,11 @@ begin
         end;
       7:begin //ennemi qui prend le temps de déployer ses ailes puis vole
         if (ennemi.anim.etat='chase') and (ennemi.stats.compteurAction>10) then
+          begin
           initAnimation(ennemi.anim,ennemi.anim.objectName,'spread',ennemi.stats.nbFrames2,False);
+          ennemi.stats.vitessePoursuite:=ennemi.stats.defense;
+          ennemi.stats.defense:=0;
+          end;
         if (ennemi.anim.etat='chase') and (random(50)=1) then
           ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
         if animFinie(ennemi.anim) and (ennemi.anim.etat='spread') then
@@ -806,6 +810,7 @@ begin
             flyUpdate(ennemi,2);
           if ennemi.stats.compteurAction>300 then
             begin
+            ennemi.stats.defense:=ennemi.stats.vitessePoursuite;
             initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
             ennemi.stats.compteurAction:=0;
             end;
@@ -1217,6 +1222,8 @@ begin
         end;
       if (ennemi.anim.etat='warp') and animFinie(ennemi.anim) then
         initAnimation(ennemi.anim,ennemi.anim.objectName,'peek',13,False);
+      if (ennemi.anim.etat='peek') then
+        if ennemi.anim.currentFrame<5 then ennemi.stats.xcible:=trouverCentreX(joueur);
       if (ennemi.anim.etat='peek') and animFinie(ennemi.anim) then
         if random(4)=0 then
           initAnimation(ennemi.anim,ennemi.anim.objectName,'rewarp',14,False)
@@ -1237,7 +1244,7 @@ begin
         begin
         initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbframes1,True);
         end;
-      if (ennemi.anim.etat='cast') then
+      if (ennemi.anim.etat='cast') or (ennemi.anim.etat='peek') then
         ennemi.anim.isFliped:=(ennemi.stats.xcible>trouverCentreX(ennemi))
       else
         ennemi.anim.isFliped:=(trouverCentreX(joueur)>trouverCentreX(ennemi));
@@ -1477,16 +1484,16 @@ initStatEnnemi(16,   'invocateur',            12,  50,  0,   0,   0,   0,   120,
 initStatEnnemi(17,   'diablotin',             4,   10,  1,   0,   0,   3,   80,  80,  4,                 6,             4,               5,               4,           50,   50,   15,   0,    'eclairR');
 initStatEnnemi(18,   'Akr',                   4,   250, 2,   0,   -20, 1,   384, 256, 14,                9,             9,               8,               16,          200,  96,   80,   150,  'kamui');
 initStatEnnemi(19,   'main',                  3,   50,  0,   5,   0,   1,   150, 150, 8,                 16,            8,               0,               15,          150,  150,  0,    0,    '');
-initStatEnnemi(20,   'armure',                7,   400, 8,   0,   6 ,  0,   384, 256, 7,                 2,             13,              9,               16,          192,  192,  96,   64,   'justice');
+initStatEnnemi(20,   'armure',                7,   400, 8,   0,   7 ,  0,   384, 256, 7,                 2,             13,              9,               16,          192,  192,  96,   64,   'justice');
 initStatEnnemi(21,   'undrixel',              3,   50,  5,   30,  0,   1,   288, 192, 4,                 10,            4,               0,               10,          200,  128,  10,   40,   'eclairR');
 initStatEnnemi(22,   'altegh',                1,   50,  2,   0,   4,   2,   192, 192, 3,                 6,             4,               0,               14,          160,  96,   16,   96,   'rayonAL');
-initStatEnnemi(23,   'Leo',                   13,  150, 15,  2,   5,   0,   300, 300, 14,                8,             7,               10,              8,           100,  150,  100,  150,  'eclairL');
-initStatEnnemi(24,   'Leo_Transe',            14,  150, 20,  5,   2,   1,   300, 300, 13,                16,            6,               22,              10,          200,  250,  50,   25,   'geyser_feu');
+initStatEnnemi(23,   'Leo',                   13,  150, 15,  5,   5,   0,   300, 300, 14,                8,             7,               10,              8,           100,  150,  100,  150,  'eclairL');
+initStatEnnemi(24,   'Leo_Transe',            14,  150, 30,  10,   2,   1,   300, 300, 13,                16,            6,               22,              10,          200,  250,  50,   25,   'geyser_feu');
 initStatEnnemi(25,   'UNKNOWN',               4,   150, 2,   0,   -20, 0,   128, 128, 8,                 12,            8,               4,               8,           64,   114,  32,   14,   'Roue');
 initStatEnnemi(26,   'chaos',                 12,  60,  1,   3,   5,   2,   200, 200, 9,                 11,            6,               0,               6,           100,  200,  50,   0,    'rayonAbysse');
 initStatEnnemi(27,   'Archimage',             4,   100, 2,   0,   6,   0,   128, 128, 8,                 6,             6,               6,               4,           64,   100,  32,  14,   'projectile');
 initStatEnnemi(28,   'liche',                 5,   50,  2,   0,   4,   1,   128, 128, 9,                 6,             5,               16,              10,          70,   110,  19,   7,    'rayonMort');
-initStatEnnemi(29,   'expurgateur',           6,   20,  3,   1,   1,   0,   128, 128, 13,                12,            0,               0,               7,           128,  104,  0,    24,   'eclairR');
+initStatEnnemi(29,   'expurgateur',           6,   40,  3,   1,   1,   0,   128, 128, 13,                12,            0,               0,               7,           128,  104,  0,    24,   'eclairR');
 initStatEnnemi(30,   'dracomage',             2,   300, 2,   5,   6,   1,   192, 192, 34,                12,            8,               8,               26,          128,  164,  32,   28,   'eclairR');
 initStatEnnemi(31,   'geolier',               18,  300, 10,  0,   -10, 2,   500, 400, 4,                 12,            20,              4,               6,           100,  200,  200,  200,  'arcane');
 initStatEnnemi(32,   'geolier2',              19,  300, 10,  0,   -10, 1,   500, 400, 32,                18,            10,              10,              14,          200,  200,  150,  200,  'chaine');

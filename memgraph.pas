@@ -414,8 +414,9 @@ end;
 
 procedure InitDialogueBox(var Box: TDialogueBox; ImgPath,portraitPath: PChar; X, Y, W, H: Integer; const DialogueText: string; Delay: UInt32);
 begin
-  sdl_destroytexture(box.BackgroundImage.imgtexture);
-  sdl_destroytexture(box.portrait.imgtexture);
+  
+  if ImgPath<>nil then sdl_destroytexture(box.BackgroundImage.imgtexture);
+  if portraitPath<>nil then sdl_destroytexture(box.portrait.imgtexture);
   CreateRawImage(Box.BackgroundImage, X, Y, W, H, ImgPath);
     if portraitPath='Sprites/Portraits/portraitB.bmp' then
       CreateRawImage(Box.portrait, X, Y, W div 4, W div 4, portraitPath)
@@ -439,8 +440,8 @@ end;
 
 procedure InitDialogueBox(var Box: TDialogueBox; ImgPath,portraitPath: PChar; X, Y, W, H: Integer; const DialogueText: string; Delay: UInt32;font:PTTF_Font;fontsize:Integer);
 begin
-  sdl_destroytexture(box.BackgroundImage.imgtexture);
-  sdl_destroytexture(box.portrait.imgtexture);
+  if ImgPath<>nil then sdl_destroytexture(box.BackgroundImage.imgtexture);
+  if portraitPath<>nil then sdl_destroytexture(box.portrait.imgtexture);
   
   if ImgPath <> nil then CreateRawImage(Box.BackgroundImage, X, Y, W, H, ImgPath) else begin Box.BackgroundImage.rect.x := X; Box.BackgroundImage.rect.y := Y end;
   if portraitPath <> nil then 

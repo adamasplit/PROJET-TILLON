@@ -111,10 +111,10 @@
 <COMM_ENN_20>Ce n'est pas qu'une simple machine, c'est un vestige des dieux! Et ils l'utilisent comme simple geôlier? C'est inadmissible!;
 <COMM_ENN_21>Un vaisseau qui sert également d'arme? Les mages ont beau être mes ennemis, je me dois d'admirer leur créativité.;
 <COMM_ENN_22>Je crois en avoir déjà vu, mais ils n'ont jamais été aussi agressifs. Je n'ose imaginer quel genre de traitement ils ont subi... Ils sont confinés dans cette armure maintenant: sans cela, utiliser leur magie les détruirait.;
-<COMM_ENN_23>Cette créature est vraiment fascinante. Il peut fournir sa propre énergie, sans visible limite... à moins que celle-ci soit fixée par sa propre âme?;
+<COMM_ENN_23>Cette créature est vraiment fascinante. Il peut fournir sa propre énergie, sans visible limite... à moins que la limite soit fixée par sa propre âme?;
 <COMM_ENN_24>Cette puissance me glace le sang... D'où peut-il donc la tenir?;
 <COMM_ENN_25>Que peut-il avoir à faire ici? Je ne crois pas que nous soyons ennemis.;
-<COMM_ENN_26>"Le chaos"? Le monde a-t-il tant changé depuis que je suis ici?;
+<COMM_ENN_26>"Le chaos"? Le monde a-t-il tant changé en mon absence?;
 <COMM_ENN_27>Voilà donc mes vrais ennemis. Je serai sans pitié.;
 <COMM_ENN_28>C'est ce genre de choses que je déplore. Ces techniques qui profanent la vie et la mort.;
 <COMM_ENN_29>Le moins que je puisse faire maintenant est d'empêcher qu'ils ne prennent plus de vies.;
@@ -122,7 +122,7 @@
 <COMM_ENN_31>Un ennemi puissant, mais il n'aurait pas dû se mettre en travers de mon chemin.;
 <COMM_ENN_32>Pourquoi...Pourquoi soumettre quelqu'un à un sort si cruel?;
 <COMM_ENN_33>Je n'ai jamais été très croyante, mais... Est-ce le genre de dessein que les dieux avaient pour l'humanité?;
-<COMM_ENN_34>On dit que la véritable forme des dieux est bien au-delà de l'imagination humaine. Pourquoi cette chose s'est-elle manifestée face à moi? Est-ce un présage, ou bien...;
+<COMM_ENN_34>Je ne peux pas m'empêcher de me demander si cette chose était vraiment d'origine divine, on dit que la véritable forme des dieux est bien au-delà de l'imagination humaine. Pourquoi s'est-elle manifestée face à moi?;
 <COMM_ENN_35>Est-ce une machine animée d'une âme? Je ne sais pas si je devrais être impressionnée ou terrifiée.;
 <COMM_ENN_36>Je comprends la volonté de s'accrocher à la vie. Mais...;
 <COMM_ENN_37>Je... je ne veux pas me remémorer ça!;
