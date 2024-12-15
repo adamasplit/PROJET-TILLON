@@ -187,7 +187,8 @@ begin
         end;
       end;
     InitAnimation(ennemi.anim,ennemi.anim.ObjectName,'rewarp', ennemi.stats.nbframes3,False);
-    ennemi.image.rect.x:=ennemi.stats.xcible;ennemi.image.rect.y:=ennemi.stats.ycible;
+    ennemi.image.rect.x:=ennemi.stats.xcible-ennemi.col.offset.x-(ennemi.image.rect.w div 2);
+    ennemi.image.rect.y:=ennemi.stats.ycible-ennemi.col.offset.y-(ennemi.image.rect.h div 2);
     ennemi.col.estActif:=True;
 end;
 
@@ -409,7 +410,15 @@ begin
         ajoutObjet(obj);
         end
       else
-        multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+(ennemi.image.rect.w div 2),ennemi.image.rect.y+(ennemi.image.rect.h div 2),100,100,5,3,360,random(18)*10,ennemi.stats.nomAttaque);
+      if ennemi.anim.objectName='Archimage' then
+        begin
+        initAngle(x-trouverCentreX(ennemi),y-trouverCentreY(ennemi),angle);
+        multiProjs(TypeObjet(1),4,ennemi.stats.force,ennemi.stats.multiplicateurDegat,trouverCentreX(ennemi),trouverCentreY(ennemi),100,100,5,4,360,angle,ennemi.stats.nomAttaque);
+        initAngle(x-ennemi.stats.xcible,y-ennemi.stats.ycible,angle);
+        multiProjs(TypeObjet(1),4,ennemi.stats.force,ennemi.stats.multiplicateurDegat,ennemi.stats.xcible,ennemi.stats.ycible,100,100,5,4,360,angle,ennemi.stats.nomAttaque);
+        end
+      else
+        multiProjs(TypeObjet(1),1,ennemi.stats.force,ennemi.stats.multiplicateurDegat,trouverCentreX(ennemi),trouverCentreY(ennemi),100,100,5,3,360,random(18)*10,ennemi.stats.nomAttaque);
     5: begin
       if (ennemi.anim.etat='chase') and (ennemi.stats.compteurAction mod 50 = 0) and (ennemi.anim.objectName='liche') then
         multiProjs(TypeObjet(1),1,1,1,ennemi.image.rect.x+(ennemi.image.rect.w div 2),ennemi.image.rect.y+(ennemi.image.rect.h div 2),100,100,5,3,360,ennemi.stats.compteurAction/180*pi,'kamui');
@@ -1047,7 +1056,7 @@ begin
               trouve:=False;
               //s'il ne reste aucun allié à soigner, l'ennemi change de comportement
               for i:=1 to high(lobjets) do
-                if lobjets[i].stats.genre=typeObjet(1) then
+                if (lobjets[i].stats.genre=typeObjet(1)) and (LObjets[i].anim.etat<>'mort') then
                   begin
                   //SDL_setRenderDrawColor(sdlRenderer,0,255,0,255);
                   sdl_renderdrawline(sdlRenderer,trouverCentreX(ennemi),trouverCentreY(ennemi),trouverCentreX(LObjets[i]),trouverCentreY(LObjets[i]));
@@ -1259,6 +1268,15 @@ begin
     begin
     InitAnimation(ennemi.anim,ennemi.anim.objectName,'chase', ennemi.stats.nbFrames1,True);
     ennemi.col.estActif:=True;
+    if (ennemi.anim.objectName='dracomage') then
+      begin
+        InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/dracomage1.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS4_3_1'),100);
+        ajoutDialogue('Sprites/Portraits/dracomage1.bmp',extractionTexte('DIALOGUE_BOSS4_3_2'));
+        ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_3_3'));
+        ajoutDialogue('Sprites/Portraits/dracomage1.bmp',extractionTexte('DIALOGUE_BOSS4_3_4'));
+        sceneActive:='Cutscene';
+        ennemi.stats.compteurAction:=1;
+      end;
     end;
   if ennemi.anim.objectname='Béhémoth' then
     begin
@@ -1336,6 +1354,7 @@ begin
         ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_1_3'));
         ajoutDialogue('Sprites/Game/Archimage/Archimage_chase_1.bmp',extractionTexte('DIALOGUE_BOSS4_1_4'));
         ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_1_5'));
+        ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_1_6'));
         sceneActive:='Cutscene';
         ennemi.stats.compteurAction:=1;
       end;
@@ -1379,7 +1398,6 @@ begin
           ajoutDialogue('Sprites/Portraits/portrait_Leo6.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_7'));
           ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_8'));
           end
-          
         else
           begin
           if ennemi.anim.objectName='elementaire_temps' then
@@ -1421,6 +1439,15 @@ begin
               sceneActive:='Cutscene';
               InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portraitGarde4.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS1_3_1'),20);
               ajoutDialogue('Sprites/Portraits/portraitGarde4.bmp',extractionTexte('DIALOGUE_BOSS1_3_2'));
+            end;
+          if (ennemi.anim.objectName='dracomage') then
+            begin
+            InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/dracomage2.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS4_4_1'),100);
+            ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_4_2'));
+            ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_4_3'));
+            ajoutDialogue('Sprites/Portraits/dracomage3.bmp',extractionTexte('DIALOGUE_BOSS4_4_4'));
+            ajoutDialogue('Sprites/Portraits/dracomage3.bmp',extractionTexte('DIALOGUE_BOSS4_4_5'));
+            sceneActive:='Cutscene';
             end;
           if (ennemi.anim.objectName='vestige') then
               begin
@@ -1502,7 +1529,7 @@ initStatEnnemi(34,   'vestige',               11,  1000,3,   15,  5,   1,   400,
 initStatEnnemi(35,   'gardien',               16,  500, 2,   1,   0,   1,   300, 300, 8,                 16,            0,               0,               23,          250,  120,  25,   120,  'rayon_main');
 initStatEnnemi(36,   'Geist',                 17,  200, 10,  0,   -10, 4,   300, 300, 21,                24,            3,               7,               9,           80,   80,   110,  160,  'rayonAL');
 initStatEnnemi(37,   'creature',              20,  1000,15,  0,   0,   0,   600, 560, 46,                12,            14,              14,              20,          500,  460,  50,   50,   'arcane');
-initStatEnnemi(38,   'Béhémoth',              10,  1500,20,  10,  10,  5,   463, 614, 12,                32,            40,              12,              39,          400,  307,  63,   307,  'rayonRykor');
+initStatEnnemi(38,   'Béhémoth',              10,  3200,20,  10,  10,  5,   463, 614, 12,                32,            40,              12,              39,          400,  307,  63,   307,  'rayonRykor');
 
 
 

@@ -6,8 +6,8 @@ uses
     SysUtils; //télécharger SDL2_mixer au préalable
 
 const TAILLE_OST=50;
-        VOLUME_MUSIQUE=20;
-        VOLUME_SON=20;
+        VOLUME_MUSIQUE=40;
+        VOLUME_SON=40;
         MAX_CHAINES = 8;
 type TMus=record
     duree:real;

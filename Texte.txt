@@ -115,7 +115,7 @@
 <COMM_ENN_24>Cette puissance me glace le sang... D'où peut-il donc la tenir?;
 <COMM_ENN_25>Que peut-il avoir à faire ici? Je ne crois pas que nous soyons ennemis.;
 <COMM_ENN_26>"Le chaos"? Le monde a-t-il tant changé en mon absence?;
-<COMM_ENN_27>Voilà donc mes vrais ennemis. Je serai sans pitié.;
+<COMM_ENN_27>Le président... Voilà donc mon vrai ennemi. Je serai sans pitié.;
 <COMM_ENN_28>C'est ce genre de choses que je déplore. Ces techniques qui profanent la vie et la mort.;
 <COMM_ENN_29>Le moins que je puisse faire maintenant est d'empêcher qu'ils ne prennent plus de vies.;
 <COMM_ENN_30>Ce symbole! Il doit donc s'agir d'un genre de pacte. Mais pourquoi aller aussi loin pour le pouvoir? Suis-je une telle menace?;
@@ -190,9 +190,9 @@
 <DIALOGUE_EVENT2_6>Merci.;
 <DIALOGUE_EVENT2_7>Si vous vous demandiez, je suis une création des mages pour conquérir l'au-delà. Tout comme Leo, et plein d'autres. Mais je n'ai pas d'attachement à mes créateurs.;
 <DIALOGUE_EVENT2_8>À l'origine, j'ai uniquement été créé pour créer de l'énergie à partir de mon âme. Mais je veux être utile à quelqu'un qui le mérite.;
-<DIALOGUE_EVENT2_9>En fait, je me suis perdu ici.;
+<DIALOGUE_EVENT2_9>En fait, je me suis perdu ici. J'avais fui cet endroit mais j'avais entendu dire que des gens que je connaissais y étaient revenus.;
 <DIALOGUE_EVENT2_10>Vous savez, je suis vraiment content de savoir que je vais pouvoir retrouver mes amis.;
-<DIALOGUE_EVENT2_11>...?;
+<DIALOGUE_EVENT2_11>...? Qu'y a-t-il?;
 <DIALOGUE_EVENT2_12>Attendez, je ne vous ai pas déjà combattu?;
 <DIALOGUE_EVENT2_13>Hein? Euh... Ah, c'est possible. Je suis vraiment désolé! Je cherchais quelqu'un, et... je ne réfléchissais pas à mon entourage...;
 <DIALOGUE_EVENT2_14>D'accord...;
@@ -201,7 +201,7 @@
 <DIALOGUE_EVENT_2>Mon nom ... Peu importe. Je suis une création des mages, en quelque sorte.;
 <DIALOGUE_EVENT_3>Des mages... Sommes-nous ennemis?;
 <DIALOGUE_EVENT_4>Non, évidemment, je n'ai pas d'allégeance envers qui que ce soit! Mais... C'est dur de trouver des adversaires de taille, si vous voyez ce que je veux dire...;
-<DIALOGUE_EVENT_5>En plus, j'ai dû me séparer de ceux avec qui je suis arrivé ici... Une mauvaise journée, quoi.;
+<DIALOGUE_EVENT_5>En plus, j'ai dû me séparer de ceux avec qui je suis arrivé ici... Une mauvaise journée, quoi. Mais bon, on fait avec.;
 <DIALOGUE_EVENT_6>...;
 <DIALOGUE_EVENT_BOSS_1>Très bien, on va voir ce que vous valez!;
 <DIALOGUE_EVENT_BOSS_2>Il y a bien longtemps que je n'ai pas eu autant de difficultés... Vous êtes certainement très tenace!;
@@ -395,8 +395,8 @@
 <FIN_BOSS3_4>Vous profitez du désordre ambiant pour vous approcher du ministère de la magie.;
 <FIN_BOSS3_5>Le président doit sûrement être en haut de cette grande tour... À moi de jouer !;
 
-<DIALOGUE_BOSS4_1_1>Nymera Amarisse. Vous êtes en état d'arrestation... Non plus pour incitation au terrorisme, mais pour haute trahison!;
-<DIALOGUE_BOSS4_1_2>Alors c'est vous qui rendez la justice, maintenant? On aura tout vu.;
+<DIALOGUE_BOSS4_1_1>Je vous attendais, Nymera Amarisse. Vous êtes en état d'arrestation... Non plus pour incitation au terrorisme, mais pour haute trahison!;
+<DIALOGUE_BOSS4_1_2>Alors c'est vous qui rendez la justice, maintenant? On aura tout vu. Être président ne vous donne pas tous les droits.;
 <DIALOGUE_BOSS4_1_3>Vous savez, en arrivant ici je n'étais pas certaine de ce que j'avais à faire. Mais il n'y a plus aucun doute possible. Je vais en finir!;
 <DIALOGUE_BOSS4_1_4>Vous n'êtes qu'une enfant... Pensez-vous vraiment pouvoir me tuer?;
 <DIALOGUE_BOSS4_1_5>On dirait bien que vous me sous-estimez.;
