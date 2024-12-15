@@ -1326,7 +1326,8 @@ begin
 	    InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portraitB.bmp',0,0,windowWidth,300,extractionTexte('DIALOGUE_BOSS4_1'),100);
       ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_2'));
       ajoutDialogue('Sprites/Portraits/portraitB.bmp',extractionTexte('DIALOGUE_BOSS4_3'));
-      ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_4'));
+      ajoutDialogue('Sprites/Portraits/portraitB.bmp',extractionTexte('DIALOGUE_BOSS4_4'));
+      ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('DIALOGUE_BOSS4_5'));
       sceneActive:='Cutscene';
       jouersonenn('dragon');
       ennemi.stats.compteurAction:=1;
@@ -1529,7 +1530,7 @@ initStatEnnemi(34,   'vestige',               11,  1000,3,   15,  5,   1,   400,
 initStatEnnemi(35,   'gardien',               16,  500, 2,   1,   0,   1,   300, 300, 8,                 16,            0,               0,               23,          250,  120,  25,   120,  'rayon_main');
 initStatEnnemi(36,   'Geist',                 17,  200, 10,  0,   -10, 4,   300, 300, 21,                24,            3,               7,               9,           80,   80,   110,  160,  'rayonAL');
 initStatEnnemi(37,   'creature',              20,  1000,15,  0,   0,   0,   600, 560, 46,                12,            14,              14,              20,          500,  460,  50,   50,   'arcane');
-initStatEnnemi(38,   'Béhémoth',              10,  3200,20,  10,  10,  5,   463, 614, 12,                32,            40,              12,              39,          400,  307,  63,   307,  'rayonRykor');
+initStatEnnemi(38,   'Béhémoth',              10,  4500,20,  10,  10,  5,   463, 614, 12,                32,            40,              12,              39,          400,  307,  63,   307,  'rayonRykor');
 
 
 

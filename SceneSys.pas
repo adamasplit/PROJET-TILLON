@@ -85,7 +85,7 @@ var faucheuse : TObjet;i:Integer;
 			end;
 		if LObjets[0].stats.laMort and (sdl_getTicks-updateTimeMort>5000) then
 			LObjets[0].stats.laMort:=False;
-		RegenMana(LObjets[0].stats.lastUpdateTimeMana,LObjets[0].stats.mana,LObjets[0].stats.manaMax,LObjets[0].stats.multiplicateurMana);
+		RegenMana(LObjets[0].stats.lastUpdateTimeMana,LObjets[0].stats.mana,LObjets[0].stats.manaMax,LObjets[0].stats.relique,LObjets[0].stats.vie,LObjets[0].stats.multiplicateurMana);
 		for i:=1 to High(LObjets) do
 			if (i<=High(LObjets)) and not leMonde then
 			begin
@@ -501,15 +501,16 @@ begin
 						//LObjets[0].stats.compteurLeMonde:=100;
 						//updateTimeMonde:=sdl_getTicks;
 						end;
-					//SDLK_O:LOBjets[0].stats.multiplicateurMana:=LOBjets[0].stats.multiplicateurMana+100;
-					//SDLK_H : choixSalle();
-					//SDLK_F2:begin
-					//	LObjets[0].stats.force:=LObjets[0].stats.force+1;
-					//	LObjets[0].stats.multiplicateurDegat:=LObjets[0].stats.multiplicateurDegat+10;
-					//	end;
-					//SDLK_F3:modeDebug:=not(modeDebug);
-					//SDLK_F4:for i:=1 to MAXENNEMIS do	statsJoueur.bestiaire[i]:=True;
-					//SDLK_F5:begin statsJoueur.tailleCollection:=26; for i:=1 to 26 do statsJoueur.collection[i]:=Cartes[i]; end;
+					{SDLK_O:LOBjets[0].stats.multiplicateurMana:=LOBjets[0].stats.multiplicateurMana+100;
+					SDLK_H : choixSalle();
+					SDLK_F2:begin
+						LObjets[0].stats.force:=LObjets[0].stats.force+1;
+						LObjets[0].stats.multiplicateurDegat:=LObjets[0].stats.multiplicateurDegat+10;
+						end;
+					SDLK_F3:modeDebug:=not(modeDebug);
+					SDLK_F4:for i:=1 to MAXENNEMIS do	statsJoueur.bestiaire[i]:=True;
+					SDLK_F5:begin statsJoueur.tailleCollection:=26; for i:=1 to 26 do statsJoueur.collection[i]:=Cartes[i]; end;
+					SDLK_F6:statsJoueur.multiplicateurSoin:=1.5;}
         		end;
       		end;
 			

@@ -118,7 +118,7 @@
 <COMM_ENN_27>Le président... Voilà donc mon vrai ennemi. Je serai sans pitié.;
 <COMM_ENN_28>C'est ce genre de choses que je déplore. Ces techniques qui profanent la vie et la mort.;
 <COMM_ENN_29>Le moins que je puisse faire maintenant est d'empêcher qu'ils ne prennent plus de vies.;
-<COMM_ENN_30>Ce symbole! Il doit donc s'agir d'un genre de pacte. Mais pourquoi aller aussi loin pour le pouvoir? Suis-je une telle menace?;
+<COMM_ENN_30>Ce symbole, c'est une des Marques des Dragons! Il doit donc s'agir d'un genre de pacte. Mais pourquoi aller aussi loin pour le pouvoir? Suis-je une telle menace?;
 <COMM_ENN_31>Un ennemi puissant, mais il n'aurait pas dû se mettre en travers de mon chemin.;
 <COMM_ENN_32>Pourquoi...Pourquoi soumettre quelqu'un à un sort si cruel?;
 <COMM_ENN_33>Je n'ai jamais été très croyante, mais... Est-ce le genre de dessein que les dieux avaient pour l'humanité?;
@@ -150,7 +150,8 @@
 <DESC_REL_7>Une cape tissée d'un matériau inconnu, qui protège son porteur grâce aux runes qui y sont brodées.;
 <DESC_REL_8>Un sacrifice offert au Diable laisse une marque permanente sur celui qui le fait: une profonde soif de puissance.;
 <DESC_REL_9>Symboles de la dualité, les lames jumelles de l'Eclipse permettent parfois de lancer deux sorts.;
-<DESC_REL_10>La légendaire lame incandescente, Lionheart. En théorie, nul ne peut la manier sauf celui qui l'a extraite de son propre coeur.;
+<DESC_REL_10>Cet objet datant des temps anciens est une création jointe des deux races originelles, et a été scellé pour empêcher leur résurrection. Il permet la conversion entre vie et magie.;
+<DESC_REL_11>La légendaire lame incandescente, Lionheart. En théorie, nul ne peut la manier sauf celui qui l'a extraite de son propre coeur.;
 <COMM_REL_1>Eh bien, c'est un effet simple mais toujours utile. Je ne les utiliserai pas pour fuir.;
 <COMM_REL_2>J'espère bien que si j'ai été jugée méritante, ce n'est pas uniquement parce que j'ai affronté les serviteurs des dieux.;
 <COMM_REL_3>Je ne reconnais pas cette matière. Et... est-ce mon propre sang?;
@@ -158,9 +159,10 @@
 <COMM_REL_5>On raconte qu'il y a bien longtemps...le sang d'un dieu aurait coulé sur une griffe de dragon, unissant leurs pouvoirs en quelque chose de bien plus grand. Mais comment ont-ils mis la main sur une chose pareille?;
 <COMM_REL_6>Ce sceptre n'a pas dû réellement servir, les dieux n'ayant pas été battus à proprement parler.;
 <COMM_REL_7>Je n'ai pas appris à lire ces glyphes, mais j'imagine qu'il doit s'agir d'un adage de bon augure.;
-<COMM_REL_8>Je ne me considère pas comme prête à tout pour accomplir mes objectifs.;
+<COMM_REL_8>Je ne me considère pas prête à tout pour accomplir mes objectifs. Je ferai en sorte que ce pouvoir ne me contrôle pas.;
 <COMM_REL_9>La dualité est la base d'un certain nombre de choses. L'histoire de notre monde, les domaines de la magie... les guerres...;
-<COMM_REL_10>Quelle volonté m'a poussé à lui prendre sa propre arme? C'est étrange... Et je la sens brûler ardemment même entre mes mains.;
+<COMM_REL_10>C'est étrange, je ne vois pas l'emblème d'un dragon... Est-ce que cette gemme contient vraiment encore leur influence ? Si c'est le cas, je dois faire attention, j'ai déjà assez d'ennemis comme ça.;
+<COMM_REL_11>Quelle volonté m'a poussé à lui prendre sa propre arme? C'est étrange... Et je la sens brûler ardemment même entre mes mains.;
 
 <GAMEOVER_1>Quelle terrible prémonition! Il ne tient qu'à moi de faire en sorte qu'elle ne se réalise pas.;
 <GAMEOVER_2>Non... Est-ce vraiment ce à quoi je me destine?;
@@ -417,8 +419,9 @@
 <DIALOGUE_BOSS4_4_5>RAAAAAAAAAAAAAAAAAARGH!!!!!;
 <DIALOGUE_BOSS4_1>Heh heh heh. Me voilà débarrassé de cet esprit misérable, enfin! L'humanité connaîtra mon courroux pour ces millénaires de souffrance.;
 <DIALOGUE_BOSS4_2>Un dragon...?! Qu'est-ce que cette chose? Qu'est-il advenu de l'archimage qui vous a invoqué?;
-<DIALOGUE_BOSS4_3>Un imbécile qui croyait pouvoir maîtriser ma force... un sacrifice nécessaire. Il est à nouveau temps pour l'ère des dragons!;
-<DIALOGUE_BOSS4_4>Nous ne sommes pas vos pions. L'humanité a largement dépassé ses créateurs, que vous le vouliez ou non!;
+<DIALOGUE_BOSS4_3>Un imbécile qui croyait pouvoir maîtriser ma force... un sacrifice nécessaire pour ma réincarnation. Vous, les humains, vous tentez de manipuler des pouvoirs qui vous dépassent totalement.;
+<DIALOGUE_BOSS4_4>Mais il est temps pour vous de connaître votre place. Il est grand temps pour l'ère des dragons!;
+<DIALOGUE_BOSS4_5>Nous ne sommes pas vos pions. L'humanité a largement dépassé ses créateurs, que vous le vouliez ou non!;
 <DIALOGUE_BOSS4_0>Non... Emprisonné à nouveau? Vous ne perdez rien pour attendre, humains!;
 
 <VICTOIRE_-1>Alors ça! On ne m'a jamais fait ce coup-là. Mais vous savez quoi? Prenez-la. Je pense que vous en êtes digne! Enfin, on verra bien.;

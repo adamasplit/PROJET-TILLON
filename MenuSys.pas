@@ -679,7 +679,7 @@ begin
 	stats.vieMax:=stats.vieMax-20;
 	end;
 	4:
-	stats.multiplicateurSoin:=stats.multiplicateurSoin-0.5;
+	stats.multiplicateurSoin:=1;
 	5:
 	begin
 	stats.manaDebutCombat:=0;
@@ -708,7 +708,7 @@ begin
 	stats.vie:=stats.vie+20;
 	end;
 	4:
-	stats.multiplicateurSoin:=stats.multiplicateurSoin+0.5;
+	stats.multiplicateurSoin:=1.5;
 	5:
 	begin
 	stats.manaDebutCombat:=10;
@@ -720,12 +720,12 @@ begin
 		stats.multiplicateurDegat:=stats.multiplicateurDegat-0.5;
 		stats.vieMax:=stats.vieMax-20;
 		end;
-	10:InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portrait_Leo6.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('VICTOIRE_-1'),10);
+	11:InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portrait_Leo6.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('VICTOIRE_-1'),10);
 	end;
 	
 
 	stats.relique:=rel;
-	if rel<>10 then finirCombat(stats);
+	if rel<>11 then finirCombat(stats);
 end;
 
 procedure victoire(var statsJ:TStats;boss:Boolean); //censé contenir le choix+obtention d'une carte après un combat
@@ -745,7 +745,7 @@ begin
 		if boss and (random(2)=0) and (nbReliques<2) then
 			begin
 			boutons[i].parametresSpeciaux:=4;
-			boutons[i].relique:=random(9)+1;
+			boutons[i].relique:=random(10)+1;
 			InitButtonGroup(boutons[i],200+300*(i-1),200,128,128,StringToPChar('Sprites/Reliques/reliques'+intToStr(boutons[i].relique)+'.bmp'),' ',btnProc);
 			boutons[i].procRel:=@equiperRelique; 
 			nbReliques:=nbReliques+1; //pour empêcher d'avoir uniquement des reliques lors du choix
@@ -776,7 +776,7 @@ begin
         boutons[i].parametresSpeciaux:=1;
         end;
 			boutons[2].parametresSpeciaux:=4;
-			boutons[2].relique:=10;
+			boutons[2].relique:=11;
 			InitButtonGroup(boutons[2],200+300*(2-1),200,128,128,StringToPChar('Sprites/Reliques/reliques'+intToStr(boutons[2].relique)+'.bmp'),' ',btnProc);
 			boutons[2].procRel:=@equiperRelique; 
 end;

@@ -16,7 +16,7 @@ uses
 var updateTimeMonde:UInt32;updateTimeMort:UInt32;
 
 function degat(flat : Integer ; force : Integer ; defense : Integer;multiplicateurDegat:Real): Integer;
-procedure RegenMana(var LastUpdateTime : UInt32;var mana:Integer;manaMax:Integer;multiplicateurMana:Real); 
+procedure RegenMana(var LastUpdateTime : UInt32;var mana:Integer;manaMax:Integer;relique:Integer;var vie:Integer;multiplicateurMana:Real);
 procedure CreerDeckCombat(stat : TStats;var DeckCombat:TDeck); 
 function trouverCarte(stats:TStats;num:Integer):Boolean;
 procedure cycle (var deck : TDeck ; i : Integer);
@@ -70,7 +70,7 @@ end;
 
 
 //Procedure Régénération du mana
-procedure RegenMana(var LastUpdateTime : UInt32;var mana:Integer;manaMax:Integer;multiplicateurMana:Real);
+procedure RegenMana(var LastUpdateTime : UInt32;var mana:Integer;manaMax:Integer;relique:Integer;var vie:Integer;multiplicateurMana:Real);
 var 
     currentTime: UInt32;
     
@@ -79,11 +79,17 @@ begin
 
         SDL_PumpEvents;
         currentTime := SDL_GetTicks(); //récupère le temps
-        if (( (currentTime - LastUpdateTime)*multiplicateurMana)>= 1000) AND (mana < manaMax) then //attendre 1sec/mult avant +1 mana
+        if (( (currentTime - LastUpdateTime)*multiplicateurMana)>= 1000) AND ((mana < manaMax) or (relique=10)) then //attendre 1sec/mult avant +1 mana
         begin
             mana := mana + 1; //régénère le mana
             LastUpdateTime := currentTime;
-    end;
+        end;
+        if (relique=10) and (mana>manaMax) then
+            begin
+            vie:=vie+(mana-manaMax);
+            mana:=manaMax;
+            end;
+            
 
 end;
 
@@ -921,7 +927,7 @@ end;
         initJustice(origine,5,s.force,s.multiplicateurDegat,xcible,ycible,xcible+distx,ycible+disty,18,delai,'Lionheart');
         initJustice(origine,5,s.force,s.multiplicateurDegat,xcible,ycible,xcible+disty,ycible-distx,18,delai,'Lionheart');
         initJustice(origine,5,s.force,s.multiplicateurDegat,xcible,ycible,xcible-disty,ycible+distx,18,delai,'Lionheart');
-        if s.relique=10 then 
+        if s.relique=11 then 
             begin
             initJustice(origine,5,s.force,s.multiplicateurDegat,xcible,ycible,xcible-distx,ycible-disty,36,delai,'Lionheart');
             initJustice(origine,5,s.force,s.multiplicateurDegat,xcible,ycible,xcible+distx,ycible+disty,36,delai,'Lionheart');
@@ -968,11 +974,16 @@ var tempCarte:TCarte;
 
 begin
     tempCarte:=stats.deck^[i];
-    if stats.deck^[i].active or (tempCarte.cout<=stats.mana) then 
+    if stats.deck^[i].active or (tempCarte.cout<=stats.mana) or (stats.relique=10) then 
         begin
         if not stats.deck^[i].active then
             begin
             stats.mana:=stats.mana-tempCarte.cout;
+            if stats.mana<0 then 
+                begin
+                stats.vie:=stats.vie+stats.mana*2;
+                stats.mana:=0;
+                end;
             stats.deck^[i].active:=True;
             if tempCarte.numero=8 then
                 begin
