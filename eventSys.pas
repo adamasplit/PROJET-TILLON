@@ -100,11 +100,19 @@ begin
    
     //if (icarteChoisie>2) or (icarteChoisie<0) then writeln(icarteChoisie);
     CreateRawImage(CombatUI[3],min(820,max(GetMouseX-20,140)),GetMouseY-5,90,90,stats.deck^[icarteChoisie].dir);
-    if (LObjets[0].stats.mana<LObjets[0].stats.deck^[iCarteChoisie].cout) and not (LObjets[0].stats.deck^[iCarteChoisie].active) then
+    if ((LObjets[0].stats.mana<LObjets[0].stats.deck^[iCarteChoisie].cout) and not (LObjets[0].stats.deck^[iCarteChoisie].active)) then
       begin
       //sdl_settexturecolormod(combatUI[3].imgTexture,120,120,120);
-      RenderRawImage(combatUI[3],100,false);
-      drawRect(black_color,100,CombatUI[3].rect.x+14,CombatUI[3].rect.y,63,90);
+      if LObjets[0].stats.relique=10 then
+        begin
+        RenderRawImage(combatUI[3],150,false);
+        drawRect(red_color,20+5*(-LObjets[0].stats.mana+LObjets[0].stats.deck^[iCarteChoisie].cout),CombatUI[3].rect.x+14,CombatUI[3].rect.y,63,90)
+        end
+      else
+        begin
+        RenderRawImage(combatUI[3],100,false);
+        drawRect(black_color,100,CombatUI[3].rect.x+14,CombatUI[3].rect.y,63,90)
+        end
       end
     else
       begin

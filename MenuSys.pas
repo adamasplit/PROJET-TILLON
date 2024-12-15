@@ -686,7 +686,7 @@ begin
 	stats.multiplicateurMana:=stats.multiplicateurMana-0.3
 	end;
 	6:stats.force:=stats.force-5;
-	7:stats.defense:=stats.defense-4;
+	7:stats.defense:=stats.defense-6;
 	8:begin
 		stats.multiplicateurDegat:=stats.multiplicateurDegat-0.5;
 		stats.vieMax:=stats.vieMax+20;
@@ -715,9 +715,9 @@ begin
 	stats.multiplicateurMana:=stats.multiplicateurMana+0.3;
 	end;
 	6:stats.force:=stats.force+5;
-	7:stats.defense:=stats.defense+4;
+	7:stats.defense:=stats.defense+6;
 	8:begin
-		stats.multiplicateurDegat:=stats.multiplicateurDegat-0.5;
+		stats.multiplicateurDegat:=stats.multiplicateurDegat;
 		stats.vieMax:=stats.vieMax-20;
 		end;
 	11:InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portrait_Leo6.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('VICTOIRE_-1'),10);

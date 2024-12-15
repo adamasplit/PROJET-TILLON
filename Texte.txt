@@ -18,7 +18,7 @@
 <DESC_CAR_18>L'utilisateur utilise toute son énergie pour annihiler ses ennemis. L'attaque est d'autant plus puissante selon le mana consommé.;
 <DESC_CAR_19>Le soleil darde le mal de ses rayons et protège ceux qui marchent dans sa lumière.;
 <DESC_CAR_20>L'ange passe son jugement et donne son aide à ceux qu'il en juge dignes.;
-<DESC_CAR_21>La carte du Monde donne à l'utilisateur l'autorité sur le temps. Sa puissance doit être exercée pour être canalisée ;
+<DESC_CAR_21>La carte du Monde donne à l'utilisateur l'autorité sur le temps. Sa puissance doit être exercée pour être canalisée. ;
 <DESC_CAR_22>Le fou arrive toujours à s'en sortir, mais on ne sait jamais trop comment. ;
 <DESC_CAR_23>Cette carte porte le symbole du Lion. Elle appelle la puissance de son épée flamboyante.;
 <DESC_CAR_24>Cette carte porte le symbole du Serpentaire. Elle renferme une grande puissance qui ne peut pas être utilisée offensivement.;
