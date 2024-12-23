@@ -15,7 +15,7 @@ uses
   SonoSys,
   SysUtils;
 
-const TAILLE_VAGUE=2;
+const TAILLE_VAGUE=4;
 var templatesEnnemis:array[1..MAXENNEMIS] of TObjet;
     ennemis:Array of TOBjet;
 //procedure initStatEnnemi(nom:PChar;typeIA_MVT,vie,att,dmg,def,vitesse,w,h,framesA,frames1,frames2,frames3,framesM:Integer;var ennemi:TObjet;wcol,hcol,offx,offy:Integer;nomAttaques:PChar);
@@ -82,7 +82,7 @@ begin
           LObjets[i]:=ennemis[taille];
           supprimeEnn(ennemis[taille],taille);
           taille:=taille-1;
-          LObjets[i].image.rect.x:=(i-1)*round(600/TAILLE_VAGUE)+180;
+          LObjets[i].image.rect.x:=random(TAILLE_VAGUE*10)*round(60/TAILLE_VAGUE)+180-LObjets[i].col.offset.x;
           LObjets[i].image.rect.y:=50;
           jouerSonEnn(LObjets[i].anim.objectName+'_apparition');
           if LObjets[i].anim.objectName='dracomage' then
@@ -121,7 +121,7 @@ begin
     
 
     case num of
-      30..38:ennemi.stats.boss:=True
+      12,30..38:ennemi.stats.boss:=True
     else ennemi.stats.boss:=False;
     end;
 
@@ -199,10 +199,10 @@ begin
   if ennemi.anim.objectName<>'Spectre' then jouerSonEnn('fly');
   repeat
   xdest:=random(10)*100;
-  until (xdest<=800) and (xdest>=200) and (abs(xdest-targetx)>100) and (abs(xdest-ennemi.image.rect.x)>100);
+  until (xdest<=800) and (xdest>=200) and (abs(xdest-targetx)>100) and (abs(xdest-trouvercentrex(ennemi))>100);
   repeat
     ydest:=random(10)*100;
-  until (ydest<700) and (ydest>0) and (abs(ydest-targety)>50) and (abs(ydest-ennemi.image.rect.y)>50);
+  until (ydest<700) and (ydest>0) and (abs(ydest-targety)>50) and (abs(ydest-trouvercentrey(ennemi))>50);
   ennemi.stats.xcible:=xdest;ennemi.stats.ycible:=ydest;
 end;
 
@@ -210,7 +210,7 @@ procedure FlyUpdate(var ennemi:TObjet;lenteur:Integer);
 var distx,disty:Integer;
 begin
   //l'ennemi se déplace vers sa cible, à une vitesse proportionnelle à la distance
-  distx:=-(ennemi.image.rect.x-ennemi.stats.xcible);disty:=-(ennemi.image.rect.y-ennemi.stats.ycible);
+  distx:=-(trouverCentreX(ennemi)-ennemi.stats.xcible);disty:=-(trouverCentreY(ennemi)-ennemi.stats.ycible);
   ennemi.image.rect.x:=ennemi.image.rect.x + (distx div lenteur);
   ennemi.image.rect.y:=ennemi.image.rect.y + (disty div lenteur);
   ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
@@ -371,7 +371,7 @@ begin
   case ennemi.stats.typeIA_MVT of
     0: if(ennemi.stats.compteurAction mod 100 = 50) then
       begin
-        LObjets[0].stats.vitesse:=round(sqrt((ennemi.stats.xcible-ennemi.image.rect.x)**2+(ennemi.stats.ycible-ennemi.image.rect.y)**2)/50);
+        LObjets[0].stats.vitesse:=1+round(sqrt((ennemi.stats.xcible-ennemi.image.rect.x)**2+(ennemi.stats.ycible-ennemi.image.rect.y)**2)/50);
       end;
     2: if (ennemi.anim.currentFrame=4) and (ennemi.anim.etat='cast') then
       begin
@@ -476,6 +476,22 @@ begin
         ajoutObjet(obj)
         end;
     10:begin
+        if ((ennemi.anim.etat='cast') and (ennemi.stats.compteurAction mod 7=0) and (ennemi.stats.compteurAction<700)) then
+          begin
+          if random(2)=0 then
+          begin
+          alea1:=1080*random(2);
+          alea2:=100*random(8);
+          end
+        else
+          begin
+          alea2:=720*random(2);
+          alea1:=100+random(10)*100;
+          end;
+          creerEffet(x-50,y-50,100,100,6,'target',False,obj);
+          initJustice(typeobjet(1),1,ennemi.stats.force,ennemi.stats.multiplicateurDegat,alea1,alea2,x,y,30,900-(ennemi.stats.compteurAction),'justiceRykor');
+          ajoutObjet(obj);
+          end;
         if (ennemi.anim.etat='tir') and (ennemi.anim.currentFrame=20) and (ennemi.stats.compteurAction<=601) then
         begin
         CreerRayon(typeobjet(1),80,ennemi.stats.force,1,false,ennemi.image.rect.x+250,ennemi.image.rect.y+350,1200,300,ennemi.image.rect.x-60,ennemi.image.rect.y+350,-(y-(ennemi.image.rect.y+350))/280,100,50,ennemi.stats.nomAttaque,obj);
@@ -483,7 +499,7 @@ begin
         end;
         if (ennemi.anim.etat='chase') and (ennemi.anim.currentFrame mod 5 =2) and (ennemi.anim.currentFrame<>2) then
           begin
-          creerBoule(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,ennemi.image.rect.x+200,ennemi.image.rect.y+340,64,64,5,x+32,y+0+((ennemi.anim.lastUpdateTime-sdl_getTicks)),'projRykor',obj);
+          creerBoule(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,ennemi.image.rect.x+200,ennemi.image.rect.y+350,64,64,5,x+32,y+0+((ennemi.anim.lastUpdateTime-sdl_getTicks)),'projRykor',obj);
           ajoutObjet(obj)
           end
         end;
@@ -504,7 +520,12 @@ begin
         if (ennemi.anim.objectName='invocateur') then
           begin
           if ennemi.stats.compteurAction mod 90 = 0 then
-            ajoutObjet(templatesEnnemis[17])
+            begin
+            obj:=templatesEnnemis[17];
+            obj.image.rect.x:=trouvercentrex(ennemi)+50*(random(2)*2-1);
+            obj.image.rect.y:=trouvercentrex(ennemi)+50*(random(2)*2-1);
+            ajoutObjet(obj);
+            end
           end
         else 
           if (ennemi.anim.objectName='Spectre') then
@@ -656,13 +677,13 @@ end;
 procedure DeplacementEnnemi(var ennemi:TObjet;joueur:TObjet); //déplace un ennemi 
 var i:Integer;rect1,rect2:TSDL_REct;trouve:Boolean;
 begin
-  if (random(100)=0) and (ennemi.anim.objectName[0]+ennemi.anim.objectName[1]+ennemi.anim.objectName[2]+ennemi.anim.objectName[3]+ennemi.anim.objectName[4]+ennemi.anim.objectName[5]+ennemi.anim.objectName[6]+ennemi.anim.objectName[7]+ennemi.anim.objectName[8]+ennemi.anim.objectName[9]+ennemi.anim.objectName[10]='elementaire') then
+  if (random(100)=0) and ((ennemi.anim.objectName='vestige') or (ennemi.anim.objectName[0]+ennemi.anim.objectName[1]+ennemi.anim.objectName[2]+ennemi.anim.objectName[3]+ennemi.anim.objectName[4]+ennemi.anim.objectName[5]+ennemi.anim.objectName[6]+ennemi.anim.objectName[7]+ennemi.anim.objectName[8]+ennemi.anim.objectName[9]+ennemi.anim.objectName[10]='elementaire')) then
     jouerSonEnn('elementaires',random(5)+1);
   case ennemi.stats.typeIA_MVT of
       0:
         begin //ennemi qui ne fait que suivre le joueur
-        AIPathFollow(ennemi,joueur,ennemi.stats.vitessePoursuite,true,true);
-        flyUpdate(ennemi,100);
+        AIPathFollow(ennemi,joueur,max(0,round(sqrt((trouvercentrex(ennemi)-trouvercentrex(joueur))**2+(trouvercentrey(ennemi)-trouvercentrey(joueur))**2)/50-1)),true,true);
+        //flyUpdate(ennemi,100);
         if ennemi.stats.compteurAction>(400*ennemi.stats.vie/ennemi.stats.vieMax) then
           ennemi.stats.compteurAction:=0
         else ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1
@@ -858,9 +879,17 @@ begin
         if ennemi.anim.etat='chase' then
           begin
           ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
+          ennemi.stats.xcible:=trouvercentrex(joueur);
+          ennemi.stats.ycible:=trouvercentrey(joueur);
           if ennemi.stats.compteurAction>600 then
             begin
-            initAnimation(ennemi.anim,ennemi.anim.objectName,'tir',ennemi.stats.nbFrames2,False);
+            if random(2)=0 then
+              initAnimation(ennemi.anim,ennemi.anim.objectName,'tir',ennemi.stats.nbFrames2,False)
+            else
+              begin
+              jouerSonEff('XXIII');
+              initAnimation(ennemi.anim,ennemi.anim.objectName,'cast',5,True);
+              end;
             ennemi.stats.compteurAction:=600
             end;
           end;
@@ -871,6 +900,17 @@ begin
           ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
           end;
         if (ennemi.anim.etat='tir') and (animFinie(ennemi.anim)) then
+          begin
+          ennemi.stats.compteurAction:=0;
+          initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
+          end;
+        if (ennemi.anim.etat='cast') then
+          begin
+          ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
+          if (ennemi.stats.compteurAction>900) then
+            initAnimation(ennemi.anim,ennemi.anim.objectName,'finish',9,True);
+          end;
+        if (ennemi.anim.etat='finish') and (animFinie(ennemi.anim)) then
           begin
           ennemi.stats.compteurAction:=0;
           initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
@@ -954,7 +994,7 @@ begin
             for i:=0 to high(LObjets) do
               begin
               rect2:=getcollisionrect(LObjets[i]);
-              if isAttack(LObjets[i]) and (LObjets[i].stats.origine=TypeObjet(0)) and CheckAABB(rect1,rect2) then
+              if isAttack(LObjets[i].stats) and (LObjets[i].stats.origine=TypeObjet(0)) and CheckAABB(rect1,rect2) then
                 begin
                 initAnimation(ennemi.anim,ennemi.anim.objectName,'dodge',4,True);
                 ennemi.stats.compteurAction:=0;
@@ -1061,7 +1101,7 @@ begin
                   //SDL_setRenderDrawColor(sdlRenderer,0,255,0,255);
                   sdl_renderdrawline(sdlRenderer,trouverCentreX(ennemi),trouverCentreY(ennemi),trouverCentreX(LObjets[i]),trouverCentreY(LObjets[i]));
                   if LObjets[i].stats.vie<LObjets[i].stats.vieMax then
-                    lObjets[i].stats.vie:=LObjets[i].stats.vie+ennemi.stats.force;
+                    lObjets[i].stats.vie:=LObjets[i].stats.vie+round((ennemi.stats.force*(ennemi.stats.vie/ennemi.stats.vieMax)));
                   if (LObjets[i].stats.indice<>ennemi.stats.indice) then trouve:=True;
                   end;
               if not trouve then
@@ -1101,7 +1141,7 @@ begin
               for i:=0 to high(LObjets) do
                 begin
                 rect2:=getcollisionrect(LObjets[i]);
-                if isAttack(LObjets[i]) and (LObjets[i].stats.origine=TypeObjet(0)) and CheckAABB(rect1,rect2) then
+                if isAttack(LObjets[i].stats) and (LObjets[i].stats.origine=TypeObjet(0)) and CheckAABB(rect1,rect2) then
                   begin
                   initAnimation(ennemi.anim,ennemi.anim.objectName,'dodge',3,True);
                   ennemi.stats.compteurAction:=100;
@@ -1147,7 +1187,7 @@ begin
             end;
           end;
     18: begin //Boss : Le geôlier
-    ennemi.anim.isFliped:=(ennemi.Stats.xcible>trouverCentreX(ennemi));
+    
       if ennemi.anim.etat='chase' then
         begin
         ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
@@ -1172,7 +1212,11 @@ begin
           end;
         end;
       if (ennemi.anim.etat='dash') then
-        moveToTarget(ennemi,10);
+        begin
+        flyUpdate(ennemi,50);
+        movetoTarget(ennemi,5);
+        ennemi.stats.compteurAction:=ennemi.stats.compteurAction-1;
+        end;
       if (ennemi.anim.etat='strike') and (ennemi.anim.currentFrame>=10) then
         ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
       if animFinie(ennemi.anim) and ((ennemi.anim.etat='strike') or (ennemi.anim.etat='dash')) then
@@ -1180,6 +1224,10 @@ begin
         initAnimation(ennemi.anim,ennemi.anim.objectName,'chase',ennemi.stats.nbFrames1,True);
         ennemi.stats.degatsContact:=0;
         end;
+      if (ennemi.anim.etat='dash') or (ennemi.anim.etat='strike') then 
+        ennemi.anim.isFliped:=(ennemi.Stats.xcible>trouverCentreX(ennemi))
+      else 
+        ennemi.anim.isFliped:=(trouvercentrex(joueur)>trouverCentreX(ennemi))
       end;
     19:begin //Geôlier (phase 2)
       if (ennemi.anim.etat='chase') then
@@ -1525,8 +1573,8 @@ initStatEnnemi(29,   'expurgateur',           6,   40,  3,   1,   1,   0,   128,
 initStatEnnemi(30,   'dracomage',             2,   300, 2,   5,   6,   1,   192, 192, 34,                12,            8,               8,               26,          128,  164,  32,   28,   'eclairR');
 initStatEnnemi(31,   'geolier',               18,  300, 10,  0,   -10, 2,   500, 400, 4,                 12,            20,              4,               6,           100,  200,  200,  200,  'arcane');
 initStatEnnemi(32,   'geolier2',              19,  300, 10,  0,   -10, 1,   500, 400, 32,                18,            10,              10,              14,          200,  200,  150,  200,  'chaine');
-initStatEnnemi(33,   'Spectre',               12,  100, 1,   10,  0,   1,   300, 400, 8,                 22,            8,               0,               13,          160,  300,  70,   50,   'oeil');
-initStatEnnemi(34,   'vestige',               11,  1000,3,   15,  5,   1,   400, 400, 16,                16,            12,              10,              7,           250,  400,  75,   0,    'geyser_lumiere');
+initStatEnnemi(33,   'Spectre',               12,  200, 1,   10,  1,   1,   300, 400, 8,                 22,            8,               0,               13,          160,  300,  70,   50,   'oeil');
+initStatEnnemi(34,   'vestige',               11,  1000,3,   15,  3,   1,   400, 400, 16,                16,            12,              10,              7,           250,  400,  75,   0,    'geyser_lumiere');
 initStatEnnemi(35,   'gardien',               16,  500, 2,   1,   0,   1,   300, 300, 8,                 16,            0,               0,               23,          250,  120,  25,   120,  'rayon_main');
 initStatEnnemi(36,   'Geist',                 17,  200, 10,  0,   -10, 4,   300, 300, 21,                24,            3,               7,               9,           80,   80,   110,  160,  'rayonAL');
 initStatEnnemi(37,   'creature',              20,  1000,15,  0,   0,   0,   600, 560, 46,                12,            14,              14,              20,          500,  460,  50,   50,   'arcane');

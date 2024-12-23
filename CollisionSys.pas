@@ -16,7 +16,7 @@ uses
   procedure MAJCollisions();
   function GetCollisionRect(var obj: TObjet): TSDL_Rect;
   function CheckAABB(rect1, rect2: TSDL_Rect): Boolean;
-  function isAttack(obj:TObjet):Boolean;
+  function isAttack(stats:TStats):Boolean;
   // Fonction de vérification manuelle des collisions entre deux objets
   function VerifCollision(var obj1, obj2: TObjet): Boolean;
   function PseudoColMurs(var obj:TObjet):Boolean;
@@ -46,9 +46,9 @@ begin
             (rect1.y < rect2.y + rect2.h) and (rect1.y + rect1.h > rect2.y);
 end;
 
-function isAttack(obj:TObjet):Boolean;
+function isAttack(stats:TStats):Boolean;
 begin
-  isAttack:=(obj.stats.genre=epee) or (obj.stats.genre=projectile) or (obj.stats.genre=laser)
+  isAttack:=(stats.genre=epee) or (stats.genre=projectile) or (stats.genre=laser) or (stats.genre=explosion) or (stats.genre=explosion2)
 end; 
 
 procedure dessinerpetitrectangle(x,y:Integer);
@@ -219,7 +219,7 @@ end;
 function PseudoColMurs(var obj:TObjet):Boolean;
 var colx1,colx2,coly1,coly2:Integer; //4 coins de l'objet
 begin
-  if not isAttack(obj) then
+  if not isAttack(obj.stats) then
   begin
   colx1:=obj.image.rect.x+obj.col.offset.x;
   colx2:=obj.image.rect.x+obj.col.offset.x+obj.col.dimensions.w;
@@ -272,20 +272,20 @@ begin
 
     end;
 
-  if (VerifCollision) and not (isAttack(obj2) and obj2.col.collisionsFaites[obj1.stats.indice]) then
+  if (VerifCollision) and ((isAttack(obj2.stats) and (obj1.stats.indice>3) or (not (isAttack(obj2.stats) and (obj2.col.collisionsFaites[obj1.stats.indice]) )))) then
   begin
     //sert uniquement à l'affichage
     obj1.col.hasCollided:=True;
     obj2.col.hasCollided:=True;
     //pour savoir avec quels objets il est déjà en collision
-    if isAttack(obj2) then obj2.col.collisionsFaites[obj1.stats.indice]:=True;
+    if isAttack(obj2.stats) and (obj1.stats.indice<=3) then obj2.col.collisionsFaites[obj1.stats.indice]:=True;
     // Si l'un des deux objets est un trigger, on appelle OnTriggerEnter
     if obj1.col.isTrigger or obj2.col.isTrigger then
     begin
       OnTriggerEnter(obj1, obj2);
     end
     else
-      if not (obj1.stats.inamovible) then
+      if not (obj1.stats.inamovible) and (not isAttack(obj1.stats)) then
       begin
       // Si aucun des deux objets n'est un trigger, on les repousse pour éviter le chevauchement
       overlapX := Min(rect1.x + rect1.w, rect2.x + rect2.w) - Max(rect1.x, rect2.x);
@@ -318,15 +318,15 @@ begin
     end;
   end
     else
-      if (not VerifCollision) and isAttack(obj2) then
+      if (not VerifCollision) and isAttack(obj2.stats) and (obj1.stats.indice<=3) then
         obj2.col.collisionsFaites[obj1.stats.indice]:=False;
 end;
 
 function collisionValide(stats1,stats2:TStats):Boolean;
 var att1,att2:Boolean;
 begin
-  att1:=(stats1.genre=projectile) or (stats1.genre=laser) or (stats1.genre=epee);
-  att2:=(stats2.genre=projectile) or (stats2.genre=laser) or (stats2.genre=epee);
+  att1:=isAttack(stats1);
+  att2:=isAttack(stats2);
   if att1 then
     collisionValide:=(not (att2)) and (stats2.genre<>stats1.origine)
   else if att2 then
@@ -345,14 +345,22 @@ begin
     if (obj1.stats.genre=projectile) and (obj1.stats.origine<>obj2.stats.genre) then
       begin
       end;
-    if ((obj2.stats.genre=projectile) or (obj2.stats.genre=laser) or (obj2.stats.genre=epee)) and (obj2.stats.origine<>obj1.stats.genre) then
+    if (isAttack(obj2.stats)) and (obj2.stats.origine<>obj1.stats.genre) then
       begin
-        if (obj2.stats.genre=epee) and not (isAttack(obj1)) then
+        if (obj2.stats.genre=epee) and not (isAttack(obj1.stats)) then
           jouerSonEff('impact_epee_'+intToStr(random(5)+1));
+        if obj1.stats.genre=joueur then
+          jouerSonEff('impact');
         if obj2.stats.genre=projectile then
           begin
           subirDegats(obj1,degat(obj2.stats.degats,obj2.stats.force,obj1.stats.defense,obj2.stats.multiplicateurDegat),round(obj2.stats.vectx),round(obj2.stats.vecty));
-          creerEffet(obj2.image.rect.x,obj2.image.rect.y,64,64,6,'impact',False,obj2)
+          if (obj2.anim.objectName='meteore') then
+            begin
+            multiprojs(obj2.stats.origine,obj2.stats.degats div 40,obj2.stats.force,obj2.stats.multiplicateurDegat,round(obj2.stats.xreel),round(obj2.stats.yreel),100,100,8,8,360,0,'meteore2');
+            creerEffet(obj2.image.rect.x,obj2.image.rect.y,obj2.image.rect.w,obj2.image.rect.h,8,'impact_meteore',False,obj2);
+            end
+          else
+            creerEffet(obj2.image.rect.x,obj2.image.rect.y,obj2.image.rect.w,obj2.image.rect.h,6,'impact',False,obj2)
           end
         else
           begin
@@ -389,31 +397,31 @@ begin
         //writeln('i=',i,',j=',j,',High(LObjets)=',high(lobjets));
         if (LObjets[i].anim.objectName='Roue') then 
           begin 
-          if isAttack(LObjets[j]) and (LObjets[j].stats.origine<>LObjets[i].stats.origine) and collisionAngle(LObjets[i],LObjets[j]) then
+          if isAttack(LObjets[j].stats) and (LObjets[j].stats.origine<>LObjets[i].stats.origine) and collisionAngle(LObjets[i],LObjets[j]) then
             begin
-            supprimeObjet(LObjets[i]);
-            creerEffet(LObjets[j-1].image.rect.x,LObjets[j-1].image.rect.y,100,100,5,'roue_impact',False,LObjets[j-1]);
+            if LObjets[j].stats.degats<10 then supprimeObjet(LObjets[j]) else LObjets[j].stats.degats:=LObjets[j].stats.degats-10;
+            creerEffet(LObjets[i].image.rect.x,LObjets[i].image.rect.y,100,100,5,'roue_impact',False,LObjets[i]);
             destructionI:=True;
             end
           else if (LObjets[j].stats.genre=ennemi) and (LObjets[j].stats.degatsContact>0) and (LObjets[j].stats.cooldown<150) and collisionAngle(LObjets[i],LObjets[j]) then
             begin
             creerEffet(LObjets[i].image.rect.x,LObjets[i].image.rect.y,100,100,5,'roue_impact',False,LObjets[i]);
-            LObjets[j].stats.cooldown:=LObjets[j].stats.cooldown+10;
+            LObjets[j].stats.cooldown:=LObjets[j].stats.cooldown+100;
             end;
           end
         else
         if (LObjets[j].anim.objectName='Roue') then 
           begin
-          if isAttack(LObjets[i]) and (LObjets[j].stats.origine<>LObjets[i].stats.origine) and collisionAngle(LObjets[i],LObjets[j]) then
+          if isAttack(LObjets[i].stats) and (LObjets[j].stats.origine<>LObjets[i].stats.origine) and collisionAngle(LObjets[i],LObjets[j]) then
             begin
-            supprimeObjet(LObjets[i]);
+            if LObjets[i].stats.degats<10 then supprimeObjet(LObjets[i]) else LObjets[i].stats.degats:=LObjets[i].stats.degats-10;
             creerEffet(LObjets[j-1].image.rect.x,LObjets[j-1].image.rect.y,100,100,5,'roue_impact',False,LObjets[j-1]);
             destructionI:=True;
             end
           else if (LObjets[i].stats.genre=ennemi) and (LObjets[i].stats.degatsContact>0) and (LObjets[i].stats.cooldown<150) and collisionAngle(LObjets[i],LObjets[j]) then
             begin
             creerEffet(LObjets[j].image.rect.x,LObjets[j].image.rect.y,100,100,5,'roue_impact',False,LObjets[j]);
-            LObjets[i].stats.cooldown:=LObjets[i].stats.cooldown+10;
+            LObjets[i].stats.cooldown:=LObjets[i].stats.cooldown+100;
             end;
           end
         else

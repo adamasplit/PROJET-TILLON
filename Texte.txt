@@ -2,7 +2,7 @@
 <DESC_CAR_2>La sagesse de la papesse lui permet de combiner attaque et soin dans un rayon.;
 <DESC_CAR_3>L'impératrice impose sa volonté en pulvérisant ses ennemis, tout en accordant de la vie à ses sujets.;
 <DESC_CAR_4>L'autorité de l'empereur est transmise dans un puissant projectile d'énergie.;
-<DESC_CAR_5>Le pape transmet ses enseignements, pour perpétuer la vérité en ce monde. Permet de lancer de gros projectiles;
+<DESC_CAR_5>Le pape transmet ses enseignements, pour perpétuer la vérité en ce monde. Permet de lancer de gros projectiles.;
 <DESC_CAR_6>On dit que les cartes s'attirent entre elles, celles des Amants gagnent en puissance en fonction de leur nombre.;
 <DESC_CAR_7>Le chariot donne une protection puissante à son hôte.;
 <DESC_CAR_8>La justice accorde une bénédiction plus importante à ceux qui l'invoquent à plusieurs reprises.;
@@ -24,6 +24,8 @@
 <DESC_CAR_24>Cette carte porte le symbole du Serpentaire. Elle renferme une grande puissance qui ne peut pas être utilisée offensivement.;
 <DESC_CAR_25>Une carte qui représente une créature inconnue. Semblant contrôler le vent, elle envoie un tourbillon de projectiles.;
 <DESC_CAR_26>Une carte qui représente une créature inconnue. Elle contrôle la foudre et peut donc fusiller une cible d'éclairs.;
+<DESC_CAR_27>Un tome qui détaille le sort le plus puissant de la création, Ultima. Entre les mains des dieux, on dit qu'il aurait la puissance de réinitialiser l'univers, en commençant par l'anéantir.;
+<DESC_CAR_28>Le tome d'une magie qui tente de répliquer l'incroyable pouvoir de création de matière des dragons, en manifestant une gigantesque météorite. Il a été écrit par les humains de l'ancien monde.;
 <COMM_CAR_1>Il faut bien commencer quelque part. J'accepte l'aide que les cartes m'accorderont.;
 <COMM_CAR_2>Je manque encore d'expérience, c'est vrai, mais je ne serai pas naïve.;
 <COMM_CAR_3>Certes, il faut que je me batte, mais je vais faire attention à moi. Si je meurs maintenant, personne ne me pleurera.;
@@ -50,6 +52,8 @@
 <COMM_CAR_24>Hmm, cette carte semble contenir une forte volonté de protéger, un désir de se sacrifier pour les autres... et, accessoirement, un sort qui scelle la magie.;
 <COMM_CAR_25>Le "général céleste"? De quoi peut-il donc s'agir? Une sorte de divinité, peut-être? Tout cela est bien étrange... Mais quelle puissance!;
 <COMM_CAR_26>L'être qui est représenté ici... Existe-t-il vraiment? Sinon, quel genre d'artiste fou a pu créer de pareilles cartes?;
+<COMM_CAR_27>Quelle puissance ! Mais retranscrites par des humains, ces instructions sont quasiment incompréhensibles...;
+<COMM_CAR_28>Le pouvoir de création, hein? Paradoxalement, ce sort ne sert qu'à détruire. C'est bien ironique. Mais j'imagine que notre emprise sur ce pouvoir est limitée par le fait que les dragons soient encore vivants.;
 <DESC_ENN_1>Cette gelée s'est formée de souillure et de magie.;
 <DESC_ENN_2>Un grimoire à qui la puissante magie qu'il contient a conféré une sorte de conscience.;
 <DESC_ENN_3>L'esprit d'un innocent tué par la guerre. Sa tristesse a fini par devenir de la haine.;
@@ -128,10 +132,25 @@
 <COMM_ENN_37>Je... je ne veux pas me remémorer ça!;
 <COMM_ENN_38>Dans nos légendes, les dragons sont réputés pour leur hargne, mais... Qu'a-t'il pu bien se passer pour en arriver là? Dans tous les cas, le seul moyen de le renvoyer dans la mort est de tuer son réceptacle.;
 
+<SORT1_1>Lumière sacrée, oracle de l'univers. J'en appelle à toi... Ultima!;
+<SORT1_2>Transperce le ciel et déchaîne ton énergie... Ultima!;
+<SORT1_3>Fais briller ta lumière, révèle la vérité! Ultima!;
+<SORT2_1>Arcane ancienne, sagesse d'innombrables millénaires! Manifeste-toi: Météore!;
+<SORT2_2>Pouvoir qui a créé ce monde, astre flamboyant de la dévastation... Météore!;
+<SORT2_3>Par la dualité de l'univers, que matière et magie ne fassent qu'un à nouveau! Météore!;
 
+<TXT_MAP1>Mes pouvoirs me permettent de prédire ce que contiennent ces salles... dans une certaine mesure. Ce n'est pas une science exacte, mais je me trompe rarement.;
+<TXT_MAP2>Je peux tenter de deviner mon propre futur: pour cela, je prédis ce qui se cache derrière ces portes. Telle est ma discipline.;
+<TXT_MAP3>Voilà ce qui m'attend si je traverse l'une de ces portes... à epsilon près.;
+<TXT_MAP4>Je vois le chemin à suivre. Ces prédictions me guideront, une fois de plus!;
 
+<TXT_MAP10>Plus qu'un chemin possible, on dirait... Il faut que je sorte d'ici.;
+<TXT_MAP20>On dirait qu'il est temps pour mon conseil de discipline, mais quel genre de fou peut vouloir vivre dans un endroit pareil?;
+<TXT_MAP30>Je préfère ne pas savoir quelle créature a fait cette ouverture, mais je n'ai pas le choix si je veux ressortir vivante au milieu de toutes ces choses.;
+<TXT_MAP40>Ma quête touche à sa fin. Derrière ces portes... se trouve le Conseil. Je n'y suis pas la bienvenue.;
 
-
+<REPRISE_1>Bon... on s'y remet?;
+<REPRISE_2>C'est le moment de continuer mes prédictions.;
 
 <TXT_INTRO1>Il fait si froid...;
 <TXT_INTRO2>Tout est noir. Aucun son, aucune lumière.;
@@ -183,6 +202,60 @@
 <INTRO_EVENT3_4>Des monstres approchent !;
 <INTRO_EVENT3_5>Vous vous réveillez..;
 <INTRO_EVENT3_6>La salle est toujours aussi vide. Vous reprenez votre aventure !;
+<INTRO_EVENT4_1>Dans le silence, interrompu uniquement par vos propres pas...;
+<INTRO_EVENT4_2>Vous entrez dans une salle immense plongée dans les ténèbres.;
+<INTRO_EVENT4_3>Une fois que vos yeux se sont habitués à l'obscurité, vous êtes instantanément figée par la terreur.;
+<INTRO_EVENT4_4>En effet, un monstre immense vous toise, mais il ne semble pas en état de se battre.;
+<INTRO_EVENT4_5>Ses membres sont entravés et son corps couvert de graves mutilations...;
+<INTRO_EVENT4_6>D'anciennes leçons de mythologie vous reviennent en tête, mais vous ne parvenez pas à identifier sa nature.;
+<INTRO_EVENT4_7>Il réagit à peine à votre arrivée.;
+<INTRO_EVENT5_1>Le peu de lumière qui vous entoure disparaît et vous êtes subitement plongée dans l'obscurité.;
+<INTRO_EVENT5_2>Une voix résonne dans votre esprit et vous propose un marché...;
+<INTRO_EVENT5_3>"En échange de votre énergie, nous pouvons accomplir de grandes choses ensemble... Qu'en dites-vous?";
+<INTRO_EVENT6_1>En traversant des couloirs, vous apercevez un duo de créatures humanoïdes que vous ne pouvez pas identifier.;
+<INTRO_EVENT6_2>L'une d'elles vous voit aussi et vous adresse la parole...;
+<INTRO_EVENT6_3>Salut! Ça va?;
+<INTRO_EVENT6_4>Hum... oui.;
+<INTRO_EVENT6_5>Besoin d'aide? Ça vous dit, quelques améliorations pour vos sorts?;
+<INTRO_EVENT6_6>Qu'est-ce que vous attendez de moi en échange?;
+<INTRO_EVENT6_7>Oh, rien, on peut vous aider comme ça!;
+<INTRO_EVENT6_8>"On"? Parle pour toi, Ulgatr. J'aide pas les inconnus comme ça.;
+<INTRO_EVENT6_9>Oh, ça va! Ça nous coûte rien.;
+<INTRO_EVENT6_10>...;
+<INTRO_EVENT6_11>Du coup, ça vous dit? Je peux faire en sorte que vous puissiez lancer un sort 2 fois. Efficace, non?;
+<INTRO_EVENT6_12>Efficace et rapide. Comme toi...?;
+<FIN_EVENT6_1>Et merci!! Bon courage!;
+<SPEC_EVENT6_1>Attendez, j'ai votre carte... Enfin, je crois?;
+<SPEC_EVENT6_2>Ah oui, c'est moi! Qui a fait ça?;
+<SPEC_EVENT6_3>Je ne connais qu'une seule personne assez tordue pour faire un truc pareil...;
+<SPEC_EVENT6_4>Ophiucus?;
+<SPEC_EVENT6_5>Maintenant que tu le dis, c'est logique. J'irai lui demander ce qu'il a fait.;
+<SPEC_EVENT6_6>En tout cas, la carte contient un puissant sort d'électricité, j'en déduis que c'est votre domaine?;
+<SPEC_EVENT6_7>Euhhhhh... ouais! Oui, bien sûr, ça doit être ça!;
+<SPEC_EVENT6_8>Heh.;
+<SPEC_EVENT6_9>Bref...;
+<INTRO_EVENT7_3>...Salut.;
+<INTRO_EVENT7_4>Hum...bonjour?;
+<INTRO_EVENT7_5>Navré, il est pas hyper bavard. On peut vous aider?;
+<INTRO_EVENT7_6>T'es trop gentil... On a pas à aider tout le monde sur notre chemin.;
+<INTRO_EVENT7_7>Quoi, tu voudrais un truc en échange? Tu es un gourmand!;
+<INTRO_EVENT7_8>...;
+<INTRO_EVENT7_9>...Je peux donner un effet de réduction de la consommation de mana, parce qu'on est pas des consommateurs ici.;
+<INTRO_EVENT7_10>Tu vois quand tu veux!;
+<SPEC_EVENT7_1>Hmm... J'ai une carte qui a l'air de vous représenter.;
+<SPEC_EVENT7_2>Ah ouais.;
+<SPEC_EVENT7_3>Je me doute bien de qui a fait ça. Si je l'attrape, je le mords!;
+<SPEC_EVENT7_4>Du calme, Soeryo, on menace pas les gens comme ça!;
+<SPEC_EVENT7_5>Hmph.;
+<ECH_EVENT6_0>Allez, dites moi ce qui vous ferait plaisir!;
+<ECH_EVENT6_1>Vous êtes sûre?;
+<ECH_EVENT7_0>...Dépêchez. J'ai pas toute la journée.;
+<ECH_EVENT7_1>C'est bon?;
+<ECH_EVENT5_0>Heh heh heh... Bien.;
+<ECH_EVENT5_1>"Bien entendu... je dois être certain que c'est ce que vous voulez...";
+<ECH_EVENT5_3>"Cette magie... Améliorons-la. Vous pourrez enchaîner ce sort...";
+<FIN_EVENT5_0>"Heh heh heh! Il faut croire que les humains ne sont pas tous si bêtes. Vous en avez, du courage, jeune fille...";
+<FIN_EVENT5_1>La voix disparaît lentement...;
 <DIALOGUE_EVENT2_0>Ah, euh...bonjour. Hum...;
 <DIALOGUE_EVENT2_1>Qu'est-ce que vous voulez?;
 <DIALOGUE_EVENT2_2>Je... Cette carte que vous portez, je peux la voir?;
@@ -213,7 +286,18 @@
 <DIALOGUE_EVENT_BOSS_6>Merci pour ce combat, c'était exactement ce qu'il me fallait! En échange...;
 <DIALOGUE_EVENT_BOSS_7>Voilà, ma propre carte!;
 <DIALOGUE_EVENT_BOSS_8>Une carte? Comment se fait-il que je ne la connaisse pas?;
-
+<DIALOGUE_EVENT4_0>...;
+<DIALOGUE_EVENT4_1>!! Qu'est-ce que...;
+<DIALOGUE_EVENT4_2>Une humaine... Il y a bien longtemps.;
+<DIALOGUE_EVENT4_3>Je... Qu'êtes-vous?!;
+<DIALOGUE_EVENT4_4>........ ça n'a plus d'intérêt d'en parler maintenant... Trop de temps s'est écoulé depuis ma création. J'imagine que les humains ont, comme il se doit, oublié les dieux-dragons...;
+<DIALOGUE_EVENT4_5>Un dieu-dragon? Dans ce cas, ça voudrait dire que vous êtes notre ancêtre?;
+<DIALOGUE_EVENT4_6>Un premier essai d'une combinaison des pouvoirs des deux Originels. Un échec.;
+<DIALOGUE_EVENT4_7>Il fut un temps où je voulais reprendre la place que je croyais légitime, aux côtés de mes créateurs. Mais ça n'a plus d'importance.;
+<DIALOGUE_EVENT4_8>Si j'ai été rejeté... il est bien trop tard pour contester cette décision. Les humains sont une création plus aboutie.;
+<DIALOGUE_EVENT4_9>...;
+<ECH_EVENT4_0>Avec le peu qu'il me reste... je voudrais emprunter un fragment de votre force, pour comprendre leur choix. Je suis prêt à faire des concessions.;
+<ECH_EVENT4_1>Un pacte avec moi aura moins de répercussions qu'un vrai dragon... mais je me dois de m'assurer de votre coopération.;
 <FEU_DE_CAMP_1>Enfin un feu de camp, je vais pouvoir me reposer.;
 <FEU_DE_CAMP_2>Un peu de chaleur, ce batiment est froid à mourir...;
 <FEU_DE_CAMP_3>Enfin un peu de lumière après tant d'ombre.;
@@ -223,7 +307,7 @@
 <MARCHAND_ACCUEIL_3>Approchez jeune aventurière !;
 <MARCHAND_ACCUEIL_4>Il est frais mon étalage, il est frais !;
 
-<MARCHAND_DISCUSSION_1_1>Je vous reconnais ! Vous êtes la rebelle qui a causé les événements terroristes restants.;
+<MARCHAND_DISCUSSION_1_1>Je vous reconnais ! Vous êtes la rebelle qui a causé les événements terroristes récents.;
 <MARCHAND_DISCUSSION_1_2>Décidément je suis une vraie star... Malgré moi. Qu'est ce que vous savez de moi ?;
 <MARCHAND_DISCUSSION_1_3>Eh bien, que vous manipulez l'opinion pour faire croire qu'une guerre allait se déclencher...;
 <MARCHAND_DISCUSSION_1_4>Finalement, cela a causé la guerre civile et les attentats druides.;
@@ -305,7 +389,7 @@
 <PRISON_CELLULE_19>Quels idiots ! Ils ne savent pas la puissance que contient réellement ces cartes.;
 
 <DIALOGUE_BOSS1_1_1>Hmm ?? GRUUuuuhhhh ! Comment toi échappée ?!;
-<DIALOGUE_BOSS1_1_2>Et bien un de tes idiots de gardes a simplement laissé tomber des cartes par terre et me voilà !;
+<DIALOGUE_BOSS1_1_2>Un de vos idiots de gardes a simplement laissé tomber des cartes par terre...;
 <DIALOGUE_BOSS1_1_3>Grumph ! Toi retourne cage, maintenant !;
 <DIALOGUE_BOSS1_1_4>Non, je ne crois pas non.;
 <DIALOGUE_BOSS1_1_5>Pourquoi ?;
@@ -341,7 +425,7 @@
 <DIALOGUE_BOSS2_1_8>Donc vous savez tout ce qui s'est passé dans l'histoire ?;
 <DIALOGUE_BOSS2_1_9>On peut dire cela, oui! HO HO !;
 <DIALOGUE_BOSS2_1_10>Dans ce cas, est-ce vrai que le président du conseil voulait s'accaparer les terres des druides par la guerre ?;
-<DIALOGUE_BOSS2_1_11>Hmph... Tu sais jeune fille, tout les secrets n'ont pas besoin d'être révelés au grand jour.;
+<DIALOGUE_BOSS2_1_11>Hmph... Tu sais jeune fille, tous les secrets n'ont pas besoin d'être révelés au grand jour.;
 <DIALOGUE_BOSS2_1_12>Je vais prendre ça pour un oui ...;
 <DIALOGUE_BOSS2_2_1>Hmph! Quelle insolence! Je ne tolèrerais jamais ça venant de mes élèves.;
 <DIALOGUE_BOSS2_2_2>Oui, en effet je doute que vos élèves tentent de vous tuer... Ou que vous tentiez de le faire en retour, d'ailleurs.;
@@ -419,7 +503,7 @@
 <DIALOGUE_BOSS4_4_5>RAAAAAAAAAAAAAAAAAARGH!!!!!;
 <DIALOGUE_BOSS4_1>Heh heh heh. Me voilà débarrassé de cet esprit misérable, enfin! L'humanité connaîtra mon courroux pour ces millénaires de souffrance.;
 <DIALOGUE_BOSS4_2>Un dragon...?! Qu'est-ce que cette chose? Qu'est-il advenu de l'archimage qui vous a invoqué?;
-<DIALOGUE_BOSS4_3>Un imbécile qui croyait pouvoir maîtriser ma force... un sacrifice nécessaire pour ma réincarnation. Vous, les humains, vous tentez de manipuler des pouvoirs qui vous dépassent totalement.;
+<DIALOGUE_BOSS4_3>Un imbécile qui croyait pouvoir maîtriser ma force... un sacrifice nécessaire pour ma réincarnation. Les humains tentent toujours de manipuler des pouvoirs qui les dépassent.;
 <DIALOGUE_BOSS4_4>Mais il est temps pour vous de connaître votre place. Il est grand temps pour l'ère des dragons!;
 <DIALOGUE_BOSS4_5>Nous ne sommes pas vos pions. L'humanité a largement dépassé ses créateurs, que vous le vouliez ou non!;
 <DIALOGUE_BOSS4_0>Non... Emprisonné à nouveau? Vous ne perdez rien pour attendre, humains!;

@@ -11,28 +11,36 @@ uses
     math,
     memgraph,
     SDL2,
+    SDL2_mixer,
     SonoSys,
     SysUtils;
-var salleChoisie:TSalle;
-var iDeck,iChoix1,iChoix2:Integer;
+var isalleChoisie:Integer;
+var iDeck,iChoix1,iChoix2,indiceMusiqueSuiv:Integer;
 var etatChoix:Boolean;
+var evenementSuiv:evenements;
 echangeFait:Boolean;
 
 CONST 
 windowHeight=720;windowWidth=1080;
-      X1=(windowWidth div 2)+(windowWidth div 4)-64;           
-      X2=(windowWidth div 2)-64;
-      X3=(windowWidth div 2)-(windowWidth div 4)-64;
+      X1=(windowWidth div 2)+(windowWidth div 4);           
+      X2=(windowWidth div 2);
+      X3=(windowWidth div 2)-(windowWidth div 4);
       Y2=(windowHeight  div 2) - (windowHeight div 2)+128;
       Y1=(windowHeight  div 2) + (windowHeight div 4);
 
 procedure generationChoix(var salle1,salle2,salle3:TSalle);
 procedure affichageSalles(var salle1,salle2,salle3:TSalle);
+procedure zoom();
+procedure actualiserDD();
+procedure actualiserUS;
+procedure desequiperRelique(var stats:TStats);
+procedure HandleButtonClickSalle(button:TButtonGroup;evenement:evenements;num,x,y:Integer);
 procedure choixSalle();
 procedure actualiserMap();
 procedure actualiserMarchand();
 procedure actualiserEchange();
 procedure actualiserSalleLeo;
+procedure actualiserEchangeDD();
 procedure brulerCarte(carte:TCarte ; var stats : Tstats);
 function dropCarte(avancement:Integer;boss:Boolean):TCarte;
 procedure LancementSalleHasardReposRisque;
@@ -43,16 +51,81 @@ procedure ReposRisque;
 procedure LancementSalleHasard;
 procedure LancementSalleBoss;
 procedure LancementSalleMarchand;
+procedure LancementSalleHasardDD;
 procedure LancementSalleCamp;
 procedure scrollDeck(var i:Integer;imax:Integer);
-procedure activationEvent(scene:String);
+procedure activationEvent(scene:String);overload;
+procedure activationEvent(evenement:evenements);overload;
 procedure HandleButtonClickEch(var button: TButtonGroup; x, y: Integer;carte1,carte2:TCarte;var stats:TStats);
 function Highlight(var btnGroup: TButtonGroup; x, y: Integer):Boolean;
 implementation
 
 var entree:Boolean;
 var numDialogue:Integer;
-var imgCar1,imgCar2,imgCar3:TImage;
+var imgCar1,imgCar2,imgCar3,imgEchange:TImage;
+izoom:Integer;
+
+procedure zoom();
+var
+  tempsEcoule: UInt32;
+  progression: Real;
+  xinit,yinit:Integer;
+  i:Integer;
+begin
+    tempsEcoule := SDL_GetTicks() - TimeDebutFondu;
+    progression := 2-2*exp(-(tempsEcoule) / dureeFondu);
+    
+    xinit:=salles[izoom].image.image.rect.x+(salles[izoom].image.image.rect.w div 2);
+    yinit:=salles[izoom].image.image.rect.y+(salles[izoom].image.image.rect.h div 2);
+    salles[izoom].image.image.rect.w:=256+round(progression*600);
+    salles[izoom].image.image.rect.h:=392+round(progression*900);
+    salles[izoom].image.image.rect.x:=xinit-(salles[izoom].image.image.rect.w div 2);
+    salles[izoom].image.image.rect.y:=yinit-(salles[izoom].image.image.rect.h div 2);
+    for i:=1 to 3 do 
+        if (i<>iZoom) then
+            case i of
+            1:salles[i].image.image.rect.x:=X1-(salles[i].image.image.rect.w div 2)+round(progression*(480+izoom*20));
+            2:salles[i].image.image.rect.x:=X2-(salles[i].image.image.rect.w div 2)+round(progression*(400*(izoom-2)));
+            3:salles[i].image.image.rect.x:=X3-(salles[i].image.image.rect.w div 2)-round(progression*(540-izoom*20));
+            end;
+    progression:=progression*1.7;
+    case izoom of
+        3:begin
+            fond.rect.x:=0;
+            fond.rect.y:=-round(progression*360);
+            fond.rect.w:=WINDOWWIDTH+round(progression*WINDOWWIDTH);
+            fond.rect.h:=WINDOWHEIGHT+round(progression*windowHeight);
+            end;
+        2:begin
+            fond.rect.x:=-round(progression*540);
+            fond.rect.y:=-round(progression*360);
+            fond.rect.w:=WINDOWWIDTH+round(progression*WINDOWWIDTH);
+            fond.rect.h:=WINDOWHEIGHT+round(progression*windowHeight);
+            end;
+        1:begin
+            fond.rect.x:=-round(progression*WINDOWWIDTH);
+            fond.rect.y:=-round(progression*360);
+            fond.rect.w:=WINDOWWIDTH+round(progression*WINDOWWIDTH);
+            fond.rect.h:=WINDOWHEIGHT+round(progression*windowHeight);
+            end;
+    end;
+    //writeln(izoom);
+    
+
+end;
+
+procedure lancerSalle(evenement:evenements;numero:Integer);
+begin
+    if evenement<>rien then
+    begin
+        sceneActive:='Fondu';
+        DeclencherFondu(True,1000);
+        evenementSuiv:=evenement;
+        if evenement<>boss then 
+        createRawImage(salles[numero].image.image,salles[numero].image.image.rect.x,salles[numero].image.image.rect.y,salles[numero].image.image.rect.w,salles[numero].image.image.rect.h,'Sprites/salles/porte10.bmp');
+        izoom:=numero;
+    end;
+end;
 
 procedure generationChoix(var salle1,salle2,salle3:TSalle);
 var alea:Integer;
@@ -121,8 +194,11 @@ begin
         3..6:choisirennemi:=random(2)+28;
         7..8:choisirennemi:=random(4)+13;
         9:choisirennemi:=random(7)+6;
-        10:if random(3)=0 then choisirennemi:=36
-            else choisirennemi:=35
+        10:case random(3) of
+            0:choisirennemi:=36;
+            1:choisirennemi:=12;
+            2:choisirennemi:=35;
+            end;
         end;
 end;
 
@@ -138,6 +214,12 @@ procedure choisirEnnemis(avancement:Integer;boss:Boolean);
 var j,nb : integer;
 begin
     //writeln(high(ennemis),',',high(LObjets));
+    if high(damagepopups)>0 then
+    repeat
+        SDL_DestroyTexture(DamagePopUps[high(DamagePopUps)].textTexture);
+        SDL_freeSurface(DamagePopUps[high(DamagePopUps)].textSurface);
+        setlength(damagepopups,high(DamagePopUps));
+    until high(damagepopups)<0;
     if high(ennemis)>1 then
         repeat
             SDL_DestroyTexture(ennemis[high(ennemis)].image.imgTexture);
@@ -154,7 +236,7 @@ begin
     randomize;
     initDecor((avancement-1) div 10);
     indiceMusiqueJouee:=choisirMusique(avancement);
-    nb:=1+((avancement mod (maxSalles div 4)) div 6);
+    nb:=1+(random(20) div 18)+((avancement mod (maxSalles div 4)) div 6);
     //writeln('choix des ennemis');
     if not boss then begin
         setlength(ennemis,nb+1);
@@ -176,8 +258,7 @@ procedure LancementSalleCombat(); //déclenche une salle de combat normal
 begin
 
 //writeln('Lancement de salle Combat');
-choisirEnnemis(statsJoueur.avancement,false);
-statsJoueur.avancement := statsJoueur.avancement+1;
+choisirEnnemis(statsJoueur.avancement-1,false);
 ClearScreen;
 SDL_RenderClear(sdlRenderer);
 
@@ -192,7 +273,7 @@ begin
     combatFini:=False;
     setlength(ennemis,2);
     indiceMusiqueJouee:=9;
-    initDecor;
+    initDecor(4);
     ennemis[1]:=templatesEnnemis[23];
     sceneActive:='Jeu';
 end;
@@ -219,14 +300,13 @@ end;
 procedure LancementSalleBoss; //active une salle où le joueur combattra un unique ennemi plus puissant
 begin
     //writeln('Lancement de salle Boss');
-    choisirEnnemis(statsJoueur.avancement,true);
+    choisirEnnemis(statsJoueur.avancement-1,true);
     ClearScreen;
     SDL_RenderClear(sdlRenderer);
     SceneActive := 'Jeu';
     vagueFinie:=False;
-    choixBoss(statsJoueur.avancement);
+    choixBoss(statsJoueur.avancement-1);
     //writeln('ennemis choisis (boss)');
-    statsJoueur.avancement := statsJoueur.avancement+1;
 end;
 
 function ajouterCarteAleatoireRarete(rarete : Trarete):TCarte;
@@ -299,8 +379,11 @@ begin
     if boss then
         if alea div 25<=avancement div (MAXSALLES div 4) then
             begin
-            if alea mod 5<>4 then
-                dropCarte:=ajouterCarteAleatoireRarete(legendaire)
+            if alea mod 5<>3 then
+                if (random(5)=4) and (avancement div (MAXSALLES div 4)=2) then
+                    dropCarte:=cartes[27+random(2)]
+                else
+                    dropCarte:=ajouterCarteAleatoireRarete(legendaire)
             else
                 if alea mod 2=0 then 
                     dropCarte:=cartes[25]
@@ -465,7 +548,7 @@ begin
     supprimerCarte(stats,carte2.numero);
     echangeFait:=True;
     ajouterCarte(statsJoueur,carte.numero);
-    createRawImage(imgCar3,1080-250-127,imgCar2.rect.y,imgCar2.rect.w,imgCar2.rect.h,carte.dir);
+    createRawImage(imgCar3,1080-150-127,imgCar2.rect.y,imgCar2.rect.w,imgCar2.rect.h,carte.dir);
     renderRawImage(imgCar3,False);
     sdl_renderpresent(sdlrenderer);
     sdl_delay(3000);
@@ -501,6 +584,18 @@ begin
 
 end;
 
+procedure HandleButtonClickSalle(button:TButtonGroup;evenement:evenements;num,x,y:Integer);
+begin
+    if (x >= button.image.rect.x) and (x <= button.image.rect.x + button.image.rect.w) and
+     (y >= button.image.rect.y) and (y <= button.image.rect.y + button.image.rect.h) then
+  begin
+    if Assigned(button.procEch) then
+    begin  
+        button.procSalle(evenement,num);
+    end;
+  end;
+end;
+
 procedure HandleButtonClickEch(var button: TButtonGroup; x, y: Integer;carte1,carte2:TCarte;var stats:TStats);
 begin
   if (x >= button.image.rect.x) and (x <= button.image.rect.x + button.image.rect.w) and
@@ -529,10 +624,47 @@ begin
     renderRawImage(imgCar1,False);
     createRawImage(imgCar2,boutons[3].image.rect.x,boutons[3].image.rect.y,boutons[3].image.rect.w,boutons[3].image.rect.h,StringToPChar('Sprites/Cartes/carte'+intToStr(statsJoueur.collection[iChoix2].numero)+'.bmp'));
     renderRawImage(imgCar2,False);
+    renderRawImage(imgEchange,False);
     sdl_destroytexture(imgCar1.imgTexture);
     sdl_freeSurface(imgCar1.imgSurface);
     sdl_destroytexture(imgCar2.imgTexture);
     sdl_freeSurface(imgCar2.imgSurface);
+end;
+
+procedure actualiserEchangeDD();
+begin
+    renderRawImage(fond,false);
+    ////writeln(ichoix1);
+    if sceneActive='DShop' then
+        drawRect(black_col,255,0,0,windowWidth,windowHeight)
+    else
+        renderRawImage(imgCar3,120,false);
+    updateDialogueBox(dialogues[2]);
+    renderButtonGroup(boutons[1]);
+    renderButtonGroup(boutons[4]);
+    renderRawImage(imgCar1,False);
+    renderRawImage(imgEchange,False);
+    if (sceneActive='DShop') and echangeFait then 
+        begin
+        createRawImage(imgcar2,640,160,200,200,statsJoueur.collection[ichoix2].dir);
+        renderRawImage(imgCar2,False);
+        sdl_destroytexture(imgCar2.imgTexture);
+        sdl_freeSurface(imgCar2.imgSurface);
+        end
+    else renderRawImage(imgCar2,False);
+end;
+
+procedure actualiserUS;
+begin
+    renderRawImage(fond,False);
+    updateDialogueBox(dialogues[2]);
+    renderButtonGroup(boutons[1]);
+    renderButtonGroup(boutons[4]);
+    createRawImage(imgcar2,imgcar2.rect.x,imgcar2.rect.y,200,200,statsJoueur.collection[ichoix2].dir);
+    renderRawImage(imgCar2,False);
+    sdl_destroytexture(imgCar2.imgTexture);
+    sdl_freeSurface(imgCar2.imgSurface);
+    effetDeFondu;
 end;
 
 procedure confirmer();
@@ -547,6 +679,7 @@ ClearScreen;
 etatchoix:=False;
 iChoix1:=1;iChoix2:=2;
 SDL_RenderClear(sdlRenderer);
+createRawImage(imgEchange,600,260,200,200,'Sprites/Menu/echange.bmp');
 InitButtonGroup(boutons[1],  415, 50, 250, 100, 'Sprites/Menu/Button1.bmp','Annuler',@LancementSalleMarchand);
 InitButtonGroup(boutons[2],  100, 250, 250, 250, 'Sprites/Menu/Button1.bmp','X',@confirmer);
 InitButtonGroup(boutons[3],  1080-255-500, 250, 250, 250, 'Sprites/Menu/Button1.bmp','X',@confirmer);
@@ -603,7 +736,6 @@ begin
         begin
         numDialogue:=1;
         if statsJoueur.nbMarchand<6 then statsJoueur.nbMarchand := statsJoueur.nbMarchand+1;
-        statsJoueur.avancement := statsJoueur.avancement+1;
         entree:=True;
         end;
     if not echangeFait then
@@ -611,8 +743,23 @@ begin
     InitButtonGroup(boutons[2],  440, 200, 200, 100, 'Sprites/Menu/Button1.bmp','Discussion',@rerollDialogueMarchand);
     InitButtonGroup(boutons[3],  465, 300, 150, 100, 'Sprites/Menu/Button1.bmp','Partir',@choixSalle);
     initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/marchand.bmp',0,450,1080,300,extractionTexte('MARCHAND_ACCUEIL_'+intToStr(min(statsJoueur.nbMarchand,4))),10);
-    
-    
+end;
+
+procedure actualiserDD();
+begin
+    renderRawImage(fond,120,false);
+    renderRawImage(imgCar3,false);
+    if not echangeFait then 
+        begin
+        OnMouseHover(boutons[1],getMouseX,getMouseY);
+        renderButtonGroup(boutons[1]);
+        //HandleButtonClick(boutons[1].button,getmousex,getmousey);
+        end;
+    UpdateDialogueBox(dialogues[2]);
+    OnMouseHover(boutons[2],getMouseX,getMouseY);
+    renderButtonGroup(boutons[2]);
+    OnMouseHover(boutons[3],getMouseX,getMouseY);
+    renderButtonGroup(boutons[3]);
 end;
 
 procedure actualiserMarchand();
@@ -688,7 +835,6 @@ begin
     createRawImage(fond, 0,0, WINDOWWIDTH, windowHeight,'Sprites/Menu/fondMarchand.bmp');
     if not(entree) then  
         begin
-        statsJoueur.avancement:=statsJoueur.avancement+1;
         entree:=true;
         end;
     InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/Button1.bmp','Bruler carte',@defaussecarte);
@@ -741,6 +887,203 @@ begin
     else
         initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT2_'+intToStr(numDialogue)),10);
     end;
+end;
+
+procedure rerollDialogueDD;
+begin
+    numDialogue:=min(numDialogue+1,9);
+    case numDialogue of
+    0,2,4,6,7,8:
+        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/dd.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT4_'+intToStr(numDialogue)),10);
+    else
+        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT4_'+intToStr(numDialogue)),10);
+    end;
+end;
+
+procedure desequiperRelique(var stats:TStats);
+begin
+	case stats.relique of
+	1:
+	stats.vitesse:=stats.vitesse-3;
+	2:
+	stats.manaMax:=stats.manaMax-4;
+	3:	
+	begin 
+	stats.vieMax:=stats.vieMax-20;
+	end;
+	4:
+	stats.multiplicateurSoin:=1;
+	5:
+	begin
+	stats.manaDebutCombat:=0;
+	stats.multiplicateurMana:=stats.multiplicateurMana-0.3
+	end;
+	6:stats.force:=stats.force-5;
+	7:stats.defense:=stats.defense-6;
+	8:begin
+		stats.multiplicateurDegat:=stats.multiplicateurDegat-0.5;
+		stats.vieMax:=stats.vieMax+10;
+		end;
+	end;
+end;
+
+procedure tradeDD(num:Integer;var stats:TStats);
+var i:Integer;
+begin
+    if etatChoix then
+    begin
+    case ichoix1 of
+    1:stats.multiplicateurMana:=stats.multiplicateurMana-0.2;
+    2:stats.force:=stats.force-3;
+    3:stats.defense:=stats.defense-3;
+    4:stats.multiplicateurSoin:=stats.multiplicateurSoin-0.2;
+    5:stats.vieMax:=stats.vieMax-15;
+    6:stats.manaMax:=stats.manaMax-4;
+    end;
+    if echangeFait then stats.collection[ichoix2].chargesMax:=stats.collection[ichoix2].chargesMax+3
+    else
+        case ichoix2 of
+        1:for i:=1 to 3 do ajouterCarte(stats,27);
+        2:for i:=1 to 3 do ajouterCarte(stats,28);
+        3:begin
+            desequiperRelique(stats);
+            stats.relique:=10;
+            end;
+        4:stats.force:=stats.force+4;
+        5:stats.multiplicateurMana:=stats.multiplicateurMana+0.5;
+        6:begin
+            randomize;
+            for i:=1 to stats.tailleCollection do stats.collection[i]:=cartes[random(22)+1];
+            end;
+        end;
+    echangeFait:=True;
+    if sceneActive='DShop' then
+        begin
+        sceneActive:='Event';
+        InitDialogueBox(dialogues[1],nil,nil,50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('FIN_EVENT5_0'),100);
+        ajoutDialogue(nil,extractionTexte('FIN_EVENT5_1'));
+        sceneSuiv:='Map';
+        declencherFondu(false,0);
+        end
+    else
+        lancementSalleHasardDD;
+    end
+    else
+        begin
+        if sceneActive='DShop' then
+            if echangeFait then
+                initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp',nil,0,460,1080,300,extractionTexte('ECH_EVENT5_3'),10)
+            else
+                initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp',nil,0,460,1080,300,extractionTexte('ECH_EVENT5_1'),10)
+        else
+            initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/dd.bmp',0,460,1080,300,extractionTexte('ECH_EVENT4_1'),10);
+        etatChoix:=True;
+        end;
+end;
+
+procedure EchangeDD;
+begin
+    SceneActive := 'DDShop';
+    ClearScreen;
+    etatchoix:=False;
+    SDL_RenderClear(sdlRenderer);
+    ichoix1:=random(4)+1;ichoix2:=random(3)+1;
+    createRawImage(imgEchange,440,160,200,200,'Sprites/Menu/echange.bmp');
+    createRawImage(imgcar1,240,160,200,200,StringToPChar('Sprites/Echange/stat'+intToSTR(ichoix1)+'.bmp'));
+    createRawImage(imgcar2,640,160,200,200,StringToPChar('Sprites/Echange/stat'+intToSTR(ichoix2+10)+'.bmp'));
+    initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/dd.bmp',0,460,1080,300,extractionTexte('ECH_EVENT4_0'),10);
+    InitButtonGroup(boutons[1],  415, 50, 250, 100, 'Sprites/Menu/Button1.bmp','Annuler',@LancementSalleHasardDD);
+    InitButtonGroup(boutons[4],  415, 400, 250, 100, 'Sprites/Menu/Button1.bmp','Pacte',btnProc);
+    boutons[4].parametresSpeciaux:=4;boutons[4].procRel:=@tradeDD;
+end;
+
+procedure lancementEchangeDiable;
+begin
+    SceneActive := 'DShop';
+    ClearScreen;
+    etatchoix:=False;
+    SDL_RenderClear(sdlRenderer);
+    repeat
+        ichoix1:=random(4)+4;
+    until not (((statsJoueur.vieMax<40) and (ichoix1=5)) or ((statsJoueur.manaMax<7) and (ichoix1=6)));
+    if ichoix1=7 then
+        ichoix2:=6
+    else
+    repeat
+        ichoix2:=random(5)+4;
+        //writeln(ichoix2)
+    until ichoix2<>6;
+    createRawImage(imgEchange,440,160,200,200,'Sprites/Menu/echange.bmp');
+    createRawImage(imgcar1,240,160,200,200,StringToPChar('Sprites/Echange/stat'+intToSTR(ichoix1)+'.bmp'));
+    if ichoix2>6 then
+        begin
+        createRawImage(imgcar2,640,160,200,200,statsJoueur.collection[1].dir);
+        echangeFait:=True;
+        ichoix2:=1;
+        end
+    else
+        createRawImage(imgcar2,640,160,200,200,StringToPChar('Sprites/Echange/stat'+intToSTR(ichoix2+10)+'.bmp'));
+    initDialogueBox(dialogues[2],nil,nil,0,460,1080,300,extractionTexte('ECH_EVENT5_0'),10);
+    InitButtonGroup(boutons[1],  415, 50, 250, 100, 'Sprites/Menu/Button1.bmp','Annuler',@choixSalle);
+    InitButtonGroup(boutons[4],  415, 400, 250, 100, 'Sprites/Menu/Button1.bmp','"Echange"',btnProc);
+    boutons[4].parametresSpeciaux:=4;boutons[4].procRel:=@tradeDD;
+end;
+
+procedure upgradeUS(i:Integer;var stats:TStats);
+begin
+    if etatChoix then
+        begin
+        if echangeFait then
+            stats.collection[ichoix2].chargesMax:=stats.collection[ichoix2].chargesMax+1
+        else
+            stats.collection[ichoix2].cout:=stats.collection[ichoix2].cout-4;
+        sceneActive:='Event';
+        sceneSuiv:='Map';
+        initDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Portraits/ulgatr.bmp',0,460,1080,300,extractionTexte('FIN_EVENT6_1'),10)
+        end
+    else
+        begin
+        etatChoix:=True;
+        if echangeFait then
+            initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/ulgatr.bmp',0,460,1080,300,extractionTexte('ECH_EVENT6_1'),10)
+        else
+            initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/soeryo.bmp',0,460,1080,300,extractionTexte('ECH_EVENT7_1'),10);
+        end;
+    
+end;
+
+procedure lancementSalleHasardUS;
+begin
+    SceneActive := 'US';
+    ClearScreen;
+    SDL_RenderClear(sdlRenderer);
+    sdl_destroytexture(fond.imgtexture);
+    sdl_freeSurface(fond.imgsurface);
+    createRawImage(fond, 0,0, WINDOWWIDTH, windowHeight,'Sprites/Menu/fondMarchand.bmp');
+    createRawImage(imgcar2,440,160,200,200,statsJoueur.collection[1].dir);
+    ichoix2:=1;
+    if echangeFait then
+        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/ulgatr.bmp',0,460,1080,300,extractionTexte('ECH_EVENT6_0'),10)
+    else
+        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/soeryo.bmp',0,460,1080,300,extractionTexte('ECH_EVENT7_0'),10);
+    InitButtonGroup(boutons[1],  415, 50, 250, 100, 'Sprites/Menu/Button1.bmp','Partir',@choixSalle);
+    InitButtonGroup(boutons[4],  415, 400, 250, 100, 'Sprites/Menu/Button1.bmp','Augmentation',btnProc);
+    boutons[4].parametresSpeciaux:=4;boutons[4].procRel:=@upgradeUS;
+end;
+
+procedure LancementSalleHasardDD;
+begin
+    sceneActive:='DD';
+    sdl_destroytexture(fond.imgtexture);
+    sdl_freeSurface(fond.imgsurface);
+    createRawImage(fond, 0,0, WINDOWWIDTH, windowHeight,'Sprites/Menu/fondMarchand.bmp');
+    createRawImage(imgCar3,0,0,windowWidth,windowHeight,'Sprites/salles/ddfull.bmp');
+    if not echangeFait then
+        numDialogue:=0;
+    InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/Button1.bmp','Pacte',@EchangeDD);
+    InitButtonGroup(boutons[2],  440, 200, 200, 100, 'Sprites/Menu/Button1.bmp','Discussion',@rerollDialogueDD);
+    InitButtonGroup(boutons[3],  465, 300, 150, 100, 'Sprites/Menu/Button1.bmp','Partir',@choixSalle);
+    initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/dd.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT4_0'),10);
 end;
 
 procedure LancementSalleHasardLeo;
@@ -832,75 +1175,140 @@ begin
 end;
 
 procedure LancementSalleHasard;
+var alea,i:Integer;
 begin
 //writeln('Lancement de salle Hasard');
 //statsJoueur.avancement := statsJoueur.avancement+1;
 ClearScreen;
 SDL_RenderClear(sdlRenderer);
-case random(5)+1 of
-1:  if trouverCarte(statsJoueur,24) then lancementSalleHasard
-    else
-    if trouverCarte(statsJoueur,23) then
+randomize;
+if (trouverCarte(statsJoueur,23)) and not (trouverCarte(statsJoueur,24)) then alea:=2
+    else if statsJoueur.avancement>(MAXSALLES div 2) then alea:=random(7)+1
+    else alea:=random(6)+1;
+case alea of
+2:  if (trouverCarte(statsJoueur,24)) then 
         begin
+        echangeFait:=(random(2)=0);
         sceneActive:='Event';
-        InitDialogueBox(dialogues[1],nil,nil,-50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('INTRO_EVENT2_1'),100);
-        ajoutDialogue(nil,extractionTexte('INTRO_EVENT2_2'));
-        sceneSuiv:='Ophiucus';
+        sceneSuiv:='US';
+        InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp',nil,0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('INTRO_EVENT6_1'),100);
+        ajoutDialogue(nil,extractionTexte('INTRO_EVENT6_2'));
+        if echangeFait then
+            begin
+            ajoutDialogue('Sprites/Portraits/ulgatr.bmp',extractionTexte('INTRO_EVENT6_3'));
+            ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('INTRO_EVENT6_4'));
+            if trouverCarte(statsJoueur,26) then
+                for i:=1 to 9 do
+                    case i of 
+                    2,4,5,7,9:ajoutDialogue('Sprites/Portraits/ulgatr.bmp',extractionTexte('SPEC_EVENT6_'+intToSTR(i)));
+                    3,8:ajoutDialogue('Sprites/Portraits/soeryo.bmp',extractionTexte('SPEC_EVENT6_'+intToSTR(i)));
+                    else ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('SPEC_EVENT6_'+intToStr(i)));
+                    end
+            else if trouverCarte(statsJoueur,25) then
+                for i:=1 to 5 do
+                    case i of 
+                    4:ajoutDialogue('Sprites/Portraits/ulgatr.bmp',extractionTexte('SPEC_EVENT7_'+intToSTR(i)));
+                    2,3:ajoutDialogue('Sprites/Portraits/soeryo.bmp',extractionTexte('SPEC_EVENT7_'+intToSTR(i)));
+                    else ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('SPEC_EVENT7_'+intToStr(i)));
+                    end;
+            for i:=5 to 12 do
+                    case i of 
+                    5,7,9,11:ajoutDialogue('Sprites/Portraits/ulgatr.bmp',extractionTexte('INTRO_EVENT6_'+intToSTR(i)));
+                    8,10,12:ajoutDialogue('Sprites/Portraits/soeryo.bmp',extractionTexte('INTRO_EVENT6_'+intToSTR(i)));
+                    else ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('INTRO_EVENT6_'+intToStr(i)));
+                    end
+            end
+        else
+            begin
+            ajoutDialogue('Sprites/Portraits/soeryo.bmp',extractionTexte('INTRO_EVENT7_3'));
+            ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('INTRO_EVENT7_4'));
+            if trouverCarte(statsJoueur,25) then
+                for i:=1 to 5 do
+                    case i of 
+                    4:ajoutDialogue('Sprites/Portraits/ulgatr.bmp',extractionTexte('SPEC_EVENT7_'+intToSTR(i)));
+                    2,3:ajoutDialogue('Sprites/Portraits/soeryo.bmp',extractionTexte('SPEC_EVENT7_'+intToSTR(i)));
+                    else ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('SPEC_EVENT7_'+intToStr(i)));
+                    end
+            else if trouverCarte(statsJoueur,26) then
+                for i:=1 to 9 do
+                    case i of 
+                    2,4,5,7,9:ajoutDialogue('Sprites/Portraits/ulgatr.bmp',extractionTexte('SPEC_EVENT6_'+intToSTR(i)));
+                    3,8:ajoutDialogue('Sprites/Portraits/soeryo.bmp',extractionTexte('SPEC_EVENT6_'+intToSTR(i)));
+                    else ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('SPEC_EVENT6_'+intToStr(i)));
+                    end;
+            for i:=5 to 10 do
+                    case i of 
+                    5,7,10:ajoutDialogue('Sprites/Portraits/ulgatr.bmp',extractionTexte('INTRO_EVENT7_'+intToSTR(i)));
+                    6,8,9:ajoutDialogue('Sprites/Portraits/soeryo.bmp',extractionTexte('INTRO_EVENT7_'+intToSTR(i)));
+                    else ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('INTRO_EVENT7_'+intToStr(i)));
+                    end
+            end;
         end
     else
+        if trouverCarte(statsJoueur,23) then
+            begin
+            sceneActive:='Event';
+            InitDialogueBox(dialogues[1],nil,nil,50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('INTRO_EVENT2_1'),100);
+            ajoutDialogue(nil,extractionTexte('INTRO_EVENT2_2'));
+            sceneSuiv:='Ophiucus';
+            end
+    else
+        if statsJoueur.avancement>(MAXSALLES div 6) then
         begin
         sceneActive:='Event';
-        InitDialogueBox(dialogues[1],nil,nil,-50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('INTRO_EVENT1_1'),100);
+        InitDialogueBox(dialogues[1],nil,nil,50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('INTRO_EVENT1_1'),100);
         ajoutDialogue(nil,extractionTexte('INTRO_EVENT1_2'));
         ajoutDialogue(nil,extractionTexte('INTRO_EVENT1_3'));
         ajoutDialogue(nil,extractionTexte('INTRO_EVENT1_4'));
         sceneSuiv:='Leo';
-        end;
-2: begin
+        end
+    else
+        lancementSalleCombat;
+4: begin
     sceneActive:='Event';
-    InitDialogueBox(dialogues[1],nil,nil,-50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('INTRO_EVENT3_1'),100);
+    InitDialogueBox(dialogues[1],nil,nil,50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('INTRO_EVENT3_1'),100);
     ajoutDialogue(nil,extractionTexte('INTRO_EVENT3_2'));
     sceneSuiv:='HReposRisque';
     end;
-3: lancementSalleCamp;
-4: lancementSalleCombat;
+3:begin
+    sceneActive:='Event';
+    InitDialogueBox(dialogues[1],nil,nil,50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('INTRO_EVENT5_1'),100);
+    ajoutDialogue(nil,extractionTexte('INTRO_EVENT5_2'));
+    ajoutDialogue(nil,extractionTexte('INTRO_EVENT5_3'));
+    sceneSuiv:='EchangeDiable';
+end;
+6: lancementSalleCamp;
+1: lancementSalleCombat;
 5: lancementSalleMarchand;
-else begin
-    end;
+7:  begin
+        sceneActive:='Event';
+        mix_pauseMusic;
+        InitDialogueBox(dialogues[1],nil,nil,50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('INTRO_EVENT4_1'),100);
+        ajoutDialogue(nil,extractionTexte('INTRO_EVENT4_2'));
+        ajoutDialogue(nil,extractionTexte('INTRO_EVENT4_3'));
+        ajoutDialogue(nil,extractionTexte('INTRO_EVENT4_4'));
+        ajoutDialogue(nil,extractionTexte('INTRO_EVENT4_5'));
+        ajoutDialogue(nil,extractionTexte('INTRO_EVENT4_6'));
+        ajoutDialogue(nil,extractionTexte('INTRO_EVENT4_7'));
+        sceneSuiv:='DD';
+        end
+
+else lancementSalleCombat;
 end;
 end;
 
-procedure affichageSalle(var salle:TSalle;x,y:integer);
-var dir:PCHar;proc:ButtonProcedure;
+procedure affichageSalle(var salle:TSalle;x,y,i:integer);
+var dir:PCHar;
 begin
-    case salle.evenement of //initialisation en fonction du type de salle
-        hasard:begin
-            dir:='Sprites/Menu/salle_hasard.bmp';
-            proc:= @LancementSalleHasard;
-            end;
-        combat:begin
-            dir:='Sprites/Menu/salle_combat.bmp';
-            proc:= @LancementSalleCombat;
-            end;
-        boss:begin
-            dir:='Sprites/Menu/salle_boss.bmp';
-            proc:= @LancementSalleBoss;
-            end;
-        marchand:begin
-            dir:='Sprites/Menu/salle_marchand.bmp';
-            proc:= @LancementSalleMarchand;
-            end;
-        camp:begin 
-            dir:='Sprites/Menu/salle_camp.bmp';
-            proc := @LancementSalleCamp;
-            end;
-        else begin
-            dir:='Sprites/Menu/salle_rien.bmp';
-            proc:= @OnButtonClickDebug;
-            end
-    end;
+    salle.image.parametresSpeciaux:=2;
+    salle.image.procSalle:=@lancerSalle;
+    salle.image.numero:=i;
     //writeln(dir);
-    InitButtonGroup(salle.image,x,y,128,128,dir,' ',proc);
+    if salle.evenement=boss then
+        dir:=StringToPChar('Sprites/salles/porte'+inttostr(ord(salle.evenement)+(statsJoueur.avancement div (MAXSALLES div 4)))+'.bmp')
+    else
+        dir:=StringToPChar('Sprites/salles/porte'+inttostr(ord(salle.evenement)+1)+'.bmp');
+    InitButtonGroup(salle.image,x-256 div 2,y-100,256,392,dir,' ',btnProc);
     RenderButtonGroup(salle.image);
 end;
 
@@ -908,10 +1316,10 @@ procedure affichageSalles(var salle1,salle2,salle3:TSalle);
 var depart:TSalle;
 begin
     depart.evenement:=rien;
-    affichageSalle(depart,X2,Y1);
-    affichageSalle(salle1,X1,Y2);
-    affichageSalle(salle2,X2,Y2);
-    affichageSalle(salle3,X3,Y2);
+    affichageSalle(depart,X2,Y1,0);
+    affichageSalle(salle1,X1,Y2,1);
+    affichageSalle(salle2,X2,Y2,2);
+    affichageSalle(salle3,X3,Y2,3);
 end;
 
 procedure InitDecorMap;
@@ -919,17 +1327,24 @@ begin
     randomize;
 	sdl_freesurface(fond.imgSurface);
 	sdl_destroytexture(fond.imgTexture);
-    CreateRawImage(fond,0,-80,1080,900,StringToPChar('Sprites/Menu/fond_cartes.bmp'));
+    case (statsJoueur.avancement-1) div (MAXSALLES div 4) of
+    0:CreateRawImage(fond,0,-80,1080,900,StringToPChar('Sprites/Menu/map1.bmp'));
+    1,2:CreateRawImage(fond,0,-80,1080,900,StringToPChar('Sprites/Menu/map2.bmp'));
+    3:CreateRawImage(fond,0,-80,1080,900,StringToPChar('Sprites/Menu/map4.bmp'));
+    end;
 end;
 
 procedure choixSalle();
     
 begin
     sauvegarder(statsJoueur);
+    if (statsJoueur.avancement) mod (MAXSALLES div 4)=0 then
+        InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('TXT_MAP'+intToSTR(10*(statsJoueur.avancement div (MAXSALLES div 4)))),10);
+    if statsJoueur.avancement<=1 then
+        InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('TXT_MAP'+intToSTR(random(4)+statsJoueur.avancement)),10);
     entree:=false;
     combatFini:=False;
     echangeFait:=False;
-    sdl_renderclear(sdlrenderer);
     SceneActive := 'map';
     ScenePrec:='map';
     InitDecorMap;
@@ -944,20 +1359,18 @@ begin
     
 end;
 
+
 procedure actualiserMap();
+var i:Integer;
 begin
     SDL_PumpEvents();
     drawrect(black_col,255,0,0,WINDOWWIDTH,windowHeight);
     renderRawImage(fond,True);
-    RenderButtonGroup(salles[1].image);
-    RenderButtonGroup(salles[2].image);
-    RenderButtonGroup(salles[3].image);
-    RenderButtonGroup(salles[1].image);
-    RenderButtonGroup(salles[2].image);
-    RenderButtonGroup(salles[3].image);
-    RenderButtonGroup(salles[1].image);
-    RenderButtonGroup(salles[2].image);
-    RenderButtonGroup(salles[3].image);
+    if ((sceneActive='map') and ((statsJoueur.avancement=1) or ((statsJoueur.avancement) mod (MAXSALLES div 4)=0))) then
+        updateDialogueBox(dialogues[1]);
+    for i:=1 to 3 do
+        if (salles[i].evenement<>rien) or (sceneActive='map') then
+        renderRawImage(salles[i].image.image,255,False);
 end;
 
 procedure activationEvent(scene:String);
@@ -965,11 +1378,15 @@ begin
     black_color.r := 0; 
     black_color.g := 0; 
     black_color.b := 0;
+    DeclencherFondu(False,300);
     while high(queueDialogues)>-1 do
 		supprimeDialogue(1);
     case scene of
         'Leo':LancementSalleHasardLeo;
         'Ophiucus':lancementSalleHasardOph;
+        'DD':lancementSalleHasardDD;
+        'US':lancementSalleHasardUS;
+        'EchangeDiable':lancementEchangeDiable;
         'HReposRisque':lancementSalleHasardReposRisque;
         'Intro':
             begin 
@@ -981,7 +1398,29 @@ begin
         else sceneActive := sceneSuiv;
     end;
 end;
-    
+
+procedure activationEvent(evenement:evenements);
+begin
+    DeclencherFondu(False,300);
+    statsJoueur.avancement:=statsJoueur.avancement+1;
+    case evenement of
+        hasard:begin
+            LancementSalleHasard;
+            end;
+        combat:begin
+            LancementSalleCombat;
+            end;
+        boss:begin
+            LancementSalleBoss;
+            end;
+        marchand:begin
+            LancementSalleMarchand;
+            end;
+        camp:begin 
+            LancementSalleCamp;
+            end;
+    end;
+end;
 
     
 

@@ -376,7 +376,7 @@ var
 begin
   TempText := '';
   LineWidth:= 0;
-  maxLength:=(width*30) div (size*22);
+  maxLength:=(width*30) div (size*22)+2;
   for i := 1 to Length(Text) do
   begin
     LineWidth:= Length(TempText);
@@ -419,7 +419,7 @@ begin
   if portraitPath<>nil then sdl_destroytexture(box.portrait.imgtexture);
   CreateRawImage(Box.BackgroundImage, X, Y, W, H, ImgPath);
     if portraitPath='Sprites/Portraits/portraitB.bmp' then
-      CreateRawImage(Box.portrait, X, Y, W div 4, W div 4, portraitPath)
+      CreateRawImage(Box.portrait, X-50, Y-50, W div 4, W div 4, portraitPath)
     else
       CreateRawImage(Box.portrait, X+(W div 20), Y+(H div 6), H div 2+ (H div 10), H div 2+(H div 10), portraitPath);
   if imgPath=nil then      box.BackgroundImage.directory:=nil;
@@ -447,7 +447,7 @@ begin
   if portraitPath <> nil then 
     begin
     if portraitPath='Sprites/Portraits/portraitB.bmp' then
-      CreateRawImage(Box.portrait, X, Y, W div 4, W div 4, portraitPath)
+      CreateRawImage(Box.portrait, X-50, Y-50, W div 4, W div 4, portraitPath)
     else
       CreateRawImage(Box.portrait, X, Y, W div 4-(W div 5), W div 4-(W div 5), portraitPath);
     end;

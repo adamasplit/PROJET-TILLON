@@ -65,7 +65,7 @@ end;
 
 // Updates des Scenes
 
-procedure ActualiserJeu(boss:Boolean);
+procedure ActualiserJeu(boss:Boolean;enn:Integer);
 var faucheuse : TObjet;i:Integer;
 	begin
 		randomize();
@@ -78,7 +78,7 @@ var faucheuse : TObjet;i:Integer;
 		UpdateDamagePopUps;
 		if LObjets[0].stats.vie>LObjets[0].stats.vieMax then LObjets[0].stats.vie:=LObjets[0].stats.vieMax;
 		if LObjets[0].stats.vie<0 then LObjets[0].stats.vie:=0;
-		if leMonde and (sdl_getTicks-UpdateTimeMonde>LObjets[0].stats.compteurLeMonde*1000) then
+		if leMonde and (sdl_getTicks-UpdateTimeMonde>(1500+LObjets[0].stats.compteurLeMonde*500)) then
 			begin
 			leMonde:=False;
 			mix_resumeMusic();
@@ -101,6 +101,7 @@ var faucheuse : TObjet;i:Integer;
 		begin
 			DeclencherFondu(True, 3000);
 			arretMus(1000);
+			arretSons(100);
 			ajoutObjet(faucheuse);
 			CreateRawImage(Lobjets[High(LObjets)].image,1200,Lobjets[0].image.rect.y-50,200,200,'Sprites/Game/death/death_walking_1.bmp');
 			InitAnimation(Lobjets[High(LObjets)].anim,'death','walking',10,True);
@@ -118,7 +119,7 @@ var faucheuse : TObjet;i:Integer;
 			end;
 		if vagueFinie then ajoutVague;
 		if combatFini then 
-			victoire(statsJoueur,boss);
+			victoire(statsJoueur,boss,enn);
 		
 	end;
 
@@ -345,7 +346,7 @@ end;
 
 
 procedure GameUpdate;
-var i:Integer;son,boss:Boolean;cardHover:Array [1..3] of Boolean;
+var i:Integer;son,boss:Boolean;ennemiActuel:Integer;cardHover:Array [1..3] of Boolean;
 begin
    while not QUITGAME do
   begin
@@ -367,12 +368,14 @@ begin
   		'Jeu': 
   		begin
 		boss:=(high(LObjets)>=1) and (LObjets[1].stats.boss);
-		ActualiserJeu(boss);
+		if boss then ennemiActuel:=LObjets[1].stats.numero;
+		ActualiserJeu(boss,ennemiActuel);
 		MouvementJoueur(LObjets[0]);
 		end;
   		'MenuEnJeu': 
   		begin
 		ActualiserMenuEnJeu;
+		effetDeFondu;
 		end;
   		'Menu': 
   		begin
@@ -381,24 +384,46 @@ begin
 		'map':
 		begin
         actualiserMap;
+		effetDeFondu;
+		ennemiActuel:=0;
     	end;
+		'Fondu':
+		begin
+		actualiserMap;
+		effetDeFondu;
+		zoom;
+		if sdl_getTicks-timeDebutFondu>=dureeFondu then
+			begin
+			activationEvent(evenementSuiv);
+			//indiceMusiqueJouee:=indiceMusiqueSuiv;
+			end;
+		end;
 		'marchand':
 		begin
 		actualiserMarchand;
+		effetDeFondu;
 		end;
 		'MenuShop':
 		begin
 		actualiserEchange;
 		end;
+		'DD':actualiserDD;
+		'US':actualiserUS;
+		'DDShop','DShop':actualiserEchangeDD;
 		'Leo_Menu':
 		begin
 		actualiserSalleLeo;
+		effetDeFondu;
 		end;
 		'Oph_Menu':
 		begin
 		actualiserSalleLeo;
+		effetDeFondu;
 		end;
-		'Hreposrisque_Menu' : actualiserReposRisque;
+		'Hreposrisque_Menu' : begin
+			effetDeFondu;
+			actualiserReposRisque;
+			end;
 		'NouvellePartieIntro': NouvellePartieIntro;
 		'victoire':
 			begin
@@ -420,7 +445,10 @@ begin
 			UpdateDialogueBox(dialogues[1])
 			end;
 		'mortJoueur': OnPlayerDeath(son);
-		'feuCamp':actualiserFeuCamp;
+		'feuCamp':begin
+		actualiserFeuCamp;
+		effetDeFondu;
+		end;
 		'defausse':actualiserDefausse;
 		'GameOver': GameOver;
 		'Event':
@@ -494,14 +522,14 @@ begin
 							mix_resumeMusic;
 							end
 							end
-						else if (sceneActive<>'Menu') and (sceneActive<>'Credits') then menuEnJeu;
+						else if (sceneActive<>'Menu') and (sceneActive<>'Credits') and (sceneActive<>'Fondu') then menuEnJeu;
 						end;
 					SDLK_SPACE:begin
 						if leMonde then leMonde:=False;
 						//LObjets[0].stats.compteurLeMonde:=100;
 						//updateTimeMonde:=sdl_getTicks;
 						end;
-					{SDLK_O:LOBjets[0].stats.multiplicateurMana:=LOBjets[0].stats.multiplicateurMana+100;
+					SDLK_O:LOBjets[0].stats.multiplicateurMana:=LOBjets[0].stats.multiplicateurMana+100;
 					SDLK_H : choixSalle();
 					SDLK_F2:begin
 						LObjets[0].stats.force:=LObjets[0].stats.force+1;
@@ -509,8 +537,11 @@ begin
 						end;
 					SDLK_F3:modeDebug:=not(modeDebug);
 					SDLK_F4:for i:=1 to MAXENNEMIS do	statsJoueur.bestiaire[i]:=True;
-					SDLK_F5:begin statsJoueur.tailleCollection:=26; for i:=1 to 26 do statsJoueur.collection[i]:=Cartes[i]; end;
-					SDLK_F6:statsJoueur.multiplicateurSoin:=1.5;}
+					SDLK_F5:begin statsJoueur.tailleCollection:=28; for i:=1 to 28 do statsJoueur.collection[i]:=Cartes[i]; end;
+					SDLK_F6:statsJoueur.multiplicateurSoin:=1.5;
+					SDLK_F7:begin statsJoueur.tailleCollection:=28; for i:=1 to 28 do statsJoueur.collection[i]:=Cartes[27+i mod 2]; end;
+					SDLK_F8:for i:=0 to high(LObjets[0].stats.deck^) do LObjets[0].stats.deck^[i]:=Cartes[8];
+					SDLK_F9:statsJoueur.avancement:=MAXSALLES;
         		end;
       		end;
 			
@@ -572,7 +603,7 @@ begin
 					for i:=1 to 3 do
 						begin
                         OnMouseClick(salles[i].image, EventSystem^.motion.x, EventSystem^.motion.y);
-                        HandleButtonClick(salles[i].image.button, EventSystem^.motion.x, EventSystem^.motion.y);
+                        HandleButtonClickSalle(salles[i].image,salles[i].evenement,i, EventSystem^.motion.x, EventSystem^.motion.y);
 						end
 					end;
 				'victoire':for i:=1 to 3 do
@@ -611,6 +642,25 @@ begin
 						HandleButtonClick(boutons[i].button, EventSystem^.motion.x, EventSystem^.motion.y);
 						end;
 					end;
+				'DD':
+					begin
+					if not echangeFait then
+						begin
+						OnMouseClick(boutons[1], EventSystem^.motion.x, EventSystem^.motion.y);
+						HandleButtonClick(boutons[1].button, EventSystem^.motion.x, EventSystem^.motion.y);
+						end;
+					for i:=2 to 3 do
+						begin
+						OnMouseClick(boutons[i], EventSystem^.motion.x, EventSystem^.motion.y);
+						HandleButtonClick(boutons[i].button, EventSystem^.motion.x, EventSystem^.motion.y);
+						end;
+					end;
+				'DDShop','DShop','US':begin
+					OnMouseClick(boutons[1], EventSystem^.motion.x, EventSystem^.motion.y);
+					HandleButtonClickRelique(boutons[4], EventSystem^.motion.x, EventSystem^.motion.y,0,statsJoueur);
+					OnMouseClick(boutons[4], EventSystem^.motion.x, EventSystem^.motion.y);
+					HandleButtonClick(boutons[1].button, EventSystem^.motion.x, EventSystem^.motion.y);
+					end;
 				'MenuShop':begin
 					highlight(boutons[2],getmousex,getmousey);
 					for i:=1 to 4 do
@@ -643,6 +693,10 @@ begin
 			SDL_MOUSEWHEEL:begin
 				if sceneActive='defausse' then
 					scrolldeck(ichoix1,statsJoueur.tailleCollection);
+				if ((sceneActive='DShop') and echangeFait) or (sceneActive='US') then
+					begin
+					scrolldeck(ichoix2,statsJoueur.tailleCollection);
+					end;
 				if sceneActive='Jeu' then 
 					begin
   					if EventSystem^.wheel.y < 0 then icarteChoisie:=(isuiv(iCarteChoisie))

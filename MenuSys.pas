@@ -28,7 +28,7 @@ var
   creditsText: TImage;
 
 procedure AfficherTout();
-procedure victoire(var statsJ:TStats;boss:Boolean);
+procedure victoire(var statsJ:TStats;boss:Boolean;num:Integer);
 procedure victoire(var statsJ:TStats;num:Integer);overload;
 procedure RenderParallaxMenu(bgImage,characterImage,cardsImage : TImage);
 procedure InitCredits;
@@ -357,7 +357,7 @@ begin
     RenderButtonGroup(boutons[5]);
     RenderButtonGroup(button_help);
     RenderButtonGroup(button_home);
-	EffetDeFondu;
+	//EffetDeFondu;
 
     // Afficher le texte et autres éléments si nécessaire
     RenderText(Title);
@@ -585,12 +585,13 @@ begin
 					SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
 				else
 					SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
-				else
-					RenderRawImage(LObjets[0].image,255, LObjets[0].anim.isFliped);
+			else
+				RenderRawImage(LObjets[0].image,255, LObjets[0].anim.isFliped);
 
 		for i:=1 to high(LObjets) do
 			case LOBjets[i].stats.genre of
-				TypeObjet(2),TypeObjet(3),TypeObjet(4):RenderAvecAngle(LObjets[i])
+				TypeObjet(2),TypeObjet(3),TypeObjet(4),explosion2:RenderAvecAngle(LObjets[i]);
+				explosion:RenderRawImage(LObjets[i].image,LObjets[i].stats.transparence, LObjets[i].anim.isFliped);
 				else
 					RenderRawImage(LObjets[i].image,255, LObjets[i].anim.isFliped);
 			end;
@@ -666,34 +667,6 @@ begin
     finirCombat(stats)
 end;
 
-
-procedure desequiperRelique(var stats:TStats);
-begin
-	case stats.relique of
-	1:
-	stats.vitesse:=stats.vitesse-3;
-	2:
-	stats.manaMax:=stats.manaMax-4;
-	3:	
-	begin 
-	stats.vieMax:=stats.vieMax-20;
-	end;
-	4:
-	stats.multiplicateurSoin:=1;
-	5:
-	begin
-	stats.manaDebutCombat:=0;
-	stats.multiplicateurMana:=stats.multiplicateurMana-0.3
-	end;
-	6:stats.force:=stats.force-5;
-	7:stats.defense:=stats.defense-6;
-	8:begin
-		stats.multiplicateurDegat:=stats.multiplicateurDegat-0.5;
-		stats.vieMax:=stats.vieMax+20;
-		end;
-	end;
-end;
-
 procedure equiperRelique(rel:Integer;var stats:TStats);
 begin
 	if stats.relique<>0 then desequiperRelique(stats);
@@ -708,7 +681,7 @@ begin
 	stats.vie:=stats.vie+20;
 	end;
 	4:
-	stats.multiplicateurSoin:=1.5;
+	stats.multiplicateurSoin:=1.8;
 	5:
 	begin
 	stats.manaDebutCombat:=10;
@@ -717,7 +690,7 @@ begin
 	6:stats.force:=stats.force+5;
 	7:stats.defense:=stats.defense+6;
 	8:begin
-		stats.multiplicateurDegat:=stats.multiplicateurDegat;
+		stats.multiplicateurDegat:=stats.multiplicateurDegat+1;
 		stats.vieMax:=stats.vieMax-20;
 		end;
 	11:InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portrait_Leo6.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('VICTOIRE_-1'),10);
@@ -728,15 +701,15 @@ begin
 	if rel<>11 then finirCombat(stats);
 end;
 
-procedure victoire(var statsJ:TStats;boss:Boolean); //censé contenir le choix+obtention d'une carte après un combat
+procedure victoire(var statsJ:TStats;boss:Boolean;num:Integer); //censé contenir le choix+obtention d'une carte après un combat
 var i,nbReliques:Integer;
 begin
 	if indiceMusiqueJouee<14 then indiceMusiqueJouee:=indiceMusiqueJouee+18; //donne une fanfare de victoire adaptée
 	StatsJ.vie:=LObjets[0].stats.vie;//synchronise la vie
-	if (statsJ.avancement-1) mod 10 = 0 then
-		InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('VICTOIRE_'+intToSTR(10*(statsJ.avancement div 10))),10)
+	if (statsJ.avancement-1) mod (MAXSALLES div 4) = 0 then
+		InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('VICTOIRE_'+intToSTR(10*(statsJ.avancement div (MAXSALLES div 4)))),10)
 	else
-		InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('VICTOIRE_'+intToSTR(random(4)+1+10*((statsJ.avancement-1) div 10))),10);
+		InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('VICTOIRE_'+intToSTR(random(4)+1+10*((statsJ.avancement-1) div (MAXSALLES div 4)))),10);
 	InitDecorCartes;
 	randomize;
 	nbReliques:=0;
@@ -745,7 +718,15 @@ begin
 		if boss and (random(2)=0) and (nbReliques<2) then
 			begin
 			boutons[i].parametresSpeciaux:=4;
-			boutons[i].relique:=random(10)+1;
+			case num of
+			31,32:repeat boutons[i].relique:=random(7)+1 until (boutons[i].relique<>2) and (boutons[i].relique<>5); 
+			33,34:boutons[i].relique:=random(5)*2+2;
+			12:if nbReliques<1 then boutons[i].relique:=9 else boutons[i].relique:=random(10)+1;
+			else begin
+				if random(10)=1 then boutons[i].relique:=10
+				else boutons[i].relique:=random(8)+1;
+				end;
+			end;
 			InitButtonGroup(boutons[i],200+300*(i-1),200,128,128,StringToPChar('Sprites/Reliques/reliques'+intToStr(boutons[i].relique)+'.bmp'),' ',btnProc);
 			boutons[i].procRel:=@equiperRelique; 
 			nbReliques:=nbReliques+1; //pour empêcher d'avoir uniquement des reliques lors du choix

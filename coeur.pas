@@ -17,7 +17,7 @@ var whiteCol,b_color,bf_color,f_color,navy_color,red_color,black_col,yellowCol,b
 
 type TRarete=(commune,rare,epique,legendaire);
 type evenements=(combat,marchand,hasard,camp,rien,boss);
-type typeObjet=(joueur,ennemi,projectile,laser,epee,effet,autre);
+type typeObjet=(joueur,ennemi,projectile,laser,epee,effet,explosion,explosion2,autre);
 
 type
   TAnimation = record
@@ -94,16 +94,17 @@ type TStats=record //(version variable)
           boss:Boolean;//détermine ce que l'on obtient à l'issue d'un combat avec l'ennemi
           numero:Integer); 
 
-        projectile,laser,epee:(degats:Integer;
+        projectile,laser,epee,explosion,explosion2:(degats:Integer;
         origine:typeObjet;
         vectX,vectY,vitRotation:Real;
         dureeVie,dureeVieInit,delai,delaiInit,targetX,targetY,vitDep:Integer;
+        transparence:Byte;
         volVie:Boolean); //soigne le joueur si jamais l'attaque touche une cible
 
         effet:(fixeJoueur:Boolean);//si l'effet suit le joueur ou non
 end;
 
-var Cartes:Array[1..26] of TCarte; //preset pour les cartes
+var Cartes:Array[1..28] of TCarte; //preset pour les cartes
 
 // Structure TCol pour la gestion des collisions
 type  TCol = record
@@ -145,7 +146,7 @@ type
     originalWidth, originalHeight: Integer; 
     case parametresSpeciaux:Integer of 
       1:(procCarte:procedure(carte:TCarte;var stats:TStats);carte:TCarte);
-      2:(procSalle:procedure(evenement:evenements));
+      2:(procSalle:procedure(evenement:evenements;numero:Integer);numero:Integer;);
       3:(procEch:procedure(carte1,carte2:TCarte;var stats:TStats));
       4:(procRel:procedure(rel:Integer;var stats:TStats);relique:Integer);
     end;
@@ -343,7 +344,7 @@ begin
   statsJoueur.multiplicateurMana:=1;
   statsJoueur.nbJustice:=0;
 
-  for i:=1 to 26 do begin
+  for i:=1 to 28 do begin
     cartes[i].numero:=i;
     case i of 
       1:cartes[i].nom:='bateleur';
@@ -372,12 +373,15 @@ begin
       24:cartes[i].nom:='serpentaire';
       25:cartes[i].nom:='general celeste';
       26:cartes[i].nom:='fulgurant';
+      27:cartes[i].nom:='ultima';
+      28:cartes[i].nom:='meteore';
       end;
     case i of
       1,2,3,4,5,10:cartes[i].rarete:=commune;
       6,7,8,9,11,16,19:cartes[i].rarete:=rare;
       12,14,17,18,20,22,24:cartes[i].rarete:=epique;
-      13,15,21,23,25,26:cartes[i].rarete:=legendaire;
+      13,15,21,23,25,26,27,28:cartes[i].rarete:=legendaire;
+
       end;
     case i of
       1,6:cartes[i].cout:=1;
@@ -387,6 +391,7 @@ begin
       11,20:cartes[i].cout:=4;
       8,9,15,21:cartes[i].cout:=5;
       7,25,26:cartes[i].cout:=6;
+      27,28:cartes[i].cout:=10;
       end;
     case i of 
     1:cartes[i].dir:='Sprites/Cartes/carte1.bmp';
@@ -415,9 +420,11 @@ begin
     24:cartes[i].dir:='Sprites/Cartes/carte24.bmp';
     25:cartes[i].dir:='Sprites/Cartes/carte25.bmp';
     26:cartes[i].dir:='Sprites/Cartes/carte26.bmp';
+    27:cartes[i].dir:='Sprites/Cartes/carte27.bmp';
+    28:cartes[i].dir:='Sprites/Cartes/carte28.bmp';
     end;
     case i of
-      7,9,12,13,15:cartes[i].discard:=True
+      7,9,12,13,15,27,28:cartes[i].discard:=True
     else
       cartes[i].discard:=False;
     end;

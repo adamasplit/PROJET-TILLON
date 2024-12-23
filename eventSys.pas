@@ -43,37 +43,53 @@ begin
 end;
 
 procedure MouvementJoueur(var joueur:TObjet);
+var memflip:Boolean;
   begin
 	if joueur.anim.etat<>'degats' then
     begin
-    joueur.anim.isFliped := False;
       if ( (sdlKeyboardState[SDL_SCANCODE_W] = 1) AND not(joueur.stats.pendu)) OR ((sdlKeyboardState[SDL_SCANCODE_S] = 1) AND joueur.stats.pendu) then //si z appuyé (ou s si pendu activé) alors déplacer vers le haut
-    begin
+      begin
         joueur.image.rect.y := joueur.image.rect.y - joueur.stats.Vitesse;
-      if joueur.anim.Etat <> 'run' then InitAnimation(joueur.anim,'Joueur','run',6,True);
-    end;
+      if joueur.anim.Etat <> 'run' then 
+          begin
+          memflip:=joueur.anim.isfliped;
+          InitAnimation(joueur.anim,'Joueur','run',6,True);
+          joueur.anim.isfliped:=memflip;
+          end;
+      end;
     
       if ( (sdlKeyboardState[SDL_SCANCODE_A] = 1) AND not(joueur.stats.pendu)) OR ((sdlKeyboardState[SDL_SCANCODE_D] = 1) AND joueur.stats.pendu) then
-    begin
+      begin
         joueur.image.rect.x := joueur.image.rect.x - joueur.stats.Vitesse;
         if joueur.anim.Etat <> 'run' then InitAnimation(joueur.anim,'Joueur','run',6,True);
-      joueur.anim.isFliped := True;
-    end;
+        joueur.anim.isFliped := True;
+      end;
       
       if ( (sdlKeyboardState[SDL_SCANCODE_S] = 1) AND not(joueur.stats.pendu)) OR ((sdlKeyboardState[SDL_SCANCODE_W] = 1) AND joueur.stats.pendu) then
-          begin
+      begin
         joueur.image.rect.y := joueur.image.rect.y + joueur.stats.Vitesse;
-        if joueur.anim.Etat <> 'run' then InitAnimation(joueur.anim,'Joueur','run',6,True);
-    end;
+        if joueur.anim.Etat <> 'run' then 
+          begin
+          memflip:=joueur.anim.isfliped;
+          InitAnimation(joueur.anim,'Joueur','run',6,True);
+          joueur.anim.isfliped:=memflip;
+          end;
+      end;
     
       if ( (sdlKeyboardState[SDL_SCANCODE_D] = 1) AND not(joueur.stats.pendu)) OR ((sdlKeyboardState[SDL_SCANCODE_A] = 1) AND joueur.stats.pendu) then
         begin
         joueur.image.rect.x := joueur.image.rect.x + joueur.stats.Vitesse;
-        if joueur.anim.Etat <> 'run' then InitAnimation(joueur.anim,'Joueur','run',6,True);
+        joueur.anim.isFliped := False;
+        if joueur.anim.Etat <> 'run' then
+          InitAnimation(joueur.anim,'Joueur','run',6,True);
     end;
 
-    if ((joueur.anim.Etat <> 'idle') and not((sdlKeyboardState[SDL_SCANCODE_D] = 1) or (sdlKeyboardState[SDL_SCANCODE_S] = 1) or (sdlKeyboardState[SDL_SCANCODE_W] = 1) or (sdlKeyboardState[SDL_SCANCODE_A] = 1))) 
-      then InitAnimation(joueur.anim,'Joueur','idle',12,True);
+    if ((joueur.anim.etat='sort') and animFinie(joueur.anim)) or ((joueur.anim.Etat = 'run') and not((sdlKeyboardState[SDL_SCANCODE_D] = 1) or (sdlKeyboardState[SDL_SCANCODE_S] = 1) or (sdlKeyboardState[SDL_SCANCODE_W] = 1) or (sdlKeyboardState[SDL_SCANCODE_A] = 1))) 
+      then begin
+        memflip:=joueur.anim.isfliped;
+        InitAnimation(joueur.anim,'Joueur','idle',12,True);
+        joueur.anim.isfliped:=memflip;
+        end;
     end
 		
   end;
@@ -106,12 +122,18 @@ begin
       if LObjets[0].stats.relique=10 then
         begin
         RenderRawImage(combatUI[3],150,false);
-        drawRect(red_color,20+5*(-LObjets[0].stats.mana+LObjets[0].stats.deck^[iCarteChoisie].cout),CombatUI[3].rect.x+14,CombatUI[3].rect.y,63,90)
+        if (LObjets[0].stats.deck^[iCarteChoisie].numero=27) or (LObjets[0].stats.deck^[iCarteChoisie].numero=28) then
+          drawRect(red_color,20+5*(-LObjets[0].stats.mana+LObjets[0].stats.deck^[iCarteChoisie].cout),CombatUI[3].rect.x+8,CombatUI[3].rect.y+7,76,76)
+        else
+          drawRect(red_color,20+5*(-LObjets[0].stats.mana+LObjets[0].stats.deck^[iCarteChoisie].cout),CombatUI[3].rect.x+14,CombatUI[3].rect.y,63,90)
         end
       else
         begin
         RenderRawImage(combatUI[3],100,false);
-        drawRect(black_color,100,CombatUI[3].rect.x+14,CombatUI[3].rect.y,63,90)
+        if (LObjets[0].stats.deck^[iCarteChoisie].numero=27) or (LObjets[0].stats.deck^[iCarteChoisie].numero=28) then
+          drawRect(black_color,100,CombatUI[3].rect.x+8,CombatUI[3].rect.y+7,76,76)
+        else
+          drawRect(black_color,100,CombatUI[3].rect.x+14,CombatUI[3].rect.y,63,90)
         end
       end
     else
@@ -135,8 +157,6 @@ begin
       DrawRect(red_color,255, 35, 355+190-Round(1.9*stats.vie), 20, Round(1.9*stats.vie) );
     //Mana
     DrawRect(black_color,255,95, 550-20*stats.manaMax, 30, 20*stats.manaMax);
-    if stats.manaMax<10 then
-      writeln('Attention, le mana max est à ',stats.manaMax);
     if stats.manaMax>0 then
       DrawRect(b_color,255, 100, 355+190-Round(19* (stats.mana)), 20, Round(19* (stats.mana)) );
     //Portrait
