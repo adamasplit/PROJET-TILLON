@@ -5,6 +5,7 @@ interface
 
 uses
 	AnimationSys,
+	math,
 	coeur,
 	CombatLib,
 	EnemyLib,
@@ -168,7 +169,23 @@ end;
 
 procedure openSettings;
 begin
-  
+	case VOLUME_SON of
+	0:VOLUME_SON:=VOLUME_SON_MAX;
+	else 
+	VOLUME_SON:=VOLUME_SON-10;
+	end;
+	sdl_settexturecolormod(boutons[5].image.imgTexture,round(255*(VOLUME_SON/VOLUME_SON_MAX)),round(255*(VOLUME_SON/VOLUME_SON_MAX)),round(255*(VOLUME_SON/VOLUME_SON_MAX)));
+	sdl_settexturealphamod(boutons[5].image.imgTexture,round(125+130*(VOLUME_SON/VOLUME_SON_MAX)))
+end;
+
+procedure settings2;
+begin
+	case VOLUME_MUSIQUE of
+	0:VOLUME_MUSIQUE:=VOLUME_MUSIQUE_MAX;
+	else VOLUME_MUSIQUE:=VOLUME_MUSIQUE-10;
+	end;
+	sdl_settexturecolormod(button_help.image.imgTexture,round(255*(VOLUME_MUSIQUE/VOLUME_MUSIQUE_MAX)),round(255*(VOLUME_MUSIQUE/VOLUME_MUSIQUE_MAX)),round(255*(VOLUME_MUSIQUE/VOLUME_MUSIQUE_MAX)));
+	sdl_settexturealphamod(button_help.image.imgTexture,round(125+130*(VOLUME_MUSIQUE/VOLUME_MUSIQUE_MAX)))
 end;
 
 procedure goSeekHelp;
@@ -324,8 +341,10 @@ procedure direction_menu;
 begin
     SceneActive := 'Menu';
 	indiceMusiqueJouee:=0;
-
-
+	sdl_settexturecolormod(button_help.image.imgTexture,round(255*(VOLUME_MUSIQUE/VOLUME_MUSIQUE_MAX)),round(255*(VOLUME_MUSIQUE/VOLUME_MUSIQUE_MAX)),round(255*(VOLUME_MUSIQUE/VOLUME_MUSIQUE_MAX)));
+	sdl_settexturecolormod(boutons[5].image.imgTexture,round(255*(VOLUME_SON/VOLUME_SON_MAX)),round(255*(VOLUME_SON/VOLUME_SON_MAX)),round(255*(VOLUME_SON/VOLUME_SON_MAX)));
+	sdl_settexturealphamod(button_help.image.imgTexture,round(125+130*(VOLUME_MUSIQUE/VOLUME_MUSIQUE_MAX)));
+	sdl_settexturealphamod(boutons[5].image.imgTexture,round(125+130*(VOLUME_SON/VOLUME_SON_MAX)));
     // Activer les boutons du menu principal
     boutons[2].button.estVisible := true;
     boutons[1].button.estVisible := true;
@@ -399,6 +418,7 @@ begin
 end;
 
 procedure InitMenuPrincipal;
+var PopenSettings2:ButtonProcedure;
 begin
     // Créer des boutons
     btnProc := @OnButtonClickDebug;
@@ -407,6 +427,7 @@ begin
     PCredits:=@Credits;
     retour_menu:=@retourMenu;
     PopenSettings := @openSettings;
+	PopenSettings2:=@settings2;
     PgoSeekHelp := @goSeekHelp;
 	PNouvellePartieIntro := @NouvellePartieIntro;
     
@@ -420,8 +441,8 @@ begin
     InitButtonGroup(boutons[4], 100, (windowHeight div 5) + 300, 350, 80, 'Sprites/Menu/Button1.bmp', 'Quitter', quitter);
 
 	// Initialisation des icônes en bas
-	InitButtonGroup(boutons[5], windowWidth div 2 - 300, windowHeight - 100, 100, 100, 'Sprites/Menu/Icon_Settings.bmp', ' ', PopenSettings);
-	InitButtonGroup(button_help, windowWidth div 2, windowHeight - 100, 100, 100, 'Sprites/Menu/Icon_Help.bmp', ' ', PgoSeekHelp);
+	InitButtonGroup(boutons[5], windowWidth div 2 - 300, windowHeight - 100, 100, 100, 'Sprites/Menu/Icon_Sound.bmp', ' ', PopenSettings);
+	InitButtonGroup(button_help, windowWidth div 2, windowHeight - 100, 100, 100, 'Sprites/Menu/Icon_Music.bmp', ' ', PopenSettings2);
 	InitButtonGroup(button_home, windowWidth div 2 + 300, windowHeight - 100, 100, 100, 'Sprites/Menu/Icon_Help.bmp', ' ', btnProc);
 
     ParallaxMenuInit;
@@ -432,13 +453,13 @@ procedure reactualiserDeck();
 begin
 	//writeln(ideck);
 	
-	if iDeck=statsJoueur.tailleCollection+1 then
+	if iDeck=statsJoueur.tailleCollection+2 then
 		begin
 		createRawImage(carteDeck,200,200,300,300,StringToPChar('Sprites/Reliques/reliques'+intToStr(statsJoueur.relique)+'.bmp'));
 		initDialogueBox(dialogues[4],nil,nil,460,120,500,600,extractionTexte('DESC_REL_'+intToStr(statsJoueur.relique)),10,Fantasy20,25);
 		initDialogueBox(dialogues[3],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_REL_'+intToStr(statsJoueur.relique)),10);
 		end
-	else
+	else if iDeck<>statsJoueur.tailleCollection+1 then
 		begin
 		createRawImage(carteDeck,200,200,300,300,statsJoueur.collection[iDeck].dir);
 		initDialogueBox(dialogues[4],nil,nil,460,120,500,600,extractionTexte('DESC_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),10,Fantasy20,25);
@@ -456,20 +477,80 @@ begin
 	reactualiserDeck;
 end;
 
-procedure actualiserDeck();
-
+procedure afficheStat(x,y:Integer;stat,statBase:Real;nom:String);
+var texte:TText;string1,string2:String;
 begin
-	if iDeck<>iDeckPrec then 
+
+	if abs(round(stat)-stat)<0.01 then
 		begin
-		sdl_destroytexture(carteDeck.imgTexture);
-		sdl_freeSurface(carteDeck.imgSurface);
+		string1:=intToStr(round(stat));
+		end
+	else
+		begin
+		string1:=intToSTR(math.ceil(stat)-1)+'.'+(inttoStr(math.ceil(10*stat-10*(math.ceil(stat-1)))));
+		end;
+	if abs(round(statBase)-statBase)<0.01 then
+		begin
+		string2:=intToStr(round(statBase));
+		end
+	else
+		begin
+		string2:=intToSTR(math.ceil(statBase)-1)+'.'+(inttoStr(math.ceil(10*statBase-10*(math.ceil(statBase-1)))));
+		end;
+	if (scenePrec='Jeu') and (stat<>statBase) then
+		createText(texte,x,y,500,600,stringtoPchar(nom+' : '+string1+' (base : '+string2+')'),Fantasy20,black_col)
+	else
+		createText(texte,x,y,500,600,stringtoPchar(nom+' : '+string2),Fantasy20,black_col);
+	renderText(texte);
+	sdl_destroytexture(texte.textTexture);
+	sdl_freeSurface(texte.textSurface);
+end;
+
+procedure actualiserDeck();
+var textePV,texteMana:TText;
+begin
+	if (iDeck<>iDeckPrec) then 
+		begin
+		if (ideckprec<>statsJoueur.tailleCollection+1) then 
+			begin
+			sdl_destroytexture(carteDeck.imgTexture);
+			sdl_freeSurface(carteDeck.imgSurface);
+			end;
 		reactualiserDeck;
 		iDeckPrec:=iDeck;
 		end;
 	
-	renderRawImage(carteDeck,False);
-	UpdateDialogueBox(dialogues[4]);
-	UpdateDialogueBox(dialogues[3]);
+	if iDeck=statsJoueur.tailleCollection+2 then
+		renderRawImage(carteDeck,False)
+	else
+	if iDeck=statsJoueur.tailleCollection+1 then
+		begin
+		createText(textePV,170,260,500,600,stringtoPchar('PV : '+intToStr(LObjets[0].stats.vie)+'/'+intToStr(LObjets[0].stats.vieMax)),Fantasy20,black_col);
+		renderText(textePV);
+		sdl_destroytexture(textePV.textTexture);
+		sdl_freeSurface(textePV.textSurface);
+		if sceneActive<>'Jeu' then
+			createText(texteMana,600,260,500,600,stringtoPchar('MANA : '+intToStr(statsJoueur.manaMax)),Fantasy20,black_col)
+		else
+			createText(texteMana,600,260,500,600,stringtoPchar('MANA : '+intToStr(LObjets[0].stats.mana)+'/'+intToStr(LObjets[0].stats.manaMax)),Fantasy20,black_col);
+		renderText(texteMana);
+		sdl_destroytexture(texteMana.textTexture);
+		sdl_freeSurface(texteMana.textSurface);
+		afficheStat(600,360,LObjets[0].stats.force,statsJoueur.force,'Force');
+		afficheStat(600,410,LObjets[0].stats.defense,statsJoueur.defense,'Defense');
+		afficheStat(600,460,LObjets[0].stats.vitesse,statsJoueur.vitesse,'Vitesse');
+		afficheStat(170,310,statsJoueur.tailleCollection,statsJoueur.tailleCollection,'Nombre de cartes');
+		afficheStat(170,360,LObjets[0].stats.multiplicateurDegat,statsJoueur.multiplicateurDegat,'Puissance');
+		afficheStat(170,410,LObjets[0].stats.multiplicateurMana,statsJoueur.multiplicateurMana,'Recup mana');
+		afficheStat(170,460,LObjets[0].stats.multiplicateurSoin,statsJoueur.multiplicateurSoin,'Pouvoir de soin');
+		end
+	else
+		afficherCarte(statsJoueur.collection[iDeck],255,carteDeck);
+	if iDeck<>statsJoueur.tailleCollection+1 then 
+	begin
+		UpdateDialogueBox(dialogues[4]);
+		UpdateDialogueBox(dialogues[3]);
+	end;
 end;
 
 
@@ -591,7 +672,7 @@ begin
 		for i:=1 to high(LObjets) do
 			case LOBjets[i].stats.genre of
 				TypeObjet(2),TypeObjet(3),TypeObjet(4),explosion2:RenderAvecAngle(LObjets[i]);
-				explosion:RenderRawImage(LObjets[i].image,LObjets[i].stats.transparence, LObjets[i].anim.isFliped);
+				explosion,afterimage:RenderRawImage(LObjets[i].image,LObjets[i].stats.transparence, LObjets[i].anim.isFliped);
 				else
 					RenderRawImage(LObjets[i].image,255, LObjets[i].anim.isFliped);
 			end;
@@ -677,18 +758,18 @@ begin
 	stats.manaMax:=stats.manaMax+4;
 	3:	
 	begin 
-	stats.vieMax:=stats.vieMax+20;
-	stats.vie:=stats.vie+20;
+	stats.vieMax:=stats.vieMax+30;
+	stats.vie:=stats.vie+30;
 	end;
 	4:
-	stats.multiplicateurSoin:=1.8;
+	stats.multiplicateurSoin:=stats.multiplicateurSoin+0.5;
 	5:
 	begin
 	stats.manaDebutCombat:=10;
 	stats.multiplicateurMana:=stats.multiplicateurMana+0.3;
 	end;
-	6:stats.force:=stats.force+5;
-	7:stats.defense:=stats.defense+6;
+	6:stats.force:=stats.force+3;
+	7:stats.defense:=stats.defense+5;
 	8:begin
 		stats.multiplicateurDegat:=stats.multiplicateurDegat+1;
 		stats.vieMax:=stats.vieMax-20;

@@ -220,15 +220,16 @@
 <INTRO_EVENT6_6>Qu'est-ce que vous attendez de moi en échange?;
 <INTRO_EVENT6_7>Oh, rien, on peut vous aider comme ça!;
 <INTRO_EVENT6_8>"On"? Parle pour toi, Ulgatr. J'aide pas les inconnus comme ça.;
-<INTRO_EVENT6_9>Oh, ça va! Ça nous coûte rien.;
+<INTRO_EVENT6_9>Oh, ça va! Ça nous coûte rien. Je m'en charge, si tu veux.;
 <INTRO_EVENT6_10>...;
-<INTRO_EVENT6_11>Du coup, ça vous dit? Je peux faire en sorte que vous puissiez lancer un sort 2 fois. Efficace, non?;
+<INTRO_EVENT6_11>Du coup, ça vous dit? Je peux faire en sorte que vous puissiez lancer un sort 1 fois de plus. Efficace, non?;
 <INTRO_EVENT6_12>Efficace et rapide. Comme toi...?;
 <FIN_EVENT6_1>Et merci!! Bon courage!;
+<FIN_EVENT6_2>Ouais, ouais. Allez, on y va?;
 <SPEC_EVENT6_1>Attendez, j'ai votre carte... Enfin, je crois?;
 <SPEC_EVENT6_2>Ah oui, c'est moi! Qui a fait ça?;
 <SPEC_EVENT6_3>Je ne connais qu'une seule personne assez tordue pour faire un truc pareil...;
-<SPEC_EVENT6_4>Ophiucus?;
+<SPEC_EVENT6_4>Hmm...Ophiucus?;
 <SPEC_EVENT6_5>Maintenant que tu le dis, c'est logique. J'irai lui demander ce qu'il a fait.;
 <SPEC_EVENT6_6>En tout cas, la carte contient un puissant sort d'électricité, j'en déduis que c'est votre domaine?;
 <SPEC_EVENT6_7>Euhhhhh... ouais! Oui, bien sûr, ça doit être ça!;
@@ -250,7 +251,7 @@
 <ECH_EVENT6_0>Allez, dites moi ce qui vous ferait plaisir!;
 <ECH_EVENT6_1>Vous êtes sûre?;
 <ECH_EVENT7_0>...Dépêchez. J'ai pas toute la journée.;
-<ECH_EVENT7_1>C'est bon?;
+<ECH_EVENT7_1>C'est bon? Un coût négatif vous redonnerait du mana à l'utilisation, je précise.;
 <ECH_EVENT5_0>Heh heh heh... Bien.;
 <ECH_EVENT5_1>"Bien entendu... je dois être certain que c'est ce que vous voulez...";
 <ECH_EVENT5_3>"Cette magie... Améliorons-la. Vous pourrez enchaîner ce sort...";
@@ -323,17 +324,17 @@
 <MARCHAND_DISCUSSION_2_6>Décidément, quel monde mal foutu. Je regrette encore que l'on ait réussi à stopper le vieillissement.;
 
 <MARCHAND_DISCUSSION_3_1>Au fait, comment se débrouillent les autres peuples avec leur population ? Ont-ils aussi une 'liste' ?;
-<MARCHAND_DISCUSSION_3_2>Cela dépend du peuple en question. Les druides n'ont pas encore prit de mesures car ils n'ont pas de problème de population.;
-<MARCHAND_DISCUSSION_3_3>Les barbares du sud par contre c'est une autre histoire.;
+<MARCHAND_DISCUSSION_3_2>Cela dépend du peuple en question. Les druides n'ont pas encore pris de mesures car ils n'ont pas de problème de population.;
+<MARCHAND_DISCUSSION_3_3>Les barbares du sud, par contre, c'est une autre histoire.;
 <MARCHAND_DISCUSSION_3_4>Après 100 ans, ils considèrent que si tu n'es pas mort au combat, tu es un couard.;
 <MARCHAND_DISCUSSION_3_5>Donc ils s'occupent de ton cas...;
 <MARCHAND_DISCUSSION_3_6>Charmant.;
 
-<MARCHAND_DISCUSSION_4_1>Tu m'avais dit que le président du conseil voulait déclencher une guerre. Tu connais la raison ?;
+<MARCHAND_DISCUSSION_4_1>Tu m'avais dit que le président du conseil voulait déclencher une guerre. Tu en connais la raison ?;
 <MARCHAND_DISCUSSION_4_2>Je n'ai pas la capacité de sonder l'esprit des gens, la télépathie n'était pas ma matière de prédilection à l'école.;
 <MARCHAND_DISCUSSION_4_3>Mais j'ai mon idée de pourquoi. Le territoire des druides est riche en ressources. Sachant qu'ils sont peu nombreux...;
 <MARCHAND_DISCUSSION_4_4>...il serait facile de les attaquer pour leur prendre du territoire.;
-<MARCHAND_DISCUSSION_4_5>Mais nous sommes la nation la plus puissance du continent. Pourquoi faire cela ?;
+<MARCHAND_DISCUSSION_4_5>Mais nous sommes la nation la plus puissante du continent. Pourquoi faire cela ?;
 <MARCHAND_DISCUSSION_4_6>Parce qu'on a la puissance de le faire. La communauté serait bien démunie.;
 
 <MARCHAND_DISCUSSION_5_1>Mais dis-moi, Nymera, pourquoi tu ne pouvais pas attendre tranquillement 1000 ans en geôle ?;
@@ -506,7 +507,7 @@
 <DIALOGUE_BOSS4_3>Un imbécile qui croyait pouvoir maîtriser ma force... un sacrifice nécessaire pour ma réincarnation. Les humains tentent toujours de manipuler des pouvoirs qui les dépassent.;
 <DIALOGUE_BOSS4_4>Mais il est temps pour vous de connaître votre place. Il est grand temps pour l'ère des dragons!;
 <DIALOGUE_BOSS4_5>Nous ne sommes pas vos pions. L'humanité a largement dépassé ses créateurs, que vous le vouliez ou non!;
-<DIALOGUE_BOSS4_0>Non... Emprisonné à nouveau? Vous ne perdez rien pour attendre, humains!;
+<DIALOGUE_BOSS4_0>Non... Emprisonné à nouveau? Vous... vous ne perdez rien pour attendre, humains!;
 
 <VICTOIRE_-1>Alors ça! On ne m'a jamais fait ce coup-là. Mais vous savez quoi? Prenez-la. Je pense que vous en êtes digne! Enfin, on verra bien.;
 <VICTOIRE_0>Je me souviendrai de vous comme d'un être particulièrement fort.;

@@ -15,7 +15,7 @@ uses
   SonoSys,
   SysUtils;
 
-const TAILLE_VAGUE=4;
+
 var templatesEnnemis:array[1..MAXENNEMIS] of TObjet;
     ennemis:Array of TOBjet;
 //procedure initStatEnnemi(nom:PChar;typeIA_MVT,vie,att,dmg,def,vitesse,w,h,framesA,frames1,frames2,frames3,framesM:Integer;var ennemi:TObjet;wcol,hcol,offx,offy:Integer;nomAttaques:PChar);
@@ -352,6 +352,10 @@ end;
 procedure ActionEnnemi(ennemi:TObjet;x,y:Integer); //permet à un ennemi d'agir (donc d'attaquer)
 var obj:TObjet;alea1,alea2,i:Integer;angle:Real;
 begin
+  if (ennemi.anim.etat='jump') or (ennemi.anim.etat='fly') or (ennemi.anim.etat='dodge') or (ennemi.anim.etat='dash') then
+    begin
+    //createAfterimage(ennemi,20);
+    end;
   if (ennemi.anim.etat='shoot') then
     if (ennemi.anim.objectName='elementaire_eclipse') and (ennemi.stats.compteurAction<20) then
       begin
@@ -489,7 +493,7 @@ begin
           alea1:=100+random(10)*100;
           end;
           creerEffet(x-50,y-50,100,100,6,'target',False,obj);
-          initJustice(typeobjet(1),1,ennemi.stats.force,ennemi.stats.multiplicateurDegat,alea1,alea2,x,y,30,900-(ennemi.stats.compteurAction),'justiceRykor');
+          initJustice(typeobjet(1),10,ennemi.stats.force,ennemi.stats.multiplicateurDegat,alea1,alea2,x,y,30,900-(ennemi.stats.compteurAction),'justiceRykor');
           ajoutObjet(obj);
           end;
         if (ennemi.anim.etat='tir') and (ennemi.anim.currentFrame=20) and (ennemi.stats.compteurAction<=601) then
@@ -773,7 +777,7 @@ begin
             AIPathFollow(ennemi,joueur,ennemi.stats.vitessePoursuite,true,true);
           if (ennemi.anim.etat='rewarp') and animFinie(ennemi.anim) then
             InitAnimation(ennemi.anim,ennemi.anim.objectName,'chase', ennemi.stats.nbFrames1,True);
-          if (animFinie(ennemi.anim) and (ennemi.anim.etat='chase') and (random(15)=0)) or ((ennemi.anim.objectName='Archimage') and (ennemi.stats.compteurAction>70))  then 
+          if (animFinie(ennemi.anim) and (ennemi.anim.etat='chase') and (random(7)=0)) or ((ennemi.anim.objectName='Archimage') and (ennemi.stats.compteurAction>70))  then 
             begin
               jouerSonEnn(ennemi.anim.objectName);
               ennemi.stats.compteurAction:=0;
@@ -819,7 +823,7 @@ begin
           begin
           initAnimation(ennemi.anim,ennemi.anim.objectName,'spread',ennemi.stats.nbFrames2,False);
           ennemi.stats.vitessePoursuite:=ennemi.stats.defense;
-          ennemi.stats.defense:=0;
+          ennemi.stats.defense:=-5;
           end;
         if (ennemi.anim.etat='chase') and (random(50)=1) then
           ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
@@ -855,8 +859,8 @@ begin
           begin
           initAnimation(ennemi.anim,ennemi.anim.objectName,'jump',ennemi.stats.nbFrames2,True);
           randomize();
-          ennemi.stats.xcible:=ennemi.image.rect.x+12*(random(20)-10);
-          ennemi.stats.ycible:=ennemi.image.rect.y+12*(random(20)-10);
+          ennemi.stats.xcible:=trouvercentrex(ennemi)+60*(random(5)-2);
+          ennemi.stats.ycible:=trouvercentrey(ennemi)+60*(random(5)-2);
           end;
         if ennemi.anim.etat='jump' then
           begin
@@ -920,10 +924,13 @@ begin
         if (ennemi.anim.etat='chase') then
           flyUpdate(ennemi,20);
         if (ennemi.anim.etat='chase') and (random(100)=0) then
+          begin
+          jouerSonEnn('vestige',random(6)+1);
           if random(2)=0 then
               initAnimation(ennemi.anim,ennemi.anim.objectName,'cast',ennemi.stats.nbFrames3,False)
             else
               initAnimation(ennemi.anim,ennemi.anim.objectName,'walk',ennemi.stats.nbFrames2,True);
+          end;
         if (ennemi.anim.etat='walk') then
           begin
           AIPathFollow(ennemi,joueur,2,True,True);
@@ -935,6 +942,7 @@ begin
               end
             else
               begin
+              jouerSonEnn('vestige',random(6)+1);
               initAnimation(ennemi.anim,ennemi.anim.objectName,'cast',ennemi.stats.nbFrames3,false);
               ennemi.stats.compteurAction:=0;
               end;
@@ -1205,7 +1213,7 @@ begin
           else
             begin
             initAnimation(ennemi.anim,ennemi.anim.objectName,'dash',ennemi.stats.nbFrames3,False);
-            ennemi.stats.degatsContact:=25;
+            ennemi.stats.degatsContact:=15;
             ennemi.stats.xcible:=trouverCentreX(joueur);
             ennemi.stats.ycible:=trouverCentreY(joueur);
             end;
@@ -1214,7 +1222,7 @@ begin
       if (ennemi.anim.etat='dash') then
         begin
         flyUpdate(ennemi,50);
-        movetoTarget(ennemi,5);
+        movetoTarget(ennemi,4);
         ennemi.stats.compteurAction:=ennemi.stats.compteurAction-1;
         end;
       if (ennemi.anim.etat='strike') and (ennemi.anim.currentFrame>=10) then
@@ -1265,6 +1273,8 @@ begin
         ennemi.col.estActif:=True;
         AIPathFollow(ennemi,joueur,ennemi.stats.vitessePoursuite,True,True);
         if ennemi.stats.compteurAction>200 then
+          begin
+          jouerSonEnn('creature',random(10)+1);
           if random(ennemi.stats.vieMax)<=ennemi.stats.vie then 
             begin
             initAnimation(ennemi.anim,ennemi.anim.objectName,'cast',25,False);
@@ -1276,6 +1286,7 @@ begin
             ennemi.stats.compteurAction:=0;
             ennemi.col.estActif:=False;
             end;
+          end;
         end;
       if (ennemi.anim.etat='warp') and animFinie(ennemi.anim) then
         initAnimation(ennemi.anim,ennemi.anim.objectName,'peek',13,False);
@@ -1552,29 +1563,29 @@ initStatEnnemi(8,    'elementaire_spectral',  4,   30,  2,   0,   0,   0,   100,
 initStatEnnemi(9,    'elementaire_lumiere',   1,   50,  2,   0,   4,   3,   300, 300, 12,                11,            6,               0,               8,           60,   60,   120,  120,  'rayon');
 initStatEnnemi(10,   'elementaire_ombre',     1,   50,  2,   0,   4,   3,   300, 300, 11,                12,            9,               0,               10,          60,   60,   120,  120,  'rayon_spectral');
 initStatEnnemi(11,   'elementaire_tempete',   3,   50,  0,   5,   0,   2,   150, 150, 10,                8,             4,               0,               10,          100,  150,  25,   0,    '');
-initStatEnnemi(12,   'elementaire_eclipse',   1,   250, 2,   0,   4,   3,   400, 400, 19,                12,            7,               0,               9,           60,   60,   160,  160,  'eclipse');
-initStatEnnemi(13,   'mage_noir',             2,   75,  0,   0,   0,   0,   126, 120, 10,                8,             9,               7,               9,           80,   100,  30,   20,   'flamme');
+initStatEnnemi(12,   'elementaire_eclipse',   1,   250, 5,   0,   4,   3,   400, 400, 19,                12,            7,               0,               9,           60,   60,   160,  160,  'eclipse');
+initStatEnnemi(13,   'mage_noir',             2,   75,  8,   0,   0,   0,   126, 120, 10,                8,             9,               7,               9,           80,   100,  30,   20,   'flamme');
 initStatEnnemi(14,   'mage_blanc',            15,  40,  4,   0,   0,   1,   100, 120, 18,                12,            3,               5,               14,          60,   90,   20,   30,   'rayon');
 initStatEnnemi(15,   'mage_rouge',            8,   50,  10,  0,   2,   0,   100, 200, 11,                6,             4,               9,               5,           60,   90,   20,   110,  'rayon_rouge');
 initStatEnnemi(16,   'invocateur',            12,  50,  0,   0,   0,   0,   120, 132, 12,                8,             3,               0,               5,           80,   100,  30,   20,   'rayon');
 initStatEnnemi(17,   'diablotin',             4,   10,  1,   0,   0,   3,   80,  80,  4,                 6,             4,               5,               4,           50,   50,   15,   0,    'eclairR');
-initStatEnnemi(18,   'Akr',                   4,   250, 2,   0,   -20, 1,   384, 256, 14,                9,             9,               8,               16,          200,  96,   80,   150,  'kamui');
+initStatEnnemi(18,   'Akr',                   4,   1050,12,  15,  -30, 1,   384, 256, 14,                9,             9,               8,               16,          200,  96,   80,   150,  'kamui');
 initStatEnnemi(19,   'main',                  3,   50,  0,   5,   0,   1,   150, 150, 8,                 16,            8,               0,               15,          150,  150,  0,    0,    '');
-initStatEnnemi(20,   'armure',                7,   400, 8,   0,   7 ,  0,   384, 256, 7,                 2,             13,              9,               16,          192,  192,  96,   64,   'justice');
+initStatEnnemi(20,   'armure',                7,   500, 8,   0,   7 ,  0,   384, 256, 7,                 2,             13,              9,               16,          192,  192,  96,   64,   'justice');
 initStatEnnemi(21,   'undrixel',              3,   50,  5,   30,  0,   1,   288, 192, 4,                 10,            4,               0,               10,          200,  128,  10,   40,   'eclairR');
 initStatEnnemi(22,   'altegh',                1,   50,  2,   0,   4,   2,   192, 192, 3,                 6,             4,               0,               14,          160,  96,   16,   96,   'rayonAL');
-initStatEnnemi(23,   'Leo',                   13,  150, 15,  5,   5,   0,   300, 300, 14,                8,             7,               10,              8,           100,  150,  100,  150,  'eclairL');
-initStatEnnemi(24,   'Leo_Transe',            14,  150, 30,  10,   2,   1,   300, 300, 13,                16,            6,               22,              10,          200,  250,  50,   25,   'geyser_feu');
+initStatEnnemi(23,   'Leo',                   13,  200, 15,  7,   3,   0,   300, 300, 14,                8,             7,               10,              8,           100,  150,  100,  150,  'eclairL');
+initStatEnnemi(24,   'Leo_Transe',            14,  150, 30,  12,   2,   1,   300, 300, 13,                16,            6,               22,              10,          200,  250,  50,   25,   'geyser_feu');
 initStatEnnemi(25,   'UNKNOWN',               4,   150, 2,   0,   -20, 0,   128, 128, 8,                 12,            8,               4,               8,           64,   114,  32,   14,   'Roue');
-initStatEnnemi(26,   'chaos',                 12,  60,  1,   3,   5,   2,   200, 200, 9,                 11,            6,               0,               6,           100,  200,  50,   0,    'rayonAbysse');
+initStatEnnemi(26,   'chaos',                 12,  60,  3,   3,   5,   2,   200, 200, 9,                 11,            6,               0,               6,           100,  200,  50,   0,    'rayonAbysse');
 initStatEnnemi(27,   'Archimage',             4,   100, 2,   0,   6,   0,   128, 128, 8,                 6,             6,               6,               4,           64,   100,  32,  14,   'projectile');
-initStatEnnemi(28,   'liche',                 5,   50,  2,   0,   4,   1,   128, 128, 9,                 6,             5,               16,              10,          70,   110,  19,   7,    'rayonMort');
-initStatEnnemi(29,   'expurgateur',           6,   40,  3,   1,   1,   0,   128, 128, 13,                12,            0,               0,               7,           128,  104,  0,    24,   'eclairR');
-initStatEnnemi(30,   'dracomage',             2,   300, 2,   5,   6,   1,   192, 192, 34,                12,            8,               8,               26,          128,  164,  32,   28,   'eclairR');
-initStatEnnemi(31,   'geolier',               18,  300, 10,  0,   -10, 2,   500, 400, 4,                 12,            20,              4,               6,           100,  200,  200,  200,  'arcane');
-initStatEnnemi(32,   'geolier2',              19,  300, 10,  0,   -10, 1,   500, 400, 32,                18,            10,              10,              14,          200,  200,  150,  200,  'chaine');
-initStatEnnemi(33,   'Spectre',               12,  200, 1,   10,  1,   1,   300, 400, 8,                 22,            8,               0,               13,          160,  300,  70,   50,   'oeil');
-initStatEnnemi(34,   'vestige',               11,  1000,3,   15,  3,   1,   400, 400, 16,                16,            12,              10,              7,           250,  400,  75,   0,    'geyser_lumiere');
+initStatEnnemi(28,   'liche',                 5,   50,  4,   0,   5,   1,   128, 128, 9,                 6,             5,               16,              10,          70,   110,  19,   7,    'rayonMort');
+initStatEnnemi(29,   'expurgateur',           6,   40,  5,   1,   3,   0,   128, 128, 13,                12,            0,               0,               7,           128,  104,  0,    24,   'eclairR');
+initStatEnnemi(30,   'dracomage',             2,   300, 2,   5,   12,   1,   192, 192, 34,                12,            8,               8,               26,          128,  164,  32,   28,   'eclairR');
+initStatEnnemi(31,   'geolier',               18,  360, 10,  0,   -12, 2,   500, 400, 4,                 12,            20,              4,               6,           100,  200,  200,  200,  'arcane');
+initStatEnnemi(32,   'geolier2',              19,  360, 10,  0,   -12, 1,   500, 400, 32,                18,            10,              10,              14,          200,  200,  150,  200,  'chaine');
+initStatEnnemi(33,   'Spectre',               12,  200, 1,   10,  0,   1,   300, 400, 8,                 22,            8,               0,               13,          160,  300,  70,   50,   'oeil');
+initStatEnnemi(34,   'vestige',               11,  1100,3,   15,  1,   1,   400, 400, 16,                16,            12,              10,              7,           250,  400,  75,   0,    'geyser_lumiere');
 initStatEnnemi(35,   'gardien',               16,  500, 2,   1,   0,   1,   300, 300, 8,                 16,            0,               0,               23,          250,  120,  25,   120,  'rayon_main');
 initStatEnnemi(36,   'Geist',                 17,  200, 10,  0,   -10, 4,   300, 300, 21,                24,            3,               7,               9,           80,   80,   110,  160,  'rayonAL');
 initStatEnnemi(37,   'creature',              20,  1000,15,  0,   0,   0,   600, 560, 46,                12,            14,              14,              20,          500,  460,  50,   50,   'arcane');

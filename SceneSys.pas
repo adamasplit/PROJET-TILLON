@@ -10,6 +10,7 @@ uses
 	eventSys,
 	fichierSys,
 	mapSys,
+	math,
 	memgraph,
 	MenuSys,
 	SDL2,
@@ -78,10 +79,9 @@ var faucheuse : TObjet;i:Integer;
 		UpdateDamagePopUps;
 		if LObjets[0].stats.vie>LObjets[0].stats.vieMax then LObjets[0].stats.vie:=LObjets[0].stats.vieMax;
 		if LObjets[0].stats.vie<0 then LObjets[0].stats.vie:=0;
-		if leMonde and (sdl_getTicks-UpdateTimeMonde>(1500+LObjets[0].stats.compteurLeMonde*500)) then
+		if leMonde and (sdl_getTicks-UpdateTimeMonde>(1500+min(LObjets[0].stats.compteurLeMonde,17)*500)) then
 			begin
 			leMonde:=False;
-			mix_resumeMusic();
 			end;
 		if LObjets[0].stats.laMort and (sdl_getTicks-updateTimeMort>5000) then
 			LObjets[0].stats.laMort:=False;
@@ -100,7 +100,6 @@ var faucheuse : TObjet;i:Integer;
 		if (Lobjets[0].stats.vie <= 0) then 
 		begin
 			DeclencherFondu(True, 3000);
-			arretMus(1000);
 			arretSons(100);
 			ajoutObjet(faucheuse);
 			CreateRawImage(Lobjets[High(LObjets)].image,1200,Lobjets[0].image.rect.y-50,200,200,'Sprites/Game/death/death_walking_1.bmp');
@@ -152,8 +151,8 @@ begin
 end;
 
 procedure OnPlayerDeath(var son:Boolean);
-var hasDeath : Boolean;
-var i : Integer;
+var hasDeath,deathInDeck : Boolean;
+var i,j : Integer;
 begin
 mix_pauseMusic;
 afficherTout;
@@ -183,15 +182,29 @@ afficherTout;
         			if (not hasDeath) and (Lobjets[0].stats.collection[i].numero = 13) then
 						begin
 							supprimerCarte(Lobjets[0].stats, 13);
-							jouerSon('SFX/Effets/mort.wav');
 							sceneActive:='Jeu';
 							DeclencherFondu(false, 500);
-							Lobjets[0].stats.vie := 20;
+							Lobjets[0].stats.vie := 1;
 							hasDeath := True;
 							supprimeObjet(Lobjets[High(LObjets)]);
-							//writeln('objet suprr');
+							mix_resumeMusic();
+						end;
+				deathInDeck:=False;
+				if hasDeath then
+					begin
+					Mix_VolumeMusic(VOLUME_MUSIQUE);
+					UpdateTimeMort:=SDL_GetTicks+1000;
+					LObjets[0].stats.laMort:=True;
+					for i:=0 to high(LObjets[0].stats.deck^) do
+						if (not deathInDeck) and (LObjets[0].stats.deck^[i].numero=13) then
+							begin
+							deathInDeck:=True;
+							for j:=i to high(LObjets[0].stats.deck^)-1 do
+								LObjets[0].stats.deck^[j]:=LObjets[0].stats.deck^[j+1];
+							setlength(LObjets[0].stats.deck^,high(LObjets[0].stats.deck^));
 							mix_resumeMusic();
 							end;
+					end;
 				if not(hasDeath) then
 					begin
 					//jouerSon('SFX/Effets/mort.wav');
@@ -305,20 +318,20 @@ begin
 		end;
 end;
 
-procedure Intro;
-var updateTime:UInt32;indice:Integer;
+procedure Intro(var indice:Integer;var updateTime:UINT32);
+var i:Integer;
 begin
 	sceneActive:='Intro';
 	updateTime:=sdl_getTicks;
 	InitDialogueBox(dialogues[1],nil,nil,0,windowHeight div 3 + 250,windowWidth+200,300,extractionTexte('INTRO_1'),30);
 	InitDialogueBox(dialogues[2],nil,nil,-50,windowHeight div 3 + 250,windowWidth div 3+250,300,'',30);
 	InitDialogueBox(dialogues[3],nil,nil,windowWidth div 2-100,windowHeight div 3 + 250,windowWidth div 3+250,300,'',30);
-	for indice:=2 to 14 do
-		if (indice<>4) and (indice<>8) then ajoutDialogue(nil,extractionTexte('INTRO_'+intToSTR(indice)))
+	for i:=2 to 14 do
+		if (i<>4) and (i<>8) then ajoutDialogue(nil,extractionTexte('INTRO_'+intToSTR(i)))
 			else 
 				begin
-				ajoutDialogue(nil,extractionTexte('INTRO_'+intToSTR(indice)+'_1'));
-				ajoutDialogue(nil,extractionTexte('INTRO_'+intToSTR(indice)+'_2'));
+				ajoutDialogue(nil,extractionTexte('INTRO_'+intToSTR(i)+'_1'));
+				ajoutDialogue(nil,extractionTexte('INTRO_'+intToSTR(i)+'_2'));
 				end;
 	indice:=1;
 	black_color.r:=255;black_color.b:=255;black_color.g:=255;
@@ -329,23 +342,12 @@ begin
 	mix_playmusic(musiqueJouee,0);
 	Mix_VolumeMusic(40);
 	createRawImage(fond,120,0,814,530,'Sprites/Intro/illustrations_intro_1.bmp');
-	while sceneActive='Intro' do
-	begin
-		sdl_renderclear(sdlrenderer);
-		sdl_delay(10);
-		actualiserIntro(updateTime,indice);
-		sdl_renderpresent(sdlrenderer);
-		while SDL_PollEvent(EventSystem)=1 do
-			if EventSystem^.type_=SDL_mousebuttondown then
-				sceneActive:='Menu'
-	end;
-	while high(queueDialogues)>-1 do
-		supprimeDialogue(1);
 end;
 
 
 
 procedure GameUpdate;
+var updateTime:UInt32;indice:Integer;
 var i:Integer;son,boss:Boolean;ennemiActuel:Integer;cardHover:Array [1..3] of Boolean;
 begin
    while not QUITGAME do
@@ -354,6 +356,31 @@ begin
   sdl_renderclear(sdlRenderer);
   autoMusique(indiceMusiqueJouee);
 	case SceneActive of
+		'Intro':begin
+			ActualiserIntro(updateTime,indice);
+			while SDL_PollEvent(EventSystem)=1 do
+				if EventSystem^.type_=SDL_mousebuttondown then
+					sceneActive:='Menu';
+			if sceneActive<>'Intro' then 
+				begin
+				while high(queueDialogues)>-1 do
+					supprimeDialogue(1);
+				initUICombat;
+				ClearScreen;
+				black_color.r:=0;black_color.b:=0;black_color.g:=0;
+				sdlKeyboardState := SDL_GetKeyboardState(nil);
+				InitMenuPrincipal;
+				InitMenuEnJeu;
+				InitCredits;
+				//initDecor;
+				InitDialogues;
+				InitTutorial;
+				indiceTuto:=1;
+				setlength(LObjets,1);
+				//writeln('essai d''actualisation...');
+				DeclencherFondu(False, 1000);
+				end;
+			end;
 		'Credits':Credits;
 		'Deck':
 		begin
@@ -380,6 +407,7 @@ begin
   		'Menu': 
   		begin
 		direction_menu;
+		effetDeFondu;
 		end;
 		'map':
 		begin
@@ -506,8 +534,9 @@ begin
 			//Touches de Debug
       		begin
         		case EventSystem^.key.keysym.sym of
-          			//SDLK_UP:  LObjets[0].stats.vie := LObjets[0].stats.vie +10;
-					//SDLK_DOWN: LObjets[0].stats.vie := LObjets[0].stats.vie-10;
+					SDLK_1:icarteChoisie:=0;
+					SDLK_2:icarteChoisie:=1;
+					SDLK_3:icarteChoisie:=2;
 					SDLK_ESCAPE : begin
 						if sceneActive='Event' then activationEvent(sceneSuiv)
 						else if sceneActive='Cutscene' then 
@@ -522,13 +551,16 @@ begin
 							mix_resumeMusic;
 							end
 							end
-						else if (sceneActive<>'Menu') and (sceneActive<>'Credits') and (sceneActive<>'Fondu') then menuEnJeu;
+						else if (sceneActive<>'Menu') and (sceneActive<>'Credits') and (sceneActive<>'Fondu') and (sceneActive<>'mortJoueur') and (sceneActive<>'GameOver') then menuEnJeu;
 						end;
 					SDLK_SPACE:begin
 						if leMonde then leMonde:=False;
 						//LObjets[0].stats.compteurLeMonde:=100;
 						//updateTimeMonde:=sdl_getTicks;
 						end;
+					{SDLK_M:writeln(LObjets[0].stats.multiplicateurMana);
+					SDLK_UP:  LObjets[0].stats.vie := LObjets[0].stats.vie +10;
+					SDLK_DOWN: LObjets[0].stats.vie := LObjets[0].stats.vie-10;
 					SDLK_O:LOBjets[0].stats.multiplicateurMana:=LOBjets[0].stats.multiplicateurMana+100;
 					SDLK_H : choixSalle();
 					SDLK_F2:begin
@@ -538,10 +570,15 @@ begin
 					SDLK_F3:modeDebug:=not(modeDebug);
 					SDLK_F4:for i:=1 to MAXENNEMIS do	statsJoueur.bestiaire[i]:=True;
 					SDLK_F5:begin statsJoueur.tailleCollection:=28; for i:=1 to 28 do statsJoueur.collection[i]:=Cartes[i]; end;
-					SDLK_F6:statsJoueur.multiplicateurSoin:=1.5;
+					SDLK_F6:
+						begin
+						statsJoueur.multiplicateurSoin:=statsJoueur.multiplicateurSoin+(random(4)-2)*0.2;
+						//writeln(statsJoueur.multiplicateurSoin);
+						end;
 					SDLK_F7:begin statsJoueur.tailleCollection:=28; for i:=1 to 28 do statsJoueur.collection[i]:=Cartes[27+i mod 2]; end;
-					SDLK_F8:for i:=0 to high(LObjets[0].stats.deck^) do LObjets[0].stats.deck^[i]:=Cartes[8];
+					SDLK_F8:for i:=0 to high(LObjets[0].stats.deck^) do LObjets[0].stats.deck^[i]:=Cartes[12];
 					SDLK_F9:statsJoueur.avancement:=MAXSALLES;
+					SDLK_F10:statsJoueur.multiplicateurSoin:=1;}
         		end;
       		end;
 			
@@ -673,11 +710,13 @@ begin
 				end;
 				if sceneActive='Menu' then
 				begin
-					for i:=1 to 5 do
+					for i:=1 to 6 do
 					begin
 					OnMouseClick(boutons[i],EventSystem^.motion.x,EventSystem^.motion.y);
 					HandleButtonClick(boutons[i].button,EventSystem^.motion.x,EventSystem^.motion.y);
 					end;
+					OnMouseClick(button_help,EventSystem^.motion.x,EventSystem^.motion.y);
+					HandleButtonClick(button_help.button,EventSystem^.motion.x,EventSystem^.motion.y);
 				end;
 				if sceneActive='MenuEnJeu' then
 				begin
@@ -705,9 +744,9 @@ begin
 				if (sceneActive='Deck') then
 					begin
 					if statsJoueur.relique<>0 then
-						scrollDeck(ideck,statsJoueur.tailleCollection+1)
+						scrollDeck(ideck,statsJoueur.tailleCollection+2)
 					else
-						scrollDeck(ideck,statsJoueur.tailleCollection)
+						scrollDeck(ideck,statsJoueur.tailleCollection+1)
 					end;
 				if sceneActive='Bestiaire' then
 					begin
@@ -726,26 +765,13 @@ begin
 end;
 
 procedure StartGame;
+var lastUpdateTime:UInt32;indice:Integer;
 begin
 	new(EventSystem);
     IndiceMusiqueJouee:=0;
 	updatetimemusique:=sdl_getticks;
     Mix_VolumeMusic(VOLUME_MUSIQUE);
-	Intro;
-	black_color.r:=0;black_color.b:=0;black_color.g:=0;
-    SceneActive := 'Menu';
-	sdlKeyboardState := SDL_GetKeyboardState(nil);
-    InitMenuPrincipal;
-    InitMenuEnJeu;
-    InitCredits;
-	initUICombat;
-	//initDecor;
-	InitDialogues;
-	InitTutorial;
-	indiceTuto:=1;
-	setlength(LObjets,1);
-	//writeln('essai d''actualisation...');
-	DeclencherFondu(False, 3000);
+	Intro(indice,lastUpdateTime);
     GameUpdate;
 end;
 

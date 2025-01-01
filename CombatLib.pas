@@ -16,7 +16,7 @@ uses
 
 var updateTimeMonde:UInt32;updateTimeMort:UInt32;
 
-function degat(flat : Integer ; force : Integer ; defense : Integer;multiplicateurDegat:Real): Integer;
+function degat(flat : Integer ; force : Integer ; defense : Integer;multiplicateurDegat:Real;cap:Boolean): Integer;
 procedure RegenMana(var LastUpdateTime : UInt32;var mana:Integer;manaMax:Integer;relique:Integer;var vie:Integer;multiplicateurMana:Real);
 procedure CreerDeckCombat(stat : TStats;var DeckCombat:TDeck); 
 function trouverCarte(stats:TStats;num:Integer):Boolean;
@@ -30,6 +30,7 @@ procedure multiProjs(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,w,h,vi
 procedure multiLasers(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,l,w,vitesse,nb,range,angleDepart,duree,delai:Integer;nom:PChar);
 procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;volVie:Boolean;x,y,l,w,xdest,ydest:Integer;vitRotation:Real;dureeVie,delai:Integer;nom:PChar;var rayon:TObjet);
 procedure updateRayon(var rayon:TObjet);
+procedure createAfterimage(obj:TObjet;duree:Integer);
 procedure UpdateJustice(var justice:TObjet);
 procedure ajouterCarte(var stats : TStats ; num : integer); 
 procedure updateAttaques();
@@ -61,10 +62,12 @@ begin
 end;
 
 //Fonction de calcul des dégats
-function degat(flat : Integer ; force : Integer ; defense : Integer;multiplicateurDegat:Real): Integer;
+function degat(flat : Integer ; force : Integer ; defense : Integer;multiplicateurDegat:Real;cap:Boolean): Integer;
 begin
 
     degat := math.ceil((flat + force - defense)*multiplicateurDegat);
+    if (degat < flat) and cap then
+        degat := flat+((flat+force-defense) div 5); 
     if degat < 1 then
         degat := 1; 
 end;
@@ -571,7 +574,7 @@ begin
             sdl_renderDrawLINE(sdlRenderer,round(trouvercentrex(justice)+justice.stats.vectY/3),round(trouvercentrey(justice)+justice.stats.vectX/3),round(justice.stats.targetX+5*(justice.stats.targetX-trouvercentrex(justice))+justice.stats.vectY/3),round(justice.stats.targetY+5*(justice.stats.targetY-trouvercentreY(justice))+justice.stats.vectX/3));
             sdl_renderDrawLINE(sdlRenderer,round(trouvercentrex(justice)-justice.stats.vectY/3),round(trouvercentrey(justice)-justice.stats.vectX/3),round(justice.stats.targetX+5*(justice.stats.targetX-trouvercentrex(justice))-justice.stats.vectY/3),round(justice.stats.targetY+5*(justice.stats.targetY-trouvercentreY(justice))-justice.stats.vectX/3));
             end;
-    if justice.stats.delai>0 then 
+    if (justice.stats.delai>0) and ((not leMonde) or (justice.stats.origine=joueur)) then 
         //phase initiale: 
         begin
         initAngle(justice.stats.vectX,justice.stats.vectY,angleDepart);
@@ -676,6 +679,30 @@ begin
     if degats<>0 then CreateDamagePopUp(x,y,StringToPChar(IntToStr(abs(degats))),popUpColor);
 end;
 
+procedure createAfterimage(obj:TObjet;duree:Integer);
+var image:TObjet;
+begin
+    if getframePath(obj.anim)<>nil then
+        begin
+        createRawImage(image.image,obj.image.rect.x,obj.image.rect.y,obj.image.rect.w,obj.image.rect.h,getFramePath(obj.anim));
+        image.anim.estActif:=False;
+        image.anim.isFliped:=obj.anim.isFliped;
+        image.col.estActif:=False;
+        image.stats.genre:=afterimage;
+        image.stats.vie:=duree;
+        image.stats.vieMax:=duree;
+        ajoutObjet(image);
+        end;
+end;
+
+procedure updateAfterimage(var image:TObjet);
+begin
+    image.stats.vie:=image.stats.vie-1;
+    if image.stats.vie<=0 then supprimeObjet(image)
+    else
+        image.stats.transparence:=round(image.stats.vie/image.stats.vieMax*50)
+end;
+
 
 //----------------------------------------------
 //-----------Déroulant des cartes---------------
@@ -726,14 +753,15 @@ end;
     //6 les amants
     procedure VI(s : TStats ; x,y : Integer);
     var proj : TObjet;
-        flat,i : integer;
+        i : integer;
+        flat:Real;
     begin
-        flat := 1;
+        flat := 0;
         for i:=0 to high(s.deck^) do //augmente le flat pour chaque copie de la carte dans le deck
             if (s.deck^[i].numero = 6) then 
-                flat := flat +1 ;
+                flat := flat +1.5 ;
         
-        creerBoule(joueur, flat, s.force, s.multiplicateurDegat, x, y,80,80, {vitesse} 10, getmouseX, getmouseY, 'projectile', proj);
+        creerBoule(joueur, round(flat), s.force, s.multiplicateurDegat, x, y,80,80, {vitesse} 10, getmouseX, getmouseY, 'projectile', proj);
         ajoutObjet(proj);
 
     end;
@@ -742,7 +770,7 @@ end;
     procedure VII(var s: TStats;x,y:Integer);
     var eff:TObjet;
     begin
-        s.defense := s.defense + 3;
+        s.defense := s.defense + 4;
         creerEffet(0,0,140,140,12,'chariot2',True,eff);
         ajoutObjet(eff);
     end; 
@@ -807,7 +835,7 @@ end;
     begin
         s.force := s.force + 5;
         s.defense := s.defense +5;
-        s.multiplicateurMana := s.multiplicateurMana + 0.25;
+        s.multiplicateurMana := s.multiplicateurMana + 0.15;
         s.vitesse := s.vitesse + 1;
         jouerSonEff('pendu');
         //inverser les contrôles
@@ -850,7 +878,7 @@ end;
     //16 La tour
     procedure XVI(s : TStats ; x,y : Integer);
     begin
-        multiLasers(joueur, 2 ,s.force , s.multiplicateurDegat , x,y ,1200,120, {vitesse} 0 ,4 ,360,0, 100 ,1,'rayon');
+        multiLasers(joueur, 1 ,s.defense , s.multiplicateurDegat , x,y ,1200,120, {vitesse} 0 ,4 ,360,0, 100 ,1,'rayon');
         jouerSonEff('tour');
     end;
 
@@ -866,6 +894,7 @@ end;
     var flat, vitesse : integer;
         proj : Tobjet;
     begin
+        s.mana:=max(s.mana-2,0);
         case s.mana of 
             0 : begin flat := 0 ; vitesse := 10; end;
             1, 2 : begin flat := 1 ; vitesse := 10; end;
@@ -897,7 +926,7 @@ end;
         ajoutObjet(eff);
         for i := 0 to high(LOBjets) do
             if (LOBjets[i].stats.genre=ennemi) then
-                subirDegats(LObjets[i].stats,degat(1,s.force,LObjets[i].stats.defense,s.multiplicateurDegat),trouverCentreX(LObjets[i]),trouverCentreY(LObjets[i]));
+                subirDegats(LObjets[i].stats,degat(1,s.force,LObjets[i].stats.defense,s.multiplicateurDegat,false),trouverCentreX(LObjets[i]),trouverCentreY(LObjets[i]));
         for i := 0 to high(LOBjets) do
             if (LOBjets[i].stats.genre=ennemi) and (i<=high(LObjets)) then
             begin
@@ -963,7 +992,7 @@ end;
         //crée une barrière qui bloque les attaques
         jouerSonEff('XXIV');
         initAngle(getmouseX-x,getMouseY-y,angle);
-        multiprojs(joueur, 10 ,s.force , s.multiplicateurDegat , x,y ,100,100, 0,2 ,360 ,round(angle*360),'Roue');
+        multiprojs(joueur, 10 ,s.force , s.multiplicateurDegat , x,y ,150,150, 0,3 ,360 ,round(angle*360),'Roue');
     end;
 
     procedure XXV(s:TStats;x,y:Integer);
@@ -978,9 +1007,9 @@ end;
     var i:Integer;alea1:Real;obj:TObjet;
     begin
         randomize();
-        for i:=1 to 10 do begin
+        for i:=1 to 6 do begin
             alea1:=random(360)/180*pi;
-            creerRayon(typeObjet(0),2,s.force,s.multiplicateurDegat,false,round(x-cos(alea1)*200),50+round(y-sin(alea1)*200),200,100,x,y,0,20,20,'eclair',obj);
+            creerRayon(typeObjet(0),6,s.force,s.multiplicateurDegat,false,round(x-cos(alea1)*200),50+round(y-sin(alea1)*200),200,100,x,y,0.1,20,20,'eclair',obj);
             ajoutObjet(obj);
         end;
     end;
@@ -997,7 +1026,7 @@ end;
         exp.stats.transparence:=0;
         ajoutObjet(exp);
         sceneActive:='Cutscene';
-        InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,0,windowWidth,300,extractionTexte('SORT1_'+intToSTR(random(3)+1)),20);
+        InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,0,windowWidth,300,extractionTexte('SORT1_'+intToSTR(random(3)+1)),20,Angelic30,40);
         
     end;
 
@@ -1104,8 +1133,8 @@ end;
         jouerSonEff('meteore');
         initAngle(getMouseX-x,getMouseY-y,angle);
         sceneActive:='Cutscene';
-        InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,0,windowWidth,300,extractionTexte('SORT2_'+intToSTR(random(3)+1)),20);
-        creerBoule(joueur, 100, s.force, s.multiplicateurDegat, x-round(cos(angle)*1000), y-round(sin(angle)*1000),600,600, {vitesse} 3, getmouseX, getmouseY, 'meteore', proj);
+        InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,0,windowWidth,300,extractionTexte('SORT2_'+intToSTR(random(3)+1)),20,Angelic30,30);
+        creerBoule(joueur, 150, s.force, s.multiplicateurDegat, x-round(cos(angle)*1000), y-round(sin(angle)*1000),600,600, {vitesse} 3, getmouseX, getmouseY, 'meteore', proj);
         sdl_settexturealphamod(proj.image.imgTexture,0);
         ajoutObjet(proj);
     end;
@@ -1121,12 +1150,14 @@ begin
     tempCarte:=stats.deck^[i];
     if stats.deck^[i].active or (tempCarte.cout<=stats.mana) or (stats.relique=10) then 
         begin
+        if LObjets[0].anim.etat='idle' then initAnimation(LObjets[0].anim,LObjets[0].anim.objectName,'sort',7,False);
+        LObjets[0].anim.isFliped:=(getmousex<x);
         if not stats.deck^[i].active then
             begin
             stats.mana:=stats.mana-tempCarte.cout;
             if stats.mana<0 then 
                 begin
-                stats.vie:=stats.vie+stats.mana*2;
+                stats.vie:=stats.vie+stats.mana*3;
                 stats.mana:=0;
                 end;
             stats.deck^[i].active:=True;
@@ -1140,8 +1171,6 @@ begin
                 stats.deck^[i].charges:=stats.deck^[i].charges-1;
         if stats.deck^[i].charges<=0 then //si la carte est consommée, elle est renvoyée à la fin du paquet (ou non)
             cycle(stats.deck^,i);
-        initAnimation(LObjets[0].anim,LObjets[0].anim.objectName,'sort',7,False);
-        LObjets[0].anim.isFliped:=(getmousex<x);
         //Partie principale : tous les effets de cartes y seront répertoriés
         case tempCarte.numero of
             1: I_(stats,x,y);  
@@ -1194,6 +1223,7 @@ for i:=2 to High(LObjets) do
 			epee:UpdateJustice(LObjets[i]); //prépare ou fait avancer une épée
             explosion:UpdateExplosion(LObjets[i],interruption);
             explosion2:updateExplosion2(LObjets[i]);
+            afterimage:updateAfterimage(LObjets[i]);
 
 			effet:if (LObjets[i].stats.fixeJoueur) and (not (leMonde) or (LObjets[i].anim.objectName='monde')) then 
 				begin

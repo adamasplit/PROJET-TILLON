@@ -278,7 +278,7 @@ begin
     obj1.col.hasCollided:=True;
     obj2.col.hasCollided:=True;
     //pour savoir avec quels objets il est déjà en collision
-    if isAttack(obj2.stats) and (obj1.stats.indice<=3) then obj2.col.collisionsFaites[obj1.stats.indice]:=True;
+    if isAttack(obj2.stats) and (obj1.stats.indice<=TAILLE_VAGUE) then obj2.col.collisionsFaites[obj1.stats.indice]:=True;
     // Si l'un des deux objets est un trigger, on appelle OnTriggerEnter
     if obj1.col.isTrigger or obj2.col.isTrigger then
     begin
@@ -353,10 +353,10 @@ begin
           jouerSonEff('impact');
         if obj2.stats.genre=projectile then
           begin
-          subirDegats(obj1,degat(obj2.stats.degats,obj2.stats.force,obj1.stats.defense,obj2.stats.multiplicateurDegat),round(obj2.stats.vectx),round(obj2.stats.vecty));
+          subirDegats(obj1,degat(obj2.stats.degats,obj2.stats.force,obj1.stats.defense,obj2.stats.multiplicateurDegat,obj2.stats.origine=ennemi),round(obj2.stats.vectx),round(obj2.stats.vecty));
           if (obj2.anim.objectName='meteore') then
             begin
-            multiprojs(obj2.stats.origine,obj2.stats.degats div 40,obj2.stats.force,obj2.stats.multiplicateurDegat,round(obj2.stats.xreel),round(obj2.stats.yreel),100,100,8,8,360,0,'meteore2');
+            multiprojs(obj2.stats.origine,obj2.stats.degats div 20,obj2.stats.force,obj2.stats.multiplicateurDegat,round(obj2.stats.xreel),round(obj2.stats.yreel),100,100,8,8,360,0,'meteore2');
             creerEffet(obj2.image.rect.x,obj2.image.rect.y,obj2.image.rect.w,obj2.image.rect.h,8,'impact_meteore',False,obj2);
             end
           else
@@ -364,8 +364,8 @@ begin
           end
         else
           begin
-          subirDegats(obj1,degat(obj2.stats.degats,obj2.stats.force,obj1.stats.defense,obj2.stats.multiplicateurDegat),0,0);
-          if obj2.stats.volVie then subirDegats(LObjets[0].stats,-round(degat(obj2.stats.degats,obj2.stats.force,obj1.stats.defense,obj2.stats.multiplicateurDegat)*LObjets[0].stats.multiplicateurSoin) div 4,trouverCentreX(LObjets[0]),trouverCentreY(LObjets[0]));
+          subirDegats(obj1,degat(obj2.stats.degats,obj2.stats.force,obj1.stats.defense,obj2.stats.multiplicateurDegat,obj2.stats.origine=ennemi),0,0);
+          if (obj2.stats.volVie) and (not (obj1.stats.indice>TAILLE_VAGUE)) then subirDegats(LObjets[0].stats,-min(LObjets[0].stats.vieMax div 10,round(degat(obj2.stats.degats,obj2.stats.force,obj1.stats.defense,obj2.stats.multiplicateurDegat,obj2.stats.origine=ennemi)*LObjets[0].stats.multiplicateurSoin) div 3),trouverCentreX(LObjets[0]),trouverCentreY(LObjets[0]));
           creerEffet(trouverCentreX(obj1),trouverCentreY(obj1),64,64,6,'impact',False,eff);
           ajoutobjet(eff);
           end;

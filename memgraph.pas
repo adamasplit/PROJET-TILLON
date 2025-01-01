@@ -68,6 +68,7 @@ var
   Fantasy40 : PTTF_Font;
   Fantasy30 : PTTF_Font;
   Fantasy20 : PTTF_Font;
+  Angelic30 : PTTF_Font;
   black_color: TSDL_Color;
   sdlWindow1 : PSDL_Window;
   sdlRenderer : PSDL_Renderer;
@@ -442,15 +443,11 @@ procedure InitDialogueBox(var Box: TDialogueBox; ImgPath,portraitPath: PChar; X,
 begin
   if ImgPath<>nil then sdl_destroytexture(box.BackgroundImage.imgtexture);
   if portraitPath<>nil then sdl_destroytexture(box.portrait.imgtexture);
-  
-  if ImgPath <> nil then CreateRawImage(Box.BackgroundImage, X, Y, W, H, ImgPath) else begin Box.BackgroundImage.rect.x := X; Box.BackgroundImage.rect.y := Y end;
-  if portraitPath <> nil then 
-    begin
+  CreateRawImage(Box.BackgroundImage, X, Y, W, H, ImgPath);
     if portraitPath='Sprites/Portraits/portraitB.bmp' then
       CreateRawImage(Box.portrait, X-50, Y-50, W div 4, W div 4, portraitPath)
     else
-      CreateRawImage(Box.portrait, X, Y, W div 4-(W div 5), W div 4-(W div 5), portraitPath);
-    end;
+      CreateRawImage(Box.portrait, X+(W div 20), Y+(H div 6), H div 2+ (H div 10), H div 2+(H div 10), portraitPath);
   if imgPath=nil then      box.BackgroundImage.directory:=nil;
   if portraitPath=nil then box.portrait.directory:=nil; 
   
@@ -599,6 +596,8 @@ BEGIN
   if Fantasy30 = nil then HALT;
   Fantasy20 := TTF_OpenFont(FantasyFontDirectory, 25);
   if Fantasy20 = nil then HALT;
+  Angelic30 := TTF_OpenFont('Fonts/AngelicAgrippaRegular.ttf',30);
+  if Angelic30 = nil then HALT;
 
   // activation de l'opacité
   SDL_SetRenderDrawBlendMode(sdlRenderer, SDL_BLENDMODE_BLEND);

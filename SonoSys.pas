@@ -6,11 +6,13 @@ uses
     SysUtils; //télécharger SDL2_mixer au préalable
 
 const TAILLE_OST=50;
-        VOLUME_MUSIQUE=40;
-        VOLUME_SON=40;
+        VOLUME_SON_MAX=50;
+        VOLUME_MUSIQUE_MAX=50;
         MAX_CHAINES = 8;
+var VOLUME_SON:Integer=VOLUME_SON_MAX;
+    VOLUME_MUSIQUE:Integer=VOLUME_MUSIQUE_MAX;
 type TMus=record
-    duree:real;
+    duree: real;
     nom:String;
     dir:PChar;
 end;
@@ -99,7 +101,7 @@ procedure JouerSonEff(nom:String); //joue un son au volume adapté parmi ceux de
 begin
     case nom of
     'ange','soleil','monde':jouerSon(StringToPChar('SFX/Effets/'+nom+'.wav'),VOLUME_SON);
-    'impact':jouerSon(StringToPChar('SFX/Effets/'+nom+'.wav'),VOLUME_SON div 3);
+    'impact','eclair','roue_impact':jouerSon(StringToPChar('SFX/Effets/'+nom+'.wav'),VOLUME_SON div 4);
     else
     jouerSon(StringToPChar('SFX/Effets/'+nom+'.wav'),VOLUME_SON div 2);
     end;
@@ -113,7 +115,7 @@ end;
 procedure JouerSonEnn(nom:String;num:Integer);
 begin
     if nom='elementaires' then
-        jouerSon(StringToPChar('SFX/Ennemis/'+nom+' ('+intToStr(num)+').wav'),VOLUME_SON * 4)
+        jouerSon(StringToPChar('SFX/Ennemis/'+nom+' ('+intToStr(num)+').wav'),VOLUME_SON * 2)
     else
         jouerSon(StringToPChar('SFX/Ennemis/'+nom+' ('+intToStr(num)+').wav'),VOLUME_SON * 2);
 end;
@@ -198,11 +200,11 @@ Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT,
     defMus(7,'OST/C6.wav','',72);
     defMus(8,'OST/C7.wav','',142);
     //Boss
-    defMus(9,'OST/Boss0.wav','',72);
+    defMus(9,'OST/Boss0.wav','',75);
     defMus(10,'OST/Boss1.wav','',120);
     defMus(13,'OST/Boss2.wav','',116);
     defMus(11,'OST/Boss3.wav','',149);
-    defMus(12,'OST/Boss4.wav','',133);
+    defMus(12,'OST/Boss4.wav','',135);
     //Map/évènements
     defMus(14,'OST/Map.wav','',163);
     defMus(15,'OST/Event.wav','',51);
@@ -233,7 +235,7 @@ Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT,
     defMus(42,'OST/Boss1_VictoireRep.wav','',81);
     defMus(45,'OST/Boss2_VictoireRep.wav','',81);
     defMus(43,'OST/Boss3_VictoireRep.wav','',99);
-    defMus(44,'OST/Boss4_VictoireRep.wav','',27);
+    defMus(44,'OST/Boss4_VictoireRep.wav','',21);
     //Mort
     defMus(47,'OST/Project_DEATH.wav','',24);
     defMus(46,'OST/Project_DEATH2.wav','',72);

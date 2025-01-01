@@ -12,12 +12,12 @@ uses
 const MAXSALLES=40; //nombre de salles total pour finir le jeu
   MAXENNEMIS=38; //nombre d'ennemis ayant une entrée dans le bestiaire
   MAXCARTES=60; //taille max du deck
-
+  TAILLE_VAGUE=4;
 var whiteCol,b_color,bf_color,f_color,navy_color,red_color,black_col,yellowCol,bk_col: TSDL_Color;
 
 type TRarete=(commune,rare,epique,legendaire);
 type evenements=(combat,marchand,hasard,camp,rien,boss);
-type typeObjet=(joueur,ennemi,projectile,laser,epee,effet,explosion,explosion2,autre);
+type typeObjet=(joueur,ennemi,projectile,laser,epee,effet,explosion,explosion2,afterimage,autre);
 
 type
   TAnimation = record
@@ -33,13 +33,13 @@ type
 
 type TCarte=record
     nom:pchar;
-    cout:Integer; //Coût en mana
+    cout,coutBase:Integer; //Coût en mana
     rarete:TRarete;
     numero:integer;
     description:String; //Description dans le menu
     dir:PChar;
     image:TImage;
-    charges,chargesMax:Integer;
+    charges,chargesMax,chargesMaxBase:Integer;
     active:Boolean;
     discard:Boolean;
 end;
@@ -55,6 +55,7 @@ type TStats=record //(version variable)
     defense:Integer;
     vie:Integer;
     vieMax:Integer;
+    transparence:Byte;
     xreel,yreel,angle:Real;
     etatPrec:TANimation; //dans le cas où l'objet est interrompu (par des dégâts par exemple) 
     inamovible:Boolean;
@@ -98,7 +99,6 @@ type TStats=record //(version variable)
         origine:typeObjet;
         vectX,vectY,vitRotation:Real;
         dureeVie,dureeVieInit,delai,delaiInit,targetX,targetY,vitDep:Integer;
-        transparence:Byte;
         volVie:Boolean); //soigne le joueur si jamais l'attaque touche une cible
 
         effet:(fixeJoueur:Boolean);//si l'effet suit le joueur ou non
@@ -113,7 +113,7 @@ type  TCol = record
     dimensions: TSDL_Rect;  // Boîte de collision (dimensions w et h)
     offset: TSDL_Point;     // Décalage par rapport à la position de l'objet
     hasCollided:Boolean;    // pour l'affichage de la boîte de collisions
-    collisionsFaites:array[0..3] of Boolean; //l'objet mémorise ceux avec qui il est déjà en collision 
+    collisionsFaites:array[0..TAILLE_VAGUE] of Boolean; //l'objet mémorise ceux avec qui il est déjà en collision 
     nom: PChar;             // Nom de l'objet (facultatif)
   end;
 
@@ -385,8 +385,8 @@ begin
       end;
     case i of
       1,6:cartes[i].cout:=1;
-      10,13,17,23,24:cartes[i].cout:=0;
-      2,5,16,18,22:cartes[i].cout:=2;
+      10,13,18,23,24:cartes[i].cout:=0;
+      2,5,16,17,22:cartes[i].cout:=2;
       3,4,12,14,19:cartes[i].cout:=3;
       11,20:cartes[i].cout:=4;
       8,9,15,21:cartes[i].cout:=5;
@@ -433,6 +433,8 @@ begin
     else
       cartes[i].chargesMax:=1;
       end;
+    cartes[i].chargesMaxBase:=cartes[i].chargesMax;
+    cartes[i].coutBase:=cartes[i].cout;
     end;
     //writeln('CORE ready');
 end.

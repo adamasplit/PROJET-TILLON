@@ -23,6 +23,7 @@ procedure UpdateUICombat(icarteChoisie:Integer;x,y:Integer;stats:TStats);
 procedure MouvementJoueur(var joueur:TObjet);
 function isuiv(i:Integer):Integer;
 function iprec(i:Integer):Integer;
+procedure afficherCarte(carte:TCarte;alpha:Integer;image:TImage);
 
 implementation
 
@@ -106,6 +107,32 @@ begin
     iCarteChoisie:=1;
 end;
 
+procedure afficherCarte(carte:TCarte;alpha:Integer;image:TImage);
+var modif1,modif2:TImage;diff1,diff2:Integer;
+begin
+    diff1:=min(0,(carte.cout-carte.coutBase)*12);
+    if carte.numero=8 then
+      diff2:=0
+    else
+      diff2:=(carte.chargesMax-carte.chargesMaxBase)*36;
+    sdl_settexturecolormod(image.imgTexture,max(0,255+diff1),max(0,255+diff1-diff2),max(0,255-diff2));
+    if carte.chargesMax>carte.chargesMaxBase then
+        begin
+        createRawImage(modif2,image.rect.x,image.rect.y,image.rect.w,image.rect.h,'Sprites/Cartes/modif2.bmp');
+        renderRawImage(modif2,False);
+        sdl_destroytexture(modif2.imgTexture);
+        sdl_freeSurface(modif2.imgSurface);
+        end;
+    renderRawImage(image,alpha,False);
+    if (carte.cout<carte.coutBase) and (carte.coutBase>0) and (carte.coutBase<=6) then
+        begin
+        createRawImage(modif1,image.rect.x+(image.rect.w div 15),image.rect.y,image.rect.w div 4,image.rect.h div 4,'Sprites/Cartes/modif1.bmp');
+        renderRawImage(modif1,False);
+        sdl_destroytexture(modif1.imgTexture);
+        sdl_freeSurface(modif1.imgSurface);
+        end;
+end;   
+
 procedure UpdateUICombat(icarteChoisie:Integer;x,y:Integer;stats:TStats);
 var i:Integer;
 begin
@@ -121,7 +148,7 @@ begin
       //sdl_settexturecolormod(combatUI[3].imgTexture,120,120,120);
       if LObjets[0].stats.relique=10 then
         begin
-        RenderRawImage(combatUI[3],150,false);
+        afficherCarte(stats.deck^[iCarteChoisie],150,combatUI[3]);
         if (LObjets[0].stats.deck^[iCarteChoisie].numero=27) or (LObjets[0].stats.deck^[iCarteChoisie].numero=28) then
           drawRect(red_color,20+5*(-LObjets[0].stats.mana+LObjets[0].stats.deck^[iCarteChoisie].cout),CombatUI[3].rect.x+8,CombatUI[3].rect.y+7,76,76)
         else
@@ -129,7 +156,7 @@ begin
         end
       else
         begin
-        RenderRawImage(combatUI[3],100,false);
+        afficherCarte(stats.deck^[iCarteChoisie],100,combatUI[3]);
         if (LObjets[0].stats.deck^[iCarteChoisie].numero=27) or (LObjets[0].stats.deck^[iCarteChoisie].numero=28) then
           drawRect(black_color,100,CombatUI[3].rect.x+8,CombatUI[3].rect.y+7,76,76)
         else
@@ -139,7 +166,7 @@ begin
     else
       begin
       //sdl_settexturecolormod(combatUI[3].imgTexture,120,120,120);
-      RenderRawImage(combatUI[3],180,false);
+      afficherCarte(stats.deck^[iCarteChoisie],200,combatUI[3]);
       end;
     //Bandes de part et d'autre
     RenderRawImage(CombatUI[1],255,False);
@@ -180,7 +207,9 @@ begin
     createRawImage(CombatUI[7],940,70,128,128,stats.deck^[0].dir);
     createRawImage(CombatUI[8],940,220,128,128,stats.deck^[1].dir);
     createRawImage(CombatUI[9],940,370,128,128,stats.deck^[2].dir);
-    RenderRawImage(combatUI[7],255,false);RenderRawImage(combatUI[8],255,false);RenderRawImage(combatUI[9],255,false);
+    afficherCarte(stats.deck^[0],255,combatUI[7]);
+    afficherCarte(stats.deck^[1],255,combatUI[8]);
+    afficherCarte(stats.deck^[2],255,combatUI[9]);
     end;
     //Reste du deck
     if high(stats.deck^)>=3 then begin
@@ -189,7 +218,7 @@ begin
             SDL_FreeSurface(CombatUI[7+i].imgSurface);
             SDL_DestroyTexture(CombatUI[7+i].imgTexture);
             createRawImage(CombatUI[7+i],920+4*i,600-i*5,128,128,stats.deck^[i-1].dir);
-            renderRawImage(CombatUI[7+i],255,False);
+            afficherCarte(stats.deck^[i-1],255,CombatUI[7+i]);
             end;
             end;
     end;

@@ -186,7 +186,8 @@ begin
         case alea of
         1..8:choisirennemi:=random(5)+18;
         9:choisirennemi:=random(2)+9;
-        10:choisirennemi:=25;
+        10:if (trouverCarte(statsJoueur,24) or (statsJoueur.bestiaire[25])) then choisirennemi:=random(3)+6
+            else choisirennemi:=25;
         end
     else if (avancement<=MAXSALLES) then
         case alea of
@@ -243,10 +244,10 @@ begin
         for j:=1 to nb do
             begin
             ennemis[j]:=templatesennemis[choisirEnnemi(avancement)];
-            ennemis[j].stats.vie :=     round((avancement/MAXSALLES+1)*ennemis[j].stats.vie    );
-            ennemis[j].stats.vieMax :=  round((avancement/MAXSALLES+1)*ennemis[j].stats.vieMax );
+            ennemis[j].stats.vie :=     round((avancement/MAXSALLES+1.2)*ennemis[j].stats.vie    );
+            ennemis[j].stats.vieMax :=  round((avancement/MAXSALLES+1.2)*ennemis[j].stats.vieMax );
             ennemis[j].stats.force :=   round((avancement/MAXSALLES+1)*ennemis[j].stats.force  );
-            ennemis[j].stats.defense := round((avancement/MAXSALLES+1)*ennemis[j].stats.defense);
+            ennemis[j].stats.defense := round(((avancement/1.4)/MAXSALLES+1)*(ennemis[j].stats.defense));
             ennemis[j].stats.vitesse := round((avancement/MAXSALLES+1)*ennemis[j].stats.vitesse);
             end;
     end;
@@ -421,7 +422,7 @@ begin
 end;
 
 procedure trade(carte1, carte2 : TCarte ; Var stats : Tstats); //#### table de proba à finir
-var rdm : Integer;carte:TCarte;
+var rdm,i : Integer;carte:TCarte;
 begin
     randomize;
     //C-C -> Commune:93% Rare:5% Epique:1% Legendaire:1%
@@ -544,8 +545,17 @@ begin
         end;
     end;
 
-    supprimerCarte(stats,carte1.numero);
-    supprimerCarte(stats,carte2.numero);
+    for i:=ichoix1 to statsJoueur.tailleCollection-1 do
+        begin
+        statsJoueur.collection[i]:=statsJoueur.collection[i+1]
+        end;
+    statsJoueur.tailleCollection:=statsJoueur.tailleCollection-1;
+    if ichoix1<ichoix2 then ichoix2:=ichoix2-1;
+    for i:=ichoix2 to statsJoueur.tailleCollection-1 do
+        begin
+        statsJoueur.collection[i]:=statsJoueur.collection[i+1]
+        end;
+    statsJoueur.tailleCollection:=statsJoueur.tailleCollection-1;
     echangeFait:=True;
     ajouterCarte(statsJoueur,carte.numero);
     createRawImage(imgCar3,1080-150-127,imgCar2.rect.y,imgCar2.rect.w,imgCar2.rect.h,carte.dir);
@@ -621,9 +631,9 @@ begin
     if ichoix1<>ichoix2 then
         renderButtonGroup(boutons[4]);
     createRawImage(imgCar1,boutons[2].image.rect.x,boutons[2].image.rect.y,boutons[2].image.rect.w,boutons[2].image.rect.h,StringToPChar('Sprites/Cartes/carte'+intToStr(statsJoueur.collection[iChoix1].numero)+'.bmp'));
-    renderRawImage(imgCar1,False);
+    afficherCarte(statsJoueur.collection[ichoix1],255,imgCar1);
     createRawImage(imgCar2,boutons[3].image.rect.x,boutons[3].image.rect.y,boutons[3].image.rect.w,boutons[3].image.rect.h,StringToPChar('Sprites/Cartes/carte'+intToStr(statsJoueur.collection[iChoix2].numero)+'.bmp'));
-    renderRawImage(imgCar2,False);
+    afficherCarte(statsJoueur.collection[ichoix2],255,imgCar2);
     renderRawImage(imgEchange,False);
     sdl_destroytexture(imgCar1.imgTexture);
     sdl_freeSurface(imgCar1.imgSurface);
@@ -647,7 +657,7 @@ begin
     if (sceneActive='DShop') and echangeFait then 
         begin
         createRawImage(imgcar2,640,160,200,200,statsJoueur.collection[ichoix2].dir);
-        renderRawImage(imgCar2,False);
+        afficherCarte(statsJoueur.collection[ichoix2],255,imgCar2);
         sdl_destroytexture(imgCar2.imgTexture);
         sdl_freeSurface(imgCar2.imgSurface);
         end
@@ -661,7 +671,7 @@ begin
     renderButtonGroup(boutons[1]);
     renderButtonGroup(boutons[4]);
     createRawImage(imgcar2,imgcar2.rect.x,imgcar2.rect.y,200,200,statsJoueur.collection[ichoix2].dir);
-    renderRawImage(imgCar2,False);
+    afficherCarte(statsJoueur.collection[ichoix2],255,imgCar2);
     sdl_destroytexture(imgCar2.imgTexture);
     sdl_freeSurface(imgCar2.imgSurface);
     effetDeFondu;
@@ -811,7 +821,7 @@ begin
     renderButtonGroup(boutons[2]);
     renderButtonGroup(boutons[3]);
     createRawImage(imgCar1,boutons[2].image.rect.x,boutons[2].image.rect.y,boutons[2].image.rect.w,boutons[2].image.rect.h,StringToPChar('Sprites/Cartes/carte'+intToStr(statsJoueur.collection[iChoix1].numero)+'.bmp'));
-    renderRawImage(imgCar1,False);
+    afficherCarte(statsJoueur.collection[ichoix1],255,imgCar1);
     sdl_destroytexture(imgCar1.imgTexture);
     sdl_freeSurface(imgCar1.imgSurface);
 end;
@@ -866,7 +876,7 @@ end;
 
 procedure rerollDialogueOph;
 begin
-    if (numDialogue=0) and statsJoueur.bestiaire[8] then
+    if (numDialogue=0) and statsJoueur.bestiaire[25] then
         numDialogue:=12
     else if numDialogue>=14 then
         numDialogue:=1
@@ -909,10 +919,10 @@ begin
 	stats.manaMax:=stats.manaMax-4;
 	3:	
 	begin 
-	stats.vieMax:=stats.vieMax-20;
+	stats.vieMax:=stats.vieMax-30;
 	end;
 	4:
-	stats.multiplicateurSoin:=1;
+	stats.multiplicateurSoin:=stats.multiplicateurSoin-0.5;
 	5:
 	begin
 	stats.manaDebutCombat:=0;
@@ -928,32 +938,51 @@ begin
 end;
 
 procedure tradeDD(num:Integer;var stats:TStats);
-var i:Integer;
+var i:Integer;modif1,modif2:Integer;
 begin
     if etatChoix then
     begin
     case ichoix1 of
-    1:stats.multiplicateurMana:=stats.multiplicateurMana-0.2;
+    1:stats.multiplicateurMana:=stats.multiplicateurMana*0.8;
     2:stats.force:=stats.force-3;
     3:stats.defense:=stats.defense-3;
-    4:stats.multiplicateurSoin:=stats.multiplicateurSoin-0.2;
-    5:stats.vieMax:=stats.vieMax-15;
+    4:stats.multiplicateurSoin:=stats.multiplicateurSoin*0.8;
+    5:stats.vieMax:=stats.vieMax-30;
     6:stats.manaMax:=stats.manaMax-4;
     end;
-    if echangeFait then stats.collection[ichoix2].chargesMax:=stats.collection[ichoix2].chargesMax+3
+    if echangeFait then 
+        begin
+        stats.collection[ichoix2].chargesMax:=stats.collection[ichoix2].chargesMax+2;
+        sdl_settexturecolormod(stats.collection[ichoix2].image.imgtexture,100,0,0);
+        end
     else
         case ichoix2 of
-        1:for i:=1 to 3 do ajouterCarte(stats,27);
-        2:for i:=1 to 3 do ajouterCarte(stats,28);
-        3:begin
+        1:begin
+            stats.manaMax:=stats.manaMax+2;
+            for i:=1 to 2+random(2) do ajouterCarte(stats,27);
+            end;
+        2:begin
+            stats.vieMax:=stats.vieMax+20;
+            for i:=1 to 2+random(2) do ajouterCarte(stats,28);
+            end;
+        3:  begin
             desequiperRelique(stats);
             stats.relique:=10;
+            stats.vieMax:=stats.vieMax+10;
+            stats.manaMax:=stats.manaMax+1;
             end;
         4:stats.force:=stats.force+4;
         5:stats.multiplicateurMana:=stats.multiplicateurMana+0.5;
         6:begin
             randomize;
-            for i:=1 to stats.tailleCollection do stats.collection[i]:=cartes[random(22)+1];
+            for i:=1 to stats.tailleCollection do 
+                begin
+                modif1:=stats.collection[i].cout-stats.collection[i].coutBase;
+                modif2:=stats.collection[i].chargesMax-stats.collection[i].chargesMaxBase;
+                stats.collection[i]:=cartes[random(22)+1];
+                stats.collection[i].cout:=stats.collection[i].cout+modif1;
+                stats.collection[i].chargesMax:=stats.collection[i].chargesMax+modif2;
+                end;
             end;
         end;
     echangeFait:=True;
@@ -987,7 +1016,11 @@ begin
     ClearScreen;
     etatchoix:=False;
     SDL_RenderClear(sdlRenderer);
-    ichoix1:=random(4)+1;ichoix2:=random(3)+1;
+    if not entree then
+        begin
+        entree:=True;
+        ichoix1:=random(4)+1;ichoix2:=random(3)+1;
+        end;
     createRawImage(imgEchange,440,160,200,200,'Sprites/Menu/echange.bmp');
     createRawImage(imgcar1,240,160,200,200,StringToPChar('Sprites/Echange/stat'+intToSTR(ichoix1)+'.bmp'));
     createRawImage(imgcar2,640,160,200,200,StringToPChar('Sprites/Echange/stat'+intToSTR(ichoix2+10)+'.bmp'));
@@ -1005,7 +1038,7 @@ begin
     SDL_RenderClear(sdlRenderer);
     repeat
         ichoix1:=random(4)+4;
-    until not (((statsJoueur.vieMax<40) and (ichoix1=5)) or ((statsJoueur.manaMax<7) and (ichoix1=6)));
+    until not (((statsJoueur.vieMax<=60) and (ichoix1=5)) or ((statsJoueur.manaMax<=7) and (ichoix1=6)));
     if ichoix1=7 then
         ichoix2:=6
     else
@@ -1036,10 +1069,11 @@ begin
         if echangeFait then
             stats.collection[ichoix2].chargesMax:=stats.collection[ichoix2].chargesMax+1
         else
-            stats.collection[ichoix2].cout:=stats.collection[ichoix2].cout-4;
+            stats.collection[ichoix2].cout:=stats.collection[ichoix2].cout-3;
         sceneActive:='Event';
         sceneSuiv:='Map';
-        initDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Portraits/ulgatr.bmp',0,460,1080,300,extractionTexte('FIN_EVENT6_1'),10)
+        initDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Portraits/ulgatr.bmp',0,460,1080,300,extractionTexte('FIN_EVENT6_1'),10);
+        ajoutDialogue('Sprites/Portraits/soeryo.bmp',extractionTexte('FIN_EVENT6_2'));
         end
     else
         begin
@@ -1182,13 +1216,13 @@ begin
 ClearScreen;
 SDL_RenderClear(sdlRenderer);
 randomize;
-if (trouverCarte(statsJoueur,23)) and not (trouverCarte(statsJoueur,24)) then alea:=2
+if (trouverCarte(statsJoueur,23)) and not (trouverCarte(statsJoueur,24)) and (random(4)=0) then alea:=2
     else if statsJoueur.avancement>(MAXSALLES div 2) then alea:=random(7)+1
     else alea:=random(6)+1;
 case alea of
 2:  if (trouverCarte(statsJoueur,24)) then 
         begin
-        echangeFait:=(random(2)=0);
+        echangeFait:=((random(100) mod 2)=0);
         sceneActive:='Event';
         sceneSuiv:='US';
         InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp',nil,0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('INTRO_EVENT6_1'),100);
@@ -1208,7 +1242,7 @@ case alea of
                 for i:=1 to 5 do
                     case i of 
                     4:ajoutDialogue('Sprites/Portraits/ulgatr.bmp',extractionTexte('SPEC_EVENT7_'+intToSTR(i)));
-                    2,3:ajoutDialogue('Sprites/Portraits/soeryo.bmp',extractionTexte('SPEC_EVENT7_'+intToSTR(i)));
+                    2,3,5:ajoutDialogue('Sprites/Portraits/soeryo.bmp',extractionTexte('SPEC_EVENT7_'+intToSTR(i)));
                     else ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('SPEC_EVENT7_'+intToStr(i)));
                     end;
             for i:=5 to 12 do
@@ -1226,7 +1260,7 @@ case alea of
                 for i:=1 to 5 do
                     case i of 
                     4:ajoutDialogue('Sprites/Portraits/ulgatr.bmp',extractionTexte('SPEC_EVENT7_'+intToSTR(i)));
-                    2,3:ajoutDialogue('Sprites/Portraits/soeryo.bmp',extractionTexte('SPEC_EVENT7_'+intToSTR(i)));
+                    2,3,5:ajoutDialogue('Sprites/Portraits/soeryo.bmp',extractionTexte('SPEC_EVENT7_'+intToSTR(i)));
                     else ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('SPEC_EVENT7_'+intToStr(i)));
                     end
             else if trouverCarte(statsJoueur,26) then
@@ -1345,9 +1379,12 @@ begin
     entree:=false;
     combatFini:=False;
     echangeFait:=False;
+    etatChoix:=False;
     SceneActive := 'map';
     ScenePrec:='map';
     InitDecorMap;
+    declencherFondu(False,600);
+    TimeDebutFondu:=sdl_getTicks-300;
     //writeln('Initializing rooms...');
     
     generationChoix(salles[1], salles[2], salles[3]);
