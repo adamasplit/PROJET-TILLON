@@ -242,7 +242,7 @@ end;
 
 procedure HandleButtonClickCarte(var button: TButtonGroup; x, y: Integer;carte:TCarte;var stats:TStats);
 begin
-  if (x >= button.image.rect.x+windowOffsetX) and (x <= button.image.rect.x+windowOffsetX + button.image.rect.w) and
+  if (x >= button.image.rect.x) and (x <= button.image.rect.x + button.image.rect.w) and
      (y >= button.image.rect.y) and (y <= button.image.rect.y + button.image.rect.h) then
   begin
     if Assigned(button.procCarte) then

@@ -167,7 +167,7 @@ end;
 {Prend le boutton et les coordonées en entrée (de la souris) puis vérifie si le bouton et cliqué et lance la procedure associée}
 procedure HandleButtonClick(var button: TButton; x, y: Integer);
 begin
-  if (x >= button.rect.x+windowOffsetX) and (x <= button.rect.x+windowOffsetX + button.rect.w) and
+  if (x >= button.rect.x) and (x <= button.rect.x + button.rect.w) and
      (y >= button.rect.y) and (y <= button.rect.y + button.rect.h) then
   begin
     if Assigned(button.OnClick) then
