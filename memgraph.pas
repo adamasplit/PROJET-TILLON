@@ -73,10 +73,10 @@ var
   sdlWindow1 : PSDL_Window;
   sdlRenderer : PSDL_Renderer;
 
-const
-  windowWidth = 1080;
-  windowHeight = 720;
-  
+var
+  windowWidth, windowHeight: Integer;
+  windowOffsetX,windowOffsetY:Integer;
+
 {Fonctions & Procedures}
 procedure CreateButton(var button: TButton; x, y, w, h: Integer; labelText: PAnsiChar; bgColor, textColor: TSDL_Color; font:PTTF_font;onClick: ButtonProcedure); overload;
 
@@ -157,7 +157,7 @@ begin
   // Calculs de la position du texte en fonction de la taille du bouton (Texte Centré)
   textRect.w := button.labelSurface^.w;
   textRect.h := button.labelSurface^.h;
-  textRect.x := button.rect.x + (button.rect.w - textRect.w) div 2;
+  textRect.x := button.rect.x + (button.rect.w - textRect.w) div 2+windowOffsetX;
   textRect.y := button.rect.y + (button.rect.h - textRect.h) div 2;
 
   // Render de la texture du texte dans le bouton
@@ -167,7 +167,7 @@ end;
 {Prend le boutton et les coordonées en entrée (de la souris) puis vérifie si le bouton et cliqué et lance la procedure associée}
 procedure HandleButtonClick(var button: TButton; x, y: Integer);
 begin
-  if (x >= button.rect.x) and (x <= button.rect.x + button.rect.w) and
+  if (x >= button.rect.x+windowOffsetX) and (x <= button.rect.x+windowOffsetX + button.rect.w) and
      (y >= button.rect.y) and (y <= button.rect.y + button.rect.h) then
   begin
     if Assigned(button.OnClick) then
@@ -200,7 +200,7 @@ begin
   // Calculs de la position du texte
   textRect.w := text.textSurface^.w;
   textRect.h := text.textSurface^.h;
-  textRect.x := text.rect.x;
+  textRect.x := text.rect.x+windowOffsetX;
   textRect.y := text.rect.y;
 
   // Render de la texture du texte
@@ -218,7 +218,7 @@ begin
   // Définition des dimensions du rectangle
   drect.w := w;
   drect.h := h;
-  drect.x := x;
+  drect.x := x+windowOffsetX;
   drect.y := y;
 
   // Changement de la couleur de rendu pour dessiner le rectangle
@@ -270,7 +270,7 @@ begin
   // Calculs de la position du texte
   imgRect.w := image.rect.w;
   imgRect.h := image.rect.h;
-  imgRect.x := image.rect.x;
+  imgRect.x := image.rect.x+windowOffsetX;
   imgRect.y := image.rect.y;
 
   // Render de la texture de l'image
@@ -286,7 +286,7 @@ begin
   // Calculs de la position du texte
   imgRect.w := image.rect.w;
   imgRect.h := image.rect.h;
-  imgRect.x := image.rect.x;
+  imgRect.x := image.rect.x+windowOffsetX;
   imgRect.y := image.rect.y;
 
   // Render de la texture de l'image
@@ -327,7 +327,7 @@ begin
 	  // Calculs de la position du texte
   imgRect.w := image.rect.w;
   imgRect.h := image.rect.h;
-  imgRect.x := image.rect.x;
+  imgRect.x := image.rect.x+windowOffsetX;
   imgRect.y := image.rect.y;
 
   // Render de la texture de l'image
@@ -430,7 +430,7 @@ begin
   Box.DisplayedLetters := 0;
   Box.CurrentLine := 1;
   Box.Font:=Fantasy30;
-  Box.FontSize:=30;
+  Box.FontSize:=30*windowWidth div 1080;
   Box.LastUpdateTime := SDL_GetTicks();
   Box.LetterDelay := Delay;
   Box.Complete := False;
@@ -459,7 +459,7 @@ begin
   Box.LastUpdateTime := SDL_GetTicks();
   Box.LetterDelay := Delay;
   Box.Font:=Font;
-  box.fontsize:=fontsize;
+  box.fontsize:=fontsize*windowWidth div 1080;
   Box.Complete := False;
 
   // Charger les premières lignes
@@ -520,7 +520,7 @@ var
 begin
   Surface := TTF_RenderUTF8_Blended(font, StringToPChar(Text), black_color);
   Texture := SDL_CreateTextureFromSurface(sdlRenderer, Surface);
-  Rect.x :=x+offsetX;
+  Rect.x :=x+offsetX+windowOffsetX;
   Rect.y := y+offsetY;
   Rect.w := Surface^.w;
   Rect.h := Surface^.h;
@@ -542,9 +542,9 @@ begin
       DisplayedText := Box.Lines[i];
 
     if box.portrait.directory<>nil then
-      RenderTextLine(DisplayedText, Box.BackgroundImage.rect.x, Box.BackgroundImage.rect.y + (i - 1) * 40,250,60,box.font)
+      RenderTextLine(DisplayedText, Box.BackgroundImage.rect.x, Box.BackgroundImage.rect.y + (i - 1) * (box.fontsize+10),250*windowWidth div 1080,60*windowHeight div 720,box.font)
     else
-      RenderTextLine(DisplayedText, Box.BackgroundImage.rect.x, Box.BackgroundImage.rect.y + (i - 1) * 40,100,60,box.font);
+      RenderTextLine(DisplayedText, Box.BackgroundImage.rect.x, Box.BackgroundImage.rect.y + (i - 1) * (box.fontsize+10),100*windowWidth div 1080,60*windowHeight div 720,box.font);
   end;
   if ((Box.Lines[Box.CurrentLine+1] <> '') and (Box.DisplayedLetters >= Length(Box.Lines[Box.CurrentLine])) and (Box.CurrentLine <= 7)) then
   begin
@@ -570,7 +570,7 @@ procedure OnButtonClickDebug;
 begin
   //WriteLn('Button Clicked!');
 end;
-
+var w:Integer;
 {Initialisation de la Fenêtre dans le programme principal}
 BEGIN
   black_color.r := 0; black_color.g := 0; black_color.b := 0;
@@ -580,9 +580,13 @@ BEGIN
   if SDL_Init(SDL_INIT_VIDEO) < 0 then HALT;
 
   // Creation de la Fenetre
-  sdlWindow1 := SDL_CreateWindow('Les Cartes du Destin 🃑', SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1080, 720, SDL_WINDOW_SHOWN);
+  sdlWindow1 := SDL_CreateWindow('Les Cartes du Destin 🃑', SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, SDL_WINDOW_SHOWN OR SDL_WINDOW_BORDERLESS OR SDL_WINDOW_FULLSCREEN_DESKTOP);
   if sdlWindow1 = nil then HALT;
 
+  SDL_GetWindowSize(sdlWindow1, @windowWidth, @windowHeight);
+  w:=windowWidth;
+  windowWidth:=round(1.5*windowHeight);
+  windowOffsetX:=(w-windowWidth) div 2;
   // Creation du Renderer
   sdlRenderer := SDL_CreateRenderer(sdlWindow1, -1, SDL_RENDERER_ACCELERATED);
   if sdlRenderer = nil then HALT;
@@ -590,13 +594,13 @@ BEGIN
 
   // Initialisation de la police [DayDream] et chargement de la police
   if TTF_Init = -1 then HALT;
-  Fantasy40 := TTF_OpenFont(FantasyFontDirectory, 40);
+  Fantasy40 := TTF_OpenFont(FantasyFontDirectory, 40*windowWidth div 1080);
   if Fantasy40 = nil then HALT;
-  Fantasy30 := TTF_OpenFont(FantasyFontDirectory, 30);
+  Fantasy30 := TTF_OpenFont(FantasyFontDirectory, 30*windowWidth div 1080);
   if Fantasy30 = nil then HALT;
-  Fantasy20 := TTF_OpenFont(FantasyFontDirectory, 25);
+  Fantasy20 := TTF_OpenFont(FantasyFontDirectory, 25*windowWidth div 1080);
   if Fantasy20 = nil then HALT;
-  Angelic30 := TTF_OpenFont('Fonts/AngelicAgrippaRegular.ttf',30);
+  Angelic30 := TTF_OpenFont('Fonts/AngelicAgrippaRegular.ttf',30*windowWidth div 1080);
   if Angelic30 = nil then HALT;
 
   // activation de l'opacité

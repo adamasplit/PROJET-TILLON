@@ -20,13 +20,8 @@ var etatChoix:Boolean;
 var evenementSuiv:evenements;
 echangeFait:Boolean;
 
-CONST 
-windowHeight=720;windowWidth=1080;
-      X1=(windowWidth div 2)+(windowWidth div 4);           
-      X2=(windowWidth div 2);
-      X3=(windowWidth div 2)-(windowWidth div 4);
-      Y2=(windowHeight  div 2) - (windowHeight div 2)+128;
-      Y1=(windowHeight  div 2) + (windowHeight div 4);
+var
+    X1,X2,X3,Y2,Y1: Integer;
 
 procedure generationChoix(var salle1,salle2,salle3:TSalle);
 procedure affichageSalles(var salle1,salle2,salle3:TSalle);
@@ -77,16 +72,16 @@ begin
     
     xinit:=salles[izoom].image.image.rect.x+(salles[izoom].image.image.rect.w div 2);
     yinit:=salles[izoom].image.image.rect.y+(salles[izoom].image.image.rect.h div 2);
-    salles[izoom].image.image.rect.w:=256+round(progression*600);
-    salles[izoom].image.image.rect.h:=392+round(progression*900);
+    salles[izoom].image.image.rect.w:=256*windowWidth div 1080+round(progression*600);
+    salles[izoom].image.image.rect.h:=392*windowHeight div 720+round(progression*900);
     salles[izoom].image.image.rect.x:=xinit-(salles[izoom].image.image.rect.w div 2);
     salles[izoom].image.image.rect.y:=yinit-(salles[izoom].image.image.rect.h div 2);
     for i:=1 to 3 do 
         if (i<>iZoom) then
             case i of
-            1:salles[i].image.image.rect.x:=X1-(salles[i].image.image.rect.w div 2)+round(progression*(480+izoom*20));
-            2:salles[i].image.image.rect.x:=X2-(salles[i].image.image.rect.w div 2)+round(progression*(400*(izoom-2)));
-            3:salles[i].image.image.rect.x:=X3-(salles[i].image.image.rect.w div 2)-round(progression*(540-izoom*20));
+            1:salles[i].image.image.rect.x:=X1-(salles[i].image.image.rect.w div 2)+round(progression*(480*windowWidth div 1080+izoom*20));
+            2:salles[i].image.image.rect.x:=X2-(salles[i].image.image.rect.w div 2)+round(progression*(400*windowWidth div 1080*(izoom-2)));
+            3:salles[i].image.image.rect.x:=X3-(salles[i].image.image.rect.w div 2)-round(progression*(540*windowWidth div 1080-izoom*20));
             end;
     progression:=progression*1.7;
     case izoom of
@@ -247,7 +242,7 @@ begin
             ennemis[j].stats.vie :=     round((avancement/MAXSALLES+1.2)*ennemis[j].stats.vie    );
             ennemis[j].stats.vieMax :=  round((avancement/MAXSALLES+1.2)*ennemis[j].stats.vieMax );
             ennemis[j].stats.force :=   round((avancement/MAXSALLES+1)*ennemis[j].stats.force  );
-            ennemis[j].stats.defense := round(((avancement/1.4)/MAXSALLES+1)*(ennemis[j].stats.defense));
+            ennemis[j].stats.defense := round(((avancement/1.3)/MAXSALLES+1)*(ennemis[j].stats.defense));
             ennemis[j].stats.vitesse := round((avancement/MAXSALLES+1)*ennemis[j].stats.vitesse);
             end;
     end;
@@ -422,7 +417,7 @@ begin
 end;
 
 procedure trade(carte1, carte2 : TCarte ; Var stats : Tstats); //#### table de proba à finir
-var rdm,i : Integer;carte:TCarte;
+var rdm : Integer;carte:TCarte;
 begin
     randomize;
     //C-C -> Commune:93% Rare:5% Epique:1% Legendaire:1%
@@ -545,20 +540,11 @@ begin
         end;
     end;
 
-    for i:=ichoix1 to statsJoueur.tailleCollection-1 do
-        begin
-        statsJoueur.collection[i]:=statsJoueur.collection[i+1]
-        end;
-    statsJoueur.tailleCollection:=statsJoueur.tailleCollection-1;
-    if ichoix1<ichoix2 then ichoix2:=ichoix2-1;
-    for i:=ichoix2 to statsJoueur.tailleCollection-1 do
-        begin
-        statsJoueur.collection[i]:=statsJoueur.collection[i+1]
-        end;
-    statsJoueur.tailleCollection:=statsJoueur.tailleCollection-1;
+    supprimerCarte(stats,carte1.numero);
+    supprimerCarte(stats,carte2.numero);
     echangeFait:=True;
     ajouterCarte(statsJoueur,carte.numero);
-    createRawImage(imgCar3,1080-150-127,imgCar2.rect.y,imgCar2.rect.w,imgCar2.rect.h,carte.dir);
+    createRawImage(imgCar3,windowWidth-(150-127)*windowWidth div 1080,imgCar2.rect.y,imgCar2.rect.w,imgCar2.rect.h,carte.dir);
     renderRawImage(imgCar3,False);
     sdl_renderpresent(sdlrenderer);
     sdl_delay(3000);
@@ -587,7 +573,7 @@ begin
   if (x >= btnGroup.image.rect.x) and (x <= btnGroup.image.rect.x + btnGroup.image.rect.w) and
      (y >= btnGroup.image.rect.y) and (y <= btnGroup.image.rect.y + btnGroup.image.rect.h) then
   begin
-    drawRect(yellowCol,255,btnGroup.image.rect.x-20,btnGroup.image.rect.y-20,btnGroup.image.rect.w+40,btnGroup.image.rect.h+40);
+    drawRect(yellowCol,255,btnGroup.image.rect.x-20*windowWidth div 1080,btnGroup.image.rect.y-20*windowHeight div 720,btnGroup.image.rect.w+40*windowWidth div 1080,btnGroup.image.rect.h+40*windowHeight div 720);
     highlight:=True;
   end
     else Highlight:=False;
@@ -596,7 +582,7 @@ end;
 
 procedure HandleButtonClickSalle(button:TButtonGroup;evenement:evenements;num,x,y:Integer);
 begin
-    if (x >= button.image.rect.x) and (x <= button.image.rect.x + button.image.rect.w) and
+    if (x >= button.image.rect.x+windowOffsetX) and (x <= button.image.rect.x+windowOffsetX + button.image.rect.w) and
      (y >= button.image.rect.y) and (y <= button.image.rect.y + button.image.rect.h) then
   begin
     if Assigned(button.procEch) then
@@ -608,7 +594,7 @@ end;
 
 procedure HandleButtonClickEch(var button: TButtonGroup; x, y: Integer;carte1,carte2:TCarte;var stats:TStats);
 begin
-  if (x >= button.image.rect.x) and (x <= button.image.rect.x + button.image.rect.w) and
+  if (x >= button.image.rect.x+windowOffsetX) and (x <= button.image.rect.x +windowOffsetX+ button.image.rect.w) and
      (y >= button.image.rect.y) and (y <= button.image.rect.y + button.image.rect.h) then
   begin
     if Assigned(button.procEch) then
@@ -656,7 +642,7 @@ begin
     renderRawImage(imgEchange,False);
     if (sceneActive='DShop') and echangeFait then 
         begin
-        createRawImage(imgcar2,640,160,200,200,statsJoueur.collection[ichoix2].dir);
+        createRawImage(imgcar2,640*windowWidth div 1080,160*windowHeight div 720,200*windowWidth div 1080,200*windowHeight div 720,statsJoueur.collection[ichoix2].dir);
         afficherCarte(statsJoueur.collection[ichoix2],255,imgCar2);
         sdl_destroytexture(imgCar2.imgTexture);
         sdl_freeSurface(imgCar2.imgSurface);
@@ -670,7 +656,7 @@ begin
     updateDialogueBox(dialogues[2]);
     renderButtonGroup(boutons[1]);
     renderButtonGroup(boutons[4]);
-    createRawImage(imgcar2,imgcar2.rect.x,imgcar2.rect.y,200,200,statsJoueur.collection[ichoix2].dir);
+    createRawImage(imgcar2,imgcar2.rect.x,imgcar2.rect.y,200*windowWidth div 1080,200*windowHeight div 720,statsJoueur.collection[ichoix2].dir);
     afficherCarte(statsJoueur.collection[ichoix2],255,imgCar2);
     sdl_destroytexture(imgCar2.imgTexture);
     sdl_freeSurface(imgCar2.imgSurface);
@@ -689,11 +675,11 @@ ClearScreen;
 etatchoix:=False;
 iChoix1:=1;iChoix2:=2;
 SDL_RenderClear(sdlRenderer);
-createRawImage(imgEchange,600,260,200,200,'Sprites/Menu/echange.bmp');
-InitButtonGroup(boutons[1],  415, 50, 250, 100, 'Sprites/Menu/Button1.bmp','Annuler',@LancementSalleMarchand);
-InitButtonGroup(boutons[2],  100, 250, 250, 250, 'Sprites/Menu/Button1.bmp','X',@confirmer);
-InitButtonGroup(boutons[3],  1080-255-500, 250, 250, 250, 'Sprites/Menu/Button1.bmp','X',@confirmer);
-InitButtonGroup(boutons[4],  415, 580, 250, 100, 'Sprites/Menu/Button1.bmp','Echange',btnProc);
+createRawImage(imgEchange,600*windowWidth div 1080,260*windowHeight div 720,200*windowWidth div 1080,200*windowHeight div 720,'Sprites/Menu/echange.bmp');
+InitButtonGroup(boutons[1],  415*windowWidth div 1080, 50 *windowHeight div 720, 250*windowWidth div 1080, 100*windowHeight div 720, 'Sprites/Menu/Button1.bmp','Annuler',@LancementSalleMarchand);
+InitButtonGroup(boutons[2],  100*windowWidth div 1080, 250*windowHeight div 720, 250*windowWidth div 1080, 250*windowHeight div 720, 'Sprites/Menu/Button1.bmp','X',@confirmer);
+InitButtonGroup(boutons[3],  windowWidth-(255+500)*windowWidth div 1080, 250*windowHeight div 720, 250*windowWidth div 1080, 250*windowHeight div 720, 'Sprites/Menu/Button1.bmp','X',@confirmer);
+InitButtonGroup(boutons[4],  415*windowWidth div 1080, 580*windowHeight div 720, 250*windowWidth div 1080, 100*windowHeight div 720, 'Sprites/Menu/Button1.bmp','Echange',btnProc);
 boutons[4].parametresSpeciaux:=3;boutons[4].procEch:=@trade;
 end;
 
@@ -731,7 +717,7 @@ begin
     if (numDialogue>8) or ((numDialogue>7) and (statsJoueur.nbMarchand<>1)) then
         numDialogue:=numDialogue-1
     else
-        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp',portrait,0,450,1080,300,extractionTexte('MARCHAND_DISCUSSION_'+intToStr(statsJoueur.nbMarchand)+'_'+intToSTR(numDialogue-1)),10);
+        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp',portrait,0,450*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('MARCHAND_DISCUSSION_'+intToStr(statsJoueur.nbMarchand)+'_'+intToSTR(numDialogue-1)),10);
 end;
 
 procedure LancementSalleMarchand; //###
@@ -749,10 +735,10 @@ begin
         entree:=True;
         end;
     if not echangeFait then
-    InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/Button1.bmp','Marchandage',@Echange);
-    InitButtonGroup(boutons[2],  440, 200, 200, 100, 'Sprites/Menu/Button1.bmp','Discussion',@rerollDialogueMarchand);
-    InitButtonGroup(boutons[3],  465, 300, 150, 100, 'Sprites/Menu/Button1.bmp','Partir',@choixSalle);
-    initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/marchand.bmp',0,450,1080,300,extractionTexte('MARCHAND_ACCUEIL_'+intToStr(min(statsJoueur.nbMarchand,4))),10);
+    InitButtonGroup(boutons[1],  415*windowWidth div 1080, 100*windowHeight div 720, 250*windowWidth div 1080, 100*windowHeight div 720, 'Sprites/Menu/Button1.bmp','Marchandage',@Echange);
+    InitButtonGroup(boutons[2],  440*windowWidth div 1080, 200*windowHeight div 720, 200*windowWidth div 1080, 100*windowHeight div 720, 'Sprites/Menu/Button1.bmp','Discussion',@rerollDialogueMarchand);
+    InitButtonGroup(boutons[3],  465*windowWidth div 1080, 300*windowHeight div 720, 150*windowWidth div 1080, 100*windowHeight div 720, 'Sprites/Menu/Button1.bmp','Partir',@choixSalle);
+    initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/marchand.bmp',0,450*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('MARCHAND_ACCUEIL_'+intToStr(min(statsJoueur.nbMarchand,4))),10);
 end;
 
 procedure actualiserDD();
@@ -832,9 +818,9 @@ begin
     ClearScreen;
     iChoix1:=1;
     SDL_RenderClear(sdlRenderer);
-    InitButtonGroup(boutons[1],  415, 50, 250, 100, 'Sprites/Menu/Button1.bmp','Annuler',@lancementSalleCamp);
-    InitButtonGroup(boutons[2],  540-125, 250, 250, 250, 'Sprites/Menu/Button1.bmp','X',btnProc);
-    InitButtonGroup(boutons[3],  415, 580, 250, 100, 'Sprites/Menu/Button1.bmp','Bruler',btnProc);
+    InitButtonGroup(boutons[1],  415      *windowWidth div 1080, 50 *windowHeight div 720,250*windowWidth div 1080, 100*windowHeight div 720, 'Sprites/Menu/Button1.bmp','Annuler',@lancementSalleCamp);
+    InitButtonGroup(boutons[2],  (540-125)*windowWidth div 1080, 250*windowHeight div 720,250*windowWidth div 1080, 250*windowHeight div 720, 'Sprites/Menu/Button1.bmp','X',btnProc);
+    InitButtonGroup(boutons[3],  415      *windowWidth div 1080, 580*windowHeight div 720,250*windowWidth div 1080, 100*windowHeight div 720, 'Sprites/Menu/Button1.bmp','Bruler',btnProc);
     boutons[3].parametresSpeciaux:=1;boutons[3].procCarte:=@brulerCarte;
 end;
 
@@ -847,10 +833,10 @@ begin
         begin
         entree:=true;
         end;
-    InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/Button1.bmp','Bruler carte',@defaussecarte);
-    InitButtonGroup(boutons[2],  440, 200, 200, 100, 'Sprites/Menu/Button1.bmp','Repos',@soinFeuCamp);
-    InitButtonGroup(boutons[3],  465, 300, 150, 100, 'Sprites/Menu/Button1.bmp','Partir',@choixSalle);
-    initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,1800,300,extractionTexte('FEU_DE_CAMP_'+intToSTR(random(3)+1)),10);
+    InitButtonGroup(boutons[1],  415*windowWidth div 1080, 100*windowHeight div 720, 250*windowWidth div 1080, 100*windowHeight div 720, 'Sprites/Menu/Button1.bmp','Bruler carte',@defaussecarte);
+    InitButtonGroup(boutons[2],  440*windowWidth div 1080, 200*windowHeight div 720, 200*windowWidth div 1080, 100*windowHeight div 720, 'Sprites/Menu/Button1.bmp','Repos',@soinFeuCamp);
+    InitButtonGroup(boutons[3],  465*windowWidth div 1080, 300*windowHeight div 720, 150*windowWidth div 1080, 100*windowHeight div 720, 'Sprites/Menu/Button1.bmp','Partir',@choixSalle);
+    initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('FEU_DE_CAMP_'+intToSTR(random(3)+1)),10);
 end;
 
 procedure brulerCarte(carte:TCarte ; var stats : Tstats);
@@ -868,9 +854,9 @@ begin
         numDialogue:=numDialogue+1;
     case numDialogue of
     0,2,4,5:
-        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portrait_Leo1.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT_'+intToStr(numDialogue)),10)
+        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portrait_Leo1.bmp',0,450*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('DIALOGUE_EVENT_'+intToStr(numDialogue)),10)
     else
-        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT_'+intToStr(numDialogue)),10);
+        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('DIALOGUE_EVENT_'+intToStr(numDialogue)),10);
     end;
 end;
 
@@ -891,11 +877,11 @@ begin
         numDialogue:=numDialogue+1;
     case numDialogue of
     0,2,4,5,13,15:
-        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portrait_Ophiucus1.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT2_'+intToStr(numDialogue)),10);
+        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portrait_Ophiucus1.bmp',0,450*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('DIALOGUE_EVENT2_'+intToStr(numDialogue)),10);
     7..11:
-        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portrait_Ophiucus2.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT2_'+intToStr(numDialogue)),10);
+        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portrait_Ophiucus2.bmp',0,450*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('DIALOGUE_EVENT2_'+intToStr(numDialogue)),10);
     else
-        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT2_'+intToStr(numDialogue)),10);
+        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('DIALOGUE_EVENT2_'+intToStr(numDialogue)),10);
     end;
 end;
 
@@ -904,9 +890,9 @@ begin
     numDialogue:=min(numDialogue+1,9);
     case numDialogue of
     0,2,4,6,7,8:
-        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/dd.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT4_'+intToStr(numDialogue)),10);
+        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/dd.bmp',0,450*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('DIALOGUE_EVENT4_'+intToStr(numDialogue)),10);
     else
-        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT4_'+intToStr(numDialogue)),10);
+        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('DIALOGUE_EVENT4_'+intToStr(numDialogue)),10);
     end;
 end;
 
@@ -919,7 +905,7 @@ begin
 	stats.manaMax:=stats.manaMax-4;
 	3:	
 	begin 
-	stats.vieMax:=stats.vieMax-30;
+	stats.vieMax:=stats.vieMax-20;
 	end;
 	4:
 	stats.multiplicateurSoin:=stats.multiplicateurSoin-0.5;
@@ -952,7 +938,7 @@ begin
     end;
     if echangeFait then 
         begin
-        stats.collection[ichoix2].chargesMax:=stats.collection[ichoix2].chargesMax+2;
+        stats.collection[ichoix2].chargesMax:=stats.collection[ichoix2].chargesMax+3;
         sdl_settexturecolormod(stats.collection[ichoix2].image.imgtexture,100,0,0);
         end
     else
@@ -989,7 +975,7 @@ begin
     if sceneActive='DShop' then
         begin
         sceneActive:='Event';
-        InitDialogueBox(dialogues[1],nil,nil,50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('FIN_EVENT5_0'),100);
+        InitDialogueBox(dialogues[1],nil,nil,50*windowWidth div 1080,windowHeight div 3 - 100*windowHeight div 720,windowWidth,400*windowHeight div 720,extractionTexte('FIN_EVENT5_0'),100);
         ajoutDialogue(nil,extractionTexte('FIN_EVENT5_1'));
         sceneSuiv:='Map';
         declencherFondu(false,0);
@@ -1001,11 +987,11 @@ begin
         begin
         if sceneActive='DShop' then
             if echangeFait then
-                initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp',nil,0,460,1080,300,extractionTexte('ECH_EVENT5_3'),10)
+                initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp',nil,0,460*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('ECH_EVENT5_3'),10)
             else
-                initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp',nil,0,460,1080,300,extractionTexte('ECH_EVENT5_1'),10)
+                initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp',nil,0,460*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('ECH_EVENT5_1'),10)
         else
-            initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/dd.bmp',0,460,1080,300,extractionTexte('ECH_EVENT4_1'),10);
+            initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/dd.bmp',0,460*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('ECH_EVENT4_1'),10);
         etatChoix:=True;
         end;
 end;
@@ -1021,12 +1007,12 @@ begin
         entree:=True;
         ichoix1:=random(4)+1;ichoix2:=random(3)+1;
         end;
-    createRawImage(imgEchange,440,160,200,200,'Sprites/Menu/echange.bmp');
-    createRawImage(imgcar1,240,160,200,200,StringToPChar('Sprites/Echange/stat'+intToSTR(ichoix1)+'.bmp'));
-    createRawImage(imgcar2,640,160,200,200,StringToPChar('Sprites/Echange/stat'+intToSTR(ichoix2+10)+'.bmp'));
-    initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/dd.bmp',0,460,1080,300,extractionTexte('ECH_EVENT4_0'),10);
-    InitButtonGroup(boutons[1],  415, 50, 250, 100, 'Sprites/Menu/Button1.bmp','Annuler',@LancementSalleHasardDD);
-    InitButtonGroup(boutons[4],  415, 400, 250, 100, 'Sprites/Menu/Button1.bmp','Pacte',btnProc);
+    createRawImage(imgEchange,440*windowWidth div 1080,160*windowHeight div 720,200*windowWidth div 1080,200*windowHeight div 720,'Sprites/Menu/echange.bmp');
+    createRawImage(imgcar1,   240*windowWidth div 1080,160*windowHeight div 720,200*windowWidth div 1080,200*windowHeight div 720,StringToPChar('Sprites/Echange/stat'+intToSTR(ichoix1)+'.bmp'));
+    createRawImage(imgcar2,   640*windowWidth div 1080,160*windowHeight div 720,200*windowWidth div 1080,200*windowHeight div 720,StringToPChar('Sprites/Echange/stat'+intToSTR(ichoix2+10)+'.bmp'));
+    initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/dd.bmp',0,460,windowWidth,300*windowHeight div 720,extractionTexte('ECH_EVENT4_0'),10);
+    InitButtonGroup(boutons[1],  415*windowWidth div 1080, 50 *windowHeight div 720, 250*windowWidth div 1080, 100*windowHeight div 720, 'Sprites/Menu/Button1.bmp','Annuler',@LancementSalleHasardDD);
+    InitButtonGroup(boutons[4],  415*windowWidth div 1080, 400*windowHeight div 720, 250*windowWidth div 1080, 100*windowHeight div 720, 'Sprites/Menu/Button1.bmp','Pacte',btnProc);
     boutons[4].parametresSpeciaux:=4;boutons[4].procRel:=@tradeDD;
 end;
 
@@ -1046,19 +1032,19 @@ begin
         ichoix2:=random(5)+4;
         //writeln(ichoix2)
     until ichoix2<>6;
-    createRawImage(imgEchange,440,160,200,200,'Sprites/Menu/echange.bmp');
-    createRawImage(imgcar1,240,160,200,200,StringToPChar('Sprites/Echange/stat'+intToSTR(ichoix1)+'.bmp'));
+    createRawImage(imgEchange,440*windowWidth div 1080,160*windowHeight div 720,200*windowWidth div 1080,200*windowHeight div 720,'Sprites/Menu/echange.bmp');
+    createRawImage(imgcar1,240*windowWidth div 1080,160*windowHeight div 720,200*windowWidth div 1080,200*windowHeight div 720,StringToPChar('Sprites/Echange/stat'+intToSTR(ichoix1)+'.bmp'));
     if ichoix2>6 then
         begin
-        createRawImage(imgcar2,640,160,200,200,statsJoueur.collection[1].dir);
+        createRawImage(imgcar2,640*windowWidth div 1080,160*windowHeight div 720,200*windowWidth div 1080,200*windowHeight div 720,statsJoueur.collection[1].dir);
         echangeFait:=True;
         ichoix2:=1;
         end
     else
-        createRawImage(imgcar2,640,160,200,200,StringToPChar('Sprites/Echange/stat'+intToSTR(ichoix2+10)+'.bmp'));
-    initDialogueBox(dialogues[2],nil,nil,0,460,1080,300,extractionTexte('ECH_EVENT5_0'),10);
-    InitButtonGroup(boutons[1],  415, 50, 250, 100, 'Sprites/Menu/Button1.bmp','Annuler',@choixSalle);
-    InitButtonGroup(boutons[4],  415, 400, 250, 100, 'Sprites/Menu/Button1.bmp','"Echange"',btnProc);
+        createRawImage(imgcar2,640*windowWidth div 1080,160*windowHeight div 720,200*windowWidth div 1080,200*windowHeight div 720,StringToPChar('Sprites/Echange/stat'+intToSTR(ichoix2+10)+'.bmp'));
+    initDialogueBox(dialogues[2],nil,nil,0,460*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('ECH_EVENT5_0'),10);
+    InitButtonGroup(boutons[1],  415*windowWidth div 1080, 50 *windowHeight div 720, 250*windowWidth div 1080, 100*windowHeight div 720, 'Sprites/Menu/Button1.bmp','Annuler',@choixSalle);
+    InitButtonGroup(boutons[4],  415*windowWidth div 1080, 400*windowHeight div 720, 250*windowWidth div 1080, 100*windowHeight div 720, 'Sprites/Menu/Button1.bmp','"Echange"',btnProc);
     boutons[4].parametresSpeciaux:=4;boutons[4].procRel:=@tradeDD;
 end;
 
@@ -1072,16 +1058,16 @@ begin
             stats.collection[ichoix2].cout:=stats.collection[ichoix2].cout-3;
         sceneActive:='Event';
         sceneSuiv:='Map';
-        initDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Portraits/ulgatr.bmp',0,460,1080,300,extractionTexte('FIN_EVENT6_1'),10);
+        initDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Portraits/ulgatr.bmp',0,460*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('FIN_EVENT6_1'),10);
         ajoutDialogue('Sprites/Portraits/soeryo.bmp',extractionTexte('FIN_EVENT6_2'));
         end
     else
         begin
         etatChoix:=True;
         if echangeFait then
-            initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/ulgatr.bmp',0,460,1080,300,extractionTexte('ECH_EVENT6_1'),10)
+            initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/ulgatr.bmp',0,460*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('ECH_EVENT6_1'),10)
         else
-            initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/soeryo.bmp',0,460,1080,300,extractionTexte('ECH_EVENT7_1'),10);
+            initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/soeryo.bmp',0,460*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('ECH_EVENT7_1'),10);
         end;
     
 end;
@@ -1094,14 +1080,14 @@ begin
     sdl_destroytexture(fond.imgtexture);
     sdl_freeSurface(fond.imgsurface);
     createRawImage(fond, 0,0, WINDOWWIDTH, windowHeight,'Sprites/Menu/fondMarchand.bmp');
-    createRawImage(imgcar2,440,160,200,200,statsJoueur.collection[1].dir);
+    createRawImage(imgcar2,440*windowWidth div 1080,160*windowHeight div 720,200*windowWidth div 1080,200*windowHeight div 720,statsJoueur.collection[1].dir);
     ichoix2:=1;
     if echangeFait then
-        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/ulgatr.bmp',0,460,1080,300,extractionTexte('ECH_EVENT6_0'),10)
+        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/ulgatr.bmp',0,460*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('ECH_EVENT6_0'),10)
     else
-        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/soeryo.bmp',0,460,1080,300,extractionTexte('ECH_EVENT7_0'),10);
-    InitButtonGroup(boutons[1],  415, 50, 250, 100, 'Sprites/Menu/Button1.bmp','Partir',@choixSalle);
-    InitButtonGroup(boutons[4],  415, 400, 250, 100, 'Sprites/Menu/Button1.bmp','Augmentation',btnProc);
+        initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/soeryo.bmp',0,460*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('ECH_EVENT7_0'),10);
+    InitButtonGroup(boutons[1],  415*windowWidth div 1080, 50 *windowHeight div 720, 250*windowWidth div 1080, 100*windowHeight div 720, 'Sprites/Menu/Button1.bmp','Partir',@choixSalle);
+    InitButtonGroup(boutons[4],  415*windowWidth div 1080, 400*windowHeight div 720, 250*windowWidth div 1080, 100*windowHeight div 720, 'Sprites/Menu/Button1.bmp','Augmentation',btnProc);
     boutons[4].parametresSpeciaux:=4;boutons[4].procRel:=@upgradeUS;
 end;
 
@@ -1114,10 +1100,10 @@ begin
     createRawImage(imgCar3,0,0,windowWidth,windowHeight,'Sprites/salles/ddfull.bmp');
     if not echangeFait then
         numDialogue:=0;
-    InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/Button1.bmp','Pacte',@EchangeDD);
-    InitButtonGroup(boutons[2],  440, 200, 200, 100, 'Sprites/Menu/Button1.bmp','Discussion',@rerollDialogueDD);
-    InitButtonGroup(boutons[3],  465, 300, 150, 100, 'Sprites/Menu/Button1.bmp','Partir',@choixSalle);
-    initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/dd.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT4_0'),10);
+    InitButtonGroup(boutons[1],  415*windowWidth div 1080, 100*windowHeight div 720, 250*windowWidth div 1080, 100*windowHeight div 720, 'Sprites/Menu/Button1.bmp','Pacte',@EchangeDD);
+    InitButtonGroup(boutons[2],  440*windowWidth div 1080, 200*windowHeight div 720, 200*windowWidth div 1080, 100*windowHeight div 720, 'Sprites/Menu/Button1.bmp','Discussion',@rerollDialogueDD);
+    InitButtonGroup(boutons[3],  465*windowWidth div 1080, 300*windowHeight div 720, 150*windowWidth div 1080, 100*windowHeight div 720, 'Sprites/Menu/Button1.bmp','Partir',@choixSalle);
+    initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/dd.bmp',0,450*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('DIALOGUE_EVENT4_0'),10);
 end;
 
 procedure LancementSalleHasardLeo;
@@ -1127,10 +1113,10 @@ begin
     sdl_freeSurface(fond.imgsurface);
     createRawImage(fond, 0,0, WINDOWWIDTH, windowHeight,'Sprites/Menu/fondMarchand.bmp');
     numDialogue:=0;
-    InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/Button1.bmp','Affronter',@LancementVSLeo);
-    InitButtonGroup(boutons[2],  440, 200, 200, 100, 'Sprites/Menu/Button1.bmp','Discussion',@rerollDialogueLeo);
-    InitButtonGroup(boutons[3],  465, 300, 150, 100, 'Sprites/Menu/Button1.bmp','Partir',@choixSalle);
-    initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portrait_Leo3.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT_0'),10);
+    InitButtonGroup(boutons[1],  415*windowWidth div 1080, 100*windowHeight div 720, 250*windowWidth div 1080, 100*windowHeight div 720, 'Sprites/Menu/Button1.bmp','Affronter',@LancementVSLeo);
+    InitButtonGroup(boutons[2],  440*windowWidth div 1080, 200*windowHeight div 720, 200*windowWidth div 1080, 100*windowHeight div 720, 'Sprites/Menu/Button1.bmp','Discussion',@rerollDialogueLeo);
+    InitButtonGroup(boutons[3],  465*windowWidth div 1080, 300*windowHeight div 720, 150*windowWidth div 1080, 100*windowHeight div 720, 'Sprites/Menu/Button1.bmp','Partir',@choixSalle);
+    initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portrait_Leo3.bmp',0,450*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('DIALOGUE_EVENT_0'),10);
 end;
 
 procedure LancementSalleHasardOph;
@@ -1141,9 +1127,9 @@ begin
     createRawImage(fond, 0,0, WINDOWWIDTH, windowHeight,'Sprites/Menu/fondMarchand.bmp');
     numDialogue:=0;
     //InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/Button1.bmp','Affronter',@LancementVSLeo);
-    InitButtonGroup(boutons[2],  440, 200, 200, 100, 'Sprites/Menu/Button1.bmp','Discussion',@rerollDialogueOph);
-    InitButtonGroup(boutons[3],  465, 300, 150, 100, 'Sprites/Menu/Button1.bmp','Partir',@choixSalle);
-    initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portrait_Ophiucus4.bmp',0,450,1080,300,extractionTexte('DIALOGUE_EVENT2_0'),10);
+    InitButtonGroup(boutons[2],  440*windowWidth div 1080, 200*windowHeight div 720, 200*windowWidth div 1080, 100*windowHeight div 720, 'Sprites/Menu/Button1.bmp','Discussion',@rerollDialogueOph);
+    InitButtonGroup(boutons[3],  465*windowWidth div 1080, 300*windowHeight div 720, 150*windowWidth div 1080, 100*windowHeight div 720, 'Sprites/Menu/Button1.bmp','Partir',@choixSalle);
+    initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portrait_Ophiucus4.bmp',0,450*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('DIALOGUE_EVENT2_0'),10);
 end;
 
 procedure LancementSalleHasardReposRisque;
@@ -1153,9 +1139,9 @@ begin
     sdl_freeSurface(fond.imgsurface);
     createRawImage(fond, 0,0, WINDOWWIDTH, windowHeight,'Sprites/Menu/fondMarchand.bmp');
     numDialogue:=0;
-    InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/Button1.bmp','Se reposer',@ReposRisque);
-    InitButtonGroup(boutons[2],  465, 300, 150, 100, 'Sprites/Menu/Button1.bmp','Partir',@choixSalle);
-    initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp',nil,0,450,1080,300,extractionTexte('DIALOGUE_EVENT_0'),10);
+    InitButtonGroup(boutons[1],  415*windowWidth div 1080, 100*windowHeight div 720, 250*windowWidth div 1080, 100*windowHeight div 720, 'Sprites/Menu/Button1.bmp','Se reposer',@ReposRisque);
+    InitButtonGroup(boutons[2],  465*windowWidth div 1080, 300*windowHeight div 720, 150*windowWidth div 1080, 100*windowHeight div 720, 'Sprites/Menu/Button1.bmp','Partir',@choixSalle);
+    initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp',nil,0,450*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('DIALOGUE_EVENT_0'),10);
 end;
 
 
@@ -1193,7 +1179,7 @@ begin
         StatsJoueur.vie := StatsJoueur.vie + 15;
         LancementSalleCombat;
         SceneActive:='Event';
-        InitDialogueBox(dialogues[1],nil,nil,-50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('INTRO_EVENT3_3'),100);
+        InitDialogueBox(dialogues[1],nil,nil,-50*windowWidth div 1080,windowHeight div 3 - 100*windowHeight div 720,windowWidth,400*windowHeight div 720,extractionTexte('INTRO_EVENT3_3'),100);
         ajoutDialogue(nil,extractionTexte('INTRO_EVENT3_4'));
         sceneSuiv:='Jeu';
         end;
@@ -1201,7 +1187,7 @@ begin
         StatsJoueur.vie := StatsJoueur.vie + 50;
         choixSalle;
         SceneActive:='Event';
-        InitDialogueBox(dialogues[1],nil,nil,-50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('INTRO_EVENT3_5'),100);
+        InitDialogueBox(dialogues[1],nil,nil,-50*windowWidth div 1080,windowHeight div 3 - 100*windowHeight div 720,windowWidth,400*windowHeight div 720,extractionTexte('INTRO_EVENT3_5'),100);
         ajoutDialogue(nil,extractionTexte('INTRO_EVENT3_6'));
         SceneSuiv:='map';
         end;
@@ -1225,7 +1211,7 @@ case alea of
         echangeFait:=((random(100) mod 2)=0);
         sceneActive:='Event';
         sceneSuiv:='US';
-        InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp',nil,0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('INTRO_EVENT6_1'),100);
+        InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp',nil,0,windowHeight div 3 + 200*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('INTRO_EVENT6_1'),100);
         ajoutDialogue(nil,extractionTexte('INTRO_EVENT6_2'));
         if echangeFait then
             begin
@@ -1282,7 +1268,7 @@ case alea of
         if trouverCarte(statsJoueur,23) then
             begin
             sceneActive:='Event';
-            InitDialogueBox(dialogues[1],nil,nil,50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('INTRO_EVENT2_1'),100);
+            InitDialogueBox(dialogues[1],nil,nil,50*windowWidth div 1080,windowHeight div 3 - 100*windowHeight div 720,windowWidth,400*windowHeight div 720,extractionTexte('INTRO_EVENT2_1'),100);
             ajoutDialogue(nil,extractionTexte('INTRO_EVENT2_2'));
             sceneSuiv:='Ophiucus';
             end
@@ -1290,7 +1276,7 @@ case alea of
         if statsJoueur.avancement>(MAXSALLES div 6) then
         begin
         sceneActive:='Event';
-        InitDialogueBox(dialogues[1],nil,nil,50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('INTRO_EVENT1_1'),100);
+        InitDialogueBox(dialogues[1],nil,nil,50*windowWidth div 1080,windowHeight div 3 - 100*windowHeight div 720,windowWidth,400*windowHeight div 720,extractionTexte('INTRO_EVENT1_1'),100);
         ajoutDialogue(nil,extractionTexte('INTRO_EVENT1_2'));
         ajoutDialogue(nil,extractionTexte('INTRO_EVENT1_3'));
         ajoutDialogue(nil,extractionTexte('INTRO_EVENT1_4'));
@@ -1300,13 +1286,13 @@ case alea of
         lancementSalleCombat;
 4: begin
     sceneActive:='Event';
-    InitDialogueBox(dialogues[1],nil,nil,50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('INTRO_EVENT3_1'),100);
+    InitDialogueBox(dialogues[1],nil,nil,50*windowWidth div 1080,windowHeight div 3 - 100*windowHeight div 720,windowWidth,400*windowHeight div 720,extractionTexte('INTRO_EVENT3_1'),100);
     ajoutDialogue(nil,extractionTexte('INTRO_EVENT3_2'));
     sceneSuiv:='HReposRisque';
     end;
 3:begin
     sceneActive:='Event';
-    InitDialogueBox(dialogues[1],nil,nil,50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('INTRO_EVENT5_1'),100);
+    InitDialogueBox(dialogues[1],nil,nil,50*windowWidth div 1080,windowHeight div 3 - 100*windowHeight div 720,windowWidth,400*windowHeight div 720,extractionTexte('INTRO_EVENT5_1'),100);
     ajoutDialogue(nil,extractionTexte('INTRO_EVENT5_2'));
     ajoutDialogue(nil,extractionTexte('INTRO_EVENT5_3'));
     sceneSuiv:='EchangeDiable';
@@ -1317,7 +1303,7 @@ end;
 7:  begin
         sceneActive:='Event';
         mix_pauseMusic;
-        InitDialogueBox(dialogues[1],nil,nil,50,windowHeight div 3 - 100,windowWidth,400,extractionTexte('INTRO_EVENT4_1'),100);
+        InitDialogueBox(dialogues[1],nil,nil,50*windowWidth div 1080,windowHeight div 3 - 100*windowHeight div 720,windowWidth,400*windowHeight div 720,extractionTexte('INTRO_EVENT4_1'),100);
         ajoutDialogue(nil,extractionTexte('INTRO_EVENT4_2'));
         ajoutDialogue(nil,extractionTexte('INTRO_EVENT4_3'));
         ajoutDialogue(nil,extractionTexte('INTRO_EVENT4_4'));
@@ -1342,7 +1328,7 @@ begin
         dir:=StringToPChar('Sprites/salles/porte'+inttostr(ord(salle.evenement)+(statsJoueur.avancement div (MAXSALLES div 4)))+'.bmp')
     else
         dir:=StringToPChar('Sprites/salles/porte'+inttostr(ord(salle.evenement)+1)+'.bmp');
-    InitButtonGroup(salle.image,x-256 div 2,y-100,256,392,dir,' ',btnProc);
+    InitButtonGroup(salle.image,x-(256 div 2)*windowWidth div 1080,y-100*windowHeight div 720,256*windowWidth div 1080,392*windowHeight div 720,dir,' ',btnProc);
     RenderButtonGroup(salle.image);
 end;
 
@@ -1362,9 +1348,9 @@ begin
 	sdl_freesurface(fond.imgSurface);
 	sdl_destroytexture(fond.imgTexture);
     case (statsJoueur.avancement-1) div (MAXSALLES div 4) of
-    0:CreateRawImage(fond,0,-80,1080,900,StringToPChar('Sprites/Menu/map1.bmp'));
-    1,2:CreateRawImage(fond,0,-80,1080,900,StringToPChar('Sprites/Menu/map2.bmp'));
-    3:CreateRawImage(fond,0,-80,1080,900,StringToPChar('Sprites/Menu/map4.bmp'));
+    0:CreateRawImage(fond,0,-80*windowHeight div 720,windowWidth,900*windowHeight div 720,StringToPChar('Sprites/Menu/map1.bmp'));
+    1,2:CreateRawImage(fond,0,-80*windowHeight div 720,windowWidth,900*windowHeight div 720,StringToPChar('Sprites/Menu/map2.bmp'));
+    3:CreateRawImage(fond,0,-80*windowHeight div 720,windowWidth,900*windowHeight div 720,StringToPChar('Sprites/Menu/map4.bmp'));
     end;
 end;
 
@@ -1373,9 +1359,9 @@ procedure choixSalle();
 begin
     sauvegarder(statsJoueur);
     if (statsJoueur.avancement) mod (MAXSALLES div 4)=0 then
-        InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('TXT_MAP'+intToSTR(10*(statsJoueur.avancement div (MAXSALLES div 4)))),10);
+        InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('TXT_MAP'+intToSTR(10*(statsJoueur.avancement div (MAXSALLES div 4)))),10);
     if statsJoueur.avancement<=1 then
-        InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200,windowWidth,300,extractionTexte('TXT_MAP'+intToSTR(random(4)+statsJoueur.avancement)),10);
+        InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('TXT_MAP'+intToSTR(random(4)+statsJoueur.avancement)),10);
     entree:=false;
     combatFini:=False;
     echangeFait:=False;
@@ -1462,10 +1448,11 @@ end;
     
 
 
-
-
-
-
 begin
+    X1:=(windowWidth div 2)+(windowWidth div 4);
+    X2:=(windowWidth div 2);
+    X3:=(windowWidth div 2)-(windowWidth div 4);
+    Y2:=(windowHeight  div 2) - (windowHeight div 2)+128;
+    Y1:=(windowHeight  div 2) + (windowHeight div 4);
 //writeln('mapSys ready')
 end.

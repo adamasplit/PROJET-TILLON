@@ -206,7 +206,7 @@ end;
 procedure OnMouseHover(var btnGroup: TButtonGroup; x, y: Integer);overload;
 begin
   // Vérifier si la souris est sur le bouton
-  if (x >= btnGroup.image.rect.x) and (x <= btnGroup.image.rect.x + btnGroup.image.rect.w) and
+  if (x >= btnGroup.image.rect.x+windowOffsetX) and (x <= btnGroup.image.rect.x+windowOffsetX + btnGroup.image.rect.w) and
      (y >= btnGroup.image.rect.y) and (y <= btnGroup.image.rect.y + btnGroup.image.rect.h) then
   begin
      //writeln(x,'  ',y);
@@ -246,7 +246,7 @@ end;
 procedure OnMouseHover(var btnGroup: TButtonGroup; x, y: Integer; soundDir : Pchar;var isHovered :Boolean);overload;
 begin
   // Vérifier si la souris est sur le bouton
-  if (x >= btnGroup.image.rect.x) and (x <= btnGroup.image.rect.x + btnGroup.image.rect.w) and
+  if (x >= btnGroup.image.rect.x+windowOffsetX) and (x <= btnGroup.image.rect.x+windowOffsetX + btnGroup.image.rect.w) and
      (y >= btnGroup.image.rect.y) and (y <= btnGroup.image.rect.y + btnGroup.image.rect.h) then
   begin
     if not btnGroup.hoverSoundPlayed then

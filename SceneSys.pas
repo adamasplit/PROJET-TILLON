@@ -102,7 +102,7 @@ var faucheuse : TObjet;i:Integer;
 			DeclencherFondu(True, 3000);
 			arretSons(100);
 			ajoutObjet(faucheuse);
-			CreateRawImage(Lobjets[High(LObjets)].image,1200,Lobjets[0].image.rect.y-50,200,200,'Sprites/Game/death/death_walking_1.bmp');
+			CreateRawImage(Lobjets[High(LObjets)].image,1200*windowWidth div 1080,Lobjets[0].image.rect.y-50*windowHeight div 720,200*windowWidth div 1080,200*windowHeight div 720,'Sprites/Game/death/death_walking_1.bmp');
 			InitAnimation(Lobjets[High(LObjets)].anim,'death','walking',10,True);
 			SceneActive := 'mortJoueur';
 		end;
@@ -147,7 +147,7 @@ procedure ActualiserMenuEnJeu;
 
 procedure InitGameOver();
 begin
-	initButtonGroup(boutons[1],1080-540-270,200,540,180,'Sprites/Menu/Button1.bmp','Menu principal',@retourmenu);
+	initButtonGroup(boutons[1],windowWidth-(540+270)*windowWidth div 1080,200*windowHeight div 720,540*windowWidth div 1080,180*windowHeight div 720,'Sprites/Menu/Button1.bmp','Menu principal',@retourmenu);
 end;
 
 procedure OnPlayerDeath(var son:Boolean);
@@ -157,7 +157,7 @@ begin
 mix_pauseMusic;
 afficherTout;
 	//if (Lobjets[High(LObjets)].image.rect.x = 1100) then indiceMusiqueJouee:=32;
-	if (Lobjets[High(LObjets)].image.rect.x > Lobjets[0].image.rect.x + 60) then
+	if (Lobjets[High(LObjets)].image.rect.x > Lobjets[0].image.rect.x + 60*windowWidth div 1080) then
 		begin
 			Lobjets[High(LObjets)].image.rect.x -= 1;
 			UpdateAnimation(Lobjets[High(LObjets)].anim,Lobjets[High(LObjets)].image);
@@ -222,7 +222,7 @@ afficherTout;
 					sauvegarder(statsJoueur);
 					supprimeObjet(Lobjets[High(LObjets)]);
 					sceneActive := 'GameOver';
-					initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,1080,350,extractionTexte('GAMEOVER_'+intToSTr(random(5)+1)),40);
+					initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,windowWidth,350,extractionTexte('GAMEOVER_'+intToSTr(random(5)+1)),40);
 					InitGameOver();
 				end;
 			end;
@@ -242,7 +242,7 @@ end;
 
 procedure HandleButtonClickCarte(var button: TButtonGroup; x, y: Integer;carte:TCarte;var stats:TStats);
 begin
-  if (x >= button.image.rect.x) and (x <= button.image.rect.x + button.image.rect.w) and
+  if (x >= button.image.rect.x+windowOffsetX) and (x <= button.image.rect.x+windowOffsetX + button.image.rect.w) and
      (y >= button.image.rect.y) and (y <= button.image.rect.y + button.image.rect.h) then
   begin
     if Assigned(button.procCarte) then
@@ -323,9 +323,9 @@ var i:Integer;
 begin
 	sceneActive:='Intro';
 	updateTime:=sdl_getTicks;
-	InitDialogueBox(dialogues[1],nil,nil,0,windowHeight div 3 + 250,windowWidth+200,300,extractionTexte('INTRO_1'),30);
-	InitDialogueBox(dialogues[2],nil,nil,-50,windowHeight div 3 + 250,windowWidth div 3+250,300,'',30);
-	InitDialogueBox(dialogues[3],nil,nil,windowWidth div 2-100,windowHeight div 3 + 250,windowWidth div 3+250,300,'',30);
+	InitDialogueBox(dialogues[1],nil,nil,0,windowHeight div 3 + 250*windowHeight div 720,windowWidth+200*windowWidth div 1080,300*windowHeight div 720,extractionTexte('INTRO_1'),30);
+	InitDialogueBox(dialogues[2],nil,nil,-50,windowHeight div 3 + 250*windowHeight div 720,windowWidth div 3+250*windowWidth div 1080,300*windowHeight div 720,'',30);
+	InitDialogueBox(dialogues[3],nil,nil,windowWidth div 2-100*windowWidth div 1080,windowHeight div 3 + 250*windowHeight div 720,windowWidth div 3+250*windowWidth div 1080,300*windowHeight div 720,'',30);
 	for i:=2 to 14 do
 		if (i<>4) and (i<>8) then ajoutDialogue(nil,extractionTexte('INTRO_'+intToSTR(i)))
 			else 
@@ -341,13 +341,12 @@ begin
 	MusiqueJouee:=mix_loadMUS(OST[0].dir);
 	mix_playmusic(musiqueJouee,0);
 	Mix_VolumeMusic(40);
-	createRawImage(fond,120,0,814,530,'Sprites/Intro/illustrations_intro_1.bmp');
+	createRawImage(fond,120*windowWidth div 1080,0,814*windowWidth div 1080,530*windowHeight div 720,'Sprites/Intro/illustrations_intro_1.bmp');
 end;
 
 
 
-procedure GameUpdate;
-var updateTime:UInt32;indice:Integer;
+procedure GameUpdate(var indice:Integer;var updateTime:UINT32);
 var i:Integer;son,boss:Boolean;ennemiActuel:Integer;cardHover:Array [1..3] of Boolean;
 begin
    while not QUITGAME do
@@ -378,7 +377,7 @@ begin
 				indiceTuto:=1;
 				setlength(LObjets,1);
 				//writeln('essai d''actualisation...');
-				DeclencherFondu(False, 1000);
+				//DeclencherFondu(False, 1000);
 				end;
 			end;
 		'Credits':Credits;
@@ -407,7 +406,7 @@ begin
   		'Menu': 
   		begin
 		direction_menu;
-		effetDeFondu;
+		EffetDeFondu;
 		end;
 		'map':
 		begin
@@ -465,9 +464,9 @@ begin
 					begin
 						cardHover[i] := False;
 						if boutons[i].parametresSpeciaux=4 then
-							initDialogueBox(dialogues[1],nil,nil,0,350,1080,450,extractionTexte('DESC_REL_'+intToSTr(boutons[i].relique)),20)
+							initDialogueBox(dialogues[1],nil,nil,0,350*windowHeight div 720,windowWidth,450*windowHeight div 720,extractionTexte('DESC_REL_'+intToSTr(boutons[i].relique)),20)
 						else
-							initDialogueBox(dialogues[1],nil,nil,0,350,1080,450,extractionTexte('DESC_CAR_'+intToSTr(boutons[i].carte.numero)),20);
+							initDialogueBox(dialogues[1],nil,nil,0,350*windowHeight div 720,windowWidth,450*windowHeight div 720,extractionTexte('DESC_CAR_'+intToSTr(boutons[i].carte.numero)),20);
 					end;
 				end;
 			UpdateDialogueBox(dialogues[1])
@@ -558,7 +557,7 @@ begin
 						//LObjets[0].stats.compteurLeMonde:=100;
 						//updateTimeMonde:=sdl_getTicks;
 						end;
-					{SDLK_M:writeln(LObjets[0].stats.multiplicateurMana);
+					SDLK_M:writeln(LObjets[0].stats.multiplicateurMana);
 					SDLK_UP:  LObjets[0].stats.vie := LObjets[0].stats.vie +10;
 					SDLK_DOWN: LObjets[0].stats.vie := LObjets[0].stats.vie-10;
 					SDLK_O:LOBjets[0].stats.multiplicateurMana:=LOBjets[0].stats.multiplicateurMana+100;
@@ -578,7 +577,7 @@ begin
 					SDLK_F7:begin statsJoueur.tailleCollection:=28; for i:=1 to 28 do statsJoueur.collection[i]:=Cartes[27+i mod 2]; end;
 					SDLK_F8:for i:=0 to high(LObjets[0].stats.deck^) do LObjets[0].stats.deck^[i]:=Cartes[12];
 					SDLK_F9:statsJoueur.avancement:=MAXSALLES;
-					SDLK_F10:statsJoueur.multiplicateurSoin:=1;}
+					SDLK_F10:statsJoueur.multiplicateurSoin:=1;
         		end;
       		end;
 			
@@ -771,8 +770,9 @@ begin
     IndiceMusiqueJouee:=0;
 	updatetimemusique:=sdl_getticks;
     Mix_VolumeMusic(VOLUME_MUSIQUE);
+	lastUpdateTime:=sdl_getTicks;
 	Intro(indice,lastUpdateTime);
-    GameUpdate;
+    GameUpdate(indice,lastUpdateTime);
 end;
 
 begin

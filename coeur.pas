@@ -221,13 +221,13 @@ procedure InitDecor;
 begin
 	sdl_freesurface(fond.imgSurface);
 	sdl_destroytexture(fond.imgTexture);
-  CreateRawImage(fond,88,-80,900,900,StringToPChar('Sprites/Game/floor/Floor'+ IntToStr(Random(5)) +'.bmp'));
+  CreateRawImage(fond,88*windowWidth div 1080,-80*WindowHeight div 720,900*windowWidth div 1080,900*WindowHeight div 720,StringToPChar('Sprites/Game/floor/Floor'+ IntToStr(Random(5)) +'.bmp'));
 end;
 procedure InitDecor(i:Integer);
 begin
 	if fond.imgSurface<>nil then sdl_freesurface(fond.imgSurface);
 	if fond.imgTexture<>nil then sdl_destroytexture(fond.imgTexture);
-  CreateRawImage(fond,88,-80,900,900,StringToPChar('Sprites/Game/floor/Floor'+ intToSTR(i) +'.bmp'));
+  CreateRawImage(fond,88*windowWidth div 1080,-80*WindowHeight div 720,900*windowWidth div 1080,900*WindowHeight div 720,StringToPChar('Sprites/Game/floor/Floor'+ intToSTR(i) +'.bmp'));
 end;
 
 procedure InitDecorCartes;
@@ -313,17 +313,17 @@ begin
   //initialisation des murs
   murs[1].image.rect.x:=0;
   murs[1].image.rect.y:=-TAILLE_MUR;
-  murs[1].col.dimensions.w:=1080;
+  murs[1].col.dimensions.w:=windowWidth;
   murs[1].col.dimensions.h:=TAILLE_MUR;
   murs[2].image.rect.x:=-TAILLE_MUR;
   murs[2].image.rect.y:=-TAILLE_MUR;
-  murs[2].col.dimensions.w:=180+TAILLE_MUR;
+  murs[2].col.dimensions.w:=180*windowWidth div 1080+TAILLE_MUR;
   murs[2].col.dimensions.h:=TAILLE_MUR*2;
   murs[3].image.rect.x:=0;
-  murs[3].image.rect.y:=720;
-  murs[3].col.dimensions.w:=1080;
+  murs[3].image.rect.y:=windowHeight;
+  murs[3].col.dimensions.w:=windowWidth;
   murs[3].col.dimensions.h:=TAILLE_MUR;
-  murs[4].image.rect.x:=880;
+  murs[4].image.rect.x:=880*windowWidth div 1080;
   murs[4].image.rect.y:=-TAILLE_MUR;
   murs[4].col.dimensions.w:=TAILLE_MUR;
   murs[4].col.dimensions.h:=TAILLE_MUR*2;

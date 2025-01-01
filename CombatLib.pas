@@ -559,6 +559,7 @@ end;
 
 procedure renderAvecAngle(objet:TObjet);
 begin
+    objet.image.rect.x:=objet.image.rect.x+windowOffsetX;
     if (objet.stats.vectX>=0) then
         SDL_RenderCopyEx(sdlRenderer, objet.image.imgTexture, nil, @objet.image.Rect,180*objet.stats.angle/pi,nil, SDL_FLIP_NONE)
     else
