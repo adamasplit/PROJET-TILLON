@@ -610,99 +610,99 @@ begin
 							activationEvent(sceneSuiv);
 						end
 						 else dialogues[1].LetterDelay:=0;
-				'Credits':begin OnMouseClick(button_retour_menu,GetMouseX,GetMouseY); HandleButtonClick(button_retour_menu.button, EventSystem^.motion.x, EventSystem^.motion.y) end;
+				'Credits':begin OnMouseClick(button_retour_menu,GetMouseX,GetMouseY); HandleButtonClick(button_retour_menu.button, getmousex, getmousey) end;
 				'Leo_Menu':for i:=1 to 3 do
 					begin
-					OnMouseClick(boutons[i], EventSystem^.motion.x, EventSystem^.motion.y);
-                    HandleButtonClick(boutons[i].button, EventSystem^.motion.x, EventSystem^.motion.y);
+					OnMouseClick(boutons[i], getmousex, getmousey);
+                    HandleButtonClick(boutons[i].button, getmousex, getmousey);
 					end;
 				'Oph_Menu':for i:=2 to 3 do
 					begin
-					OnMouseClick(boutons[i], EventSystem^.motion.x, EventSystem^.motion.y);
-                    HandleButtonClick(boutons[i].button, EventSystem^.motion.x, EventSystem^.motion.y);
+					OnMouseClick(boutons[i], getmousex, getmousey);
+                    HandleButtonClick(boutons[i].button, getmousex, getmousey);
 					end;
 				'Hreposrisque_Menu':for i:=1 to 2 do
 					begin
-					OnMouseClick(boutons[i], EventSystem^.motion.x, EventSystem^.motion.y);
-                    HandleButtonClick(boutons[i].button, EventSystem^.motion.x, EventSystem^.motion.y);
+					OnMouseClick(boutons[i], getmousex, getmousey);
+                    HandleButtonClick(boutons[i].button, getmousex, getmousey);
 					end;
 				'Jeu': jouerCarte(LObjets[0].stats,LObjets[0].image.rect.x+(LObjets[0].image.rect.w div 2),LObjets[0].image.rect.y+(LObjets[0].image.rect.h div 2),iCarteChoisie);
 				'defausse':begin
-					OnMouseClick(boutons[3], EventSystem^.motion.x, EventSystem^.motion.y);
-					HandleButtonClickCarte(boutons[3], EventSystem^.motion.x, EventSystem^.motion.y,statsjoueur.collection[ichoix1],statsJoueur);
-					OnMouseClick(boutons[1], EventSystem^.motion.x, EventSystem^.motion.y);
-                    HandleButtonClick(boutons[1].button, EventSystem^.motion.x, EventSystem^.motion.y);
+					OnMouseClick(boutons[3], getmousex, getmousey);
+					HandleButtonClickCarte(boutons[3], getmousex, getmousey,statsjoueur.collection[ichoix1],statsJoueur);
+					OnMouseClick(boutons[1], getmousex, getmousey);
+                    HandleButtonClick(boutons[1].button, getmousex, getmousey);
 					end;
 				'map':begin 
-					//writeln('Mouse button pressed at (', EventSystem^.motion.x, ',', EventSystem^.motion.y, ')');
+					//writeln('Mouse button pressed at (', getmousex, ',', getmousey, ')');
                     //writeln(salles[1].image.button.rect.x);
 					for i:=1 to 3 do
 						begin
-                        OnMouseClick(salles[i].image, EventSystem^.motion.x, EventSystem^.motion.y);
-                        HandleButtonClickSalle(salles[i].image,salles[i].evenement,i, EventSystem^.motion.x, EventSystem^.motion.y);
+                        OnMouseClick(salles[i].image, getmousex, getmousey);
+                        HandleButtonClickSalle(salles[i].image,salles[i].evenement,i, getmousex, getmousey);
 						end
 					end;
 				'victoire':for i:=1 to 3 do
 					begin
-					OnMouseClick(boutons[i], EventSystem^.motion.x, EventSystem^.motion.y);
+					OnMouseClick(boutons[i], getmousex, getmousey);
 					if boutons[i].parametresSpeciaux=4 then
-						HandleButtonClickRelique(boutons[i], EventSystem^.motion.x, EventSystem^.motion.y,boutons[i].relique,statsJoueur)
+						HandleButtonClickRelique(boutons[i], getmousex, getmousey,boutons[i].relique,statsJoueur)
 					else
-						HandleButtonClickCarte(boutons[i], EventSystem^.motion.x, EventSystem^.motion.y,boutons[i].carte,statsJoueur);
+						HandleButtonClickCarte(boutons[i], getmousex, getmousey,boutons[i].carte,statsJoueur);
 					end;
 				'GameOver':begin
-					OnMouseClick(boutons[1], EventSystem^.motion.x, EventSystem^.motion.y);
-						HandleButtonClick(boutons[1].button, EventSystem^.motion.x, EventSystem^.motion.y);
+					OnMouseClick(boutons[1], getmousex, getmousey);
+						HandleButtonClick(boutons[1].button, getmousex, getmousey);
 						end;
 				'feuCamp':
 					begin
-						OnMouseClick(boutons[3], EventSystem^.motion.x, EventSystem^.motion.y);
-						HandleButtonClick(boutons[3].button, EventSystem^.motion.x, EventSystem^.motion.y);
+						OnMouseClick(boutons[3], getmousex, getmousey);
+						HandleButtonClick(boutons[3].button, getmousex, getmousey);
 					for i:=1 to 2 do
 						if not echangeFait then
 						begin
-						OnMouseClick(boutons[i], EventSystem^.motion.x, EventSystem^.motion.y);
-						HandleButtonClick(boutons[i].button, EventSystem^.motion.x, EventSystem^.motion.y);
+						OnMouseClick(boutons[i], getmousex, getmousey);
+						HandleButtonClick(boutons[i].button, getmousex, getmousey);
 						end;
 					end;
 				'marchand':
 					begin
 					if not echangeFait then
 						begin
-						OnMouseClick(boutons[1], EventSystem^.motion.x, EventSystem^.motion.y);
-						HandleButtonClick(boutons[1].button, EventSystem^.motion.x, EventSystem^.motion.y);
+						OnMouseClick(boutons[1], getmousex, getmousey);
+						HandleButtonClick(boutons[1].button, getmousex, getmousey);
 						end;
 					for i:=2 to 3 do
 						begin
-						OnMouseClick(boutons[i], EventSystem^.motion.x, EventSystem^.motion.y);
-						HandleButtonClick(boutons[i].button, EventSystem^.motion.x, EventSystem^.motion.y);
+						OnMouseClick(boutons[i], getmousex, getmousey);
+						HandleButtonClick(boutons[i].button, getmousex, getmousey);
 						end;
 					end;
 				'DD':
 					begin
 					if not echangeFait then
 						begin
-						OnMouseClick(boutons[1], EventSystem^.motion.x, EventSystem^.motion.y);
-						HandleButtonClick(boutons[1].button, EventSystem^.motion.x, EventSystem^.motion.y);
+						OnMouseClick(boutons[1], getmousex, getmousey);
+						HandleButtonClick(boutons[1].button, getmousex, getmousey);
 						end;
 					for i:=2 to 3 do
 						begin
-						OnMouseClick(boutons[i], EventSystem^.motion.x, EventSystem^.motion.y);
-						HandleButtonClick(boutons[i].button, EventSystem^.motion.x, EventSystem^.motion.y);
+						OnMouseClick(boutons[i], getmousex, getmousey);
+						HandleButtonClick(boutons[i].button, getmousex, getmousey);
 						end;
 					end;
 				'DDShop','DShop','US':begin
-					OnMouseClick(boutons[1], EventSystem^.motion.x, EventSystem^.motion.y);
-					HandleButtonClickRelique(boutons[4], EventSystem^.motion.x, EventSystem^.motion.y,0,statsJoueur);
-					OnMouseClick(boutons[4], EventSystem^.motion.x, EventSystem^.motion.y);
-					HandleButtonClick(boutons[1].button, EventSystem^.motion.x, EventSystem^.motion.y);
+					OnMouseClick(boutons[1], getmousex, getmousey);
+					HandleButtonClickRelique(boutons[4], getmousex, getmousey,0,statsJoueur);
+					OnMouseClick(boutons[4], getmousex, getmousey);
+					HandleButtonClick(boutons[1].button, getmousex, getmousey);
 					end;
 				'MenuShop':begin
 					highlight(boutons[2],getmousex,getmousey);
 					for i:=1 to 4 do
 					begin
-					OnMouseClick(boutons[i], EventSystem^.motion.x, EventSystem^.motion.y);
-					HandleButtonClick(boutons[i].button, EventSystem^.motion.x, EventSystem^.motion.y);
+					OnMouseClick(boutons[i], getmousex, getmousey);
+					HandleButtonClick(boutons[i].button, getmousex, getmousey);
 					end;
 					if ichoix1<>ichoix2 then HandleButtonClickEch(boutons[4],getmouseX,getMouseY,statsJoueur.collection[iChoix1],statsJoueur.collection[iChoix2],statsJoueur);
 					end;
@@ -711,20 +711,20 @@ begin
 				begin
 					for i:=1 to 6 do
 					begin
-					OnMouseClick(boutons[i],EventSystem^.motion.x,EventSystem^.motion.y);
-					HandleButtonClick(boutons[i].button,EventSystem^.motion.x,EventSystem^.motion.y);
+					OnMouseClick(boutons[i],getmousex,getmousey);
+					HandleButtonClick(boutons[i].button,getmousex,getmousey);
 					end;
-					OnMouseClick(button_help,EventSystem^.motion.x,EventSystem^.motion.y);
-					HandleButtonClick(button_help.button,EventSystem^.motion.x,EventSystem^.motion.y);
+					OnMouseClick(button_help,getmousex,getmousey);
+					HandleButtonClick(button_help.button,getmousex,getmousey);
 				end;
 				if sceneActive='MenuEnJeu' then
 				begin
 				if boutons[8].button.estVisible then
-					HandleButtonClick(boutons[8].button,EventSystem^.motion.x,EventSystem^.motion.y);
+					HandleButtonClick(boutons[8].button,getmousex,getmousey);
 				if boutons[9].button.estVisible then
-					HandleButtonClick(boutons[9].button,EventSystem^.motion.x,EventSystem^.motion.y);
+					HandleButtonClick(boutons[9].button,getmousex,getmousey);
 				if button_retour_menu.button.estVisible then
-					HandleButtonClick(button_retour_menu.button,EventSystem^.motion.x,EventSystem^.motion.y);
+					HandleButtonClick(button_retour_menu.button,getmousex,getmousey);
 				end;
 				end;
 			SDL_QUITEV:  QUITGAME:=True; 

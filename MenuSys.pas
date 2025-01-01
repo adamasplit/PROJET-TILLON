@@ -117,7 +117,7 @@ begin
     decor.scales[i] := 1 / profondeur;
 
     // Dimensions calculées à partir de l'échelle
-    width := Round(windowWidth * profondeur);
+    width := Round(originalWindowWidth * profondeur);
     height := Round(windowHeight * profondeur);
     // Création de l'image
     CreateRawImage(decor.images[i], 0, 0, width, height,StringToPChar('Sprites/Menu/DecorsCredits/' + NomDecor + '-' + IntToStr(totalDecors - i) + '.bmp'));

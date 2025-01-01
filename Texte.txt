@@ -370,7 +370,7 @@
 
 <PRISON_CELLULE_0>AN |VI * M| DCCIX , geôles du ministère de la magie.;
 <PRISON_CELLULE_1>*Soupir*;
-<PRISON_CELLULE_2>Quelle idée d'avoir diviné cela. On m'avait pourant mise en garde à l'école de magie de ce genre de choses.;
+<PRISON_CELLULE_2>Quelle idée d'avoir diviné cela. On m'avait pourtant mise en garde à l'école de magie de ce genre de choses.;
 <PRISON_CELLULE_3>Me voilà à croupir dans cette cellule pour le prochain millénaire...;
 <PRISON_CELLULE_4>Enfin surtout jusqu'à la fin de ma vie. Au moins je m'ennuierai moins longtemps.;
 <PRISON_CELLULE_5>Alors c'est toi Nymera ? La grande cheffe des fanatiques terroristes.;
