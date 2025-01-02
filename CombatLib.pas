@@ -244,6 +244,8 @@ var norme:Real;destination,distance:array['X'..'Y'] of Integer;i:Integer;
 begin
     //Initialisation des caractéristiques
 
+    w:=w*windowWidth div 1080;
+    l:=l*windowWidth div 1080;
     rayon.stats.genre:=laser;
     rayon.stats.degats:=flat;
     rayon.stats.force:=force;
@@ -399,6 +401,8 @@ begin
         proj.stats.vitDep:=vitesse;
         proj.stats.volvie:=False;
         proj.stats.dureeVie:=0;
+        w:=w*windowWidth div 1080;
+        h:=h*windowWidth div 1080;
 
         if (nom='projectile') and (origine=joueur) then
             jouerSonEff('Arc ('+intToSTr(random(6)+1)+')');
@@ -453,7 +457,7 @@ procedure updateBoule(var proj:TObjet);
 begin
     
     //vérifie si le projectile sort de l'écran
-    if (proj.anim.objectName<>'meteore') and ((proj.anim.objectName<>'Roue') or (proj.stats.origine=ennemi)) and ((proj.stats.dureeVie>350) or (proj.stats.xreel>1200) or (proj.stats.xreel<0) or (proj.stats.yreel>1000) or (proj.stats.yreel<0)) then 
+    if (proj.anim.objectName<>'meteore') and ((proj.anim.objectName<>'Roue') or (proj.stats.origine=ennemi)) and ((proj.stats.dureeVie>350) or (proj.stats.xreel>950*windowHeight div 720) or (proj.stats.xreel<100*windowHeight div 720) or (proj.stats.yreel>1000*windowWidth div 1080) or (proj.stats.yreel<0)) then 
 
         begin
         supprimeObjet(proj);
@@ -529,18 +533,18 @@ procedure InitJustice(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,xCibl
 var justice:TObjet;
 begin
     //initialisation comme un projectile
-    creerBoule(origine,degats,force,mult,x,y,200,100,vitesse,xCible,yCible,dir,justice);
+    creerBoule(origine,degats,force,mult,x,y,200*windowWidth div 1080,100*windowWidth div 1080,vitesse,xCible,yCible,dir,justice);
     //modification de l'image utilisée
     InitAnimation(justice.anim,justice.anim.objectname,'start',9,False);
     justice.anim.estActif:=True;
     justice.anim.currentFrame:=2;
-    CreateRawImage(justice.image,x,y,200,100,getFramePath(justice.anim));
+    CreateRawImage(justice.image,x,y,200*windowWidth div 1080,100*windowWidth div 1080,getFramePath(justice.anim));
     initAngle(justice.stats.vectX,justice.stats.vectY,justice.stats.angle);
     justice.col.isTrigger := True;
-    justice.col.dimensions.w := justice.image.rect.w-20;
+    justice.col.dimensions.w := justice.image.rect.w-20*windowWidth div 1080;
     justice.col.dimensions.h := justice.image.rect.h div 2;
-    justice.col.offset.x := 10;
-    justice.col.offset.y := 30;
+    justice.col.offset.x := 10*windowWidth div 1080;
+    justice.col.offset.y := 30*windowWidth div 1080;
     justice.col.nom := 'Justice';
     justice.col.estActif:=False;
     //initialisation des caractéristiques
@@ -615,7 +619,7 @@ begin
         justice.image.rect.y:=round(justice.stats.yreel)-(justice.image.rect.h div 2);
         end;
     //vérifie si le projectile sort de l'écran
-    if (justice.stats.xreel>1600) or (justice.stats.xreel<-400) or (justice.stats.yreel>1200) or (justice.stats.yreel<-400) then 
+    if ((justice.stats.xreel>1600*windowHeight div 720) or (justice.stats.xreel<-400*windowHeight div 720) or (justice.stats.yreel>1200*windowHeight div 720) or (justice.stats.yreel<-400*windowHeight div 720)) and (justice.stats.delai<0) then 
         begin
         supprimeObjet(justice);
         end
@@ -739,7 +743,7 @@ end;
     procedure IV(s : TStats ; x,y : Integer);
     var proj : TObjet;
     begin
-        creerBoule(joueur, 5, s.force, s.multiplicateurDegat, x, y,100,100, {vitesse} 29, getmouseX, getmouseY, 'projectile', proj);
+        creerBoule(joueur, 4+s.vitesse div 5, s.force, s.multiplicateurDegat, x, y,100,100, {vitesse} 29, getmouseX, getmouseY, 'projectile', proj);
         ajoutObjet(proj);
     end;
 
@@ -1027,7 +1031,7 @@ end;
         exp.stats.transparence:=0;
         ajoutObjet(exp);
         sceneActive:='Cutscene';
-        InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,0,windowWidth,300,extractionTexte('SORT1_'+intToSTR(random(3)+1)),20,Angelic30,40);
+        InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,0,windowWidth,300*windowWidth div 1080,extractionTexte('SORT1_'+intToSTR(random(3)+1)),20,Angelic30,40);
         
     end;
 
@@ -1149,7 +1153,7 @@ var tempCarte:TCarte;
 
 begin
     tempCarte:=stats.deck^[i];
-    if stats.deck^[i].active or (tempCarte.cout<=stats.mana) or (stats.relique=10) then 
+    if stats.deck^[i].active or (tempCarte.cout<=stats.mana) or (stats.relique=10) or ((tempcarte.cout>stats.manaMax) and (stats.mana=stats.manaMax)) then 
         begin
         if LObjets[0].anim.etat='idle' then initAnimation(LObjets[0].anim,LObjets[0].anim.objectName,'sort',7,False);
         LObjets[0].anim.isFliped:=(getmousex<x);

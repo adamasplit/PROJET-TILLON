@@ -51,6 +51,7 @@ procedure LancementSalleCamp;
 procedure scrollDeck(var i:Integer;imax:Integer);
 procedure activationEvent(scene:String);overload;
 procedure activationEvent(evenement:evenements);overload;
+function nbCartesRecyclables(stats:TStats):Integer;
 procedure HandleButtonClickEch(var button: TButtonGroup; x, y: Integer;carte1,carte2:TCarte;var stats:TStats);
 function Highlight(var btnGroup: TButtonGroup; x, y: Integer):Boolean;
 implementation
@@ -59,6 +60,15 @@ var entree:Boolean;
 var numDialogue:Integer;
 var imgCar1,imgCar2,imgCar3,imgEchange:TImage;
 izoom:Integer;
+
+function nbCartesRecyclables(stats:TStats):Integer;
+var i:Integer;
+begin
+    nbCartesRecyclables:=0;
+    for i:=1 to stats.tailleCollection do
+        if not stats.collection[i].discard then
+            nbCartesRecyclables:=nbCartesRecyclables+1;
+end;
 
 procedure zoom();
 var
@@ -417,7 +427,7 @@ begin
 end;
 
 procedure trade(carte1, carte2 : TCarte ; Var stats : Tstats); //#### table de proba à finir
-var rdm : Integer;carte:TCarte;
+var rdm,i : Integer;carte:TCarte;
 begin
     randomize;
     //C-C -> Commune:93% Rare:5% Epique:1% Legendaire:1%
@@ -540,11 +550,20 @@ begin
         end;
     end;
 
-    supprimerCarte(stats,carte1.numero);
-    supprimerCarte(stats,carte2.numero);
+    for i:=ichoix1 to stats.tailleCollection-1 do
+        begin
+        stats.collection[i]:=stats.collection[i+1];
+        end;
+    stats.tailleCollection:=stats.tailleCollection-1;
+    if ichoix1<ichoix2 then ichoix2:=ichoix2-1;
+    for i:=ichoix2 to stats.tailleCollection-1 do
+        begin
+        stats.collection[i]:=stats.collection[i+1];
+        end;
+    stats.tailleCollection:=stats.tailleCollection-1;
     echangeFait:=True;
     ajouterCarte(statsJoueur,carte.numero);
-    createRawImage(imgCar3,windowWidth-(150-127)*windowWidth div 1080,imgCar2.rect.y,imgCar2.rect.w,imgCar2.rect.h,carte.dir);
+    createRawImage(imgCar3,windowWidth-(150+127)*windowWidth div 1080,imgCar2.rect.y,imgCar2.rect.w,imgCar2.rect.h,carte.dir);
     renderRawImage(imgCar3,False);
     sdl_renderpresent(sdlrenderer);
     sdl_delay(3000);
@@ -582,7 +601,7 @@ end;
 
 procedure HandleButtonClickSalle(button:TButtonGroup;evenement:evenements;num,x,y:Integer);
 begin
-    if (x >= button.image.rect.x+windowOffsetX) and (x <= button.image.rect.x+windowOffsetX + button.image.rect.w) and
+    if (x >= button.image.rect.x) and (x <= button.image.rect.x + button.image.rect.w) and
      (y >= button.image.rect.y) and (y <= button.image.rect.y + button.image.rect.h) then
   begin
     if Assigned(button.procEch) then
@@ -632,7 +651,7 @@ begin
     renderRawImage(fond,false);
     ////writeln(ichoix1);
     if sceneActive='DShop' then
-        drawRect(black_col,255,0,0,windowWidth,windowHeight)
+        drawRect(black_col,255,-windowOffsetX*2,0,windowWidth+windowOffsetX*3,windowHeight)
     else
         renderRawImage(imgCar3,120,false);
     updateDialogueBox(dialogues[2]);
@@ -726,7 +745,7 @@ begin
     indiceMusiqueJouee:=15;
     //writeln('Lancement de salle Marchand');
     createRawImage(fond, 0,0, WINDOWWIDTH, windowHeight,'Sprites/Menu/fondMarchand.bmp');
-    if statsJoueur.tailleCollection<4 then
+    if nbCartesRecyclables(statsJoueur)<4 then
         echangeFait:=True;
     if not entree then
         begin
@@ -787,8 +806,11 @@ begin
     renderRawImage(fond,false);
     if not echangeFait then 
         begin
-        OnMouseHover(boutons[1],getMouseX,getMouseY);
-        renderButtonGroup(boutons[1]);
+        if nbCartesRecyclables(statsJoueur)>3 then 
+            begin
+            OnMouseHover(boutons[1],getMouseX,getMouseY);
+            renderButtonGroup(boutons[1]);
+            end;
         OnMouseHover(boutons[2],getMouseX,getMouseY);
         renderButtonGroup(boutons[2]);
         //HandleButtonClick(boutons[1].button,getmousex,getmousey);
@@ -840,8 +862,13 @@ begin
 end;
 
 procedure brulerCarte(carte:TCarte ; var stats : Tstats);
+var i:Integer;
 begin
-    supprimerCarte(stats,carte.numero);
+    for i:=ichoix1 to stats.tailleCollection-1 do
+        begin
+        stats.collection[i]:=stats.collection[i+1];
+        end;
+    stats.tailleCollection:=stats.tailleCollection-1;
     echangeFait:=True;
     lancementSalleCamp;
 end;
@@ -938,18 +965,29 @@ begin
     end;
     if echangeFait then 
         begin
-        stats.collection[ichoix2].chargesMax:=stats.collection[ichoix2].chargesMax+3;
+        if stats.collection[ichoix2].discard then 
+            stats.collection[ichoix2].chargesMax:=stats.collection[ichoix2].chargesMax+2
+        else
+            stats.collection[ichoix2].chargesMax:=stats.collection[ichoix2].chargesMax+3;
         sdl_settexturecolormod(stats.collection[ichoix2].image.imgtexture,100,0,0);
         end
     else
         case ichoix2 of
         1:begin
             stats.manaMax:=stats.manaMax+2;
-            for i:=1 to 2+random(2) do ajouterCarte(stats,27);
+            for i:=1 to 2+random(2) do 
+                begin
+                ajouterCarte(stats,27);
+                stats.collection[stats.tailleCollection].cout:=min(stats.manaMax,10)
+                end;
             end;
         2:begin
             stats.vieMax:=stats.vieMax+20;
-            for i:=1 to 2+random(2) do ajouterCarte(stats,28);
+            for i:=1 to 2+random(2) do 
+                begin
+                ajouterCarte(stats,28);
+                stats.collection[stats.tailleCollection].cout:=min(stats.manaMax,10);
+                end;
             end;
         3:  begin
             desequiperRelique(stats);
@@ -1010,7 +1048,7 @@ begin
     createRawImage(imgEchange,440*windowWidth div 1080,160*windowHeight div 720,200*windowWidth div 1080,200*windowHeight div 720,'Sprites/Menu/echange.bmp');
     createRawImage(imgcar1,   240*windowWidth div 1080,160*windowHeight div 720,200*windowWidth div 1080,200*windowHeight div 720,StringToPChar('Sprites/Echange/stat'+intToSTR(ichoix1)+'.bmp'));
     createRawImage(imgcar2,   640*windowWidth div 1080,160*windowHeight div 720,200*windowWidth div 1080,200*windowHeight div 720,StringToPChar('Sprites/Echange/stat'+intToSTR(ichoix2+10)+'.bmp'));
-    initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/dd.bmp',0,460,windowWidth,300*windowHeight div 720,extractionTexte('ECH_EVENT4_0'),10);
+    initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/dd.bmp',0,460*windowWidth div 1080,windowWidth,300*windowHeight div 720,extractionTexte('ECH_EVENT4_0'),10);
     InitButtonGroup(boutons[1],  415*windowWidth div 1080, 50 *windowHeight div 720, 250*windowWidth div 1080, 100*windowHeight div 720, 'Sprites/Menu/Button1.bmp','Annuler',@LancementSalleHasardDD);
     InitButtonGroup(boutons[4],  415*windowWidth div 1080, 400*windowHeight div 720, 250*windowWidth div 1080, 100*windowHeight div 720, 'Sprites/Menu/Button1.bmp','Pacte',btnProc);
     boutons[4].parametresSpeciaux:=4;boutons[4].procRel:=@tradeDD;

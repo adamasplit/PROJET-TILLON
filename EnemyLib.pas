@@ -116,7 +116,7 @@ begin
     ennemi.stats.angle:=0;
     InitAnimation(ennemi.anim,nom,'apparition', ennemi.stats.nbFramesApparition,False);
     //writeln('accès au fichier ',getframePath(ennemi.anim));
-    CreateRawImage(ennemi.image,(random(20)+5)*20,0,w,h,getframePath(ennemi.anim));
+    CreateRawImage(ennemi.image,(random(20)+5)*20,0,w*windowWidth div 1080,h*windowHeight div 720,getframePath(ennemi.anim));
     //UpdateAnimation(ennemi.anim,ennemi.image);
     
 
@@ -144,10 +144,10 @@ begin
     // Initialisation de la boîte de collisions
     ennemi.col.isTrigger := False;
     ennemi.col.estActif := False;
-    ennemi.col.dimensions.w := wcol;
-    ennemi.col.dimensions.h := hcol;
-    ennemi.col.offset.x := offx;
-    ennemi.col.offset.y := offy;
+    ennemi.col.dimensions.w := wcol*windowWidth div 1080;
+    ennemi.col.dimensions.h := hcol*windowHeight div 720;
+    ennemi.col.offset.x := offx*windowWidth div 1080;
+    ennemi.col.offset.y := offy*windowHeight div 720;
     ennemi.col.nom := nom;
     ennemi.anim.estActif := True;
     ennemi.stats.inamovible:=ennemi.stats.boss or ((ennemi.anim.objectname='Béhémoth') or (ennemi.anim.objectName='gardien'));
@@ -435,9 +435,9 @@ begin
           begin
           alea2:=(random(20)*10-100)*windowHeight div 720+y;
           if (ennemi.image.rect.x<ennemi.stats.xcible) then
-            CreerRayon(typeobjet(1),2,1,1,false,ennemi.image.rect.x+40*windowWidth div 1080,alea2,1200,100,ennemi.image.rect.x+60*windowWidth div 1080,alea2*windowHeight div 720,0,10,ennemi.stats.vie,ennemi.stats.nomAttaque,obj)
+            CreerRayon(typeobjet(1),2,1,1,false,ennemi.image.rect.x+40*windowWidth div 1080,alea2,1200,100,ennemi.image.rect.x+60*windowWidth div 1080,alea2,0,10,ennemi.stats.vie,ennemi.stats.nomAttaque,obj)
           else
-            CreerRayon(typeobjet(1),2,1,1,false,ennemi.image.rect.x+40*windowWidth div 1080,alea2,1200,100,ennemi.image.rect.x-60*windowWidth div 1080,alea2*windowHeight div 720,0,10,ennemi.stats.vie,ennemi.stats.nomAttaque,obj);
+            CreerRayon(typeobjet(1),2,1,1,false,ennemi.image.rect.x+40*windowWidth div 1080,alea2,1200,100,ennemi.image.rect.x-60*windowWidth div 1080,alea2,0,10,ennemi.stats.vie,ennemi.stats.nomAttaque,obj);
           ajoutObjet(obj);
           end
         else
@@ -565,7 +565,7 @@ begin
         end;
     14:begin
     if (random(30)=0) and (ennemi.anim.etat='rage') then begin
-        alea1:=random(100)*10;alea2:=random(100)*10;
+        alea1:=random(100)*10;alea2:=random(50)*15;
         creerRayon(typeObjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,alea1*windowWidth div 1080,alea2*windowWidth div 1080,400,200,alea1,alea2-100*windowHeight div 720,0,100,100,ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj)
         end;
@@ -664,9 +664,9 @@ begin
       if (ennemi.anim.etat='cast') and (ennemi.anim.currentFrame>=15) and (ennemi.anim.currentFrame<=18) then
         begin
         if ennemi.anim.isFliped then
-          CreerRayon(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,trouverCentreX(ennemi)+200,ennemi.image.rect.y+100*windowHeight div 720,1000,100,ennemi.stats.xcible-500+random(20)*50,ennemi.stats.ycible,0,10,50,'tentacule',obj)
+          CreerRayon(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,trouverCentreX(ennemi)+200,ennemi.image.rect.y+100*windowHeight div 720,1000,100,ennemi.stats.xcible-(500-random(5)*200)*windowHeight div 720,ennemi.stats.ycible,0,10,50,'tentacule',obj)
         else
-          CreerRayon(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,trouverCentreX(ennemi)-200,ennemi.image.rect.y+100*windowHeight div 720,1000,100,ennemi.stats.xcible-500+random(20)*50,ennemi.stats.ycible,0,10,50,'tentacule',obj);
+          CreerRayon(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,trouverCentreX(ennemi)-200,ennemi.image.rect.y+100*windowHeight div 720,1000,100,ennemi.stats.xcible-(500-random(5)*200)*windowHeight div 720,ennemi.stats.ycible,0,10,50,'tentacule',obj);
         ajoutObjet(obj);
         end;
       if (ennemi.anim.etat='peek') and (ennemi.anim.currentFrame=7) then
@@ -1109,7 +1109,7 @@ begin
                   //SDL_setRenderDrawColor(sdlRenderer,0,255,0,255);
                   sdl_renderdrawline(sdlRenderer,trouverCentreX(ennemi),trouverCentreY(ennemi),trouverCentreX(LObjets[i]),trouverCentreY(LObjets[i]));
                   if LObjets[i].stats.vie<LObjets[i].stats.vieMax then
-                    lObjets[i].stats.vie:=LObjets[i].stats.vie+round((ennemi.stats.force*(ennemi.stats.vie/ennemi.stats.vieMax)));
+                    lObjets[i].stats.vie:=min(LObjets[i].stats.vieMax,LObjets[i].stats.vie+round((ennemi.stats.force*(ennemi.stats.vie/ennemi.stats.vieMax))));
                   if (LObjets[i].stats.indice<>ennemi.stats.indice) then trouve:=True;
                   end;
               if not trouve then
@@ -1339,7 +1339,7 @@ begin
     end;
   if ennemi.anim.objectname='Béhémoth' then
     begin
-    ennemi.image.rect.x:=460;ennemi.image.rect.y:=0;
+    ennemi.image.rect.x:=460*windowWidth div 1080;ennemi.image.rect.y:=0;
     end;
   if ennemi.anim.objectName='gardien' then
     ennemi.image.rect.y:=-50*windowHeight div 720;
@@ -1570,7 +1570,7 @@ initStatEnnemi(15,   'mage_rouge',            8,   50,  10,  0,   2,   0,   100,
 initStatEnnemi(16,   'invocateur',            12,  50,  0,   0,   0,   0,   120, 132, 12,                8,             3,               0,               5,           80,   100,  30,   20,   'rayon');
 initStatEnnemi(17,   'diablotin',             4,   10,  1,   0,   0,   3,   80,  80,  4,                 6,             4,               5,               4,           50,   50,   15,   0,    'eclairR');
 initStatEnnemi(18,   'Akr',                   4,   1050,12,  15,  -30, 1,   384, 256, 14,                9,             9,               8,               16,          200,  96,   80,   150,  'kamui');
-initStatEnnemi(19,   'main',                  3,   50,  0,   5,   0,   1,   150, 150, 8,                 16,            8,               0,               15,          150,  150,  0,    0,    '');
+initStatEnnemi(19,   'main',                  3,   140,  0,   5,   0,   1,   150, 150, 8,                 16,            8,               0,               15,          150,  150,  0,    0,    '');
 initStatEnnemi(20,   'armure',                7,   500, 8,   0,   7 ,  0,   384, 256, 7,                 2,             13,              9,               16,          192,  192,  96,   64,   'justice');
 initStatEnnemi(21,   'undrixel',              3,   50,  5,   30,  0,   1,   288, 192, 4,                 10,            4,               0,               10,          200,  128,  10,   40,   'eclairR');
 initStatEnnemi(22,   'altegh',                1,   50,  2,   0,   4,   2,   192, 192, 3,                 6,             4,               0,               14,          160,  96,   16,   96,   'rayonAL');
@@ -1589,7 +1589,7 @@ initStatEnnemi(34,   'vestige',               11,  1100,3,   15,  1,   1,   400,
 initStatEnnemi(35,   'gardien',               16,  500, 2,   1,   0,   1,   300, 300, 8,                 16,            0,               0,               23,          250,  120,  25,   120,  'rayon_main');
 initStatEnnemi(36,   'Geist',                 17,  200, 10,  0,   -10, 4,   300, 300, 21,                24,            3,               7,               9,           80,   80,   110,  160,  'rayonAL');
 initStatEnnemi(37,   'creature',              20,  1000,15,  0,   0,   0,   600, 560, 46,                12,            14,              14,              20,          500,  460,  50,   50,   'arcane');
-initStatEnnemi(38,   'Béhémoth',              10,  4500,20,  10,  10,  5,   463, 614, 12,                32,            40,              12,              39,          400,  307,  63,   307,  'rayonRykor');
+initStatEnnemi(38,   'Béhémoth',              10,  4000,20,  10,  10,  5,   463, 614, 12,                32,            40,              12,              39,          400,  307,  63,   307,  'rayonRykor');
 
 
 

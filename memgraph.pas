@@ -171,7 +171,7 @@ begin
      (y >= button.rect.y) and (y <= button.rect.y + button.rect.h) then
   begin
     if Assigned(button.OnClick) then
-		writeln('Starting Procedure');
+		//writeln('Starting Procedure');
 		button.OnClick;
   end;
 end;
@@ -593,11 +593,11 @@ BEGIN
 
   // Initialisation de la police [DayDream] et chargement de la police
   if TTF_Init = -1 then HALT;
-  Fantasy40 := TTF_OpenFont(FantasyFontDirectory, 40*windowWidth div 1080);
+  Fantasy40 := TTF_OpenFont(FantasyFontDirectory, 8*round(40*windowWidth div 1080/8));
   if Fantasy40 = nil then HALT;
-  Fantasy30 := TTF_OpenFont(FantasyFontDirectory, 30*windowWidth div 1080);
+  Fantasy30 := TTF_OpenFont(FantasyFontDirectory, 8*round(30*windowWidth div 1080/8));
   if Fantasy30 = nil then HALT;
-  Fantasy20 := TTF_OpenFont(FantasyFontDirectory, 25*windowWidth div 1080);
+  Fantasy20 := TTF_OpenFont(FantasyFontDirectory, 5*round(25*windowWidth div 1080/5));
   if Fantasy20 = nil then HALT;
   Angelic30 := TTF_OpenFont('Fonts/AngelicAgrippaRegular.ttf',30*windowWidth div 1080);
   if Angelic30 = nil then HALT;

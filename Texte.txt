@@ -419,17 +419,17 @@
 <DIALOGUE_BOSS2_1_1>HO HO HO ! Qui vient me déranger dans mes recherches ?;
 <DIALOGUE_BOSS2_1_2>Je suis Nym-;
 <DIALOGUE_BOSS2_1_3>-mera Amarisse, cartomancienne de Sarkota ayant étudié la cartomancie à Clamsofort et fameuse cheffe des événements.;
-<DIALOGUE_BOSS2_1_4>Comment savez-vous cela ?;
+<DIALOGUE_BOSS2_1_4>...?;
 <DIALOGUE_BOSS2_1_5>HO HO HO ! Je sais tout ce qu'il y a à savoir. Ma connaissance n'a de limite que votre imagination !;
-<DIALOGUE_BOSS2_1_6>Comment pouvez-vous être si sûr de cela ? ;
+<DIALOGUE_BOSS2_1_6>D'où vient donc cet excès de confiance ?;
 <DIALOGUE_BOSS2_1_7>Je suis un ancien d'avant l'an I. J'ai plus de 6 millénaires d'études sur le pouvoir magique des dieux.;
-<DIALOGUE_BOSS2_1_8>Donc vous savez tout ce qui s'est passé dans l'histoire ?;
+<DIALOGUE_BOSS2_1_8>Ha, vous savez tout ce qui s'est passé dans l'histoire ?;
 <DIALOGUE_BOSS2_1_9>On peut dire cela, oui! HO HO !;
 <DIALOGUE_BOSS2_1_10>Dans ce cas, est-ce vrai que le président du conseil voulait s'accaparer les terres des druides par la guerre ?;
 <DIALOGUE_BOSS2_1_11>Hmph... Tu sais jeune fille, tous les secrets n'ont pas besoin d'être révelés au grand jour.;
 <DIALOGUE_BOSS2_1_12>Je vais prendre ça pour un oui ...;
 <DIALOGUE_BOSS2_2_1>Hmph! Quelle insolence! Je ne tolèrerais jamais ça venant de mes élèves.;
-<DIALOGUE_BOSS2_2_2>Oui, en effet je doute que vos élèves tentent de vous tuer... Ou que vous tentiez de le faire en retour, d'ailleurs.;
+<DIALOGUE_BOSS2_2_2>Oui, en effet je doute que vos élèves tentent de vous tuer... Ou que vous essayiez de le faire en retour, d'ailleurs.;
 <DIALOGUE_BOSS2_2_3>Et elle répond, en plus! Tu es bien impertinente, Nymera!;
 <DIALOGUE_BOSS2_2_4>J'ai fini mes études et j'ai choisi mon chemin. Je n'ai plus rien à apprendre de vous.;
 <DIALOGUE_BOSS2_2_5>Ça, vous devriez le savoir, non?;
@@ -460,7 +460,7 @@
 <FIN_BOSS2_9>Ces créatures semblent être façonnées par la main de l'homme...;
 <FIN_BOSS2_10>Merde ! Leurs expériences se sont échappées. Il faut vite que je sorte de là !;
 
-<DIALOGUE_BOSS3_1_1>Vous êtes sur le point de vous échapper de l'école quand vous tombez nez-à-nez avec une immence créature.;
+<DIALOGUE_BOSS3_1_1>Vous êtes sur le point de vous échapper de l'école quand vous tombez nez-à-nez avec une immense créature.;
 <DIALOGUE_BOSS3_1_2>ARRRRrrrrghhhh.... !;
 <DIALOGUE_BOSS3_1_3>Bon sang ! Il est gigantesque ! Comment les chercheurs ont pu créer cela ?;
 <DIALOGUE_BOSS3_1_4>KRRIIIIIiiiiaaaa ! ;
@@ -503,7 +503,7 @@
 <DIALOGUE_BOSS4_4_4>...................;
 <DIALOGUE_BOSS4_4_5>RAAAAAAAAAAAAAAAAAARGH!!!!!;
 <DIALOGUE_BOSS4_1>Heh heh heh. Me voilà débarrassé de cet esprit misérable, enfin! L'humanité connaîtra mon courroux pour ces millénaires de souffrance.;
-<DIALOGUE_BOSS4_2>Un dragon...?! Qu'est-ce que cette chose? Qu'est-il advenu de l'archimage qui vous a invoqué?;
+<DIALOGUE_BOSS4_2>Un dragon...?! Comment est-ce possible? Qu'est-il advenu de l'archimage qui vous a invoqué?;
 <DIALOGUE_BOSS4_3>Un imbécile qui croyait pouvoir maîtriser ma force... un sacrifice nécessaire pour ma réincarnation. Les humains tentent toujours de manipuler des pouvoirs qui les dépassent.;
 <DIALOGUE_BOSS4_4>Mais il est temps pour vous de connaître votre place. Il est grand temps pour l'ère des dragons!;
 <DIALOGUE_BOSS4_5>Nous ne sommes pas vos pions. L'humanité a largement dépassé ses créateurs, que vous le vouliez ou non!;

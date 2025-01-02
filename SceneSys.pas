@@ -352,14 +352,18 @@ begin
    while not QUITGAME do
   begin
   sdl_delay(10);
+  SDL_SetRenderDrawColor(sdlrenderer, 0, 0, 0, 255);
   sdl_renderclear(sdlRenderer);
   autoMusique(indiceMusiqueJouee);
 	case SceneActive of
 		'Intro':begin
 			ActualiserIntro(updateTime,indice);
 			while SDL_PollEvent(EventSystem)=1 do
+				begin
 				if EventSystem^.type_=SDL_mousebuttondown then
 					sceneActive:='Menu';
+				if EventSystem^.type_=SDL_QUITEV then  QUITGAME:=True; 
+				end;
 			if sceneActive<>'Intro' then 
 				begin
 				while high(queueDialogues)>-1 do
@@ -496,8 +500,6 @@ begin
 		if (LObjets[0].anim.etat<>'idle') then
 			initAnimation(LObjets[0].anim,LObjets[0].anim.objectName,'idle',12,True);
 		updateanimation(LObjets[0].anim,LObjets[0].image);
-		if (LObjets[1].anim.etat<>'apparition') and (LObjets[1].anim.etat<>'mort') then
-			updateanimation(LObjets[1].anim,LObjets[1].image);
 		
 		if LObjets[1].anim.objectName='Béhémoth' then fond.rect.x:=88-4+random(9);
 		end;
@@ -557,7 +559,7 @@ begin
 						//LObjets[0].stats.compteurLeMonde:=100;
 						//updateTimeMonde:=sdl_getTicks;
 						end;
-					SDLK_M:writeln(LObjets[0].stats.multiplicateurMana);
+					{SDLK_M:writeln(LObjets[0].stats.multiplicateurMana);
 					SDLK_UP:  LObjets[0].stats.vie := LObjets[0].stats.vie +10;
 					SDLK_DOWN: LObjets[0].stats.vie := LObjets[0].stats.vie-10;
 					SDLK_O:LOBjets[0].stats.multiplicateurMana:=LOBjets[0].stats.multiplicateurMana+100;
@@ -577,7 +579,7 @@ begin
 					SDLK_F7:begin statsJoueur.tailleCollection:=28; for i:=1 to 28 do statsJoueur.collection[i]:=Cartes[27+i mod 2]; end;
 					SDLK_F8:for i:=0 to high(LObjets[0].stats.deck^) do LObjets[0].stats.deck^[i]:=Cartes[12];
 					SDLK_F9:statsJoueur.avancement:=MAXSALLES;
-					SDLK_F10:statsJoueur.multiplicateurSoin:=1;
+					SDLK_F10:statsJoueur.multiplicateurSoin:=1;}
         		end;
       		end;
 			
@@ -658,11 +660,15 @@ begin
 					begin
 						OnMouseClick(boutons[3], getmousex, getmousey);
 						HandleButtonClick(boutons[3].button, getmousex, getmousey);
-					for i:=1 to 2 do
 						if not echangeFait then
 						begin
-						OnMouseClick(boutons[i], getmousex, getmousey);
-						HandleButtonClick(boutons[i].button, getmousex, getmousey);
+						if nbCartesRecyclables(statsJoueur)>3 then
+							begin
+							OnMouseClick(boutons[1], getmousex, getmousey);
+							HandleButtonClick(boutons[1].button, getmousex, getmousey);
+							end;
+						OnMouseClick(boutons[2], getmousex, getmousey);
+						HandleButtonClick(boutons[2].button, getmousex, getmousey);
 						end;
 					end;
 				'marchand':
@@ -759,6 +765,7 @@ begin
 				end;
 			end;
 		end;
+		drawRect(black_color,255,-windowOffsetX,0,windowOffsetX,0);
 		sdl_renderpresent(sdlrenderer);
 	end;
 end;

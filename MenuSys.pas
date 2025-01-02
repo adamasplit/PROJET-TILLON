@@ -61,10 +61,10 @@ begin
 	
     LObjets[0].col.isTrigger := False;
     LObjets[0].col.estActif := True;
-    LObjets[0].col.dimensions.w := 50;
-    LObjets[0].col.dimensions.h := 85;
-    LObjets[0].col.offset.x := 25;
-    LObjets[0].col.offset.y := 15;
+    LObjets[0].col.dimensions.w := 50*windowWidth div 1080;
+    LObjets[0].col.dimensions.h := 85*windowHeight div 720;
+    LObjets[0].col.offset.x := 25*windowWidth div 1080;
+    LObjets[0].col.offset.y := 15*windowHeight div 720;
     LObjets[0].col.nom := 'Joueur';
 	LObjets[0].stats.angle:=0;
     LObjets[0].anim.estActif := True;
@@ -72,7 +72,7 @@ begin
     LObjets[0].image.rect.y := windowHeight div 2;
 	LObjets[0].stats.lastUpdateTimeMana:=SDL_GetTicks;
 	statsJoueur.tailleCollection:=4;
-	statsJoueur.Vitesse:=5;
+	statsJoueur.Vitesse:=5*windowWidth div 1080;
 	statsJoueur.multiplicateurMana:=1;
 	statsJoueur.force:=1;
 	statsJoueur.defense:=1;
@@ -92,7 +92,7 @@ begin
 	statsJoueur.multiplicateurSoin:=1;
 	initStatsCombat(statsJoueur,LObjets[0].stats);
 	iCarteChoisie:=1;
-	CreateRawImage(LObjets[0].image, windowWidth div 2-windowWidth div 4, windowHeight div 2, 100, 100, 'Sprites/Game/Joueur/Joueur_idle_1.bmp');
+	CreateRawImage(LObjets[0].image, windowWidth div 2-windowWidth div 4, windowHeight div 2, 100*windowHeight div 720, 100*windowHeight div 720, 'Sprites/Game/Joueur/Joueur_idle_1.bmp');
 	CreateRawImage(menuBook,0,0,windowWidth,windowHeight,'Sprites/Game/Book/Book_Opening_1.bmp');
 	initAnimation(LObjets[0].anim,'Joueur','idle',12,True);
 	if continuer then
@@ -117,10 +117,10 @@ begin
     decor.scales[i] := 1 / profondeur;
 
     // Dimensions calculées à partir de l'échelle
-    width := Round(originalWindowWidth * profondeur);
+    width := Round(windowWidth * profondeur);
     height := Round(windowHeight * profondeur);
     // Création de l'image
-    CreateRawImage(decor.images[i], 0, 0, width, height,StringToPChar('Sprites/Menu/DecorsCredits/' + NomDecor + '-' + IntToStr(totalDecors - i) + '.bmp'));
+    CreateRawImage(decor.images[i], 0, 0, width+2*windowOffsetX, height,StringToPChar('Sprites/Menu/DecorsCredits/' + NomDecor + '-' + IntToStr(totalDecors - i) + '.bmp'));
 
     // Centrage initial des images
     decor.images[i].rect.x := (windowWidth- width);  // Centrer horizontalement
@@ -241,7 +241,7 @@ begin
 		if creditsText.rect.y >= -4025*windowHeight div 720 then
 			creditsText.rect.y := Round(creditsText.rect.y - 0.55);
 		
-      newWidth := Round(decor.images[i].rect.w + (1+decor.scales[i]/100));
+      newWidth := Round(decor.images[i].rect.w + (1+decor.scales[i]/100)) ;
       newHeight := Round(decor.images[i].rect.h + (1+decor.scales[i]/100));
 
       // Recentrage des positions après zoom
@@ -280,7 +280,7 @@ begin
 	changementDecor:=False;
   end;
 
-  if (decor.images[0].rect.w > 1460) and fonduActif = False then
+  if (decor.images[0].rect.w > 1460*(windowWidth+windowOffsetX) div 1080) and fonduActif = False then
   begin
     DeclencherFondu(True, 1000); // Déclenche le fondu de sortie
 	changementDecor := True;
@@ -643,7 +643,7 @@ end;
 
 procedure InitCredits;
 begin
-	InitButtonGroup(button_retour_menu, 850*windowWidth div 1080, 625*windowHeight div 720, 200*windowWidth div 1080, 75*windowHeight div 720,'Sprites/Menu/Button1.bmp','Menu',retour_menu);
+	InitButtonGroup(button_retour_menu, 850*windowWidth div 1080+windowOffsetX, 625*windowHeight div 720, 200*windowWidth div 1080, 75*windowHeight div 720,'Sprites/Menu/Button1.bmp','Menu',retour_menu);
 	SetLength(DecorCredits.plans, 4);
   	DecorCredits.plans[0] := 'Plains';
   	DecorCredits.plans[1] := 'Forest';
@@ -661,12 +661,13 @@ begin
 		begin
 		renderRawImage(fond,255,False);
 		if LObjets[0].stats.pendu then
-				if LObjets[0].anim.isFliped then
-					SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
+					begin
+					LObjets[0].image.rect.x:=LObjets[0].image.rect.x+windowOffsetX;
+					SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL);
+					LObjets[0].image.rect.x:=LObjets[0].image.rect.x-windowOffsetX;
+					end
 				else
-					SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
-			else
-				RenderRawImage(LObjets[0].image,255, LObjets[0].anim.isFliped);
+					RenderRawImage(LObjets[0].image,255, LObjets[0].anim.isFliped);
 
 		for i:=1 to high(LObjets) do
 			case LOBjets[i].stats.genre of
@@ -786,6 +787,7 @@ var i,nbReliques:Integer;
 begin
 	if indiceMusiqueJouee<14 then indiceMusiqueJouee:=indiceMusiqueJouee+18; //donne une fanfare de victoire adaptée
 	StatsJ.vie:=LObjets[0].stats.vie;//synchronise la vie
+	statsJ.nbJustice:=LObjets[0].stats.nbJustice div 2;
 	if (statsJ.avancement-1) mod (MAXSALLES div 4) = 0 then
 		InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('VICTOIRE_'+intToSTR(10*(statsJ.avancement div (MAXSALLES div 4)))),10)
 	else

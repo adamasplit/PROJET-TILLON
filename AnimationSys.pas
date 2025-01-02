@@ -298,7 +298,7 @@ procedure CreateDamagePopUp(x, y: Integer; damage: PChar; couleur: TSDL_Color);
 var
   newPopUp: TText;
 begin
-  CreateText(newPopUp, x+10, y+20,20,20, damage, Fantasy30, couleur);
+  CreateText(newPopUp, x+10, y+20,20*windowWidth div 1080,20*windowHeight div 720, damage, Fantasy30, couleur);
   SetLength(DamagePopUps, Length(DamagePopUps) + 1);
   DamagePopUps[High(DamagePopUps)] := newPopUp;
 end;
