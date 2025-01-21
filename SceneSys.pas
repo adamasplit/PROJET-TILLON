@@ -25,6 +25,50 @@ implementation
 
 var UpdateTimeTuto : UInt32; indiceTuto:Integer;
 
+procedure updateObjets(); //met à jour tous les objets autres que le joueur et les ennemis
+var i:Integer;interruption:Boolean;
+begin
+interruption:=False;
+for i:=0 to High(LObjets) do
+      if (not interruption) and (i<=High(LObjets)) then
+	  	begin
+            LObjets[i].stats.indice:=i;
+			case LObjets[i].stats.genre of
+			joueur:begin
+				if LObjets[i].stats.vie>LObjets[i].stats.vieMax then LObjets[i].stats.vie:=LObjets[i].stats.vieMax;
+				if LObjets[i].stats.vie<0 then LObjets[i].stats.vie:=0;
+				if leMonde and (sdl_getTicks-UpdateTimeMonde>(1500+min(LObjets[i].stats.compteurLeMonde,17)*500)) then
+					begin
+					leMonde:=False;
+					end;
+				if LObjets[i].stats.laMort and (sdl_getTicks-updateTimeMort>5000) then
+					LObjets[i].stats.laMort:=False;
+				RegenMana(LObjets[i].stats.lastUpdateTimeMana,LObjets[i].stats.mana,LObjets[i].stats.manaMax,LObjets[i].stats.relique,LObjets[i].stats.vie,LObjets[i].stats.multiplicateurMana);
+				MouvementJoueur(Lobjets[i]); 
+				end;
+			ennemi: if not leMonde then
+					begin
+					vagueFinie:=False;
+					if not (LObjets[i].anim.etat='dodge') then
+						LObjets[i].col.estActif:=True;
+					IAEnnemi(LObjets[i],LObjets[0]);
+					end;
+        	projectile:updateBoule(LObjets[i]); //fait avancer un projectile en ligne droite
+			laser:updateRayon(LObjets[i]); //met à jour un rayon
+			epee:UpdateJustice(LObjets[i]); //prépare ou fait avancer une épée
+            explosion:UpdateExplosion(LObjets[i],interruption);
+            explosion2:updateExplosion2(LObjets[i]);
+            afterimage:updateAfterimage(LObjets[i]);
+			effet:if (LObjets[i].stats.fixeJoueur) and (not (leMonde) or (LObjets[i].anim.objectName='monde')) then 
+				begin
+                //si l'effet suit le joueur, il se fixe à sa position
+				LObjets[i].image.rect.x:=trouvercentrex(LObjets[0])-(LObjets[i].image.rect.w div 2);
+				LObjets[i].image.rect.y:=trouvercentrey(LObjets[0])-(LObjets[i].image.rect.h div 2);
+				end;
+			end;
+		end
+end;
+
 procedure UpdateAnimations();
 var i:Integer;
 begin
@@ -75,29 +119,9 @@ var faucheuse : TObjet;i:Integer;
 		afficherTout;
 		MAJCollisions();
 		UpdateAnimations();
-		UpdateAttaques();
+		UpdateObjets();
 		UpdateDamagePopUps;
-		if LObjets[0].stats.vie>LObjets[0].stats.vieMax then LObjets[0].stats.vie:=LObjets[0].stats.vieMax;
-		if LObjets[0].stats.vie<0 then LObjets[0].stats.vie:=0;
-		if leMonde and (sdl_getTicks-UpdateTimeMonde>(1500+min(LObjets[0].stats.compteurLeMonde,17)*500)) then
-			begin
-			leMonde:=False;
-			end;
-		if LObjets[0].stats.laMort and (sdl_getTicks-updateTimeMort>5000) then
-			LObjets[0].stats.laMort:=False;
-		RegenMana(LObjets[0].stats.lastUpdateTimeMana,LObjets[0].stats.mana,LObjets[0].stats.manaMax,LObjets[0].stats.relique,LObjets[0].stats.vie,LObjets[0].stats.multiplicateurMana);
-		for i:=1 to High(LObjets) do
-			if (i<=High(LObjets)) and not leMonde then
-			begin
-				if LObjets[i].stats.genre=TypeObjet(1) then
-					begin
-					vagueFinie:=False;
-					if not (LObjets[i].anim.etat='dodge') then
-						LObjets[i].col.estActif:=True;
-					IAEnnemi(LObjets[i],LObjets[0]);
-					end;
-			end;
-		if (Lobjets[0].stats.vie <= 0) then 
+		if (Lobjets[0].stats.vie <= 0) and not (LObjets[0].stats.laMort) then 
 		begin
 			DeclencherFondu(True, 3000);
 			arretSons(100);
@@ -152,7 +176,7 @@ end;
 
 procedure OnPlayerDeath(var son:Boolean);
 var hasDeath,deathInDeck : Boolean;
-var i,j : Integer;
+var i,j,av : Integer;
 begin
 mix_pauseMusic;
 afficherTout;
@@ -193,7 +217,7 @@ afficherTout;
 				if hasDeath then
 					begin
 					Mix_VolumeMusic(VOLUME_MUSIQUE);
-					UpdateTimeMort:=SDL_GetTicks+1000;
+					UpdateTimeMort:=SDL_GetTicks+5000;
 					LObjets[0].stats.laMort:=True;
 					for i:=0 to high(LObjets[0].stats.deck^) do
 						if (not deathInDeck) and (LObjets[0].stats.deck^[i].numero=13) then
@@ -208,6 +232,7 @@ afficherTout;
 				if not(hasDeath) then
 					begin
 					//jouerSon('SFX/Effets/mort.wav');
+					av:=statsJoueur.avancement;
 					DeclencherFondu(true,3000);
 					sceneActive:='MortFondu';
 					for i:=1 to 300 do
@@ -217,12 +242,23 @@ afficherTout;
 						sdl_renderpresent(sdlrenderer);
 						end;
 					DeclencherFondu(False, 5000);
-					indiceMusiqueJouee:=46;
-					initJoueur(False);
-					sauvegarder(statsJoueur);
+					if av>=MAXSALLES then indiceMusiqueJouee:=47
+					else indiceMusiqueJouee:=46;
 					supprimeObjet(Lobjets[High(LObjets)]);
 					sceneActive := 'GameOver';
-					initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,windowWidth,350,extractionTexte('GAMEOVER_'+intToSTr(random(5)+1)),40);
+					if ((av-1) mod (MAXSALLES div 4)=0) and (av<=MAXSALLES+1) then
+						case (av-1) div (MAXSALLES div 4) of
+						1:initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450*WINDOWHEIGHT div 720,windowWidth,350*WINDOWHEIGHT div 720,extractionTexte('GAMEOVER_BOSS_1'),40);
+						2:if statsJoueur.bestiaire[33] then initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/spectre3.bmp',0,450*WINDOWHEIGHT div 720,windowWidth,350*WINDOWHEIGHT div 720,extractionTexte('GAMEOVER_BOSS_2'),40)
+							else initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/spectre1.bmp',0,450*WINDOWHEIGHT div 720,windowWidth,350*WINDOWHEIGHT div 720,extractionTexte('GAMEOVER_BOSS_2_1'),40);
+						3:initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450*WINDOWHEIGHT div 720,windowWidth,350*WINDOWHEIGHT div 720,extractionTexte('GAMEOVER_BOSS_3'),40);
+						4:if statsJoueur.bestiaire[30] then initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portraitB.bmp',0,450*WINDOWHEIGHT div 720,windowWidth,350,extractionTexte('GAMEOVER_BOSS_4'),40)
+							else initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450*WINDOWHEIGHT div 720,windowWidth,350,extractionTexte('GAMEOVER_BOSS_5'),40)
+						end
+					else
+						initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450*WINDOWHEIGHT div 720,windowWidth,350,extractionTexte('GAMEOVER_'+intToSTr(random(5)+1)),40);
+					initJoueur(False);
+					sauvegarder(statsJoueur);
 					InitGameOver();
 				end;
 			end;
@@ -248,6 +284,7 @@ begin
     if Assigned(button.procCarte) then
     begin
         //writeln('procédure spéciale en cours');
+		jouerSon('SFX/carte.wav');
 		button.procCarte(carte,stats);
     end;
   end;
@@ -347,7 +384,7 @@ end;
 
 
 procedure GameUpdate(var indice:Integer;var updateTime:UINT32);
-var i:Integer;son,boss:Boolean;ennemiActuel:Integer;cardHover:Array [1..3] of Boolean;
+var i:Integer;son,boss:Boolean;ennemiActuel:Integer;cardHover:Array [1..3] of Boolean;clone:TObjet;
 begin
    while not QUITGAME do
   begin
@@ -397,10 +434,9 @@ begin
 		end;
   		'Jeu': 
   		begin
-		boss:=(high(LObjets)>=1) and (LObjets[1].stats.boss);
+		boss:=((high(LObjets)>=1) and (LObjets[1].stats.boss));
 		if boss then ennemiActuel:=LObjets[1].stats.numero;
 		ActualiserJeu(boss,ennemiActuel);
-		MouvementJoueur(LObjets[0]);
 		end;
   		'MenuEnJeu': 
   		begin
@@ -559,13 +595,13 @@ begin
 						//LObjets[0].stats.compteurLeMonde:=100;
 						//updateTimeMonde:=sdl_getTicks;
 						end;
-					{SDLK_M:writeln(LObjets[0].stats.multiplicateurMana);
+					SDLK_M:writeln(LObjets[0].stats.multiplicateurMana);
 					SDLK_UP:  LObjets[0].stats.vie := LObjets[0].stats.vie +10;
 					SDLK_DOWN: LObjets[0].stats.vie := LObjets[0].stats.vie-10;
 					SDLK_O:LOBjets[0].stats.multiplicateurMana:=LOBjets[0].stats.multiplicateurMana+100;
 					SDLK_H : choixSalle();
 					SDLK_F2:begin
-						LObjets[0].stats.force:=LObjets[0].stats.force+1;
+						LObjets[0].stats.force:=LObjets[0].stats.force+10;
 						LObjets[0].stats.multiplicateurDegat:=LObjets[0].stats.multiplicateurDegat+10;
 						end;
 					SDLK_F3:modeDebug:=not(modeDebug);
@@ -577,9 +613,17 @@ begin
 						//writeln(statsJoueur.multiplicateurSoin);
 						end;
 					SDLK_F7:begin statsJoueur.tailleCollection:=28; for i:=1 to 28 do statsJoueur.collection[i]:=Cartes[27+i mod 2]; end;
-					SDLK_F8:for i:=0 to high(LObjets[0].stats.deck^) do LObjets[0].stats.deck^[i]:=Cartes[12];
-					SDLK_F9:statsJoueur.avancement:=MAXSALLES;
-					SDLK_F10:statsJoueur.multiplicateurSoin:=1;}
+					SDLK_F8:for i:=0 to high(LObjets[0].stats.deck^) do LObjets[0].stats.deck^[i]:=Cartes[8];
+					SDLK_F9:statsJoueur.avancement:=statsJoueur.avancement+MAXSALLES-2;
+					SDLK_F10:statsJoueur.multiplicateurSoin:=1;
+					SDLK_L:LObjets[0].anim.objectName:=stringtoPchar('Joueur'+inttoStr(random(2)+2));
+					SDLK_F11:begin
+						clone:=LObjets[0];
+						clone.stats.pendu:=not(clone.stats.pendu);
+						createRawImage(clone.image,clone.image.rect.x,clone.image.rect.y,clone.image.rect.w,clone.image.rect.h,getframepath(clone.anim));
+						ajoutObjet(clone);
+						//LObjets[0].stats.pendu:=not(LObjets[0].stats.pendu);
+						end;
         		end;
       		end;
 			
@@ -628,7 +672,7 @@ begin
 					OnMouseClick(boutons[i], getmousex, getmousey);
                     HandleButtonClick(boutons[i].button, getmousex, getmousey);
 					end;
-				'Jeu': jouerCarte(LObjets[0].stats,LObjets[0].image.rect.x+(LObjets[0].image.rect.w div 2),LObjets[0].image.rect.y+(LObjets[0].image.rect.h div 2),iCarteChoisie);
+				'Jeu': for i:=0 to high(LObjets) do if (Lobjets[i].stats.genre=joueur) and (i<High(LObjets)) then jouerCarte(LObjets[i],iCarteChoisie);
 				'defausse':begin
 					OnMouseClick(boutons[3], getmousex, getmousey);
 					HandleButtonClickCarte(boutons[3], getmousex, getmousey,statsjoueur.collection[ichoix1],statsJoueur);
@@ -770,10 +814,80 @@ begin
 	end;
 end;
 
+procedure lancerFullscreen;
+begin
+	fullScreenInit;
+	sceneActive:='Intro';
+end;
+
+procedure lancerFenetre;
+begin
+	sceneActive:='Intro';
+end;
+
+procedure initMurs;
+var i:Integer;
+
+const TAILLE_MUR = 4000;
+begin
+	//initialisation des murs
+  murs[1].image.rect.x:=0;
+  murs[1].image.rect.y:=-TAILLE_MUR;
+  murs[1].col.dimensions.w:=windowWidth;
+  murs[1].col.dimensions.h:=TAILLE_MUR;
+  murs[2].image.rect.x:=-TAILLE_MUR;
+  murs[2].image.rect.y:=-TAILLE_MUR;
+  murs[2].col.dimensions.w:=180*windowWidth div 1080+TAILLE_MUR;
+  murs[2].col.dimensions.h:=TAILLE_MUR*2;
+  murs[3].image.rect.x:=0;
+  murs[3].image.rect.y:=windowHeight;
+  murs[3].col.dimensions.w:=windowWidth;
+  murs[3].col.dimensions.h:=TAILLE_MUR;
+  murs[4].image.rect.x:=880*windowWidth div 1080;
+  murs[4].image.rect.y:=-TAILLE_MUR;
+  murs[4].col.dimensions.w:=TAILLE_MUR;
+  murs[4].col.dimensions.h:=TAILLE_MUR*2;
+  for i:=1 to 4 do
+    begin
+    murs[i].col.estActif:=True;
+    murs[i].col.offset.x:=0;
+    murs[i].col.offset.y:=0;
+    end;
+end;
+
+procedure choixInitial;
+var fullscreen,window:tbuttonGroup;
+begin
+	sceneActive:='choix';
+	initButtonGroup(fullscreen,200,280,200,160,'Sprites/Menu/Button1.bmp','Plein ecran',@lancerFullscreen);
+	initButtonGroup(window,680,280,200,160,'Sprites/Menu/Button1.bmp','Fenetre',@lancerFenetre);
+	while sceneActive='choix' do
+	begin
+	sdl_delay(10);
+	sdl_renderclear(sdlrenderer);
+	drawRect(black_color,255,0,0,windowWidth,windowHeight);
+	renderButtonGroup(fullscreen);
+	renderButtonGroup(window);
+	while SDL_PollEvent(EventSystem)=1 do
+		if EventSystem^.type_=SDL_mousebuttondown then
+		begin
+		HandleButtonClick(fullscreen.button,getmousex,getmousey);
+		HandleButtonClick(window.button,getmousex,getmousey);
+		OnMouseClick(fullscreen,getmousex,getmousey);
+		OnMouseClick(window,getmousex,getmousey);
+		end
+		else if EventSystem^.type_=SDL_QUITEV then halt();
+	sdl_renderpresent(sdlrenderer);
+	end;
+end;
+
 procedure StartGame;
 var lastUpdateTime:UInt32;indice:Integer;
 begin
 	new(EventSystem);
+	choixInitial;
+	initMurs;
+	initEnnemis;
     IndiceMusiqueJouee:=0;
 	updatetimemusique:=sdl_getticks;
     Mix_VolumeMusic(VOLUME_MUSIQUE);

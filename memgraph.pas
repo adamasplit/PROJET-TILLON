@@ -104,6 +104,7 @@ procedure RenderDialogueText(var Box: TDialogueBox);
 
 function boiteFinie(box:TDialogueBox):Boolean;
 
+procedure fullScreenInit;
 
 
 procedure ClearScreen;
@@ -430,7 +431,7 @@ begin
   Box.DisplayedLetters := 0;
   Box.CurrentLine := 1;
   Box.Font:=Fantasy30;
-  Box.FontSize:=30*windowWidth div 1080;
+  Box.FontSize:=8*round(30*windowWidth div 1080/8);
   Box.LastUpdateTime := SDL_GetTicks();
   Box.LetterDelay := Delay;
   Box.Complete := False;
@@ -459,7 +460,7 @@ begin
   Box.LastUpdateTime := SDL_GetTicks();
   Box.LetterDelay := Delay;
   Box.Font:=Font;
-  box.fontsize:=fontsize*windowWidth div 1080;
+  box.fontsize:=8*round(fontsize*windowWidth div 1080/8);
   Box.Complete := False;
 
   // Charger les premières lignes
@@ -497,9 +498,12 @@ begin
       else
       begin
         Inc(Box.DisplayedLetters);
-        if box.portrait.directory=nil then
+        if (box.portrait.directory=nil) then
           begin
-          //jouerSon('SFX/Dialogues/texte.wav')
+          if (box.BackgroundImage.directory<>nil) then
+            begin
+            //jouerSon('SFX/Dialogues/texte.wav')
+            end
           end
         else
           jouerSon(StringToPChar('SFX/Dialogues/'+box.portrait.directory+'.wav'));
@@ -562,7 +566,36 @@ begin
 end;
 
 
+procedure fullScreenInit();
+begin
+  if sdlWindow1<>nil then SDL_DestroyWindow(sdlWindow1);
+  sdlWindow1 := SDL_CreateWindow('Les Cartes du Destin 🃑', SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, SDL_WINDOW_SHOWN OR SDL_WINDOW_BORDERLESS OR SDL_WINDOW_FULLSCREEN_DESKTOP);
+  if sdlWindow1 = nil then HALT;
 
+  SDL_GetWindowSize(sdlWindow1, @windowWidth, @windowHeight);
+  originalWindowWidth:=windowWidth;
+  windowWidth:=round(1.5*windowHeight);
+  windowOffsetX:=(originalWindowWidth-windowWidth) div 2;
+  // Creation du Renderer
+  sdlRenderer := SDL_CreateRenderer(sdlWindow1, -1, SDL_RENDERER_ACCELERATED);
+  if sdlRenderer = nil then HALT;
+
+  // Initialisation de la police [DayDream] et chargement de la police
+  if TTF_Init = -1 then HALT;
+  Fantasy40 := TTF_OpenFont(FantasyFontDirectory, 8*round(40*windowWidth div 1080/8));
+  if Fantasy40 = nil then HALT;
+  Fantasy30 := TTF_OpenFont(FantasyFontDirectory, 8*round(30*windowWidth div 1080/8));
+  if Fantasy30 = nil then HALT;
+  Fantasy20 := TTF_OpenFont(FantasyFontDirectory, 5*round(25*windowWidth div 1080/5));
+  if Fantasy20 = nil then HALT;
+  Angelic30 := TTF_OpenFont('Fonts/AngelicAgrippaRegular.ttf',30*windowWidth div 1080);
+  if Angelic30 = nil then HALT;
+  // activation de l'opacité
+  SDL_SetRenderDrawBlendMode(sdlRenderer, SDL_BLENDMODE_BLEND);
+  TTF_SetFontStyle(Fantasy40, TTF_STYLE_NORMAL);
+  TTF_SetFontOutline(Fantasy40, 1);
+  TTF_SetFontHinting(Fantasy40, TTF_HINTING_NORMAL);
+end;
 
 
 {Debug}
@@ -579,17 +612,14 @@ BEGIN
   if SDL_Init(SDL_INIT_VIDEO) < 0 then HALT;
 
   // Creation de la Fenetre
-  sdlWindow1 := SDL_CreateWindow('Les Cartes du Destin 🃑', SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, SDL_WINDOW_SHOWN OR SDL_WINDOW_BORDERLESS OR SDL_WINDOW_FULLSCREEN_DESKTOP);
-  if sdlWindow1 = nil then HALT;
 
-  SDL_GetWindowSize(sdlWindow1, @windowWidth, @windowHeight);
-  originalWindowWidth:=windowWidth;
-  windowWidth:=round(1.5*windowHeight);
-  windowOffsetX:=(originalWindowWidth-windowWidth) div 2;
+  sdlWindow1 := SDL_CreateWindow('Les Cartes du Destin 🃑', SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1080, 720, SDL_WINDOW_SHOWN);
+  if sdlWindow1 = nil then HALT;
+  windowHeight:=720;
+  windowWidth:=1080;
   // Creation du Renderer
   sdlRenderer := SDL_CreateRenderer(sdlWindow1, -1, SDL_RENDERER_ACCELERATED);
   if sdlRenderer = nil then HALT;
-
 
   // Initialisation de la police [DayDream] et chargement de la police
   if TTF_Init = -1 then HALT;
@@ -601,7 +631,6 @@ BEGIN
   if Fantasy20 = nil then HALT;
   Angelic30 := TTF_OpenFont('Fonts/AngelicAgrippaRegular.ttf',30*windowWidth div 1080);
   if Angelic30 = nil then HALT;
-
   // activation de l'opacité
   SDL_SetRenderDrawBlendMode(sdlRenderer, SDL_BLENDMODE_BLEND);
   TTF_SetFontStyle(Fantasy40, TTF_STYLE_NORMAL);

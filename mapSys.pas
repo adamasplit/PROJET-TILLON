@@ -127,7 +127,11 @@ begin
         DeclencherFondu(True,1000);
         evenementSuiv:=evenement;
         if evenement<>boss then 
-        createRawImage(salles[numero].image.image,salles[numero].image.image.rect.x,salles[numero].image.image.rect.y,salles[numero].image.image.rect.w,salles[numero].image.image.rect.h,'Sprites/salles/porte10.bmp');
+            begin
+            sdl_destroytexture(salles[numero].image.image.imgtexture);
+            sdl_freeSurface(salles[numero].image.image.imgSurface);
+            createRawImage(salles[numero].image.image,salles[numero].image.image.rect.x,salles[numero].image.image.rect.y,salles[numero].image.image.rect.w,salles[numero].image.image.rect.h,'Sprites/salles/porte10.bmp');
+            end;
         izoom:=numero;
     end;
 end;
@@ -136,7 +140,7 @@ procedure generationChoix(var salle1,salle2,salle3:TSalle);
 var alea:Integer;
 begin
     ////writeln('Actuellement en salle : ',statsJoueur.avancement);
-    if ((statsJoueur.avancement mod (MAXSALLES div 4)) = 0) then 
+    if ((statsJoueur.avancement mod (MAXSALLES div 4)) = 0) and (statsJoueur.avancement <=MAXSALLES) then 
         begin
             salle1.evenement:=rien;
             salle2.evenement:=boss;
@@ -172,7 +176,7 @@ begin
         end
 end;
 
-function choisirennemi(avancement:Integer):integer; //choisit un ennemi adapté à la salle actuelle
+function choisirennemi(avancement,i:Integer):integer; //choisit un ennemi adapté à la salle actuelle
 var alea:Integer;
 begin
     alea:=random(10)+1;
@@ -200,19 +204,37 @@ begin
         3..6:choisirennemi:=random(2)+28;
         7..8:choisirennemi:=random(4)+13;
         9:choisirennemi:=random(7)+6;
-        10:case random(3) of
+        10:if i=1 then case random(3) of
+            0:choisirennemi:=36;
+            1:choisirennemi:=12;
+            2:choisirennemi:=35;
+            end
+        else choisirennemi:=12;
+        end
+    else
+        case alea of
+        1,10:case random(3) of
             0:choisirennemi:=36;
             1:choisirennemi:=12;
             2:choisirennemi:=35;
             end;
+        2:choisirennemi:=random(5)+1;
+        3,7:choisirennemi:=random(7)+6;
+        4:choisirennemi:=random(4)+13;
+        5,8:choisirennemi:=random(5)+18;
+        6:choisirennemi:=random(2)+28;
+        9:choisirennemi:=random(2)+25;
         end;
 end;
 
 function choisirMusique(avancement:Integer):Integer;
 begin
+    if avancement>MAXSALLES+1 then
+        choisirMusique:=random(13)+1
+    else
     case avancement div (MAXSALLES div 6) of
         0..4:choisirMusique:=(avancement div (MAXSALLES div 6))+random(2)+1;
-        else choisirMusique:=random(4)+5
+        else choisirMusique:=random(4)+5;
         end
 end;
 
@@ -240,15 +262,21 @@ begin
     vagueFinie:=True;
     combatFini:=False;
     randomize;
-    initDecor((avancement-1) div 10);
+    if avancement>MAXSALLES then
+        initDecor(random(5))
+    else
+        initDecor((avancement-1) div (MAXSALLES div 4));
     indiceMusiqueJouee:=choisirMusique(avancement);
-    nb:=1+(random(20) div 18)+((avancement mod (maxSalles div 4)) div 6);
+    if avancement>MAXSALLES then
+        nb:=(avancement div (MAXSALLES div 2))+(random(20) div 18)
+    else
+        nb:=1+(random(20) div 18)+((avancement mod (maxSalles div 4)) div 6);
     //writeln('choix des ennemis');
     if not boss then begin
         setlength(ennemis,nb+1);
         for j:=1 to nb do
             begin
-            ennemis[j]:=templatesennemis[choisirEnnemi(avancement)];
+            ennemis[j]:=templatesennemis[choisirEnnemi(avancement,j)];
             ennemis[j].stats.vie :=     round((avancement/MAXSALLES+1.2)*ennemis[j].stats.vie    );
             ennemis[j].stats.vieMax :=  round((avancement/MAXSALLES+1.2)*ennemis[j].stats.vieMax );
             ennemis[j].stats.force :=   round((avancement/MAXSALLES+1)*ennemis[j].stats.force  );
@@ -294,7 +322,7 @@ begin
         LObjets[1]:=templatesennemis[33]
     else if (avancement<=(MAXSALLES - MAXSALLES div 4)) then
         LObjets[1]:=templatesennemis[37]
-    else if (avancement<=MAXSALLES) then
+    else if (avancement<=MAXSALLES+1) then
         begin
         setlength(ennemis,3);
         LObjets[1]:=TemplatesEnnemis[27];
@@ -335,17 +363,22 @@ begin
 
     rare :
     begin
-         rdm := 1 + random(7);
-
-        case rdm of
-        1: ajouterCarteAleatoireRarete:=cartes[6];
-        2: ajouterCarteAleatoireRarete:=cartes[7];
-        3: ajouterCarteAleatoireRarete:=cartes[8];
-        4: ajouterCarteAleatoireRarete:=cartes[9];
-        5: ajouterCarteAleatoireRarete:=cartes[11];
-        6: ajouterCarteAleatoireRarete:=cartes[16];
-        7: ajouterCarteAleatoireRarete:=cartes[19];
-        end;
+        if trouverCarte(statsJoueur,6) and (random(3)=0) then
+            ajouterCarteAleatoireRarete:=cartes[6]
+        else
+            begin
+            rdm := 1 + random(7);
+        
+            case rdm of
+            1: ajouterCarteAleatoireRarete:=cartes[6];
+            2: ajouterCarteAleatoireRarete:=cartes[7];
+            3: ajouterCarteAleatoireRarete:=cartes[8];
+            4: ajouterCarteAleatoireRarete:=cartes[9];
+            5: ajouterCarteAleatoireRarete:=cartes[11];
+            6: ajouterCarteAleatoireRarete:=cartes[16];
+            7: ajouterCarteAleatoireRarete:=cartes[19];
+                end;
+            end;
     end;
 
     epique :
@@ -423,7 +456,7 @@ begin
             91..100:dropCarte:=ajouterCarteAleatoireRarete(legendaire);
             end;
         end;
-    if dropCarte.numero=0 then dropCarte:=Cartes[random(24)+1];
+    if dropCarte.numero=0 then dropCarte:=Cartes[random(22)+1];
 end;
 
 procedure trade(carte1, carte2 : TCarte ; Var stats : Tstats); //#### table de proba à finir
@@ -566,6 +599,7 @@ begin
     createRawImage(imgCar3,windowWidth-(150+127)*windowWidth div 1080,imgCar2.rect.y,imgCar2.rect.w,imgCar2.rect.h,carte.dir);
     renderRawImage(imgCar3,False);
     sdl_renderpresent(sdlrenderer);
+    jouerSon('SFX/echange.wav');
     sdl_delay(3000);
     LancementSalleMarchand;
 end;
@@ -606,6 +640,7 @@ begin
   begin
     if Assigned(button.procEch) then
     begin  
+        jouerSon(stringtoPchar('SFX/salle ('+IntToSTR(ord(evenement)+1)+').wav'));
         button.procSalle(evenement,num);
     end;
   end;
@@ -619,6 +654,7 @@ begin
     if Assigned(button.procEch) then
     begin
         //writeln('procédure spéciale en cours');
+        jouerSon('SFX/trade.wav');
 		button.procEch(carte1,carte2,stats);
     end;
   end;
@@ -795,6 +831,7 @@ end;
 
 procedure soinFeuCamp();
 begin
+    jouerSon('SFX/repos.wav');
     subirDegats(statsJoueur, -40, windowWidth div 2, windowHeight div 2);
     echangeFait:=True;
 end;
@@ -955,6 +992,7 @@ var i:Integer;modif1,modif2:Integer;
 begin
     if etatChoix then
     begin
+    jouerSon('SFX/echange2.wav');
     case ichoix1 of
     1:stats.multiplicateurMana:=stats.multiplicateurMana*0.8;
     2:stats.force:=stats.force-3;
@@ -1023,6 +1061,7 @@ begin
     end
     else
         begin
+        jouerSon('SFX/conf.wav');
         if sceneActive='DShop' then
             if echangeFait then
                 initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp',nil,0,460*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('ECH_EVENT5_3'),10)
@@ -1090,6 +1129,7 @@ procedure upgradeUS(i:Integer;var stats:TStats);
 begin
     if etatChoix then
         begin
+        jouerSon('SFX/upgrade.wav');
         if echangeFait then
             stats.collection[ichoix2].chargesMax:=stats.collection[ichoix2].chargesMax+1
         else
@@ -1162,6 +1202,7 @@ begin
     sceneActive:='Oph_Menu';
     sdl_destroytexture(fond.imgtexture);
     sdl_freeSurface(fond.imgsurface);
+    statsJoueur.ophiucus:=True;
     createRawImage(fond, 0,0, WINDOWWIDTH, windowHeight,'Sprites/Menu/fondMarchand.bmp');
     numDialogue:=0;
     //InitButtonGroup(boutons[1],  415, 100, 250, 100, 'Sprites/Menu/Button1.bmp','Affronter',@LancementVSLeo);
@@ -1240,11 +1281,11 @@ begin
 ClearScreen;
 SDL_RenderClear(sdlRenderer);
 randomize;
-if (trouverCarte(statsJoueur,23)) and not (trouverCarte(statsJoueur,24)) and (random(4)=0) then alea:=2
-    else if statsJoueur.avancement>(MAXSALLES div 2) then alea:=random(7)+1
-    else alea:=random(6)+1;
+if (trouverCarte(statsJoueur,23)) and not (statsJoueur.ophiucus) and (random(4)=0) then alea:=2
+    else if statsJoueur.avancement>(MAXSALLES div 2) then alea:=random(9)+1
+    else alea:=random(8)+1;
 case alea of
-2:  if (trouverCarte(statsJoueur,24)) then 
+2:  if (statsJoueur.ophiucus) then 
         begin
         echangeFait:=((random(100) mod 2)=0);
         sceneActive:='Event';
@@ -1335,10 +1376,10 @@ case alea of
     ajoutDialogue(nil,extractionTexte('INTRO_EVENT5_3'));
     sceneSuiv:='EchangeDiable';
 end;
-6: lancementSalleCamp;
+6,7: lancementSalleCamp;
 1: lancementSalleCombat;
-5: lancementSalleMarchand;
-7:  begin
+5,8: lancementSalleMarchand;
+9:  begin
         sceneActive:='Event';
         mix_pauseMusic;
         InitDialogueBox(dialogues[1],nil,nil,50*windowWidth div 1080,windowHeight div 3 - 100*windowHeight div 720,windowWidth,400*windowHeight div 720,extractionTexte('INTRO_EVENT4_1'),100);
@@ -1355,12 +1396,49 @@ else lancementSalleCombat;
 end;
 end;
 
+procedure HoverSalle(var salle: TSalle; x, y: Integer);overload;
+begin
+  // Vérifier si la souris est sur le bouton
+  if (x >= salle.image.image.rect.x) and (x <= salle.image.image.rect.x + salle.image.image.rect.w) and
+     (y >= salle.image.image.rect.y) and (y <= salle.image.image.rect.y + salle.image.image.rect.h) then
+  begin
+    drawRect(black_col,255,salle.image.image.rect.x+(salle.image.image.rect.w div 2)-(salle.image.image.rect.w div 20),salle.image.image.rect.y+salle.image.image.rect.h div 50,salle.image.image.rect.w div 10,salle.image.image.rect.h-salle.image.image.rect.h div 50);
+    if not salle.image.hoverSoundPlayed then
+    begin
+      salle.image.image.rect.w := Round(salle.image.originalWidth * 1.02);
+      salle.image.image.rect.h := Round(salle.image.originalHeight * 1.02);
+
+      salle.image.button.rect.w := salle.image.image.rect.w;
+      salle.image.button.rect.h := salle.image.image.rect.h;
+      salle.image.image.rect.x:=round(salle.image.image.rect.x-salle.image.originalWidth*0.01);
+
+      SDL_SetTextureAlphaMod(salle.image.image.imgTexture, 180);  // Alpha à 180 pour OnHover
+
+      // Jouer le son de hoverr
+      jouerSon('SFX/hoverSalle.wav');
+      salle.image.hoverSoundPlayed := True;
+    end;
+  end
+  else
+  if salle.image.hoverSoundPlayed then
+  begin
+    // Réinitialiser l'alpha et la taille si la souris quitte la zone de Hover
+    SDL_SetTextureAlphaMod(salle.image.image.imgTexture, 150);
+      //btnGroup.image.rect.x := Round(btnGroup.image.rect.x *1.05);
+      //btnGroup.image.rect.y := Round(btnGroup.image.rect.x *1.05);
+      salle.image.image.rect.x:=round(salle.image.image.rect.x+salle.image.originalWidth*0.01);
+      salle.image.image.rect.h :=  salle.image.originalHeight;
+      salle.image.image.rect.w :=  salle.image.originalWidth;
+      salle.image.button.rect.w := salle.image.originalWidth;
+      salle.image.button.rect.h := salle.image.originalHeight;
+    salle.image.hoverSoundPlayed := False;  // Réinitialiser pour le prochain Hover
+  end;
+end;
+
 procedure affichageSalle(var salle:TSalle;x,y,i:integer);
 var dir:PCHar;
 begin
-    salle.image.parametresSpeciaux:=2;
-    salle.image.procSalle:=@lancerSalle;
-    salle.image.numero:=i;
+    
     //writeln(dir);
     if salle.evenement=boss then
         dir:=StringToPChar('Sprites/salles/porte'+inttostr(ord(salle.evenement)+(statsJoueur.avancement div (MAXSALLES div 4)))+'.bmp')
@@ -1368,6 +1446,9 @@ begin
         dir:=StringToPChar('Sprites/salles/porte'+inttostr(ord(salle.evenement)+1)+'.bmp');
     InitButtonGroup(salle.image,x-(256 div 2)*windowWidth div 1080,y-100*windowHeight div 720,256*windowWidth div 1080,392*windowHeight div 720,dir,' ',btnProc);
     RenderButtonGroup(salle.image);
+    salle.image.parametresSpeciaux:=2;
+    salle.image.procSalle:=@lancerSalle;
+    salle.image.numero:=i;
 end;
 
 procedure affichageSalles(var salle1,salle2,salle3:TSalle);
@@ -1388,13 +1469,19 @@ begin
     case (statsJoueur.avancement-1) div (MAXSALLES div 4) of
     0:CreateRawImage(fond,0,-80*windowHeight div 720,windowWidth,900*windowHeight div 720,StringToPChar('Sprites/Menu/map1.bmp'));
     1,2:CreateRawImage(fond,0,-80*windowHeight div 720,windowWidth,900*windowHeight div 720,StringToPChar('Sprites/Menu/map2.bmp'));
-    3:CreateRawImage(fond,0,-80*windowHeight div 720,windowWidth,900*windowHeight div 720,StringToPChar('Sprites/Menu/map4.bmp'));
+    3: CreateRawImage(fond,0,-80*windowHeight div 720,windowWidth,900*windowHeight div 720,StringToPChar('Sprites/Menu/map4.bmp'));
+    else CreateRawImage(fond,0,-80*windowHeight div 720,windowWidth,900*windowHeight div 720,StringToPChar('Sprites/Menu/map'+inttoStr(random(2)*2+2)+'.bmp'));
     end;
 end;
 
 procedure choixSalle();
     
 begin
+    X1:=(windowWidth div 2)+(windowWidth div 4);
+    X2:=(windowWidth div 2);
+    X3:=(windowWidth div 2)-(windowWidth div 4);
+    Y2:=(windowHeight  div 2) - (windowHeight div 2)+128;
+    Y1:=(windowHeight  div 2) + (windowHeight div 4);
     sauvegarder(statsJoueur);
     if (statsJoueur.avancement) mod (MAXSALLES div 4)=0 then
         InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('TXT_MAP'+intToSTR(10*(statsJoueur.avancement div (MAXSALLES div 4)))),10);
@@ -1427,11 +1514,15 @@ begin
     SDL_PumpEvents();
     drawrect(black_col,255,0,0,WINDOWWIDTH,windowHeight);
     renderRawImage(fond,True);
-    if ((sceneActive='map') and ((statsJoueur.avancement=1) or ((statsJoueur.avancement) mod (MAXSALLES div 4)=0))) then
+    if (((sceneActive='map') and ((statsJoueur.avancement=1) or ((statsJoueur.avancement) mod (MAXSALLES div 4)=0)))) and (statsJoueur.avancement<=MAXSALLES+1) then
         updateDialogueBox(dialogues[1]);
     for i:=1 to 3 do
+        begin
         if (salles[i].evenement<>rien) or (sceneActive='map') then
-        renderRawImage(salles[i].image.image,255,False);
+            renderRawImage(salles[i].image.image,255,False);
+        if (ord(salles[i].evenement)<4) and (sceneActive='map') then
+            hoversalle(salles[i],getmousex,getmousey);
+        end;
 end;
 
 procedure activationEvent(scene:String);
@@ -1464,6 +1555,7 @@ procedure activationEvent(evenement:evenements);
 begin
     DeclencherFondu(False,300);
     statsJoueur.avancement:=statsJoueur.avancement+1;
+    jouerSon(stringtoPchar('SFX/lance'+inttostr(ord(evenement)+1)+'.wav'));
     case evenement of
         hasard:begin
             LancementSalleHasard;
@@ -1487,10 +1579,6 @@ end;
 
 
 begin
-    X1:=(windowWidth div 2)+(windowWidth div 4);
-    X2:=(windowWidth div 2);
-    X3:=(windowWidth div 2)-(windowWidth div 4);
-    Y2:=(windowHeight  div 2) - (windowHeight div 2)+128;
-    Y1:=(windowHeight  div 2) + (windowHeight div 4);
+    
 //writeln('mapSys ready')
 end.

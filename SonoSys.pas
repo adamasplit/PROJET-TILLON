@@ -200,11 +200,11 @@ Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT,
     defMus(7,'OST/C6.wav','',72);
     defMus(8,'OST/C7.wav','',142);
     //Boss
-    defMus(9,'OST/Boss0.wav','',75);
+    defMus(9,'OST/Boss0.wav', 'Lion Heart',75);
     defMus(10,'OST/Boss1.wav','',120);
-    defMus(13,'OST/Boss2.wav','',116);
     defMus(11,'OST/Boss3.wav','',149);
-    defMus(12,'OST/Boss4.wav','',135);
+    defMus(12,'OST/Boss4.wav','Distortion',135);
+    defMus(13,'OST/Boss2.wav','Fierce Unity',116);
     //Map/évènements
     defMus(14,'OST/Map.wav','',163);
     defMus(15,'OST/Event.wav','',51);
@@ -219,9 +219,9 @@ Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT,
     defMus(26,'OST/C7_VictoireIntro.wav','',6);
     defMus(27,'OST/Boss0_VictoireIntro.wav','',4);
     defMus(28,'OST/Boss1_VictoireIntro.wav','',5);
-    defMus(31,'OST/Boss2_VictoireIntro.wav','',7);
     defMus(29,'OST/Boss3_VictoireIntro.wav','',5);
     defMus(30,'OST/Boss4_VictoireIntro.wav','',5);
+    defMus(31,'OST/Boss2_VictoireIntro.wav','',7);
     //Thèmes de victoire/map
     defMus(33,'OST/C0_VictoireRep.wav','',66);
     defMus(34,'OST/C1_VictoireRep.wav','',6);
@@ -233,12 +233,12 @@ Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT,
     defMus(40,'OST/C7_VictoireRep.wav','',48);
     defMus(41,'OST/Boss0_VictoireRep.wav','',71);
     defMus(42,'OST/Boss1_VictoireRep.wav','',81);
-    defMus(45,'OST/Boss2_VictoireRep.wav','',81);
     defMus(43,'OST/Boss3_VictoireRep.wav','',99);
     defMus(44,'OST/Boss4_VictoireRep.wav','',21);
+    defMus(45,'OST/Boss2_VictoireRep.wav','',81);
     //Mort
-    defMus(47,'OST/Project_DEATH.wav','',24);
     defMus(46,'OST/Project_DEATH2.wav','',72);
+    defMus(47,'OST/Project_DEATH.wav','',24);
     //Crédits
     defMus(48,'OST/Credits.wav','',180);
 

@@ -27,9 +27,6 @@ uses
 
 implementation
 
-
-
-
 type ligne=record
   x,y:real;
   centre:TSDL_POint;
@@ -37,7 +34,6 @@ end;
 type axes=Array[1..2] of ligne;
 type coins=Array[1..5] of TSDL_point;
 vecteur=array[1..2] of real;
-
 // Vérifie si deux rectangles (boîtes englobantes) se chevauchent (AABB)
 function CheckAABB(rect1, rect2: TSDL_Rect): Boolean;
 begin
@@ -57,6 +53,7 @@ begin
 end;
 
 //vérifie si deux boîtes de collisions (inclinées) sont en contact
+
 function trouverAxes(obj:TObjet):axes;
 var i,w,h,centreX,centreY:Integer;
 begin
@@ -80,6 +77,7 @@ begin
 
   if modeDebug then for i:=1 to 2 do SDL_RenderDrawLine(sdlrenderer,round(trouveraxes[i].centre.x-trouveraxes[i].x*1000),round(trouveraxes[i].centre.y-trouveraxes[i].y*1000),round(trouveraxes[i].centre.x+trouveraxes[i].x*1000),round(trouveraxes[i].centre.y+trouveraxes[i].y*1000))
 end;
+
 
 function trouverCoins(obj:TObjet):coins;
 var centreX,centreY,w,h:Integer;vect1,vect2:ligne;pointeurPoint:PSDL_Point;
@@ -107,6 +105,14 @@ begin
     SDL_SetRenderDrawColor(sdlRenderer, 0, 255, 255, 255);
     SDL_RenderDrawLines(sdlrenderer,pointeurPoint,5);
     end;
+end;
+
+function centreangle(obj:TObjet):TSDL_Point;
+var co:coins;
+begin
+  co:=trouvercoins(obj);
+  centreangle.x:=(co[1].x+co[3].x) div 2;
+  centreangle.y:=(co[1].y+co[3].y) div 2;
 end;
 
 function projection(point:TSDL_Point;axe:ligne):vecteur;
@@ -278,7 +284,7 @@ begin
     obj1.col.hasCollided:=True;
     obj2.col.hasCollided:=True;
     //pour savoir avec quels objets il est déjà en collision
-    if isAttack(obj2.stats) and (obj1.stats.indice<=TAILLE_VAGUE) then obj2.col.collisionsFaites[obj1.stats.indice]:=True;
+    if isAttack(obj2.stats) and (obj1.stats.indice<=TAILLE_VAGUE+4) then obj2.col.collisionsFaites[obj1.stats.indice]:=True;
     // Si l'un des deux objets est un trigger, on appelle OnTriggerEnter
     if obj1.col.isTrigger or obj2.col.isTrigger then
     begin
@@ -318,7 +324,7 @@ begin
     end;
   end
     else
-      if (not VerifCollision) and isAttack(obj2.stats) and (obj1.stats.indice<=3) then
+      if (not VerifCollision) and isAttack(obj2.stats) and (obj1.stats.indice<=TAILLE_VAGUE+4) then
         obj2.col.collisionsFaites[obj1.stats.indice]:=False;
 end;
 
@@ -400,12 +406,12 @@ begin
           if isAttack(LObjets[j].stats) and (LObjets[j].stats.origine<>LObjets[i].stats.origine) and collisionAngle(LObjets[i],LObjets[j]) then
             begin
             if LObjets[j].stats.degats<10 then supprimeObjet(LObjets[j]) else LObjets[j].stats.degats:=LObjets[j].stats.degats-10;
-            creerEffet(LObjets[i].image.rect.x,LObjets[i].image.rect.y,100,100,5,'roue_impact',False,LObjets[i]);
+            creerEffet(LObjets[i].image.rect.x+LObjets[i].col.offset.x div 2,LObjets[i].image.rect.y+LObjets[i].col.offset.y div 2,100*windowWidth div 1080,100*windowWidth div 1080,5,'roue_impact',False,LObjets[i]);
             destructionI:=True;
             end
           else if (LObjets[j].stats.genre=ennemi) and (LObjets[j].stats.degatsContact>0) and (LObjets[j].stats.cooldown<150) and collisionAngle(LObjets[i],LObjets[j]) then
             begin
-            creerEffet(LObjets[i].image.rect.x,LObjets[i].image.rect.y,100,100,5,'roue_impact',False,LObjets[i]);
+            creerEffet(LObjets[i].image.rect.x+LObjets[i].col.offset.x div 2,LObjets[i].image.rect.y+LObjets[i].col.offset.y div 2,100,100,5,'roue_impact',False,LObjets[i]);
             LObjets[j].stats.cooldown:=LObjets[j].stats.cooldown+100;
             end;
           end
@@ -415,12 +421,12 @@ begin
           if isAttack(LObjets[i].stats) and (LObjets[j].stats.origine<>LObjets[i].stats.origine) and collisionAngle(LObjets[i],LObjets[j]) then
             begin
             if LObjets[i].stats.degats<10 then supprimeObjet(LObjets[i]) else LObjets[i].stats.degats:=LObjets[i].stats.degats-10;
-            creerEffet(LObjets[j-1].image.rect.x,LObjets[j-1].image.rect.y,100,100,5,'roue_impact',False,LObjets[j-1]);
+            creerEffet(LObjets[j-1].image.rect.x+LObjets[j-1].col.offset.x div 2,LObjets[j-1].image.rect.y+LObjets[j-1].col.offset.y div 2,100,100,5,'roue_impact',False,LObjets[j-1]);
             destructionI:=True;
             end
           else if (LObjets[i].stats.genre=ennemi) and (LObjets[i].stats.degatsContact>0) and (LObjets[i].stats.cooldown<150) and collisionAngle(LObjets[i],LObjets[j]) then
             begin
-            creerEffet(LObjets[j].image.rect.x,LObjets[j].image.rect.y,100,100,5,'roue_impact',False,LObjets[j]);
+            creerEffet(LObjets[j].image.rect.x+LObjets[j].col.offset.x div 2,LObjets[j].image.rect.y+LObjets[j].col.offset.y div 2,100,100,5,'roue_impact',False,LObjets[j]);
             LObjets[i].stats.cooldown:=LObjets[i].stats.cooldown+100;
             end;
           end

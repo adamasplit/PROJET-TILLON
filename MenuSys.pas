@@ -90,6 +90,8 @@ begin
 	statsJoueur.mana:=0;statsJoueur.manaMax:=10;
 	statsJoueur.manaDebutCombat:=0;
 	statsJoueur.multiplicateurSoin:=1;
+	statsJoueur.lefou:=0;
+	statsJoueur.ophiucus:=False;
 	initStatsCombat(statsJoueur,LObjets[0].stats);
 	iCarteChoisie:=1;
 	CreateRawImage(LObjets[0].image, windowWidth div 2-windowWidth div 4, windowHeight div 2, 100*windowHeight div 720, 100*windowHeight div 720, 'Sprites/Game/Joueur/Joueur_idle_1.bmp');
@@ -172,7 +174,7 @@ begin
 	case VOLUME_SON of
 	0:VOLUME_SON:=VOLUME_SON_MAX;
 	else 
-	VOLUME_SON:=VOLUME_SON-10;
+	VOLUME_SON:=VOLUME_SON-VOLUME_SON_MAX div 2;
 	end;
 	sdl_settexturecolormod(boutons[5].image.imgTexture,round(255*(VOLUME_SON/VOLUME_SON_MAX)),round(255*(VOLUME_SON/VOLUME_SON_MAX)),round(255*(VOLUME_SON/VOLUME_SON_MAX)));
 	sdl_settexturealphamod(boutons[5].image.imgTexture,round(125+130*(VOLUME_SON/VOLUME_SON_MAX)))
@@ -182,7 +184,7 @@ procedure settings2;
 begin
 	case VOLUME_MUSIQUE of
 	0:VOLUME_MUSIQUE:=VOLUME_MUSIQUE_MAX;
-	else VOLUME_MUSIQUE:=VOLUME_MUSIQUE-10;
+	else VOLUME_MUSIQUE:=VOLUME_MUSIQUE-VOLUME_MUSIQUE_MAX div 2;
 	end;
 	sdl_settexturecolormod(button_help.image.imgTexture,round(255*(VOLUME_MUSIQUE/VOLUME_MUSIQUE_MAX)),round(255*(VOLUME_MUSIQUE/VOLUME_MUSIQUE_MAX)),round(255*(VOLUME_MUSIQUE/VOLUME_MUSIQUE_MAX)));
 	sdl_settexturealphamod(button_help.image.imgTexture,round(125+130*(VOLUME_MUSIQUE/VOLUME_MUSIQUE_MAX)))
@@ -303,7 +305,7 @@ procedure Credits;
         boutons[2].button.estVisible := false;
 		boutons[1].button.estVisible := false;
 		
-		UpdateCameraParallax(DecorCredits,sdlKeyboardState[SDL_SCANCODE_W] = 1);
+		UpdateCameraParallax(DecorCredits,True);
 		
 		OnMouseHover(button_retour_menu,GetMouseX,GetMouseY);
 		RenderButtonGroup(button_retour_menu);
@@ -371,11 +373,11 @@ begin
     // Rendre les icônes en bas
     OnMouseHover(boutons[5], GetMouseX, GetMouseY);
     OnMouseHover(button_help, GetMouseX, GetMouseY);
-    OnMouseHover(button_home, GetMouseX, GetMouseY);
+    //OnMouseHover(button_home, GetMouseX, GetMouseY);
 
     RenderButtonGroup(boutons[5]);
     RenderButtonGroup(button_help);
-    RenderButtonGroup(button_home);
+    //RenderButtonGroup(button_home);
 	
 
     // Afficher le texte et autres éléments si nécessaire
@@ -414,6 +416,7 @@ begin
 	SDL_freeSurface(boutons[4].image.imgSurface);
 	InitMenuPrincipal;
 	direction_menu;
+	declencherFondu(False,0);
 end;
 
 procedure InitMenuPrincipal;
@@ -506,7 +509,7 @@ begin
 end;
 
 procedure actualiserDeck();
-var textePV,texteMana:TText;
+var textePV,texteMana:TText;i,nb:Integer;
 begin
 	if (iDeck<>iDeckPrec) then 
 		begin
@@ -524,11 +527,14 @@ begin
 	else
 	if iDeck=statsJoueur.tailleCollection+1 then
 		begin
+		if scenePrec<>'Jeu' then
+		createText(textePV,170*windowWidth div 1080,260,500*windowWidth div 1080,600,stringtoPchar('PV : '+intToStr(min(statsJoueur.vie,statsJoueur.vieMax))+'/'+intToStr(statsJoueur.vieMax)),Fantasy20,black_col)
+		else
 		createText(textePV,170*windowWidth div 1080,260,500*windowWidth div 1080,600,stringtoPchar('PV : '+intToStr(LObjets[0].stats.vie)+'/'+intToStr(LObjets[0].stats.vieMax)),Fantasy20,black_col);
 		renderText(textePV);
 		sdl_destroytexture(textePV.textTexture);
 		sdl_freeSurface(textePV.textSurface);
-		if sceneActive<>'Jeu' then
+		if scenePrec<>'Jeu' then
 			createText(texteMana,600*windowWidth div 1080,260,500*windowWidth div 1080,600*windowHeight div 720,stringtoPchar('MANA : '+intToStr(statsJoueur.manaMax)),Fantasy20,black_col)
 		else
 			createText(texteMana,600*windowWidth div 1080,260,500*windowWidth div 1080,600*windowHeight div 720,stringtoPchar('MANA : '+intToStr(LObjets[0].stats.mana)+'/'+intToStr(LObjets[0].stats.manaMax)),Fantasy20,black_col);
@@ -542,6 +548,14 @@ begin
 		afficheStat(170*windowWidth div 1080,360*windowHeight div 720,LObjets[0].stats.multiplicateurDegat,statsJoueur.multiplicateurDegat,'Puissance');
 		afficheStat(170*windowWidth div 1080,410*windowHeight div 720,LObjets[0].stats.multiplicateurMana,statsJoueur.multiplicateurMana,'Recup mana');
 		afficheStat(170*windowWidth div 1080,460*windowHeight div 720,LObjets[0].stats.multiplicateurSoin,statsJoueur.multiplicateurSoin,'Pouvoir de soin');
+		afficheStat(170*windowWidth div 1080,510*windowHeight div 720,statsJoueur.avancement,statsJoueur.avancement,'Avancement');
+		nb:=0;
+		for i:=1 to MAXENNEMIS do
+			if statsJoueur.bestiaire[i] then nb:=nb+1;
+		createText(textePV,600*windowWidth div 1080,510*windowHeight div 720,500*windowWidth div 1080,600,stringtoPchar('Bestiaire : '+intToStr(nb)+'/'+intToStr(MAXENNEMIS)),Fantasy20,black_col);
+		renderText(textePV);
+		sdl_destroytexture(textePV.textTexture);
+		sdl_freeSurface(textePV.textSurface);
 		end
 	else
 		afficherCarte(statsJoueur.collection[iDeck],255,carteDeck);
@@ -660,19 +674,19 @@ begin
 	if scenePrec='Jeu' then
 		begin
 		renderRawImage(fond,255,False);
-		if LObjets[0].stats.pendu then
-					begin
-					LObjets[0].image.rect.x:=LObjets[0].image.rect.x+windowOffsetX;
-					SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL);
-					LObjets[0].image.rect.x:=LObjets[0].image.rect.x-windowOffsetX;
-					end
-				else
-					RenderRawImage(LObjets[0].image,255, LObjets[0].anim.isFliped);
 
-		for i:=1 to high(LObjets) do
+		for i:=0 to high(LObjets) do
 			case LOBjets[i].stats.genre of
 				TypeObjet(2),TypeObjet(3),TypeObjet(4),explosion2:RenderAvecAngle(LObjets[i]);
 				explosion,afterimage:RenderRawImage(LObjets[i].image,LObjets[i].stats.transparence, LObjets[i].anim.isFliped);
+				joueur:if LObjets[i].stats.pendu then
+					begin
+					LObjets[i].image.rect.x:=LObjets[i].image.rect.x+windowOffsetX;
+					SDL_RenderCopyEx(sdlRenderer, LObjets[i].image.imgTexture, nil, @LObjets[i].image.rect,0, nil, SDL_FLIP_VERTICAL);
+					LObjets[i].image.rect.x:=LObjets[i].image.rect.x-windowOffsetX;
+					end
+				else
+					RenderRawImage(LObjets[i].image,255, LObjets[i].anim.isFliped);
 				else
 					RenderRawImage(LObjets[i].image,255, LObjets[i].anim.isFliped);
 			end;
@@ -680,11 +694,13 @@ begin
 		if leMonde then 
 			begin
 			drawrect(black_color,50,0,0,windowWidth,windowHeight);
+			//createAfterimage(LObjets[0],10);
 			if LObjets[0].stats.pendu then
-				if LObjets[0].anim.isFliped then
-					SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
-				else
-					SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL)
+					begin
+					LObjets[0].image.rect.x:=LObjets[0].image.rect.x+windowOffsetX;
+					SDL_RenderCopyEx(sdlRenderer, LObjets[0].image.imgTexture, nil, @LObjets[0].image.rect,0, nil, SDL_FLIP_VERTICAL);
+					LObjets[0].image.rect.x:=LObjets[0].image.rect.x-windowOffsetX;
+					end
 				else
 					RenderRawImage(LObjets[0].image,255, LObjets[0].anim.isFliped);
 			end;
@@ -703,7 +719,7 @@ end;
 procedure finirCombat(stats:TStats);
 var i:Integer;
 begin
-	if (stats.avancement-1) mod (MAXSALLES div 4) = 0 then
+	if ((stats.avancement-1) mod (MAXSALLES div 4) = 0) and (stats.avancement<=MAXSALLES+1) then
 		case (stats.avancement div (MAXSALLES div 4)) of
 		1:	begin
 			sceneActive:='Event';
@@ -735,7 +751,10 @@ begin
 				else ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('FIN_BOSS3_'+intToStr(i)));
 			end;
 			end;
-		4:Credits;
+		4:begin
+			sauvegarder(statsJoueur);
+			Credits;
+			end;
 		end
 	else choixSalle;
 end;
@@ -788,10 +807,10 @@ begin
 	if indiceMusiqueJouee<14 then indiceMusiqueJouee:=indiceMusiqueJouee+18; //donne une fanfare de victoire adaptée
 	StatsJ.vie:=LObjets[0].stats.vie;//synchronise la vie
 	statsJ.nbJustice:=LObjets[0].stats.nbJustice div 2;
-	if (statsJ.avancement-1) mod (MAXSALLES div 4) = 0 then
+	if ((statsJ.avancement-1) mod (MAXSALLES div 4) = 0) and (statsJ.avancement<=MAXSALLES+1) then
 		InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('VICTOIRE_'+intToSTR(10*(statsJ.avancement div (MAXSALLES div 4)))),10)
 	else
-		InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('VICTOIRE_'+intToSTR(random(4)+1+10*((statsJ.avancement-1) div (MAXSALLES div 4)))),10);
+		InitDialogueBox(dialogues[1],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,windowHeight div 3 + 200*windowHeight div 720,windowWidth,300*windowHeight div 720,extractionTexte('VICTOIRE_'+intToSTR(random(4)+1+10*(min(6,(statsJ.avancement-1) div (MAXSALLES div 4))))),10);
 	InitDecorCartes;
 	randomize;
 	nbReliques:=0;
@@ -801,7 +820,7 @@ begin
 			begin
 			boutons[i].parametresSpeciaux:=4;
 			case num of
-			31,32:repeat boutons[i].relique:=random(7)+1 until (boutons[i].relique<>2) and (boutons[i].relique<>5); 
+			10,31,32:repeat boutons[i].relique:=random(7)+1 until (boutons[i].relique<>2) and (boutons[i].relique<>5); 
 			33,34:boutons[i].relique:=random(5)*2+2;
 			12:if nbReliques<1 then boutons[i].relique:=9 else boutons[i].relique:=random(10)+1;
 			else begin
@@ -835,13 +854,15 @@ begin
         begin
 	    boutons[i].carte:=cartes[num];
 	    InitButtonGroup(boutons[i],(200+300*(i-1))*windowWidth div 1080,200*windowHeight div 720,128*windowWidth div 1080,128*windowHeight div 720,boutons[i].carte.dir,' ',nil);
-        boutons[i].procCarte:=@acquisitionCarte;
         boutons[i].parametresSpeciaux:=1;
+		boutons[i].procCarte:=@acquisitionCarte;
         end;
+			
 			boutons[2].parametresSpeciaux:=4;
 			boutons[2].relique:=11;
-			InitButtonGroup(boutons[2],(200+300*(2-1))*windowWidth div 1080,200*windowHeight div 720,128*windowWidth div 1080,128*windowHeight div 720,StringToPChar('Sprites/Reliques/reliques'+intToStr(boutons[2].relique)+'.bmp'),' ',btnProc);
 			boutons[2].procRel:=@equiperRelique; 
+			InitButtonGroup(boutons[2],(200+300*(2-1))*windowWidth div 1080,200*windowHeight div 720,128*windowWidth div 1080,128*windowHeight div 720,StringToPChar('Sprites/Reliques/reliques'+intToStr(boutons[2].relique)+'.bmp'),' ',btnProc);
+			
 end;
 
 procedure RenderParallaxMenu(bgImage,characterImage,cardsImage : TImage);

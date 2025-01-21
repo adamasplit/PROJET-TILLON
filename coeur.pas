@@ -73,8 +73,8 @@ type TStats=record //(version variable)
           tailleCollection:Integer;
           bestiaire:array[1..MAXENNEMIS] of Boolean;
           pendu:Boolean;
-          compteurLeMonde:Integer;
-          laMort,leFou:Boolean;
+          compteurLeMonde,leFou:Integer;
+          laMort,ophiucus:Boolean;
           nbJustice : Integer;
           nbMarchand: Integer;
           relique:Integer);// numéro de la relique équipée
@@ -113,7 +113,7 @@ type  TCol = record
     dimensions: TSDL_Rect;  // Boîte de collision (dimensions w et h)
     offset: TSDL_Point;     // Décalage par rapport à la position de l'objet
     hasCollided:Boolean;    // pour l'affichage de la boîte de collisions
-    collisionsFaites:array[0..TAILLE_VAGUE] of Boolean; //l'objet mémorise ceux avec qui il est déjà en collision 
+    collisionsFaites:array[0..TAILLE_VAGUE+4] of Boolean; //l'objet mémorise ceux avec qui il est déjà en collision 
     nom: PChar;             // Nom de l'objet (facultatif)
   end;
 
@@ -295,7 +295,7 @@ begin
 end;
 var i:Integer;
 
-const TAILLE_MUR = 4000;
+
 
 begin
    // Définir les couleurs de base
@@ -309,30 +309,6 @@ begin
   black_col.r:=0;black_col.g:=0;black_col.b:=0;
   bk_col.r:=0;bk_col.g:=0;bk_col.b:=0;
 
-
-  //initialisation des murs
-  murs[1].image.rect.x:=0;
-  murs[1].image.rect.y:=-TAILLE_MUR;
-  murs[1].col.dimensions.w:=windowWidth;
-  murs[1].col.dimensions.h:=TAILLE_MUR;
-  murs[2].image.rect.x:=-TAILLE_MUR;
-  murs[2].image.rect.y:=-TAILLE_MUR;
-  murs[2].col.dimensions.w:=180*windowWidth div 1080+TAILLE_MUR;
-  murs[2].col.dimensions.h:=TAILLE_MUR*2;
-  murs[3].image.rect.x:=0;
-  murs[3].image.rect.y:=windowHeight;
-  murs[3].col.dimensions.w:=windowWidth;
-  murs[3].col.dimensions.h:=TAILLE_MUR;
-  murs[4].image.rect.x:=880*windowWidth div 1080;
-  murs[4].image.rect.y:=-TAILLE_MUR;
-  murs[4].col.dimensions.w:=TAILLE_MUR;
-  murs[4].col.dimensions.h:=TAILLE_MUR*2;
-  for i:=1 to 4 do
-    begin
-    murs[i].col.estActif:=True;
-    murs[i].col.offset.x:=0;
-    murs[i].col.offset.y:=0;
-    end;
 
   statsJoueur.genre:=joueur;
   statsJoueur.vieMax:=100;
@@ -435,6 +411,7 @@ begin
       end;
     cartes[i].chargesMaxBase:=cartes[i].chargesMax;
     cartes[i].coutBase:=cartes[i].cout;
+    cartes[i].inverse:=False;
     end;
     //writeln('CORE ready');
 end.

@@ -55,7 +55,7 @@ var memflip:Boolean;
       if joueur.anim.Etat <> 'run' then 
           begin
           memflip:=joueur.anim.isfliped;
-          InitAnimation(joueur.anim,'Joueur','run',6,True);
+          InitAnimation(joueur.anim,joueur.anim.objectName,'run',6,True);
           joueur.anim.isfliped:=memflip;
           end;
       end;
@@ -63,7 +63,7 @@ var memflip:Boolean;
       if ( (sdlKeyboardState[SDL_SCANCODE_A] = 1) AND not(joueur.stats.pendu)) OR ((sdlKeyboardState[SDL_SCANCODE_D] = 1) AND joueur.stats.pendu) then
       begin
         joueur.image.rect.x := joueur.image.rect.x - joueur.stats.Vitesse;
-        if joueur.anim.Etat <> 'run' then InitAnimation(joueur.anim,'Joueur','run',6,True);
+        if joueur.anim.Etat <> 'run' then InitAnimation(joueur.anim,joueur.anim.objectName,'run',6,True);
         joueur.anim.isFliped := True;
       end;
       
@@ -73,7 +73,7 @@ var memflip:Boolean;
         if joueur.anim.Etat <> 'run' then 
           begin
           memflip:=joueur.anim.isfliped;
-          InitAnimation(joueur.anim,'Joueur','run',6,True);
+          InitAnimation(joueur.anim,joueur.anim.objectName,'run',6,True);
           joueur.anim.isfliped:=memflip;
           end;
       end;
@@ -82,14 +82,13 @@ var memflip:Boolean;
         begin
         joueur.image.rect.x := joueur.image.rect.x + joueur.stats.Vitesse;
         joueur.anim.isFliped := False;
-        if joueur.anim.Etat <> 'run' then
-          InitAnimation(joueur.anim,'Joueur','run',6,True);
+        if joueur.anim.Etat <> 'run' then InitAnimation(joueur.anim,joueur.anim.objectName,'run',6,True);
     end;
 
     if ((joueur.anim.etat='sort') and animFinie(joueur.anim)) or ((joueur.anim.Etat = 'run') and not((sdlKeyboardState[SDL_SCANCODE_D] = 1) or (sdlKeyboardState[SDL_SCANCODE_S] = 1) or (sdlKeyboardState[SDL_SCANCODE_W] = 1) or (sdlKeyboardState[SDL_SCANCODE_A] = 1))) 
       then begin
         memflip:=joueur.anim.isfliped;
-        InitAnimation(joueur.anim,'Joueur','idle',12,True);
+        InitAnimation(joueur.anim,joueur.anim.objectName,'idle',12,True);
         joueur.anim.isfliped:=memflip;
         end;
     end

@@ -290,7 +290,7 @@ begin
   SDL_SetTextureAlphaMod(btnGroup.image.imgTexture, 220);  // Alpha à 220 pour OnClick
 
   // Jouer le son de clic
-  jouerSon('SFX/Button_click.wav');
+  if btnGroup.parametresSpeciaux<1 then jouerSon('SFX/Button_click.wav');
   end;
 end;
 

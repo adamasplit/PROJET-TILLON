@@ -188,6 +188,12 @@
 <GAMEOVER_3>J'ai déjà lu mon propre destin, ce n'est pas comme ça que les choses se passeront. Recommençons.;
 <GAMEOVER_4>...;
 <GAMEOVER_5>Qu'est-ce que le destin cherche à me montrer? Que puis-je apprendre de cet échec?;
+<GAMEOVER_BOSS_1>Tout me ramène à cette prison... Mais je finirai bien par m'en sortir.;
+<GAMEOVER_BOSS_2>...Quel dommage, vous auriez fait une bonne élève, j'en suis sûr. Mais ce pouvoir me suffit, à présent...;
+<GAMEOVER_BOSS_2_1>HO HO HO! Evidemment! Je l'avais prédit dès votre arrivée.;
+<GAMEOVER_BOSS_3>J'aurais tant voulu... mettre fin à ses souffrances...;
+<GAMEOVER_BOSS_4>Hmph! Nous avons appris de nos erreurs... Et rien ne nous arrêtera, cette fois-ci. Votre destin est scellé.;
+<GAMEOVER_BOSS_5>Non! Si près du but !? Impossible ! À quel moment me suis-je perdue dans mes prédictions?;
 
 <INTRO_EVENT1_1>Vous traversez des couloirs vides, sans aucune vie à proximité. Ce donjon est bien plus grand que vous ne l'imaginiez...;
 <INTRO_EVENT1_2>Cependant, l'air est calme et apaisé. Vous vous sentez en sécurité.;
@@ -531,3 +537,15 @@
 <VICTOIRE_33>J'approche de mon but! Surtout, ne pas baisser ma garde.;
 <VICTOIRE_34>Je suis entourée de mes ennemis désormais.;
 <VICTOIRE_40>Je ne dois pas me faire d'illusions... La paix n'est pas restaurée pour autant. Mais je continuerai à me battre aussi longtemps qu'il le faudra!;
+<VICTOIRE_41>Je crois que j'ai pas mal progressé, malgré tout.;
+<VICTOIRE_42>Maintenant, à moi de protéger cette ville. Mais je le ferai dans l'ombre, la célébrité n'apporte rien de bon.;
+<VICTOIRE_43>Ai-je fait ce qu'il fallait? Du moins, je suis restée fidèle à mes convictions...;
+<VICTOIRE_44>*Soupir* ... Trop facile. Mais je ne devrais pas me laisser aller à l'arrogance.;
+<VICTOIRE_51>Il reste encore un grand nombre de monstres en liberté... Je suis loin d'en avoir fini.;
+<VICTOIRE_52>Que font les gardes de la ville? Est-ce qu'il n'ont pas mieux à faire que de me chercher, moi?;
+<VICTOIRE_53>Il faut toujours tout faire toute seule, par ici.;
+<VICTOIRE_54>Les cartes continueront à me guider. Je dois y croire.;
+<VICTOIRE_61>Cette puissance devient presque écrasante... Celle de mes ennemis, mais aussi la mienne.;
+<VICTOIRE_62>Je n'ai plus d'endroit où aller. Pour l'instant, je dois tenter de mettre un peu les choses en ordre.;
+<VICTOIRE_63>Certainement, les mages sont en train de gérer les problèmes causés par mon passage.;
+<VICTOIRE_64>Je tracerai mon propre destin. C'est ce que je me suis dit en devenant cartomancienne.;
