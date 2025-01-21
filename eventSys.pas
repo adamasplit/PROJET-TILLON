@@ -32,7 +32,8 @@ begin
         GetMouseX:=EventSystem^.motion.x;
         if GetMouseX=0 then
           getMouseX:=lastMouseX
-        else lastMouseX:=getMouseX
+        else lastMouseX:=getMouseX;
+        getmouseX:=getmousex-windowOffsetX
 end;
 
 function GetMouseY():Integer;
@@ -54,7 +55,7 @@ var memflip:Boolean;
       if joueur.anim.Etat <> 'run' then 
           begin
           memflip:=joueur.anim.isfliped;
-          InitAnimation(joueur.anim,'Joueur','run',6,True);
+          InitAnimation(joueur.anim,joueur.anim.objectName,'run',6,True);
           joueur.anim.isfliped:=memflip;
           end;
       end;
@@ -62,7 +63,7 @@ var memflip:Boolean;
       if ( (sdlKeyboardState[SDL_SCANCODE_A] = 1) AND not(joueur.stats.pendu)) OR ((sdlKeyboardState[SDL_SCANCODE_D] = 1) AND joueur.stats.pendu) then
       begin
         joueur.image.rect.x := joueur.image.rect.x - joueur.stats.Vitesse;
-        if joueur.anim.Etat <> 'run' then InitAnimation(joueur.anim,'Joueur','run',6,True);
+        if joueur.anim.Etat <> 'run' then InitAnimation(joueur.anim,joueur.anim.objectName,'run',6,True);
         joueur.anim.isFliped := True;
       end;
       
@@ -72,7 +73,7 @@ var memflip:Boolean;
         if joueur.anim.Etat <> 'run' then 
           begin
           memflip:=joueur.anim.isfliped;
-          InitAnimation(joueur.anim,'Joueur','run',6,True);
+          InitAnimation(joueur.anim,joueur.anim.objectName,'run',6,True);
           joueur.anim.isfliped:=memflip;
           end;
       end;
@@ -81,14 +82,13 @@ var memflip:Boolean;
         begin
         joueur.image.rect.x := joueur.image.rect.x + joueur.stats.Vitesse;
         joueur.anim.isFliped := False;
-        if joueur.anim.Etat <> 'run' then
-          InitAnimation(joueur.anim,'Joueur','run',6,True);
+        if joueur.anim.Etat <> 'run' then InitAnimation(joueur.anim,joueur.anim.objectName,'run',6,True);
     end;
 
     if ((joueur.anim.etat='sort') and animFinie(joueur.anim)) or ((joueur.anim.Etat = 'run') and not((sdlKeyboardState[SDL_SCANCODE_D] = 1) or (sdlKeyboardState[SDL_SCANCODE_S] = 1) or (sdlKeyboardState[SDL_SCANCODE_W] = 1) or (sdlKeyboardState[SDL_SCANCODE_A] = 1))) 
       then begin
         memflip:=joueur.anim.isfliped;
-        InitAnimation(joueur.anim,'Joueur','idle',12,True);
+        InitAnimation(joueur.anim,joueur.anim.objectName,'idle',12,True);
         joueur.anim.isfliped:=memflip;
         end;
     end
@@ -98,10 +98,10 @@ var memflip:Boolean;
 procedure InitUICombat();
 begin
     //Barres de part et d'autre de l'écran
-    CreateRawImage(CombatUI[1],-70,-40,300,800,'Sprites/Menu/CombatUI_1.bmp');
-    CreateRawImage(CombatUI[2],850,-40,300,800,'Sprites/Menu/CombatUI_1.bmp');
-    CreateRawImage(CombatUI[4],15,560,128,128,'Sprites/Menu/CombatUI_4.bmp');
-    CreateRawImage(CombatUI[5],30,575,100,100,'Sprites/Menu/CombatUI_5.bmp');
+    CreateRawImage(CombatUI[1],-70*windowWidth div 1080,-40*windowHeight div 720,300*windowWidth div 1080,800*windowHeight div 720,'Sprites/Menu/CombatUI_1.bmp');
+    CreateRawImage(CombatUI[2],850*windowWidth div 1080,-40*windowHeight div 720,300*windowWidth div 1080,800*windowHeight div 720,'Sprites/Menu/CombatUI_1.bmp');
+    CreateRawImage(CombatUI[4],15*windowWidth div 1080,560 *windowHeight div 720,128*windowWidth div 1080,128*windowHeight div 720,'Sprites/Menu/CombatUI_4.bmp');
+    CreateRawImage(CombatUI[5],30*windowWidth div 1080,575 *windowHeight div 720,100*windowWidth div 1080,100*windowHeight div 720,'Sprites/Menu/CombatUI_5.bmp');
     renderRawImage(CombatUI[1],255,False);
     
     iCarteChoisie:=1;
@@ -142,7 +142,7 @@ begin
     SDL_DestroyTexture(CombatUI[3].imgTexture);
    
     //if (icarteChoisie>2) or (icarteChoisie<0) then writeln(icarteChoisie);
-    CreateRawImage(CombatUI[3],min(820,max(GetMouseX-20,140)),GetMouseY-5,90,90,stats.deck^[icarteChoisie].dir);
+    CreateRawImage(CombatUI[3],min(820*windowWidth div 1080,max(GetMouseX-20*windowWidth div 1080,140*windowWidth div 1080)),GetMouseY-5,90*windowWidth div 1080,90*windowHeight div 720,stats.deck^[icarteChoisie].dir);
     if ((LObjets[0].stats.mana<LObjets[0].stats.deck^[iCarteChoisie].cout) and not (LObjets[0].stats.deck^[iCarteChoisie].active)) then
       begin
       //sdl_settexturecolormod(combatUI[3].imgTexture,120,120,120);
@@ -150,17 +150,17 @@ begin
         begin
         afficherCarte(stats.deck^[iCarteChoisie],150,combatUI[3]);
         if (LObjets[0].stats.deck^[iCarteChoisie].numero=27) or (LObjets[0].stats.deck^[iCarteChoisie].numero=28) then
-          drawRect(red_color,20+5*(-LObjets[0].stats.mana+LObjets[0].stats.deck^[iCarteChoisie].cout),CombatUI[3].rect.x+8,CombatUI[3].rect.y+7,76,76)
+          drawRect(red_color,20+5*(-LObjets[0].stats.mana+LObjets[0].stats.deck^[iCarteChoisie].cout),CombatUI[3].rect.x+8*windowWidth div 1080,CombatUI[3].rect.y+7*windowHeight div 720,76*windowWidth div 1080,76*windowHeight div 720)
         else
-          drawRect(red_color,20+5*(-LObjets[0].stats.mana+LObjets[0].stats.deck^[iCarteChoisie].cout),CombatUI[3].rect.x+14,CombatUI[3].rect.y,63,90)
+          drawRect(red_color,20+5*(-LObjets[0].stats.mana+LObjets[0].stats.deck^[iCarteChoisie].cout),CombatUI[3].rect.x+14*windowWidth div 1080,CombatUI[3].rect.y,63*windowWidth div 1080,90*windowHeight div 720)
         end
       else
         begin
         afficherCarte(stats.deck^[iCarteChoisie],100,combatUI[3]);
         if (LObjets[0].stats.deck^[iCarteChoisie].numero=27) or (LObjets[0].stats.deck^[iCarteChoisie].numero=28) then
-          drawRect(black_color,100,CombatUI[3].rect.x+8,CombatUI[3].rect.y+7,76,76)
+          drawRect(black_color,100,CombatUI[3].rect.x+8*windowWidth div 1080,CombatUI[3].rect.y+7*windowHeight div 720,76*windowWidth div 1080,76*windowHeight div 720)
         else
-          drawRect(black_color,100,CombatUI[3].rect.x+14,CombatUI[3].rect.y,63,90)
+          drawRect(black_color,100,CombatUI[3].rect.x+14*windowWidth div 1080,CombatUI[3].rect.y,63*windowWidth div 1080,90*windowHeight div 720)
         end
       end
     else
@@ -175,17 +175,17 @@ begin
       begin
       SDL_FreeSurface(CombatUI[6].imgSurface);
       SDL_DestroyTexture(CombatUI[6].imgTexture);
-      createRawImage(CombatUI[6],0,0,160,160,StringToPChar('Sprites/Reliques/reliques'+intToStr(stats.relique)+'.bmp'));
+      createRawImage(CombatUI[6],0,0,160*windowWidth div 1080,160*windowHeight div 720,StringToPChar('Sprites/Reliques/reliques'+intToStr(stats.relique)+'.bmp'));
       renderRawImage(combatUI[6],255,False);
       end;
     //Vie
-    DrawRect(black_color,255, 30, 550-2*stats.vieMax, 30, 2*stats.vieMax);
+    DrawRect(black_color,255, 30*windowWidth div 1080, (550-2*stats.vieMax)*windowHeight div 720, 30*windowWidth div 1080, 2*stats.vieMax*windowHeight div 720);
     if stats.vie>0 then
-      DrawRect(red_color,255, 35, 355+190-Round(1.9*stats.vie), 20, Round(1.9*stats.vie) );
+      DrawRect(red_color,255, 35*windowWidth div 1080, (355+190-Round(1.9*stats.vie))*windowHeight div 720, 20*windowWidth div 1080, Round(1.9*stats.vie)*windowHeight div 720 );
     //Mana
-    DrawRect(black_color,255,95, 550-20*stats.manaMax, 30, 20*stats.manaMax);
+    DrawRect(black_color,255,95*windowWidth div 1080, (550-20*stats.manaMax)*windowHeight div 720, 30*windowWidth div 1080, 20*stats.manaMax*windowHeight div 720);
     if stats.manaMax>0 then
-      DrawRect(b_color,255, 100, 355+190-Round(19* (stats.mana)), 20, Round(19* (stats.mana)) );
+      DrawRect(b_color,255, 100*windowWidth div 1080, (355+190-Round(19* (stats.mana)))*windowHeight div 720, 20*windowWidth div 1080, Round(19* (stats.mana))*windowHeight div 720 );
     //Portrait
     RenderRawImage(CombatUI[4],255,False);
     RenderRawImage(CombatUI[5],255,False);
@@ -193,31 +193,31 @@ begin
     if  high(stats.deck^)>=2 then 
       begin
         case icarteChoisie of //mettre une des cartes en surbrillance selon celle choisie
-        0:drawRect(red_color,160,933,68,135,132);
-        1:drawRect(red_color,160,933,218,135,132);
-        2:drawRect(red_color,160,933,368,135,132);
+        0:drawRect(red_color,160,933*windowWidth div 1080,68 *windowHeight div 720,135*windowWidth div 1080, 132*windowHeight div 720);
+        1:drawRect(red_color,160,933*windowWidth div 1080,218*windowHeight div 720,135*windowWidth div 1080,132*windowHeight div 720);
+        2:drawRect(red_color,160,933*windowWidth div 1080,368*windowHeight div 720,135*windowWidth div 1080,132*windowHeight div 720);
       end;
     for i:=1 to 3 do 
       begin
       SDL_FreeSurface(CombatUI[6+i].imgSurface);
       SDL_DestroyTexture(CombatUI[6+i].imgTexture);
       if (LObjets[0].stats.deck^[i-1].active) then
-        drawRect(black_color,round(180*(LObjets[0].stats.deck^[i-1].charges)/(LObjets[0].stats.deck^[i-1].chargesMax)),933,68+150*(i-1),135,132);
+        drawRect(black_color,round(180*(LObjets[0].stats.deck^[i-1].charges)/(LObjets[0].stats.deck^[i-1].chargesMax)),933*windowWidth div 1080,(68+150*(i-1))*windowHeight div 720,135*windowWidth div 1080,132*windowHeight div 720);
       end;
-    createRawImage(CombatUI[7],940,70,128,128,stats.deck^[0].dir);
-    createRawImage(CombatUI[8],940,220,128,128,stats.deck^[1].dir);
-    createRawImage(CombatUI[9],940,370,128,128,stats.deck^[2].dir);
+    createRawImage(CombatUI[7],940*windowWidth div 1080,70 *windowHeight div 720,128*windowWidth div 1080,128*windowHeight div 720,stats.deck^[0].dir);
+    createRawImage(CombatUI[8],940*windowWidth div 1080,220*windowHeight div 720,128*windowWidth div 1080,128*windowHeight div 720,stats.deck^[1].dir);
+    createRawImage(CombatUI[9],940*windowWidth div 1080,370*windowHeight div 720,128*windowWidth div 1080,128*windowHeight div 720,stats.deck^[2].dir);
     afficherCarte(stats.deck^[0],255,combatUI[7]);
     afficherCarte(stats.deck^[1],255,combatUI[8]);
     afficherCarte(stats.deck^[2],255,combatUI[9]);
     end;
     //Reste du deck
     if high(stats.deck^)>=3 then begin
-        drawRect(black_color,100,935,560,133,158);
+        drawRect(black_color,100,935*windowWidth div 1080,560*windowHeight div 720,133*windowWidth div 1080,158*windowHeight div 720);
         for i:=min(7,high(stats.deck^)+1) downto 4 do begin
             SDL_FreeSurface(CombatUI[7+i].imgSurface);
             SDL_DestroyTexture(CombatUI[7+i].imgTexture);
-            createRawImage(CombatUI[7+i],920+4*i,600-i*5,128,128,stats.deck^[i-1].dir);
+            createRawImage(CombatUI[7+i],(920+4*i)*windowWidth div 1080,(600-i*5)*windowHeight div 720,128*windowWidth div 1080,128*windowHeight div 720,stats.deck^[i-1].dir);
             afficherCarte(stats.deck^[i-1],255,CombatUI[7+i]);
             end;
             end;

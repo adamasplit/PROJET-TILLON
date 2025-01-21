@@ -1,6 +1,5 @@
-
+# Ignore compiled binaries
 *.exe
 *.ppu
 *.o
-*.ppu
-*.ppu
+*.o
