@@ -42,6 +42,7 @@ type TCarte=record
     charges,chargesMax,chargesMaxBase:Integer;
     active:Boolean;
     discard:Boolean;
+    inverse:Boolean;
 end;
 var iCarteChoisie:Integer;
 
