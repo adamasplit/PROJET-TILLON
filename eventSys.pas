@@ -123,7 +123,15 @@ begin
         sdl_destroytexture(modif2.imgTexture);
         sdl_freeSurface(modif2.imgSurface);
         end;
-    renderRawImage(image,alpha,False);
+    if carte.inverse then
+      begin
+      image.rect.x:=image.rect.x+windowOffsetX;
+      sdl_settexturealphamod(image.imgtexture,alpha);
+			SDL_RenderCopyEx(sdlRenderer,image.imgTexture, nil, @image.rect,0, nil, SDL_FLIP_VERTICAL);
+			image.rect.x:=image.rect.x-windowOffsetX;
+      end
+    else
+      renderRawImage(image,alpha,False);
     if (carte.cout<carte.coutBase) and (carte.coutBase>0) and (carte.coutBase<=6) then
         begin
         createRawImage(modif1,image.rect.x+(image.rect.w div 15),image.rect.y,image.rect.w div 4,image.rect.h div 4,'Sprites/Cartes/modif1.bmp');

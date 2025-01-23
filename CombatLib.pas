@@ -458,7 +458,7 @@ procedure updateBoule(var proj:TObjet);
 begin
     
     //vérifie si le projectile sort de l'écran
-    if (proj.anim.objectName<>'meteore') and ((proj.anim.objectName<>'Roue') or (proj.stats.origine=ennemi)) and ((proj.stats.dureeVie>350) or (proj.stats.xreel>950*windowHeight div 720) or (proj.stats.xreel<100*windowHeight div 720) or (proj.stats.yreel>1000*windowWidth div 1080) or (proj.stats.yreel<0)) then 
+    if (proj.anim.objectName<>'meteore') and ((proj.anim.objectName<>'Roue') or (proj.stats.origine=ennemi)) and ((proj.stats.dureeVie>350) or ((proj.stats.vectX>0) and (proj.stats.xreel>windowHeight+(windowHeight div 3))) or ((proj.stats.vectX<0) and (proj.stats.xreel<100*windowHeight div 720)) or ((proj.stats.vectY>0) and (proj.stats.yreel>1000*windowWidth div 1080)) or ((proj.stats.vectY<0) and (proj.stats.yreel<-200))) then 
 
         begin
         supprimeObjet(proj);
@@ -724,193 +724,310 @@ end;
 //----------------------------------------------
 
     //1 Le batteleur
-    procedure I_(s : TStats ; x,y : Integer);
+    procedure I_(inv:Boolean;lanceur : TObjet ; x,y : Integer);
     var proj : TObjet;
     begin
-        creerBoule(joueur, 1, s.force, s.multiplicateurDegat, x, y,100,100, {vitesse} 10, getmouseX, getmouseY, 'projectile', proj);
+        creerBoule(joueur, 1, lanceur.stats.force, lanceur.stats.multiplicateurDegat, x, y,100,100, {vitesse} 10, getmouseX, getmouseY, 'projectile', proj);
+        if inv then proj.stats.vitRotation:=12;
         ajoutObjet(proj);
     end;
 
     //2 La papesse 
-    procedure II(s : TStats ; x,y : integer);
+    procedure II(inv:Boolean;lanceur : TObjet ; x,y : integer);
     var proj : TObjet;
     begin
-        CreerRayon(joueur , 2 , s.force , s.multiplicateurDegat ,True, x,y,1200,120, getmouseX,getmouseY,{vitRotation}1,{dureeVie}30,{delai}1, 'rayon', proj);
+        CreerRayon(joueur , 2 , lanceur.stats.force , lanceur.stats.multiplicateurDegat ,True, x,y,1200,120, getmouseX,getmouseY,{vitRotation}1,{dureeVie}30,{delai}1, 'rayon', proj);
         ajoutObjet(proj);
         jouerSonEff('Rayon');
     end;
 
     //3 L'impératrice
-    procedure III(s : TStats ; x,y : integer);
+    procedure III(inv:Boolean;lanceur : TObjet ; x,y : integer);
     var proj : TObjet;
     begin
-        CreerRayon(joueur , 3 , s.force , s.multiplicateurDegat ,True, x,y,1200,180, getmouseX,getmouseY,{vitRotation}0,{dureeVie}50,{delai}1, 'rayon', proj);
+        CreerRayon(joueur , 3 , lanceur.stats.force , lanceur.stats.multiplicateurDegat ,True, x,y,1200,180, getmouseX,getmouseY,{vitRotation}0,{dureeVie}50,{delai}1, 'rayon', proj);
         ajoutObjet(proj);
         jouerSonEff('Rayon');
     end;
 
     //4 L'empereur
-    procedure IV(s : TStats ; x,y : Integer);
+    procedure IV(inv:Boolean;lanceur : TObjet ; x,y : Integer);
     var proj : TObjet;
     begin
-        creerBoule(joueur, 4+s.vitesse div 5, s.force, s.multiplicateurDegat, x, y,100,100, {vitesse} 29, getmouseX, getmouseY, 'projectile', proj);
+        if inv then
+            creerBoule(joueur, 4+lanceur.stats.vitesse div 5, lanceur.stats.force, lanceur.stats.multiplicateurDegat+1, min(windowWidth,max(0,x+(getmousex-x)*2)), min(windowHeight,max(0,y+(getmousey-y)*2)),100,100, {vitesse} 29, getmouseX, getmouseY, 'projectile', proj)
+        else
+            creerBoule(joueur, 4+lanceur.stats.vitesse div 5, lanceur.stats.force, lanceur.stats.multiplicateurDegat, x, y,100,100, {vitesse} 29, getmouseX, getmouseY, 'projectile', proj);
         ajoutObjet(proj);
     end;
 
     //5 Le pape
-    procedure V(s : TStats ; x,y : Integer);
+    procedure V(inv:Boolean;lanceur : TObjet ; x,y : Integer);
     var proj : TObjet;
     begin
-        creerBoule(joueur, 6, s.force, s.multiplicateurDegat, x, y,150,150, {vitesse} 5, getmouseX, getmouseY, 'projectile', proj);
+        creerBoule(joueur, 6, lanceur.stats.force, lanceur.stats.multiplicateurDegat, x, y,150,150, {vitesse} 5, getmouseX, getmouseY, 'projectile', proj);
         ajoutObjet(proj);
     end;
 
     //6 les amants
-    procedure VI(s : TStats ; x,y : Integer);
+    procedure VI(inv:Boolean;lanceur : TObjet ; x,y : Integer);
     var proj : TObjet;
         i : integer;
         flat:Real;
     begin
-        flat := 0;
-        for i:=0 to high(s.deck^) do //augmente le flat pour chaque copie de la carte dans le deck
-            if (s.deck^[i].numero = 6) then 
-                flat := flat +1.25 ;
-        
-        creerBoule(joueur, round(flat), s.force, s.multiplicateurDegat, x, y,80,80, {vitesse} 10, getmouseX, getmouseY, 'projectile', proj);
-        ajoutObjet(proj);
+        if inv then
+        begin
+            for i:=0 to high(lanceur.stats.deck^) do
+                if (lanceur.stats.deck^[i].numero = 6) then 
+                    begin
+                    if random(2)=0 then
+                        creerBoule(joueur, 0, lanceur.stats.force, lanceur.stats.multiplicateurDegat, random(11)*(windowWidth div 10),random(2)*windowHeight ,40,40, {vitesse} 10, getmouseX, getmouseY, 'projectile', proj)
+                    else
+                        creerBoule(joueur, 0, lanceur.stats.force, lanceur.stats.multiplicateurDegat, random(2)*windowWidth, random(11)*(windowHeight div 10),40,40, {vitesse} 10, getmouseX, getmouseY, 'projectile', proj);
+                    ajoutObjet(proj);
+                    end;
+        end
+        else
+        begin
+            flat := 0;
+            for i:=0 to high(lanceur.stats.deck^) do //augmente le flat pour chaque copie de la carte dans le deck
+                if (lanceur.stats.deck^[i].numero = 6) then 
+                    flat := flat +1.3 ;
+            
+            creerBoule(joueur, round(flat), lanceur.stats.force, lanceur.stats.multiplicateurDegat, x, y,80,80, {vitesse} 10, getmouseX, getmouseY, 'projectile', proj);
+            ajoutObjet(proj);
+        end;
 
     end;
 
     //7 le chariot
-    procedure VII(var s: TStats;x,y:Integer);
-    var eff:TObjet;
+    procedure VII(inv:Boolean;var lanceur: TObjet;x,y:Integer);
+    var eff:TObjet;i:Integer;
     begin
-        s.defense := s.defense + 4;
-        creerEffet(0,0,140*windowWidth div 1080,140*windowWidth div 1080,12,'chariot2',True,eff);
-        ajoutObjet(eff);
+        if inv then
+            begin
+            lanceur.stats.vitesse:=lanceur.stats.vitesse+2;
+            for i := 0 to high(LOBjets) do
+            if (LOBjets[i].stats.genre=ennemi) then
+                LObjets[i].stats.vitessePoursuite:=max(0,LObjets[i].stats.vitessePoursuite-3);
+            for i := 0 to high(LOBjets) do
+            if (LOBjets[i].stats.genre=ennemi) and (i<=high(LObjets)) then
+                begin
+                    creerEffet(LObjets[i].image.rect.x+LObjets[i].col.offset.x,LObjets[i].image.rect.y+LObjets[i].col.offset.y,LObjets[i].col.dimensions.w,LObjets[i].col.dimensions.h,7,'impact_solaire',False,eff); //@@@
+                    ajoutObjet(eff);
+                end;
+            end
+        else
+            begin
+            lanceur.stats.defense := lanceur.stats.defense + 4;
+            creerEffet(0,0,140*windowWidth div 1080,140*windowWidth div 1080,12,'chariot2',True,eff);
+            ajoutObjet(eff);
+            end;
     end; 
 
     //8 la justice 
-    procedure VIII(var sPerm, sCombat :Tstats;x,y,charges:Integer);
+    procedure VIII(inv:Boolean;var sPerm:Tstats;var lanceur:TObjet;x,y,charges:Integer);
     begin
-        if (charges>=scombat.nbjustice) and (sCombat.nbJustice<10) then //incrémente le compteur d'utilisations de la carte
+        if (charges>=lanceur.stats.nbjustice) and (lanceur.stats.nbJustice<10) then //incrémente le compteur d'utilisations de la carte
             begin
             sPerm.nbJustice := sPerm.nbJustice + 1;
-            sCombat.nbJustice := sCombat.nbJustice + 1;  
+            lanceur.stats.nbJustice := lanceur.stats.nbJustice + 1;  
             end;
-        initJustice(typeObjet(0),1,scombat.force,sCombat.multiplicateurDegat,x,y,getmousex,getmousey,28,50,'justice');
+        initJustice(typeObjet(0),1,lanceur.stats.force,lanceur.stats.multiplicateurDegat,x,y,getmousex,getmousey,28,50,'justice');
     end;
     
     //9 L'ermite
-    procedure IX(var s : TStats);
-    var eff:TObjet;
+    procedure IX(inv:Boolean;var lanceur : TObjet);
+    var eff:TObjet;i:INteger;
     begin
-        s.multiplicateurMana := s.multiplicateurMana * 1.2;
-        creerEffet(0,0,100*windowWidth div 1080,140*windowWidth div 1080,20,'ermite',True,eff);
-        ajoutObjet(eff);
+        if inv then
+            begin
+            lanceur.stats.multiplicateurMana:=lanceur.stats.multiplicateurMana*0.65;
+            for i:=0 to high(lanceur.stats.deck^) do
+                lanceur.stats.deck^[i].cout:=lanceur.stats.deck^[i].cout-1;
+            end
+        else
+            begin
+            lanceur.stats.multiplicateurMana := lanceur.stats.multiplicateurMana * 1.2;
+            creerEffet(0,0,100*windowWidth div 1080,140*windowWidth div 1080,20,'ermite',True,eff);
+            ajoutObjet(eff);
+            end;
 
     end;
 
     //10 La roue de la fortune
-    procedure X_(var s : TStats);
+    procedure X_(inv:Boolean;var lanceur : TObjet);
     var rdm : integer ;  eff:TObjet; 
     begin
         randomize;
         rdm := random(10)+1;
 
         case rdm of //active un effet au hasard
-            1,2,3 : subirDegats(s, 5,Lobjets[0].image.rect.x,Lobjets[0].image.rect.y); //-5pv
-            4 : begin
-                s.force := s.force + 3;
-                creerEffet(0,0,100*windowWidth div 1080,100*windowWidth div 1080,16,'force',True,eff);
-                ajoutObjet(eff);
-                end; // +3 force
-            5,6,7,8  : begin 
-                s.mana := s.mana + 2;
-                creerEffet(0,0,70*windowWidth div 1080,70*windowWidth div 1080,12,'plus',True,eff);
-                ajoutObjet(eff);
-                end;
+            1,2,3 : if inv then 
+                subirDegats(lanceur.stats, 5,lanceur.image.rect.x,lanceur.image.rect.y); //-5pv
+            4 : if inv then
+                    begin
+                    lanceur.stats.force := lanceur.stats.defense + 3;
+                    creerEffet(0,0,100*windowWidth div 1080,100*windowWidth div 1080,16,'chariot',True,eff);
+                    ajoutObjet(eff);
+                    end
+                else
+                    begin
+                    lanceur.stats.force := lanceur.stats.force + 3;
+                    creerEffet(0,0,100*windowWidth div 1080,100*windowWidth div 1080,16,'force',True,eff);
+                    ajoutObjet(eff);
+                    end; // +3 force
+            5,6,7,8  :if inv then
+                    begin
+                    lanceur.stats.mana:=lanceur.stats.mana-2;
+                    if lanceur.stats.mana<0 then
+                        begin
+                        subirDegats(lanceur.stats, -lanceur.stats.mana*3,Lobjets[0].image.rect.x,Lobjets[0].image.rect.y);
+                        lanceur.stats.mana:=0;
+                        end;
+                    end
+                else 
+                    begin 
+                    lanceur.stats.mana := lanceur.stats.mana + 2;
+                    creerEffet(0,0,70*windowWidth div 1080,70*windowWidth div 1080,12,'plus',True,eff);
+                    ajoutObjet(eff);
+                    end
+                
                  //+2 mana
             //9,10 : rien 
         end;
     end;
 
     //11 La force
-    procedure XI(var s : TStats);
-    var eff:TObjet;
+    procedure XI(inv:Boolean;var lanceur : TObjet);
+    var eff:TObjet;i:Integer;
     begin
-        s.force := s.force + 1;
-        creerEffet(0,0,100*windowWidth div 1080,100*windowWidth div 1080,16,'force',True,eff);
-        ajoutObjet(eff);
+        if inv then
+            begin
+            for i:=1 to high(LObjets) do
+                if LObjets[i].stats.genre=ennemi then
+                begin
+                LObjets[i].stats.defense:=LObjets[i].stats.defense-1;
+                end
+            end
+        else
+            begin
+            lanceur.stats.force := lanceur.stats.force + 1;
+            creerEffet(0,0,100*windowWidth div 1080,100*windowWidth div 1080,16,'force',True,eff);
+            ajoutObjet(eff);
+            end
     end;
 
     //12 Le pendu
-    procedure XII(var s : TStats);
-    
+    procedure XII(inv:Boolean;var lanceur : TObjet);
+    var clone:TObjet;
     begin
-        s.force := s.force + 5;
-        s.defense := s.defense +5;
-        s.multiplicateurMana := s.multiplicateurMana + 0.15;
-        s.vitesse := s.vitesse + 1;
-        jouerSonEff('pendu');
-        //inverser les contrôles
-        s.pendu := not(s.pendu); 
+        if inv then
+            begin
+            clone:=lanceur;
+			clone.stats.pendu:=not(clone.stats.pendu);
+            clone.stats.vie:=5;
+            clone.stats.vieMax:=5;
+			createRawImage(clone.image,clone.image.rect.x,clone.image.rect.y+50,clone.image.rect.w,clone.image.rect.h,getframepath(clone.anim));
+			ajoutObjet(clone);
+            end
+        else
+            begin
+            lanceur.stats.force := lanceur.stats.force + 5;
+            lanceur.stats.defense := lanceur.stats.defense +5;
+            lanceur.stats.multiplicateurMana := lanceur.stats.multiplicateurMana + 0.15;
+            lanceur.stats.vitesse := lanceur.stats.vitesse + 1;
+            jouerSonEff('pendu');
+            //inverser les contrôles
+            lanceur.stats.pendu := not(lanceur.stats.pendu); 
+            end;
     end;
 
     //13 La mort
-    procedure XIII(var s : Tstats);
+    procedure XIII(inv:Boolean;var lanceur : TObjet);
     var eff:TObjet;
     begin
-        s.laMort := True;
-        updateTimeMort:=sdl_getticks;
-        creerEffet(0,0,120*windowWidth div 1080,120*windowWidth div 1080,12,'mort',True,eff);
-        ajoutObjet(eff);
+        if inv then
+            begin
+            lanceur.stats.multiplicateurDegat:=lanceur.stats.multiplicateurDegat+100;
+            lanceur.stats.vie:=1;
+            end
+        else
+            begin
+            lanceur.stats.laMort := True;
+            updateTimeMort:=sdl_getticks;
+            creerEffet(0,0,120*windowWidth div 1080,120*windowWidth div 1080,12,'mort',True,eff);
+            ajoutObjet(eff);
+            end;
     end;
 
 
     //14 La tempérance
-    procedure XIV(var s : TStats);
+    procedure XIV(inv:Boolean;var lanceur : TObjet);
     var eff:TObjet;
     begin
-        s.defense := s.defense + 1;
-        creerEffet(0,0,100*windowWidth div 1080,100*windowWidth div 1080,11,'chariot',True,eff);
-        ajoutObjet(eff);
+        if inv then
+            begin
+            lanceur.stats.force := lanceur.stats.force + 2;
+            lanceur.stats.defense := lanceur.stats.defense - 3;
+            end
+        else
+            begin
+            lanceur.stats.defense := lanceur.stats.defense + 1;
+            creerEffet(0,0,100*windowWidth div 1080,100*windowWidth div 1080,11,'chariot',True,eff);
+            ajoutObjet(eff);
+            end
     end;
 
     //15 Le diable
-    procedure XV(var sCombat, sPerm : TStats);
-    var eff:TOBjet;
+    procedure XV(inv:Boolean;var lanceur:TObjet;var sPerm : TStats);
+    var eff:TOBjet;i:Integer;
     begin
-        subirDegats(sCombat, 45*LObjets[0].stats.vieMax div 100,Lobjets[0].image.rect.x,Lobjets[0].image.rect.y); // infliger 45 dmg
-        sCombat.defense := sCombat.defense + 1; //modifier le s en combat
-        sPerm.defense := sPerm.defense + 1; // appliqué aussi au s de sauvegarde
-        sCombat.multiplicateurDegat := sCombat.multiplicateurDegat + 0.5;
-        sPerm.multiplicateurDegat := sPerm.multiplicateurDegat + 0.5;
-        creerEffet(0,0,120*windowWidth div 1080,120*windowWidth div 1080,15,'diable',True,eff);
-        ajoutObjet(eff);
+        if inv then
+            begin
+            for i := 0 to high(LOBjets) do
+                if (LOBjets[i].stats.genre=ennemi) then
+                    LObjets[i].stats.multiplicateurDegat:=LObjets[i].stats.multiplicateurDegat*0.1;
+            for i := 0 to high(LOBjets) do
+                if (LOBjets[i].stats.genre=ennemi) and (i<=high(LObjets)) then
+                begin
+                    creerEffet(LObjets[i].image.rect.x+LObjets[i].col.offset.x,LObjets[i].image.rect.y+LObjets[i].col.offset.y,LObjets[i].col.dimensions.w,LObjets[i].col.dimensions.h,7,'impact_solaire',False,eff);
+                    ajoutObjet(eff);
+                end;
+            end
+        else
+            begin
+            subirDegats(lanceur.stats, 45*LObjets[0].stats.vieMax div 100,Lobjets[0].image.rect.x,Lobjets[0].image.rect.y); // infliger 45 dmg
+            lanceur.stats.defense := lanceur.stats.defense + 1; //modifier le lanceur.stats en combat
+            sPerm.defense := sPerm.defense + 1; // appliqué aussi au lanceur.stats de sauvegarde
+            lanceur.stats.multiplicateurDegat := lanceur.stats.multiplicateurDegat + 0.5;
+            sPerm.multiplicateurDegat := sPerm.multiplicateurDegat + 0.5;
+            creerEffet(0,0,120*windowWidth div 1080,120*windowWidth div 1080,15,'diable',True,eff);
+            ajoutObjet(eff);
+            end;
     end;
 
     //16 La tour
-    procedure XVI(s : TStats ; x,y : Integer);
+    procedure XVI(inv:Boolean;lanceur : TObjet ; x,y : Integer);
     begin
-        multiLasers(joueur, 1 ,s.defense , s.multiplicateurDegat , x,y ,1200,120, {vitesse} 0 ,4 ,360,0, 100 ,1,'rayon');
+        multiLasers(joueur, 1 ,lanceur.stats.defense , lanceur.stats.multiplicateurDegat , x,y ,1200,120, {vitesse} 0 ,4 ,360,0, 100 ,1,'rayon');
         jouerSonEff('tour');
     end;
 
     //17 L'étoile
-    procedure XVII(s : Tstats ; x,y : integer);
+    procedure XVII(inv:Boolean;lanceur : TObjet ; x,y : integer);
     begin
-        multiLasers(joueur, 2 ,s.force , s.multiplicateurDegat , x,y ,1200,120, {vitesse} 0 ,8 ,360,0, 100 ,1,'rayon');
+        multiLasers(joueur, 2 ,lanceur.stats.force , lanceur.stats.multiplicateurDegat , x,y ,1200,120, {vitesse} 0 ,8 ,360,0, 100 ,1,'rayon');
         jouerSonEff('etoile');
     end;
 
     //18 La lune
-    procedure XVIII(var s : Tstats ; x,y : integer);
+    procedure XVIII(inv:Boolean;var lanceur : TObjet ; x,y : integer);
     var flat, vitesse : integer;
         proj : Tobjet;
     begin
-        s.mana:=max(s.mana-2,0);
-        case s.mana of 
+        lanceur.stats.mana:=max(lanceur.stats.mana-2,0);
+        case lanceur.stats.mana of 
             0 : begin flat := 0 ; vitesse := 10; end;
             1, 2 : begin flat := 1 ; vitesse := 10; end;
             3 : begin flat := 2 ; vitesse := 10;end;
@@ -928,21 +1045,33 @@ end;
             15 : begin flat := 510 ; vitesse := 15;end;
             else begin flat := 887 ; vitesse := 20;end;
         end;
-        creerBoule(joueur, flat, s.force, s.multiplicateurDegat, x, y,s.mana*30,s.mana*30, vitesse, getmouseX, getmouseY, 'projectile', proj);
-        s.mana:=0; //consomme tout le mana
-        ajoutObjet(proj);
+        if inv then
+            begin
+            lanceur.stats.defense:=lanceur.stats.defense+(flat div 10);
+            end
+        else
+            begin
+            creerBoule(joueur, flat, lanceur.stats.force, lanceur.stats.multiplicateurDegat, x, y,lanceur.stats.mana*30,lanceur.stats.mana*30, vitesse, getmouseX, getmouseY, 'projectile', proj);
+            lanceur.stats.mana:=0; //consomme tout le mana
+            ajoutObjet(proj);
+            end
     end;
 
     //19 Le soleil
-    procedure XIX(var s : TStats);
+    procedure XIX(inv:Boolean;var lanceur : TObjet);
     var i : integer;eff:TObjet;
     begin
-        subirDegats(s, round(-5*s.multiplicateurSoin),Lobjets[0].image.rect.x,Lobjets[0].image.rect.y); // soin de 5 pv 
+        if inv then
+            subirDegats(lanceur.stats, round(15-5*lanceur.stats.multiplicateurSoin),Lobjets[0].image.rect.x,Lobjets[0].image.rect.y)
+        else subirDegats(lanceur.stats, round(-5*lanceur.stats.multiplicateurSoin),Lobjets[0].image.rect.x,Lobjets[0].image.rect.y); // soin de 5 pv 
         creerEffet(0,0,150*windowWidth div 1080,150*windowWidth div 1080,15,'soleil',True,eff);
         ajoutObjet(eff);
         for i := 0 to high(LOBjets) do
             if (LOBjets[i].stats.genre=ennemi) then
-                subirDegats(LObjets[i].stats,degat(1,s.force,LObjets[i].stats.defense,s.multiplicateurDegat,false),trouverCentreX(LObjets[i]),trouverCentreY(LObjets[i]));
+                if inv then
+                    LOBjets[i].stats.defense:=LOBjets[i].stats.defense-1
+                else
+                    subirDegats(LObjets[i].stats,degat(1,lanceur.stats.force,LObjets[i].stats.defense,lanceur.stats.multiplicateurDegat,false),trouverCentreX(LObjets[i]),trouverCentreY(LObjets[i]));
         for i := 0 to high(LOBjets) do
             if (LOBjets[i].stats.genre=ennemi) and (i<=high(LObjets)) then
             begin
@@ -952,32 +1081,57 @@ end;
     end;
 
     //20 L'ange
-    procedure XX(var s : Tstats);
-    var eff:TObjet;
+    procedure XX(inv:Boolean;var lanceur : TObjet);
+    var eff,obj:TObjet;i:Integer;
     begin
-        subirDegats(s, round(-20*s.multiplicateurSoin),Lobjets[0].image.rect.x,Lobjets[0].image.rect.y);
-        creerEffet(0,0,150*windowWidth div 1080,150*windowWidth div 1080,15,'ange',True,eff);
-        ajoutObjet(eff);
+        if inv then
+            begin
+            for i:=1 to high(LObjets) do
+                if LObjets[i].stats.genre=ennemi then
+                begin
+                creerRayon(typeObjet(0),2,lanceur.stats.force,lanceur.stats.multiplicateurDegat,false,trouvercentrex(LObjets[i]),trouverCentrey(LObjets[i])+100,300,150,trouvercentrex(LObjets[i]),trouvercentrey(LObjets[i])-100,0,50,30{-ennemi.stats.compteurAction},'arcane',obj);
+                ajoutObjet(obj);
+                end
+            end
+        else
+            begin
+            subirDegats(lanceur.stats, round(-20*lanceur.stats.multiplicateurSoin),Lobjets[0].image.rect.x,Lobjets[0].image.rect.y);
+            creerEffet(0,0,150*windowWidth div 1080,150*windowWidth div 1080,15,'ange',True,eff);
+            ajoutObjet(eff);
+            end;
     end;
 
     //21 Le monde
-    procedure XXI(var s : TStats);
+    procedure XXI(inv:Boolean;var lanceur : TObjet);
     var eff:TObjet;
     begin
-        s.compteurLemonde := s.compteurLemonde +1;
-        leMonde:=True; //arrête le temps
-        updateTimeMonde:=sdl_getticks;
-        creerEffet(0,0,150*windowWidth div 1080,150*windowWidth div 1080,6,'monde',True,eff);
-        ajoutObjet(eff);
+        if inv then
+            lanceur.stats.deck^[icarteChoisie].chargesMax:=lanceur.stats.deck^[icarteChoisie].chargesMax+1
+        else
+            begin
+            lanceur.stats.compteurLemonde := lanceur.stats.compteurLemonde +1;
+            leMonde:=True; //arrête le temps
+            updateTimeMonde:=sdl_getticks;
+            creerEffet(0,0,150*windowWidth div 1080,150*windowWidth div 1080,6,'monde',True,eff);
+            ajoutObjet(eff);
+            end;
     end;
     
     //22 Le fou
-    procedure __(var s:TStats);
+    procedure __(inv:Boolean;var lanceur : TObjet);
     var eff:TObjet;
     begin
-        s.lefou:=min(4,s.lefou+2);
-        creerEffet(0,0,100*windowWidth div 1080,100*windowWidth div 1080,25,'fou',True,eff);
-        ajoutObjet(eff);
+        if inv then
+            begin
+            lanceur.image.rect.x:=getmousex-lanceur.col.offset.x-(lanceur.col.dimensions.w div 2);
+            lanceur.image.rect.y:=getmousey-lanceur.col.offset.y-(lanceur.col.dimensions.h div 2);
+            end
+        else
+            begin
+            lanceur.stats.lefou:=min(4,lanceur.stats.lefou+2);
+            creerEffet(0,0,100*windowWidth div 1080,100*windowWidth div 1080,25,'fou',True,eff);
+            ajoutObjet(eff);
+            end
     end;
     
     // Cartes bonus
@@ -1192,35 +1346,35 @@ begin
             cycle(lanceur.stats.deck^,i);
         //Partie principale : tous les effets de cartes y seront répertoriés
         case tempCarte.numero of
-            1: I_(lanceur.stats,x,y);  
-            2: II(lanceur.stats,x,y);
-            3: III(lanceur.stats,x,y);
-            4: IV(lanceur.stats,x,y);
-            5: V(lanceur.stats,x,y);
-            6: VI(lanceur.stats,x,y);
-            7: VII(lanceur.stats,x,y);
-            8: VIII(statsJoueur,lanceur.stats,x,y,tempCarte.charges);
-            9: IX(lanceur.stats);
-            10: X_(lanceur.stats);
-            11: XI(lanceur.stats);
-            12: XII(lanceur.stats);
-            13: XIII(lanceur.stats);
-            14: XIV(lanceur.stats);
-            15: XV(lanceur.stats, statsJoueur);
-            16: XVI(lanceur.stats,x,y);
-            17: XVII(lanceur.stats,x,y);
-            18: XVIII(lanceur.stats,x,y);
-            19: XIX(lanceur.stats);
-            20: XX(lanceur.stats);
-            21: XXI(lanceur.stats);
-            22: __(lanceur.stats);
+            1: I_      (tempCarte.inverse,lanceur,x,y);  
+            2: II      (tempCarte.inverse,lanceur,x,y);
+            3: III     (tempCarte.inverse,lanceur,x,y);
+            4: IV      (tempCarte.inverse,lanceur,x,y);
+            5: V       (tempCarte.inverse,lanceur,x,y);
+            6: VI      (tempCarte.inverse,lanceur,x,y);
+            7: VII     (tempCarte.inverse,lanceur,x,y);
+            8: VIII    (tempCarte.inverse,statsJoueur,lanceur,x,y,tempCarte.charges);
+            9: IX      (tempCarte.inverse,lanceur);
+            10: X_     (tempCarte.inverse,lanceur);
+            11: XI     (tempCarte.inverse,lanceur);
+            12: XII    (tempCarte.inverse,lanceur);
+            13: XIII   (tempCarte.inverse,lanceur);
+            14: XIV    (tempCarte.inverse,lanceur);
+            15: XV     (tempCarte.inverse,lanceur, statsJoueur);
+            16: XVI    (tempCarte.inverse,lanceur,x,y);
+            17: XVII   (tempCarte.inverse,lanceur,x,y);
+            18: XVIII  (tempCarte.inverse,lanceur,x,y);
+            19: XIX    (tempCarte.inverse,lanceur);
+            20: XX     (tempCarte.inverse,lanceur);
+            21: XXI    (tempCarte.inverse,lanceur);
+            22: __     (tempCarte.inverse,lanceur);
             //Cartes bonus
-            23: XXIII(joueur,lanceur.stats,x,y,getmouseX,getmousey,60);
-            24: XXIV(lanceur.stats,getmouseX,getmouseY);
-            25: XXV(lanceur.stats,x,y);
-            26: XXVI(lanceur.stats,getmousex,getmousey);
-            27: XXVII(lanceur.stats,x,y);
-            28: XXVIII(lanceur.stats,x,y);
+            23: XXIII  (joueur,lanceur.stats,x,y,getmouseX,getmousey,60);
+            24: XXIV   (lanceur.stats,getmouseX,getmouseY);
+            25: XXV    (lanceur.stats,x,y);
+            26: XXVI   (lanceur.stats,getmousex,getmousey);
+            27: XXVII  (lanceur.stats,x,y);
+            28: XXVIII (lanceur.stats,x,y);
             //writeln('???')
             end;
         end;

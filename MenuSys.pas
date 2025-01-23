@@ -464,7 +464,10 @@ begin
 	else if iDeck<>statsJoueur.tailleCollection+1 then
 		begin
 		createRawImage(carteDeck,200*windowWidth div 1080,200*windowHeight div 720,300*windowWidth div 1080,300*windowHeight div 720,statsJoueur.collection[iDeck].dir);
-		initDialogueBox(dialogues[4],nil,nil,460*windowWidth div 1080,120*windowHeight div 720,500*windowWidth div 1080,600*windowHeight div 720,extractionTexte('DESC_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),10,Fantasy20,25);
+		if statsJoueur.collection[iDeck].inverse then
+			initDialogueBox(dialogues[4],nil,nil,460*windowWidth div 1080,120*windowHeight div 720,500*windowWidth div 1080,600*windowHeight div 720,extractionTexte('DESC_CAR_INV_'+intToStr(statsJoueur.collection[iDeck].numero)),10,Fantasy20,25)
+		else
+			initDialogueBox(dialogues[4],nil,nil,460*windowWidth div 1080,120*windowHeight div 720,500*windowWidth div 1080,600*windowHeight div 720,extractionTexte('DESC_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),10,Fantasy20,25);
 		initDialogueBox(dialogues[3],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450*windowHeight div 720,windowWidth,350*windowHeight div 720,extractionTexte('COMM_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),10);
 		end;
 end;

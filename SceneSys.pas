@@ -36,7 +36,6 @@ for i:=0 to High(LObjets) do
 			case LObjets[i].stats.genre of
 			joueur:begin
 				if LObjets[i].stats.vie>LObjets[i].stats.vieMax then LObjets[i].stats.vie:=LObjets[i].stats.vieMax;
-				if LObjets[i].stats.vie<0 then LObjets[i].stats.vie:=0;
 				if leMonde and (sdl_getTicks-UpdateTimeMonde>(1500+min(LObjets[i].stats.compteurLeMonde,17)*500)) then
 					begin
 					leMonde:=False;
@@ -44,7 +43,11 @@ for i:=0 to High(LObjets) do
 				if LObjets[i].stats.laMort and (sdl_getTicks-updateTimeMort>5000) then
 					LObjets[i].stats.laMort:=False;
 				RegenMana(LObjets[i].stats.lastUpdateTimeMana,LObjets[i].stats.mana,LObjets[i].stats.manaMax,LObjets[i].stats.relique,LObjets[i].stats.vie,LObjets[i].stats.multiplicateurMana);
-				MouvementJoueur(Lobjets[i]); 
+				MouvementJoueur(Lobjets[i]);
+				if LObjets[i].stats.vie<0 then begin
+					LObjets[i].stats.vie:=0;
+					if i<>0 then supprimeObjet(LObjets[i]);
+					end; 
 				end;
 			ennemi: if not leMonde then
 					begin
@@ -203,7 +206,7 @@ afficherTout;
 			begin
 				hasDeath:=False;
 				for i:=1 to Lobjets[0].stats.tailleCollection do 
-        			if (not hasDeath) and (Lobjets[0].stats.collection[i].numero = 13) then
+        			if (not hasDeath) and ((Lobjets[0].stats.collection[i].numero = 13) and not(LObjets[0].stats.collection[i].inverse)) then
 						begin
 							supprimerCarte(Lobjets[0].stats, 13);
 							sceneActive:='Jeu';
@@ -612,8 +615,8 @@ begin
 						statsJoueur.multiplicateurSoin:=statsJoueur.multiplicateurSoin+(random(4)-2)*0.2;
 						//writeln(statsJoueur.multiplicateurSoin);
 						end;
-					SDLK_F7:begin statsJoueur.tailleCollection:=28; for i:=1 to 28 do statsJoueur.collection[i]:=Cartes[27+i mod 2]; end;
-					SDLK_F8:for i:=0 to high(LObjets[0].stats.deck^) do LObjets[0].stats.deck^[i]:=Cartes[8];
+					SDLK_F7:begin statsJoueur.tailleCollection:=4; for i:=1 to 4 do statsJoueur.collection[i]:=Cartes[random(4)+20]; end;
+					SDLK_F8:for i:=0 to high(LObjets[0].stats.deck^) do LObjets[0].stats.deck^[i]:=Cartes[6];
 					SDLK_F9:statsJoueur.avancement:=statsJoueur.avancement+MAXSALLES-2;
 					SDLK_F10:statsJoueur.multiplicateurSoin:=1;
 					SDLK_L:LObjets[0].anim.objectName:=stringtoPchar('Joueur'+inttoStr(random(2)+2));
@@ -741,6 +744,7 @@ begin
 						HandleButtonClick(boutons[i].button, getmousex, getmousey);
 						end;
 					end;
+				'Deck':if iDeck<=statsJoueur.tailleCollection then statsJoueur.collection[ideck].inverse:=not(statsJoueur.collection[ideck].inverse);
 				'DDShop','DShop','US':begin
 					OnMouseClick(boutons[1], getmousex, getmousey);
 					HandleButtonClickRelique(boutons[4], getmousex, getmousey,0,statsJoueur);
@@ -885,7 +889,7 @@ procedure StartGame;
 var lastUpdateTime:UInt32;indice:Integer;
 begin
 	new(EventSystem);
-	choixInitial;
+	//choixInitial;
 	initMurs;
 	initEnnemis;
     IndiceMusiqueJouee:=0;
