@@ -257,7 +257,7 @@ begin
         supprimeObjet(LObjets[1]);
     until high(LObjets)=0;
     //writeln('listes vidées');
-    initStatsCombat(statsJoueur,LObjets[0].stats);
+    initStatsCombat(statsJoueur,LObjets[0]);
     //writeln('stats initialisées');
     vagueFinie:=True;
     combatFini:=False;
@@ -301,7 +301,7 @@ end;
 
 procedure LancementVSLeo(); //active le combat contre Leo
 begin
-    initStatsCombat(statsJoueur,LObjets[0].stats);
+    initStatsCombat(statsJoueur,LObjets[0]);
     if high(LOBjets)>0 then repeat supprimeObjet(LObjets[1]) until high(LObjets)=0;
     vagueFinie:=True;
     combatFini:=False;
