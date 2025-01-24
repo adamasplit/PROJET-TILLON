@@ -92,7 +92,7 @@ begin
 	statsJoueur.multiplicateurSoin:=1;
 	statsJoueur.lefou:=0;
 	statsJoueur.ophiucus:=False;
-	initStatsCombat(statsJoueur,LObjets[0].stats);
+	initStatsCombat(statsJoueur,LObjets[0]);
 	iCarteChoisie:=1;
 	CreateRawImage(LObjets[0].image, 1080 div 2-1080 div 4, 720 div 2, 100, 100, 'Sprites/Game/Joueur/Joueur_idle_1.bmp');
 	CreateRawImage(menuBook,0,0,1080,720,'Sprites/Game/Book/Book_Opening_1.bmp');
