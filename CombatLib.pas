@@ -22,7 +22,7 @@ procedure CreerDeckCombat(stat : TStats;var DeckCombat:TDeck);
 function trouverCarte(stats:TStats;num:Integer):Boolean;
 procedure cycle (var deck : TDeck ; i : Integer);
 procedure circoncision  (var deck : Tdeck);
-procedure initStatsCombat(statsPerm:TStats;var statsTemp:TStats);
+procedure initStatsCombat(statsPerm:TStats;var joueur:TObjet);
 procedure CreerBoule(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;x,y,w,h,vitesse,xdest,ydest:Integer;nom:PChar;var proj:TObjet);
 procedure updateBoule(var proj:TObjet);
 procedure multiProjs(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,w,h,vitesse,nb,range,angleDepart:Integer;nom:PChar);overload;
@@ -209,20 +209,23 @@ begin
 end;
 
 //Lancement du combat
-procedure initStatsCombat(statsPerm:TStats;var statsTemp:TStats);
+procedure initStatsCombat(statsPerm:TStats;var joueur:TObjet);
 //var i:Integer;
 begin
-    initAnimation(LObjets[0].anim,LObjets[0].anim.objectName,'idle',12,True);
+    initAnimation(joueur.anim,joueur.anim.objectName,'idle',12,True);
     //Création de la copie
-    statsTemp:=statsPerm;
-    statsTemp.mana:=statsPerm.manaDebutCombat;
-    creerDeckCombat(statsTemp,Pdeck);
+    joueur.stats:=statsPerm;
+    joueur.stats.mana:=statsPerm.manaDebutCombat;
+    creerDeckCombat(joueur.stats,Pdeck);
     //Initialisation du deck pointé
-    statsTemp.deck:=@pDeck;
-    statsTemp.compteurLeMonde:=0;
-    LObjets[0].image.rect.x:=WINDOWWIDTH div 2 - 50;
-    LObjets[0].image.rect.y:=WINDOWHEIGHT div 2 + 50;
-    if statsTemp.deck=NIL then //writeln('AVERTISSEMENT: DECK NON DEFINI');
+    joueur.stats.deck:=@pDeck;
+    joueur.stats.compteurLeMonde:=0;
+    joueur.image.rect.x:=1080 div 2 - 50;
+    joueur.image.rect.y:=720 div 2 + 50;
+    if joueur.stats.deck=NIL then begin
+        HALT;
+        writeln('AVERTISSEMENT: DECK NON DEFINI');
+        end;
     combatFini:=False;
     vagueFinie:=True;
 end;
@@ -245,8 +248,8 @@ var norme:Real;destination,distance:array['X'..'Y'] of Integer;i:Integer;
 begin
     //Initialisation des caractéristiques
 
-    w:=w*windowWidth div 1080;
-    l:=l*windowWidth div 1080;
+    w:=w;
+    l:=l;
     rayon.stats.genre:=laser;
     rayon.stats.degats:=flat;
     rayon.stats.force:=force;
@@ -402,8 +405,8 @@ begin
         proj.stats.vitDep:=vitesse;
         proj.stats.volvie:=False;
         proj.stats.dureeVie:=0;
-        w:=w*windowWidth div 1080;
-        h:=h*windowWidth div 1080;
+        w:=w;
+        h:=h;
 
         if (nom='projectile') and (origine=joueur) then
             jouerSonEff('Arc ('+intToSTr(random(6)+1)+')');
@@ -458,7 +461,7 @@ procedure updateBoule(var proj:TObjet);
 begin
     
     //vérifie si le projectile sort de l'écran
-    if (proj.anim.objectName<>'meteore') and ((proj.anim.objectName<>'Roue') or (proj.stats.origine=ennemi)) and ((proj.stats.dureeVie>350) or ((proj.stats.vectX>0) and (proj.stats.xreel>windowHeight+(windowHeight div 3))) or ((proj.stats.vectX<0) and (proj.stats.xreel<100*windowHeight div 720)) or ((proj.stats.vectY>0) and (proj.stats.yreel>1000*windowWidth div 1080)) or ((proj.stats.vectY<0) and (proj.stats.yreel<-200))) then 
+    if (proj.anim.objectName<>'meteore') and ((proj.anim.objectName<>'Roue') or (proj.stats.origine=ennemi)) and ((proj.stats.dureeVie>350) or ((proj.stats.vectX>0) and (proj.stats.xreel>720+(720 div 3))) or ((proj.stats.vectX<0) and (proj.stats.xreel<100)) or ((proj.stats.vectY>0) and (proj.stats.yreel>1000)) or ((proj.stats.vectY<0) and (proj.stats.yreel<-200))) then 
 
         begin
         supprimeObjet(proj);
@@ -481,6 +484,7 @@ begin
             if proj.stats.vitRotation<>0 then
                 begin
                 proj.stats.angle:=proj.stats.angle+proj.stats.vitRotation/180;
+                if (proj.anim.objectName='projectile') and (random(10)=0) then proj.stats.vitRotation:=-proj.stats.vitRotation*1.05;
                 if proj.stats.vectX>0 then
                     begin
                     proj.stats.vectX:=proj.stats.vitDep*cos(proj.stats.angle);
@@ -534,18 +538,18 @@ procedure InitJustice(origine:TypeObjet;degats,force:Integer;mult:Real;x,y,xCibl
 var justice:TObjet;
 begin
     //initialisation comme un projectile
-    creerBoule(origine,degats,force,mult,x,y,200*windowWidth div 1080,100*windowWidth div 1080,vitesse,xCible,yCible,dir,justice);
+    creerBoule(origine,degats,force,mult,x,y,200,100,vitesse,xCible,yCible,dir,justice);
     //modification de l'image utilisée
     InitAnimation(justice.anim,justice.anim.objectname,'start',9,False);
     justice.anim.estActif:=True;
     justice.anim.currentFrame:=2;
-    CreateRawImage(justice.image,x,y,200*windowWidth div 1080,100*windowWidth div 1080,getFramePath(justice.anim));
+    CreateRawImage(justice.image,x,y,200,100,getFramePath(justice.anim));
     initAngle(justice.stats.vectX,justice.stats.vectY,justice.stats.angle);
     justice.col.isTrigger := True;
-    justice.col.dimensions.w := justice.image.rect.w-20*windowWidth div 1080;
+    justice.col.dimensions.w := justice.image.rect.w-20;
     justice.col.dimensions.h := justice.image.rect.h div 2;
-    justice.col.offset.x := 10*windowWidth div 1080;
-    justice.col.offset.y := 30*windowWidth div 1080;
+    justice.col.offset.x := 10;
+    justice.col.offset.y := 30;
     justice.col.nom := 'Justice';
     justice.col.estActif:=False;
     //initialisation des caractéristiques
@@ -564,7 +568,7 @@ end;
 
 procedure renderAvecAngle(objet:TObjet);
 begin
-    objet.image.rect.x:=objet.image.rect.x+windowOffsetX;
+    rendermode(objet.image.rect,True);
     if (objet.stats.vectX>=0) then
         SDL_RenderCopyEx(sdlRenderer, objet.image.imgTexture, nil, @objet.image.Rect,180*objet.stats.angle/pi,nil, SDL_FLIP_NONE)
     else
@@ -629,7 +633,7 @@ begin
         justice.image.rect.y:=round(justice.stats.yreel)-(justice.image.rect.h div 2);
         end;
     //vérifie si le projectile sort de l'écran
-    if ((justice.stats.xreel>1600*windowHeight div 720) or (justice.stats.xreel<-400*windowHeight div 720) or (justice.stats.yreel>1200*windowHeight div 720) or (justice.stats.yreel<-400*windowHeight div 720)) and (justice.stats.delai<0) then 
+    if ((justice.stats.xreel>1600) or (justice.stats.xreel<-400) or (justice.stats.yreel>1200) or (justice.stats.yreel<-400)) and (justice.stats.delai<0) then 
         begin
         supprimeObjet(justice);
         end
@@ -723,13 +727,20 @@ end;
 //-----------Déroulant des cartes---------------
 //----------------------------------------------
 
-    //1 Le batteleur
+    //1 Le bateleur
     procedure I_(inv:Boolean;lanceur : TObjet ; x,y : Integer);
-    var proj : TObjet;
+    var proj : TObjet;i:Integer;
     begin
         creerBoule(joueur, 1, lanceur.stats.force, lanceur.stats.multiplicateurDegat, x, y,100,100, {vitesse} 10, getmouseX, getmouseY, 'projectile', proj);
-        if inv then proj.stats.vitRotation:=12;
+        if inv then 
+            proj.stats.vitRotation:=19;
         ajoutObjet(proj);
+        if inv then
+            begin
+            creerBoule(joueur, 0, lanceur.stats.force, lanceur.stats.multiplicateurDegat, x, y,100,100, {vitesse} 10, getmouseX, getmouseY, 'projectile', proj);
+            proj.stats.vitRotation:=-19;
+            ajoutObjet(proj);
+            end;
     end;
 
     //2 La papesse 
@@ -755,7 +766,7 @@ end;
     var proj : TObjet;
     begin
         if inv then
-            creerBoule(joueur, 4+lanceur.stats.vitesse div 5, lanceur.stats.force, lanceur.stats.multiplicateurDegat+1, min(windowWidth,max(0,x+(getmousex-x)*2)), min(windowHeight,max(0,y+(getmousey-y)*2)),100,100, {vitesse} 29, getmouseX, getmouseY, 'projectile', proj)
+            creerBoule(joueur, 4+lanceur.stats.vitesse div 5, lanceur.stats.force, lanceur.stats.multiplicateurDegat+1, min(1080,max(0,x+(getmousex-x)*2)), min(720,max(0,y+(getmousey-y)*2)),100,100, {vitesse} 29, getmouseX, getmouseY, 'projectile', proj)
         else
             creerBoule(joueur, 4+lanceur.stats.vitesse div 5, lanceur.stats.force, lanceur.stats.multiplicateurDegat, x, y,100,100, {vitesse} 29, getmouseX, getmouseY, 'projectile', proj);
         ajoutObjet(proj);
@@ -781,9 +792,9 @@ end;
                 if (lanceur.stats.deck^[i].numero = 6) then 
                     begin
                     if random(2)=0 then
-                        creerBoule(joueur, 0, lanceur.stats.force, lanceur.stats.multiplicateurDegat, random(11)*(windowWidth div 10),random(2)*windowHeight ,40,40, {vitesse} 10, getmouseX, getmouseY, 'projectile', proj)
+                        creerBoule(joueur, 0, lanceur.stats.force, lanceur.stats.multiplicateurDegat, random(11)*(1080 div 10),random(2)*720 ,40,40, {vitesse} 10, getmouseX, getmouseY, 'projectile', proj)
                     else
-                        creerBoule(joueur, 0, lanceur.stats.force, lanceur.stats.multiplicateurDegat, random(2)*windowWidth, random(11)*(windowHeight div 10),40,40, {vitesse} 10, getmouseX, getmouseY, 'projectile', proj);
+                        creerBoule(joueur, 0, lanceur.stats.force, lanceur.stats.multiplicateurDegat, random(2)*1080, random(11)*(720 div 10),40,40, {vitesse} 10, getmouseX, getmouseY, 'projectile', proj);
                     ajoutObjet(proj);
                     end;
         end
@@ -820,7 +831,7 @@ end;
         else
             begin
             lanceur.stats.defense := lanceur.stats.defense + 4;
-            creerEffet(0,0,140*windowWidth div 1080,140*windowWidth div 1080,12,'chariot2',True,eff);
+            creerEffet(0,0,140,140,12,'chariot2',True,eff);
             ajoutObjet(eff);
             end;
     end; 
@@ -833,7 +844,10 @@ end;
             sPerm.nbJustice := sPerm.nbJustice + 1;
             lanceur.stats.nbJustice := lanceur.stats.nbJustice + 1;  
             end;
-        initJustice(typeObjet(0),1,lanceur.stats.force,lanceur.stats.multiplicateurDegat,x,y,getmousex,getmousey,28,50,'justice');
+        if inv then
+            initJustice(typeObjet(0),9-lanceur.stats.nbJustice,lanceur.stats.force,lanceur.stats.multiplicateurDegat,x,y,getmousex,getmousey,28-lanceur.stats.nbJustice,50,'justice')
+        else
+            initJustice(typeObjet(0),1,lanceur.stats.force,lanceur.stats.multiplicateurDegat,x,y,getmousex,getmousey,28,50,'justice');
     end;
     
     //9 L'ermite
@@ -844,12 +858,12 @@ end;
             begin
             lanceur.stats.multiplicateurMana:=lanceur.stats.multiplicateurMana*0.65;
             for i:=0 to high(lanceur.stats.deck^) do
-                lanceur.stats.deck^[i].cout:=lanceur.stats.deck^[i].cout-1;
+                lanceur.stats.deck^[i].cout:=min(lanceur.stats.deck^[i].cout,max(0,lanceur.stats.deck^[i].cout-1));
             end
         else
             begin
             lanceur.stats.multiplicateurMana := lanceur.stats.multiplicateurMana * 1.2;
-            creerEffet(0,0,100*windowWidth div 1080,140*windowWidth div 1080,20,'ermite',True,eff);
+            creerEffet(0,0,100,140,20,'ermite',True,eff);
             ajoutObjet(eff);
             end;
 
@@ -864,17 +878,19 @@ end;
 
         case rdm of //active un effet au hasard
             1,2,3 : if inv then 
-                subirDegats(lanceur.stats, 5,lanceur.image.rect.x,lanceur.image.rect.y); //-5pv
+                    subirDegats(lanceur.stats, -4,lanceur.image.rect.x,lanceur.image.rect.y)
+                else
+                    subirDegats(lanceur.stats, 5,lanceur.image.rect.x,lanceur.image.rect.y); //-5pv
             4 : if inv then
                     begin
-                    lanceur.stats.force := lanceur.stats.defense + 3;
-                    creerEffet(0,0,100*windowWidth div 1080,100*windowWidth div 1080,16,'chariot',True,eff);
+                    lanceur.stats.defense := lanceur.stats.defense + 3;
+                    creerEffet(0,0,100,100,11,'chariot',True,eff);
                     ajoutObjet(eff);
                     end
                 else
                     begin
                     lanceur.stats.force := lanceur.stats.force + 3;
-                    creerEffet(0,0,100*windowWidth div 1080,100*windowWidth div 1080,16,'force',True,eff);
+                    creerEffet(0,0,100,100,16,'force',True,eff);
                     ajoutObjet(eff);
                     end; // +3 force
             5,6,7,8  :if inv then
@@ -882,14 +898,14 @@ end;
                     lanceur.stats.mana:=lanceur.stats.mana-2;
                     if lanceur.stats.mana<0 then
                         begin
-                        subirDegats(lanceur.stats, -lanceur.stats.mana*3,Lobjets[0].image.rect.x,Lobjets[0].image.rect.y);
+                        subirDegats(lanceur.stats,lanceur.stats.mana*3,lanceur.image.rect.x,lanceur.image.rect.y);
                         lanceur.stats.mana:=0;
                         end;
                     end
                 else 
                     begin 
                     lanceur.stats.mana := lanceur.stats.mana + 2;
-                    creerEffet(0,0,70*windowWidth div 1080,70*windowWidth div 1080,12,'plus',True,eff);
+                    creerEffet(0,0,70,70,12,'plus',True,eff);
                     ajoutObjet(eff);
                     end
                 
@@ -913,7 +929,7 @@ end;
         else
             begin
             lanceur.stats.force := lanceur.stats.force + 1;
-            creerEffet(0,0,100*windowWidth div 1080,100*windowWidth div 1080,16,'force',True,eff);
+            creerEffet(0,0,100,100,16,'force',True,eff);
             ajoutObjet(eff);
             end
     end;
@@ -956,7 +972,7 @@ end;
             begin
             lanceur.stats.laMort := True;
             updateTimeMort:=sdl_getticks;
-            creerEffet(0,0,120*windowWidth div 1080,120*windowWidth div 1080,12,'mort',True,eff);
+            creerEffet(0,0,120,120,12,'mort',True,eff);
             ajoutObjet(eff);
             end;
     end;
@@ -974,7 +990,7 @@ end;
         else
             begin
             lanceur.stats.defense := lanceur.stats.defense + 1;
-            creerEffet(0,0,100*windowWidth div 1080,100*windowWidth div 1080,11,'chariot',True,eff);
+            creerEffet(0,0,100,100,11,'chariot',True,eff);
             ajoutObjet(eff);
             end
     end;
@@ -997,12 +1013,12 @@ end;
             end
         else
             begin
-            subirDegats(lanceur.stats, 45*LObjets[0].stats.vieMax div 100,Lobjets[0].image.rect.x,Lobjets[0].image.rect.y); // infliger 45 dmg
+            subirDegats(lanceur.stats, (45*lanceur.stats.vieMax) div 100,lanceur.image.rect.x,lanceur.image.rect.y); // infliger 45% dmg
             lanceur.stats.defense := lanceur.stats.defense + 1; //modifier le lanceur.stats en combat
             sPerm.defense := sPerm.defense + 1; // appliqué aussi au lanceur.stats de sauvegarde
             lanceur.stats.multiplicateurDegat := lanceur.stats.multiplicateurDegat + 0.5;
             sPerm.multiplicateurDegat := sPerm.multiplicateurDegat + 0.5;
-            creerEffet(0,0,120*windowWidth div 1080,120*windowWidth div 1080,15,'diable',True,eff);
+            creerEffet(0,0,120,120,15,'diable',True,eff);
             ajoutObjet(eff);
             end;
     end;
@@ -1062,9 +1078,9 @@ end;
     var i : integer;eff:TObjet;
     begin
         if inv then
-            subirDegats(lanceur.stats, round(15-5*lanceur.stats.multiplicateurSoin),Lobjets[0].image.rect.x,Lobjets[0].image.rect.y)
-        else subirDegats(lanceur.stats, round(-5*lanceur.stats.multiplicateurSoin),Lobjets[0].image.rect.x,Lobjets[0].image.rect.y); // soin de 5 pv 
-        creerEffet(0,0,150*windowWidth div 1080,150*windowWidth div 1080,15,'soleil',True,eff);
+            subirDegats(lanceur.stats, round(15-5*lanceur.stats.multiplicateurSoin),lanceur.image.rect.x,lanceur.image.rect.y)
+        else subirDegats(lanceur.stats, round(-5*lanceur.stats.multiplicateurSoin),lanceur.image.rect.x,lanceur.image.rect.y); // soin de 5 pv 
+        creerEffet(0,0,150,150,15,'soleil',True,eff);
         ajoutObjet(eff);
         for i := 0 to high(LOBjets) do
             if (LOBjets[i].stats.genre=ennemi) then
@@ -1095,8 +1111,8 @@ end;
             end
         else
             begin
-            subirDegats(lanceur.stats, round(-20*lanceur.stats.multiplicateurSoin),Lobjets[0].image.rect.x,Lobjets[0].image.rect.y);
-            creerEffet(0,0,150*windowWidth div 1080,150*windowWidth div 1080,15,'ange',True,eff);
+            subirDegats(lanceur.stats, round(-20*lanceur.stats.multiplicateurSoin),lanceur.image.rect.x,lanceur.image.rect.y);
+            creerEffet(0,0,150,150,15,'ange',True,eff);
             ajoutObjet(eff);
             end;
     end;
@@ -1112,7 +1128,7 @@ end;
             lanceur.stats.compteurLemonde := lanceur.stats.compteurLemonde +1;
             leMonde:=True; //arrête le temps
             updateTimeMonde:=sdl_getticks;
-            creerEffet(0,0,150*windowWidth div 1080,150*windowWidth div 1080,6,'monde',True,eff);
+            creerEffet(0,0,150,150,6,'monde',True,eff);
             ajoutObjet(eff);
             end;
     end;
@@ -1129,7 +1145,7 @@ end;
         else
             begin
             lanceur.stats.lefou:=min(4,lanceur.stats.lefou+2);
-            creerEffet(0,0,100*windowWidth div 1080,100*windowWidth div 1080,25,'fou',True,eff);
+            creerEffet(0,0,100,100,25,'fou',True,eff);
             ajoutObjet(eff);
             end
     end;
@@ -1196,7 +1212,7 @@ end;
         exp.stats.transparence:=0;
         ajoutObjet(exp);
         sceneActive:='Cutscene';
-        InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,0,windowWidth,300*windowWidth div 1080,extractionTexte('SORT1_'+intToSTR(random(3)+1)),20,Angelic30,40);
+        InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,0,1080,300,extractionTexte('SORT1_'+intToSTR(random(3)+1)),20,Angelic30,40);
         
     end;
 
@@ -1303,7 +1319,7 @@ end;
         jouerSonEff('meteore');
         initAngle(getMouseX-x,getMouseY-y,angle);
         sceneActive:='Cutscene';
-        InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,0,windowWidth,300,extractionTexte('SORT2_'+intToSTR(random(3)+1)),20,Angelic30,30);
+        InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,0,1080,300,extractionTexte('SORT2_'+intToSTR(random(3)+1)),20,Angelic30,30);
         creerBoule(joueur, 150, s.force, s.multiplicateurDegat, x-round(cos(angle)*1000), y-round(sin(angle)*1000),600,600, {vitesse} 3, getmouseX, getmouseY, 'meteore', proj);
         sdl_settexturealphamod(proj.image.imgTexture,0);
         ajoutObjet(proj);

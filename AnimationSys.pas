@@ -33,7 +33,7 @@ function AnimFinie(anim:TAnimation):Boolean;
 
 // Initialiser un ButtonGroup avec des animations de fond et effets sonores
 procedure InitButtonGroup(var btnGroup: TButtonGroup;  x, y, w, h: Integer; imgPath: PChar;labelText: PAnsiChar;onClick: ButtonProcedure);
-procedure RenderButtonGroup(var btnGroup: TButtonGroup);
+procedure RenderButtonGroup(btnGroup: TButtonGroup);
 
 // Gestion des événements OnHover et OnClick
 procedure OnMouseHover(var btnGroup: TButtonGroup; x,y : Integer);overload;
@@ -197,8 +197,9 @@ begin
 end;
 
 
-procedure RenderButtonGroup(var btnGroup: TButtonGroup);
+procedure RenderButtonGroup(btnGroup: TButtonGroup);
 begin
+
 RenderRawImage(btnGroup.image, False);
 RenderButton(btnGroup.button);
 end;
@@ -241,6 +242,7 @@ begin
       btnGroup.button.rect.h := btnGroup.originalHeight;
     btnGroup.hoverSoundPlayed := False;  // Réinitialiser pour le prochain Hover
   end;
+  //drawrect(yellowCol,150,btnGroup.image.rect.x,btnGroup.image.rect.y,btnGroup.image.rect.w,btnGroup.image.rect.h);
 end;
 
 procedure OnMouseHover(var btnGroup: TButtonGroup; x, y: Integer; soundDir : Pchar;var isHovered :Boolean);overload;
@@ -288,17 +290,17 @@ begin
   begin
   // Appliquer un alpha plus fort pour un effet visuel supplémentaire lors du clic
   SDL_SetTextureAlphaMod(btnGroup.image.imgTexture, 220);  // Alpha à 220 pour OnClick
-
   // Jouer le son de clic
   if btnGroup.parametresSpeciaux<1 then jouerSon('SFX/Button_click.wav');
   end;
-end;
+
+  end;
 
 procedure CreateDamagePopUp(x, y: Integer; damage: PChar; couleur: TSDL_Color);
 var
   newPopUp: TText;
 begin
-  CreateText(newPopUp, x+10, y+20,20*windowWidth div 1080,20*windowHeight div 720, damage, Fantasy30, couleur);
+  CreateText(newPopUp, x+10, y+20,20,20, damage, Fantasy30, couleur);
   SetLength(DamagePopUps, Length(DamagePopUps) + 1);
   DamagePopUps[High(DamagePopUps)] := newPopUp;
 end;

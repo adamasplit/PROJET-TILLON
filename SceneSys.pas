@@ -129,7 +129,7 @@ var faucheuse : TObjet;i:Integer;
 			DeclencherFondu(True, 3000);
 			arretSons(100);
 			ajoutObjet(faucheuse);
-			CreateRawImage(Lobjets[High(LObjets)].image,1200*windowWidth div 1080,Lobjets[0].image.rect.y-50*windowHeight div 720,200*windowWidth div 1080,200*windowHeight div 720,'Sprites/Game/death/death_walking_1.bmp');
+			CreateRawImage(Lobjets[High(LObjets)].image,1200,Lobjets[0].image.rect.y-50,200,200,'Sprites/Game/death/death_walking_1.bmp');
 			InitAnimation(Lobjets[High(LObjets)].anim,'death','walking',10,True);
 			SceneActive := 'mortJoueur';
 		end;
@@ -174,7 +174,7 @@ procedure ActualiserMenuEnJeu;
 
 procedure InitGameOver();
 begin
-	initButtonGroup(boutons[1],windowWidth-(540+270)*windowWidth div 1080,200*windowHeight div 720,540*windowWidth div 1080,180*windowHeight div 720,'Sprites/Menu/Button1.bmp','Menu principal',@retourmenu);
+	initButtonGroup(boutons[1],1080-(540+270),200,540,180,'Sprites/Menu/Button1.bmp','Menu principal',@retourmenu);
 end;
 
 procedure OnPlayerDeath(var son:Boolean);
@@ -184,7 +184,7 @@ begin
 mix_pauseMusic;
 afficherTout;
 	//if (Lobjets[High(LObjets)].image.rect.x = 1100) then indiceMusiqueJouee:=32;
-	if (Lobjets[High(LObjets)].image.rect.x > Lobjets[0].image.rect.x + 60*windowWidth div 1080) then
+	if (Lobjets[High(LObjets)].image.rect.x > Lobjets[0].image.rect.x + 60) then
 		begin
 			Lobjets[High(LObjets)].image.rect.x -= 1;
 			UpdateAnimation(Lobjets[High(LObjets)].anim,Lobjets[High(LObjets)].image);
@@ -251,15 +251,15 @@ afficherTout;
 					sceneActive := 'GameOver';
 					if ((av-1) mod (MAXSALLES div 4)=0) and (av<=MAXSALLES+1) then
 						case (av-1) div (MAXSALLES div 4) of
-						1:initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450*WINDOWHEIGHT div 720,windowWidth,350*WINDOWHEIGHT div 720,extractionTexte('GAMEOVER_BOSS_1'),40);
-						2:if statsJoueur.bestiaire[33] then initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/spectre3.bmp',0,450*WINDOWHEIGHT div 720,windowWidth,350*WINDOWHEIGHT div 720,extractionTexte('GAMEOVER_BOSS_2'),40)
-							else initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/spectre1.bmp',0,450*WINDOWHEIGHT div 720,windowWidth,350*WINDOWHEIGHT div 720,extractionTexte('GAMEOVER_BOSS_2_1'),40);
-						3:initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450*WINDOWHEIGHT div 720,windowWidth,350*WINDOWHEIGHT div 720,extractionTexte('GAMEOVER_BOSS_3'),40);
-						4:if statsJoueur.bestiaire[30] then initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portraitB.bmp',0,450*WINDOWHEIGHT div 720,windowWidth,350,extractionTexte('GAMEOVER_BOSS_4'),40)
-							else initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450*WINDOWHEIGHT div 720,windowWidth,350,extractionTexte('GAMEOVER_BOSS_5'),40)
+						1:initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,1080,350,extractionTexte('GAMEOVER_BOSS_1'),40);
+						2:if statsJoueur.bestiaire[33] then initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/spectre3.bmp',0,450,1080,350,extractionTexte('GAMEOVER_BOSS_2'),40)
+							else initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/spectre1.bmp',0,450,1080,350,extractionTexte('GAMEOVER_BOSS_2_1'),40);
+						3:initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,1080,350,extractionTexte('GAMEOVER_BOSS_3'),40);
+						4:if statsJoueur.bestiaire[30] then initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portraitB.bmp',0,450,1080,350,extractionTexte('GAMEOVER_BOSS_4'),40)
+							else initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,1080,350,extractionTexte('GAMEOVER_BOSS_5'),40)
 						end
 					else
-						initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450*WINDOWHEIGHT div 720,windowWidth,350,extractionTexte('GAMEOVER_'+intToSTr(random(5)+1)),40);
+						initDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',0,450,1080,350,extractionTexte('GAMEOVER_'+intToSTr(random(5)+1)),40);
 					initJoueur(False);
 					sauvegarder(statsJoueur);
 					InitGameOver();
@@ -273,7 +273,7 @@ end;
 procedure GameOver();
 begin
 	
-	drawrect(black_color,255,0,0,WINDOWWIDTH,windowHeight);
+	drawrect(black_color,255,0,0,1080,720);
 	renderButtonGroup(boutons[1]);
 	UpdateDialogueBox(dialogues[2]);
 	EffetDeFondu;
@@ -363,9 +363,9 @@ var i:Integer;
 begin
 	sceneActive:='Intro';
 	updateTime:=sdl_getTicks;
-	InitDialogueBox(dialogues[1],nil,nil,0,windowHeight div 3 + 250*windowHeight div 720,windowWidth+200*windowWidth div 1080,300*windowHeight div 720,extractionTexte('INTRO_1'),30);
-	InitDialogueBox(dialogues[2],nil,nil,-50,windowHeight div 3 + 250*windowHeight div 720,windowWidth div 3+250*windowWidth div 1080,300*windowHeight div 720,'',30);
-	InitDialogueBox(dialogues[3],nil,nil,windowWidth div 2-100*windowWidth div 1080,windowHeight div 3 + 250*windowHeight div 720,windowWidth div 3+250*windowWidth div 1080,300*windowHeight div 720,'',30);
+	InitDialogueBox(dialogues[1],nil,nil,0,720 div 3 + 250,1080+200,300,extractionTexte('INTRO_1'),30);
+	InitDialogueBox(dialogues[2],nil,nil,-50,720 div 3 + 250,1080 div 3+250,300,'',30);
+	InitDialogueBox(dialogues[3],nil,nil,1080 div 2-100,720 div 3 + 250,1080 div 3+250,300,'',30);
 	for i:=2 to 14 do
 		if (i<>4) and (i<>8) then ajoutDialogue(nil,extractionTexte('INTRO_'+intToSTR(i)))
 			else 
@@ -381,7 +381,7 @@ begin
 	MusiqueJouee:=mix_loadMUS(OST[0].dir);
 	mix_playmusic(musiqueJouee,0);
 	Mix_VolumeMusic(40);
-	createRawImage(fond,120*windowWidth div 1080,0,814*windowWidth div 1080,530*windowHeight div 720,'Sprites/Intro/illustrations_intro_1.bmp');
+	createRawImage(fond,120,0,814,530,'Sprites/Intro/illustrations_intro_1.bmp');
 end;
 
 
@@ -507,9 +507,9 @@ begin
 					begin
 						cardHover[i] := False;
 						if boutons[i].parametresSpeciaux=4 then
-							initDialogueBox(dialogues[1],nil,nil,0,350*windowHeight div 720,windowWidth,450*windowHeight div 720,extractionTexte('DESC_REL_'+intToSTr(boutons[i].relique)),20)
+							initDialogueBox(dialogues[1],nil,nil,0,350,1080,450,extractionTexte('DESC_REL_'+intToSTr(boutons[i].relique)),20)
 						else
-							initDialogueBox(dialogues[1],nil,nil,0,350*windowHeight div 720,windowWidth,450*windowHeight div 720,extractionTexte('DESC_CAR_'+intToSTr(boutons[i].carte.numero)),20);
+							initDialogueBox(dialogues[1],nil,nil,0,350,1080,450,extractionTexte('DESC_CAR_'+intToSTr(boutons[i].carte.numero)),20);
 					end;
 				end;
 			UpdateDialogueBox(dialogues[1])
@@ -529,7 +529,7 @@ begin
     		black_color.g := 255; 
     		black_color.b := 255;
 			end;
-		drawrect(bk_col,255,0,0,windowWidth,windowHeight);
+		drawrect(bk_col,255,0,0,1080,720);
 		UpdateDialogueBox(dialogues[1]);
 		end;
   		'Cutscene':
@@ -837,17 +837,17 @@ begin
 	//initialisation des murs
   murs[1].image.rect.x:=0;
   murs[1].image.rect.y:=-TAILLE_MUR;
-  murs[1].col.dimensions.w:=windowWidth;
+  murs[1].col.dimensions.w:=1080;
   murs[1].col.dimensions.h:=TAILLE_MUR;
   murs[2].image.rect.x:=-TAILLE_MUR;
   murs[2].image.rect.y:=-TAILLE_MUR;
-  murs[2].col.dimensions.w:=180*windowWidth div 1080+TAILLE_MUR;
+  murs[2].col.dimensions.w:=180+TAILLE_MUR;
   murs[2].col.dimensions.h:=TAILLE_MUR*2;
   murs[3].image.rect.x:=0;
-  murs[3].image.rect.y:=windowHeight;
-  murs[3].col.dimensions.w:=windowWidth;
+  murs[3].image.rect.y:=720;
+  murs[3].col.dimensions.w:=1080;
   murs[3].col.dimensions.h:=TAILLE_MUR;
-  murs[4].image.rect.x:=880*windowWidth div 1080;
+  murs[4].image.rect.x:=880;
   murs[4].image.rect.y:=-TAILLE_MUR;
   murs[4].col.dimensions.w:=TAILLE_MUR;
   murs[4].col.dimensions.h:=TAILLE_MUR*2;
@@ -869,7 +869,7 @@ begin
 	begin
 	sdl_delay(10);
 	sdl_renderclear(sdlrenderer);
-	drawRect(black_color,255,0,0,windowWidth,windowHeight);
+	drawRect(black_color,255,0,0,1080,720);
 	renderButtonGroup(fullscreen);
 	renderButtonGroup(window);
 	while SDL_PollEvent(EventSystem)=1 do
@@ -889,7 +889,7 @@ procedure StartGame;
 var lastUpdateTime:UInt32;indice:Integer;
 begin
 	new(EventSystem);
-	//choixInitial;
+	choixInitial;
 	initMurs;
 	initEnnemis;
     IndiceMusiqueJouee:=0;

@@ -104,6 +104,8 @@ procedure RenderDialogueText(var Box: TDialogueBox);
 
 function boiteFinie(box:TDialogueBox):Boolean;
 
+procedure rendermode(var rect:TSDL_Rect;versRender:Boolean);
+
 procedure fullScreenInit;
 
 
@@ -127,6 +129,26 @@ IMPLEMENTATION
 * textColor --> TSDL_Color 	| couleur du texte
 * onClick --> ButtonProcedure 	| procedure à lancer en cas de clic (ATTENTION A METTRE UN @ AVANT VOTRE PROCEDURE EN ENTREE)
 }
+
+procedure rendermode(var rect:TSDL_Rect;versRender:Boolean);
+
+begin
+  if versRender then
+    begin
+    rect.x:=rect.x*WindowWidth div 1080+windowOffsetX;
+    rect.y:=rect.y*windowWidth div 1080;
+    rect.w:=rect.w*windowWidth div 1080;
+    rect.h:=rect.h*windowWidth div 1080
+    end
+  else
+    begin
+    rect.x:=round((rect.x-windowOffsetX)/(WindowWidth/1080));
+    rect.y:=round((rect.y)/(WindowWidth/1080));
+    rect.w:=round((rect.w)/(WindowWidth/1080));
+    rect.h:=round((rect.h)/(WindowWidth/1080))
+    end
+end;
+
 procedure CreateButton(var button: TButton; x, y, w, h: Integer; labelText: PAnsiChar; bgColor, textColor: TSDL_Color; font:PTTF_font; onClick: ButtonProcedure); 
 begin
   button.rect.x := x;
@@ -152,17 +174,18 @@ procedure RenderButton(var button: TButton);
 var textRect: TSDL_Rect;
 begin
   // Remplir le fond du bouton à la couleur choisie
+  rendermode(button.rect,True);
   SDL_SetRenderDrawColor(sdlRenderer, button.bgColor.r, button.bgColor.g, button.bgColor.b, 5);
   SDL_RenderFillRect(sdlRenderer, @button.rect);
-
   // Calculs de la position du texte en fonction de la taille du bouton (Texte Centré)
   textRect.w := button.labelSurface^.w;
   textRect.h := button.labelSurface^.h;
-  textRect.x := button.rect.x + (button.rect.w - textRect.w) div 2+windowOffsetX;
+  textRect.x := button.rect.x + (button.rect.w - textRect.w) div 2;
   textRect.y := button.rect.y + (button.rect.h - textRect.h) div 2;
 
   // Render de la texture du texte dans le bouton
   SDL_RenderCopy(sdlRenderer, button.labelTexture, nil, @textRect);
+  rendermode(button.rect,True);
 end;
 
 {Prend le boutton et les coordonées en entrée (de la souris) puis vérifie si le bouton et cliqué et lance la procedure associée}
@@ -201,8 +224,10 @@ begin
   // Calculs de la position du texte
   textRect.w := text.textSurface^.w;
   textRect.h := text.textSurface^.h;
-  textRect.x := text.rect.x+windowOffsetX;
+  textRect.x := text.rect.x;
   textRect.y := text.rect.y;
+
+  rendermode(textrect,True);
 
   // Render de la texture du texte
   SDL_RenderCopy(sdlRenderer, text.textTexture, nil, @textRect);
@@ -219,9 +244,10 @@ begin
   // Définition des dimensions du rectangle
   drect.w := w;
   drect.h := h;
-  drect.x := x+windowOffsetX;
+  drect.x := x;
   drect.y := y;
 
+  rendermode(drect,True);
   // Changement de la couleur de rendu pour dessiner le rectangle
   SDL_SetRenderDrawColor(sdlRenderer, bgColor.r, bgColor.g, bgColor.b, alpha);
   SDL_RenderFillRect(sdlRenderer, @drect);
@@ -271,9 +297,10 @@ begin
   // Calculs de la position du texte
   imgRect.w := image.rect.w;
   imgRect.h := image.rect.h;
-  imgRect.x := image.rect.x+windowOffsetX;
+  imgRect.x := image.rect.x;
   imgRect.y := image.rect.y;
 
+  rendermode(imgRect,True);
   // Render de la texture de l'image
   if (flip) then
     SDL_RenderCopyEx(sdlRenderer, image.imgTexture, nil, @imgRect,0, nil, SDL_FLIP_HORIZONTAL)
@@ -287,9 +314,10 @@ begin
   // Calculs de la position du texte
   imgRect.w := image.rect.w;
   imgRect.h := image.rect.h;
-  imgRect.x := image.rect.x+windowOffsetX;
+  imgRect.x := image.rect.x;
   imgRect.y := image.rect.y;
 
+  rendermode(imgRect,True);
   // Render de la texture de l'image
   if (flip) then
     SDL_RenderCopyEx(sdlRenderer, image.imgTexture, nil, @imgRect,0, nil, SDL_FLIP_HORIZONTAL)
@@ -378,7 +406,7 @@ var
 begin
   TempText := '';
   LineWidth:= 0;
-  maxLength:=(width*30) div (size*22)+2;
+  maxLength:=(width) div (size)+(width div 70);
   for i := 1 to Length(Text) do
   begin
     LineWidth:= Length(TempText);
@@ -431,7 +459,7 @@ begin
   Box.DisplayedLetters := 0;
   Box.CurrentLine := 1;
   Box.Font:=Fantasy30;
-  Box.FontSize:=8*round(30*windowWidth div 1080/8);
+  Box.FontSize:=8*round(30/8);
   Box.LastUpdateTime := SDL_GetTicks();
   Box.LetterDelay := Delay;
   Box.Complete := False;
@@ -460,7 +488,7 @@ begin
   Box.LastUpdateTime := SDL_GetTicks();
   Box.LetterDelay := Delay;
   Box.Font:=Font;
-  box.fontsize:=8*round(fontsize*windowWidth div 1080/8);
+  box.fontsize:=8*round(fontsize/8);
   Box.Complete := False;
 
   // Charger les premières lignes
@@ -524,10 +552,11 @@ var
 begin
   Surface := TTF_RenderUTF8_Blended(font, StringToPChar(Text), black_color);
   Texture := SDL_CreateTextureFromSurface(sdlRenderer, Surface);
-  Rect.x :=x+offsetX+windowOffsetX;
+  Rect.x :=x+offsetX;
   Rect.y := y+offsetY;
   Rect.w := Surface^.w;
   Rect.h := Surface^.h;
+  rendermode(rect,True);
   SDL_RenderCopy(sdlRenderer, Texture, nil, @Rect);
   SDL_FreeSurface(Surface);
   SDL_DestroyTexture(Texture);
@@ -546,9 +575,9 @@ begin
       DisplayedText := Box.Lines[i];
 
     if box.portrait.directory<>nil then
-      RenderTextLine(DisplayedText, Box.BackgroundImage.rect.x, Box.BackgroundImage.rect.y + (i - 1) * (box.fontsize+10),250*windowWidth div 1080,60*windowHeight div 720,box.font)
+      RenderTextLine(DisplayedText, Box.BackgroundImage.rect.x, Box.BackgroundImage.rect.y + (i - 1) * (box.fontsize+10),250,60,box.font)
     else
-      RenderTextLine(DisplayedText, Box.BackgroundImage.rect.x, Box.BackgroundImage.rect.y + (i - 1) * (box.fontsize+10),100*windowWidth div 1080,60*windowHeight div 720,box.font);
+      RenderTextLine(DisplayedText, Box.BackgroundImage.rect.x, Box.BackgroundImage.rect.y + (i - 1) * (box.fontsize+10),100,60,box.font);
   end;
   if ((Box.Lines[Box.CurrentLine+1] <> '') and (Box.DisplayedLetters >= Length(Box.Lines[Box.CurrentLine])) and (Box.CurrentLine <= 7)) then
   begin
@@ -582,13 +611,13 @@ begin
 
   // Initialisation de la police [DayDream] et chargement de la police
   if TTF_Init = -1 then HALT;
-  Fantasy40 := TTF_OpenFont(FantasyFontDirectory, 8*round(40*windowWidth div 1080/8));
+  Fantasy40 := TTF_OpenFont(FantasyFontDirectory, 8*round(40/8));
   if Fantasy40 = nil then HALT;
-  Fantasy30 := TTF_OpenFont(FantasyFontDirectory, 8*round(30*windowWidth div 1080/8));
+  Fantasy30 := TTF_OpenFont(FantasyFontDirectory, 8*round(30/8));
   if Fantasy30 = nil then HALT;
-  Fantasy20 := TTF_OpenFont(FantasyFontDirectory, 5*round(25*windowWidth div 1080/5));
+  Fantasy20 := TTF_OpenFont(FantasyFontDirectory, 5*round(25/5));
   if Fantasy20 = nil then HALT;
-  Angelic30 := TTF_OpenFont('Fonts/AngelicAgrippaRegular.ttf',30*windowWidth div 1080);
+  Angelic30 := TTF_OpenFont('Fonts/AngelicAgrippaRegular.ttf',30);
   if Angelic30 = nil then HALT;
   // activation de l'opacité
   SDL_SetRenderDrawBlendMode(sdlRenderer, SDL_BLENDMODE_BLEND);
@@ -623,13 +652,13 @@ BEGIN
 
   // Initialisation de la police [DayDream] et chargement de la police
   if TTF_Init = -1 then HALT;
-  Fantasy40 := TTF_OpenFont(FantasyFontDirectory, 8*round(40*windowWidth div 1080/8));
+  Fantasy40 := TTF_OpenFont(FantasyFontDirectory, 8*round(40/8));
   if Fantasy40 = nil then HALT;
-  Fantasy30 := TTF_OpenFont(FantasyFontDirectory, 8*round(30*windowWidth div 1080/8));
+  Fantasy30 := TTF_OpenFont(FantasyFontDirectory, 8*round(30/8));
   if Fantasy30 = nil then HALT;
-  Fantasy20 := TTF_OpenFont(FantasyFontDirectory, 5*round(25*windowWidth div 1080/5));
+  Fantasy20 := TTF_OpenFont(FantasyFontDirectory, 5*round(25/5));
   if Fantasy20 = nil then HALT;
-  Angelic30 := TTF_OpenFont('Fonts/AngelicAgrippaRegular.ttf',30*windowWidth div 1080);
+  Angelic30 := TTF_OpenFont('Fonts/AngelicAgrippaRegular.ttf',30);
   if Angelic30 = nil then HALT;
   // activation de l'opacité
   SDL_SetRenderDrawBlendMode(sdlRenderer, SDL_BLENDMODE_BLEND);

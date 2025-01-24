@@ -222,13 +222,13 @@ procedure InitDecor;
 begin
 	sdl_freesurface(fond.imgSurface);
 	sdl_destroytexture(fond.imgTexture);
-  CreateRawImage(fond,88*windowWidth div 1080,-80*WindowHeight div 720,900*windowWidth div 1080,900*WindowHeight div 720,StringToPChar('Sprites/Game/floor/Floor'+ IntToStr(Random(5)) +'.bmp'));
+  CreateRawImage(fond,88,-80,900,900,StringToPChar('Sprites/Game/floor/Floor'+ IntToStr(Random(5)) +'.bmp'));
 end;
 procedure InitDecor(i:Integer);
 begin
 	if fond.imgSurface<>nil then sdl_freesurface(fond.imgSurface);
 	if fond.imgTexture<>nil then sdl_destroytexture(fond.imgTexture);
-  CreateRawImage(fond,88*windowWidth div 1080,-80*WindowHeight div 720,900*windowWidth div 1080,900*WindowHeight div 720,StringToPChar('Sprites/Game/floor/Floor'+ intToSTR(i) +'.bmp'));
+  CreateRawImage(fond,88,-80,900,900,StringToPChar('Sprites/Game/floor/Floor'+ intToSTR(i) +'.bmp'));
 end;
 
 procedure InitDecorCartes;
@@ -236,7 +236,7 @@ begin
     randomize;
 	sdl_freesurface(fond.imgSurface);
 	sdl_destroytexture(fond.imgTexture);
-    CreateRawImage(fond,0,0,windowWidth,windowHeight,StringToPChar('Sprites/Menu/fond_cartes.bmp'));
+    CreateRawImage(fond,0,0,1080,720,StringToPChar('Sprites/Menu/fond_cartes.bmp'));
 end;
 
 procedure AjoutObjet(var obj:TObjet); //Ajoute directement un projectile/autre à LObjets

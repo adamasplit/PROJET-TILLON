@@ -406,7 +406,7 @@ begin
           if isAttack(LObjets[j].stats) and (LObjets[j].stats.origine<>LObjets[i].stats.origine) and collisionAngle(LObjets[i],LObjets[j]) then
             begin
             if LObjets[j].stats.degats<10 then supprimeObjet(LObjets[j]) else LObjets[j].stats.degats:=LObjets[j].stats.degats-10;
-            creerEffet(LObjets[i].image.rect.x+LObjets[i].col.offset.x div 2,LObjets[i].image.rect.y+LObjets[i].col.offset.y div 2,100*windowWidth div 1080,100*windowWidth div 1080,5,'roue_impact',False,LObjets[i]);
+            creerEffet(LObjets[i].image.rect.x+LObjets[i].col.offset.x div 2,LObjets[i].image.rect.y+LObjets[i].col.offset.y div 2,100,100,5,'roue_impact',False,LObjets[i]);
             destructionI:=True;
             end
           else if (LObjets[j].stats.genre=ennemi) and (LObjets[j].stats.degatsContact>0) and (LObjets[j].stats.cooldown<150) and collisionAngle(LObjets[i],LObjets[j]) then
