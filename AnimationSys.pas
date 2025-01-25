@@ -201,6 +201,7 @@ procedure RenderButtonGroup(btnGroup: TButtonGroup);
 begin
 
 RenderRawImage(btnGroup.image, False);
+btnGroup.button.rect:=btnGroup.image.rect;
 RenderButton(btnGroup.button);
 end;
 
@@ -221,6 +222,8 @@ begin
 
       btnGroup.button.rect.w := btnGroup.image.rect.w;
       btnGroup.button.rect.h := btnGroup.image.rect.h;
+      btnGroup.image.rect.x := round(btnGroup.image.rect.x-btnGroup.originalWidth*0.05);
+      btnGroup.image.rect.y := round(btnGroup.image.rect.y-btnGroup.originalHeight*0.05);
 
       SDL_SetTextureAlphaMod(btnGroup.image.imgTexture, 180);  // Alpha à 180 pour OnHover
 
@@ -236,6 +239,8 @@ begin
     SDL_SetTextureAlphaMod(btnGroup.image.imgTexture, 150);
       //btnGroup.image.rect.x := Round(btnGroup.image.rect.x *1.05);
       //btnGroup.image.rect.y := Round(btnGroup.image.rect.x *1.05);
+      btnGroup.image.rect.x := round(btnGroup.image.rect.x+btnGroup.originalWidth*0.05);
+      btnGroup.image.rect.y := round(btnGroup.image.rect.y+btnGroup.originalHeight*0.05);
       btnGroup.image.rect.h := btnGroup.originalHeight;
       btnGroup.image.rect.w := btnGroup.originalWidth;
       btnGroup.button.rect.w := btnGroup.originalWidth;
@@ -253,6 +258,8 @@ begin
   begin
     if not btnGroup.hoverSoundPlayed then
     begin
+      btnGroup.image.rect.x := round(btnGroup.image.rect.x-btnGroup.originalWidth*0.05);
+      btnGroup.image.rect.y := round(btnGroup.image.rect.y-btnGroup.originalHeight*0.05);
       btnGroup.image.rect.w := Round(btnGroup.originalWidth * 1.1);
       btnGroup.image.rect.h := Round(btnGroup.originalHeight * 1.1);
 
@@ -272,6 +279,8 @@ begin
     SDL_SetTextureAlphaMod(btnGroup.image.imgTexture, 150);
       //btnGroup.image.rect.x := Round(btnGroup.image.rect.x *1.05);
       //btnGroup.image.rect.y := Round(btnGroup.image.rect.x *1.05);
+      btnGroup.image.rect.x := round(btnGroup.image.rect.x+btnGroup.originalWidth*0.05);
+      btnGroup.image.rect.y := round(btnGroup.image.rect.y+btnGroup.originalHeight*0.05);
       btnGroup.image.rect.h := btnGroup.originalHeight;
       btnGroup.image.rect.w := btnGroup.originalWidth;
       btnGroup.button.rect.w := btnGroup.originalWidth;

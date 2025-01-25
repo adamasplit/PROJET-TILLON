@@ -47,7 +47,8 @@ for i:=0 to High(LObjets) do
 				if LObjets[i].stats.vie<0 then begin
 					LObjets[i].stats.vie:=0;
 					if i<>0 then supprimeObjet(LObjets[i]);
-					end; 
+					end;
+				if ((LObjets[i].stats.vitesse>10) and ((SDL_GetTicks mod 100) mod LObjets[i].stats.vitesse=0)) or (LObjets[i].stats.tp.duree>0) then createAfterimage(Lobjets[i],30);
 				end;
 			ennemi: if not leMonde then
 					begin
@@ -55,6 +56,7 @@ for i:=0 to High(LObjets) do
 					if not (LObjets[i].anim.etat='dodge') then
 						LObjets[i].col.estActif:=True;
 					IAEnnemi(LObjets[i],LObjets[0]);
+					if (LObjets[i].anim.etat='dodge') or (LObjets[i].anim.etat='dash') then createAfterimage(Lobjets[i],20);
 					end;
         	projectile:updateBoule(LObjets[i]); //fait avancer un projectile en ligne droite
 			laser:updateRayon(LObjets[i]); //met à jour un rayon
@@ -81,7 +83,7 @@ begin
 			//ajuste l'indice de l'objet à sa position dans LObjets
 			LObjets[i].stats.indice:=i;
 
-			if LObjets[i].anim.estActif then 
+			if (LObjets[i].anim.estActif) and not (LObjets[i].stats.genre=afterimage) then 
 				begin
 				if (LObjets[i].anim.etat='degats') then
 					begin
@@ -114,7 +116,7 @@ end;
 // Updates des Scenes
 
 procedure ActualiserJeu(boss:Boolean;enn:Integer);
-var faucheuse : TObjet;i:Integer;
+var faucheuse : TObjet;
 	begin
 		randomize();
 		scenePrec:='Jeu';
@@ -387,7 +389,7 @@ end;
 
 
 procedure GameUpdate(var indice:Integer;var updateTime:UINT32);
-var i:Integer;son,boss:Boolean;ennemiActuel:Integer;cardHover:Array [1..3] of Boolean;clone:TObjet;
+var i:Integer;son,boss:Boolean;ennemiActuel:Integer;cardHover:Array [1..3] of Boolean;clone:TObjet;carteJouee:TCarte;
 begin
    while not QUITGAME do
   begin
@@ -615,7 +617,14 @@ begin
 						statsJoueur.multiplicateurSoin:=statsJoueur.multiplicateurSoin+(random(4)-2)*0.2;
 						//writeln(statsJoueur.multiplicateurSoin);
 						end;
-					SDLK_F7:begin statsJoueur.tailleCollection:=4; for i:=1 to 4 do statsJoueur.collection[i]:=Cartes[random(4)+20]; end;
+					SDLK_F7:begin 
+						statsJoueur.tailleCollection:=4; 
+						for i:=1 to 4 do 
+							begin
+							statsJoueur.collection[i]:=Cartes[22]; 
+							statsJoueur.collection[i].inverse:=True;
+							end;
+						end;
 					SDLK_F8:for i:=0 to high(LObjets[0].stats.deck^) do LObjets[0].stats.deck^[i]:=Cartes[6];
 					SDLK_F9:statsJoueur.avancement:=statsJoueur.avancement+MAXSALLES-2;
 					SDLK_F10:statsJoueur.multiplicateurSoin:=1;
@@ -675,7 +684,10 @@ begin
 					OnMouseClick(boutons[i], getmousex, getmousey);
                     HandleButtonClick(boutons[i].button, getmousex, getmousey);
 					end;
-				'Jeu': for i:=0 to high(LObjets) do if (Lobjets[i].stats.genre=joueur) and (i<High(LObjets)) then jouerCarte(LObjets[i],iCarteChoisie);
+				'Jeu': for i:=0 to high(LObjets) do 
+					if (Lobjets[i].stats.genre=joueur) and (i<High(LObjets)) then 
+						if cyclerCarte(Lobjets[i],icarteChoisie,carteJouee) then
+							jouerCarte(Lobjets[i],carteJouee,getmousex,getmousey);
 				'defausse':begin
 					OnMouseClick(boutons[3], getmousex, getmousey);
 					HandleButtonClickCarte(boutons[3], getmousex, getmousey,statsjoueur.collection[ichoix1],statsJoueur);

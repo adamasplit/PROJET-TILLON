@@ -73,11 +73,14 @@ type TStats=record //(version variable)
           deck:^TDeck;
           tailleCollection:Integer;
           bestiaire:array[1..MAXENNEMIS] of Boolean;
-          pendu:Boolean;
+          pendu,clone:Boolean;
           compteurLeMonde,leFou:Integer;
           laMort,ophiucus:Boolean;
           nbJustice : Integer;
           nbMarchand: Integer;
+          tp:record
+            restants,duree,destTempx,destTempy,destx,desty:Integer;
+            end;
           relique:Integer);// numéro de la relique équipée
         
         ennemi:(

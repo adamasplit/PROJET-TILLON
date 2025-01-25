@@ -13,7 +13,7 @@
 <DESC_CAR_13>L'utilisateur reçoit la protection ultime, pour échapper à son destin. Immunise contre la défaite pendant 5 secondes.;
 <DESC_CAR_14>L'utilisateur se concentre pour se protéger des attaques jusqu'à la fin du combat.;
 <DESC_CAR_15>Un pacte avec le diable coûte une partie de la vitalité de celui qui le passe. En échange, il gagne une puissance immense.;
-<DESC_CAR_16>Forme une croix d'énergie, conformément au mouvement d'une tour.;
+<DESC_CAR_16>Forme une croix d'énergie, conformément au mouvement d'une tour. La puissance de cette carte dépend de la défense du porteur.;
 <DESC_CAR_17>Sous forme d'étoile, la puissance magique de l'utilisateur est envoyée dans toutes les directions.;
 <DESC_CAR_18>L'utilisateur utilise toute son énergie pour annihiler ses ennemis. L'attaque est d'autant plus puissante selon le mana consommé.;
 <DESC_CAR_19>Le soleil darde le mal de ses rayons et protège ceux qui marchent dans sa lumière.;
@@ -35,7 +35,7 @@
 <DESC_CAR_INV_7>Le chariot, hors de contrôle, déséquilibre les vitesses du lanceur et de ses adversaires.;
 <DESC_CAR_INV_8>Une injustice répétée frustre ceux concernés: pour cette raison, les lames de la Justice perdent leur force à l'usure.;
 <DESC_CAR_INV_9>L'utilisateur répète ses erreurs, choisissant d'améliorer ses cartes plutôt que de se concentrer sur son mana. C'est une stratégie comme une autre.;
-<DESC_CAR_INV_10>;
+<DESC_CAR_INV_10>Active un effet choisi par le destin, qui peut parfois être facétieux...;
 <DESC_CAR_INV_11>Les peurs de l'utilisateur se transmettent en ses ennemis, qui se voient incapables de rester sur leurs gardes. ;
 <DESC_CAR_INV_12>Pris au piège, le pendu montre à l'utilisateur un miroir de lui-même... capable des mêmes choses. Cette copie conforme est vulnérable mais puissante.;
 <DESC_CAR_INV_13>Aux portes de la mort, son pouvoir permet de mettre fin à tout... Dans cet état, l'arcane sans nom ne peut protéger son porteur, qui choisit de tout mettre en jeu pour en finir.;
@@ -43,14 +43,14 @@
 <DESC_CAR_INV_15>Avec ses grandes capacités de manipulateur, le diable peut semer le doute dans ses ennemis, tout en libérant le porteur de son influence. Il lui accorde donc non pas sa puissance, mais sa protection.;
 <DESC_CAR_INV_16>;
 <DESC_CAR_INV_17>;
-<DESC_CAR_INV_18>;
+<DESC_CAR_INV_18>La lune sert à se cacher dans l'ombre, protégeant son porteur contre les attaques ennemies. Cette protection est aussi efficace que la volonté de l'utilisateur.;
 <DESC_CAR_INV_19>Le soleil brûle les ailes de tous les audacieux, mais purge d'autant plus le mal, le vidant de sa force.;
 <DESC_CAR_INV_20>Si l'ange se trompe dans son verdict, l'humanité est plongée dans l'ignorance.;
-<DESC_CAR_INV_21>;
+<DESC_CAR_INV_21>Une fois inversé, le monde interrompt le cycle des cartes en donnant à la suivante une utilisation supplémentaire.;
 <DESC_CAR_INV_22>Le fou arrive toujours à s'en sortir, que ce soit en parant ou en esquivant.;
-<DESC_CAR_INV_23>Face à une vraie menace, le calme du Lion laisse place à une colère indomptable et brûlante.;
+<DESC_CAR_INV_23>Face à une vraie menace, le calme du Lion laisse place à une colère indomptable et brûlante qui met un champ de bataille à feu et à sang.;
 <DESC_CAR_INV_24>Libérée pleinement, la puissance du Serpentaire permet d'absorber l'énergie des cibles. Tel est le vrai visage du prétendu altruiste.;
-<DESC_CAR_INV_25>;
+<DESC_CAR_INV_25>"...Hmph. Peu importe". Voilà ce que la carte a l'air de vous dire. Cet être semble décidément assez opiniâtre.;
 <DESC_CAR_INV_26>La vitesse du dieu de la foudre dépasse tout ce qui peut être imaginable. On dit même qu'elle lui donne le don d'ubiquité.;
 <DESC_CAR_INV_27>Lues de la sorte, les instructions de l'ancien temps ne peuvent qu'avoir le même effet.;
 <DESC_CAR_INV_28>Lues de la sorte, les instructions de l'ancien temps ne peuvent qu'avoir le même effet.;

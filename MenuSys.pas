@@ -59,18 +59,6 @@ var j : Integer;
 begin
     // Initialisation du joueur
 	
-    LObjets[0].col.isTrigger := False;
-    LObjets[0].col.estActif := True;
-    LObjets[0].col.dimensions.w := 50;
-    LObjets[0].col.dimensions.h := 85;
-    LObjets[0].col.offset.x := 25;
-    LObjets[0].col.offset.y := 15;
-    LObjets[0].col.nom := 'Joueur';
-	LObjets[0].stats.angle:=0;
-    LObjets[0].anim.estActif := True;
-    LObjets[0].image.rect.x := 1080 div 2;
-    LObjets[0].image.rect.y := 720 div 2;
-	LObjets[0].stats.lastUpdateTimeMana:=SDL_GetTicks;
 	statsJoueur.tailleCollection:=4;
 	statsJoueur.Vitesse:=5;
 	statsJoueur.multiplicateurMana:=1;
@@ -94,9 +82,7 @@ begin
 	statsJoueur.ophiucus:=False;
 	initStatsCombat(statsJoueur,LObjets[0]);
 	iCarteChoisie:=1;
-	CreateRawImage(LObjets[0].image, 1080 div 2-1080 div 4, 720 div 2, 100, 100, 'Sprites/Game/Joueur/Joueur_idle_1.bmp');
 	CreateRawImage(menuBook,0,0,1080,720,'Sprites/Game/Book/Book_Opening_1.bmp');
-	initAnimation(LObjets[0].anim,'Joueur','idle',12,True);
 	if continuer then
 		chargerSauvegarde(statsJoueur);
 end;
@@ -682,14 +668,26 @@ begin
 			case LOBjets[i].stats.genre of
 				TypeObjet(2),TypeObjet(3),TypeObjet(4),explosion2:RenderAvecAngle(LObjets[i]);
 				explosion,afterimage:RenderRawImage(LObjets[i].image,LObjets[i].stats.transparence, LObjets[i].anim.isFliped);
-				joueur:if LObjets[i].stats.pendu then
+				joueur:
 					begin
-					rendermode(LObjets[i].image.rect,True);
-					SDL_RenderCopyEx(sdlRenderer, LObjets[i].image.imgTexture, nil, @LObjets[i].image.rect,0, nil, SDL_FLIP_VERTICAL);
-					rendermode(LObjets[i].image.rect,False);
-					end
-				else
-					RenderRawImage(LObjets[i].image,255, LObjets[i].anim.isFliped);
+						if LObjets[i].stats.clone then
+							begin
+							DrawRect(black_color,255, LObjets[i].image.rect.x-2+LObjets[i].col.offset.x,LObjets[i].image.rect.y+LObjets[i].col.dimensions.h+LObjets[i].col.offset.y+5, LObjets[i].col.dimensions.w+4, 12);
+							if LObjets[i].stats.vieMax>0 then
+								DrawRect(red_color,255, LObjets[i].image.rect.x+LObjets[i].col.offset.x,LObjets[i].image.rect.y+LObjets[i].col.dimensions.h+LObjets[i].col.offset.y+7, max(0,Round(LObjets[i].col.dimensions.w*(LObjets[i].stats.vie/LObjets[i].stats.vieMax))), 8 );
+							DrawRect(black_color,255, LObjets[i].image.rect.x-2+LObjets[i].col.offset.x,LObjets[i].image.rect.y+LObjets[i].col.dimensions.h+LObjets[i].col.offset.y+18, LObjets[i].col.dimensions.w+4, 12);
+							if LObjets[i].stats.manaMax>0 then
+								DrawRect(b_color,255, LObjets[i].image.rect.x+LObjets[i].col.offset.x,LObjets[i].image.rect.y+LObjets[i].col.dimensions.h+LObjets[i].col.offset.y+20, max(0,Round(LObjets[i].col.dimensions.w*(LObjets[i].stats.mana/LObjets[i].stats.manaMax))), 8 );
+							end;
+						if LObjets[i].stats.pendu then
+							begin
+							rendermode(LObjets[i].image.rect,True);
+							SDL_RenderCopyEx(sdlRenderer, LObjets[i].image.imgTexture, nil, @LObjets[i].image.rect,0, nil, SDL_FLIP_VERTICAL);
+							rendermode(LObjets[i].image.rect,False);
+							end
+						else
+							RenderRawImage(LObjets[i].image,255, LObjets[i].anim.isFliped)
+					end;
 				else
 					RenderRawImage(LObjets[i].image,255, LObjets[i].anim.isFliped);
 			end;

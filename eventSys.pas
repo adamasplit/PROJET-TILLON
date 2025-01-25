@@ -24,6 +24,8 @@ procedure MouvementJoueur(var joueur:TObjet);
 function isuiv(i:Integer):Integer;
 function iprec(i:Integer):Integer;
 procedure afficherCarte(carte:TCarte;alpha:Integer;image:TImage);
+procedure createAfterimage(obj:TObjet;duree:Integer);
+procedure updateAfterimage(var image:TObjet);
 
 implementation
 
@@ -45,55 +47,101 @@ begin
         getmouseY:=round(getMouseY/(windowHeight/720));
 end;
 
+procedure createAfterimage(obj:TObjet;duree:Integer);
+var image:TObjet;
+begin
+    if getframePath(obj.anim)<>nil then
+        begin
+        createRawImage(image.image,obj.image.rect.x,obj.image.rect.y,obj.image.rect.w,obj.image.rect.h,getFramePath(obj.anim));
+        image.anim.estActif:=False;
+        image.anim.isFliped:=obj.anim.isFliped;
+        image.col.estActif:=False;
+        image.stats.genre:=afterimage;
+        image.stats.vie:=duree;
+        image.stats.vieMax:=duree;
+        ajoutObjet(image);
+        end;
+end;
+
+procedure updateAfterimage(var image:TObjet);
+begin
+    image.stats.vie:=image.stats.vie-1;
+    if image.stats.vie<=0 then supprimeObjet(image)
+    else
+        image.stats.transparence:=round(image.stats.vie/image.stats.vieMax*50)
+end;
+
 procedure MouvementJoueur(var joueur:TObjet);
 var memflip:Boolean;
   begin
-	if joueur.anim.etat<>'degats' then
-    begin
-      if ( (sdlKeyboardState[SDL_SCANCODE_W] = 1) AND not(joueur.stats.pendu)) OR ((sdlKeyboardState[SDL_SCANCODE_S] = 1) AND joueur.stats.pendu) then //si z appuyé (ou s si pendu activé) alors déplacer vers le haut
-      begin
-        joueur.image.rect.y := joueur.image.rect.y - joueur.stats.Vitesse;
-      if joueur.anim.Etat <> 'run' then 
-          begin
-          memflip:=joueur.anim.isfliped;
-          InitAnimation(joueur.anim,joueur.anim.objectName,'run',6,True);
-          joueur.anim.isfliped:=memflip;
-          end;
-      end;
-    
-      if ( (sdlKeyboardState[SDL_SCANCODE_A] = 1) AND not(joueur.stats.pendu)) OR ((sdlKeyboardState[SDL_SCANCODE_D] = 1) AND joueur.stats.pendu) then
-      begin
-        joueur.image.rect.x := joueur.image.rect.x - joueur.stats.Vitesse;
-        if joueur.anim.Etat <> 'run' then InitAnimation(joueur.anim,joueur.anim.objectName,'run',6,True);
-        joueur.anim.isFliped := True;
-      end;
-      
-      if ( (sdlKeyboardState[SDL_SCANCODE_S] = 1) AND not(joueur.stats.pendu)) OR ((sdlKeyboardState[SDL_SCANCODE_W] = 1) AND joueur.stats.pendu) then
-      begin
-        joueur.image.rect.y := joueur.image.rect.y + joueur.stats.Vitesse;
-        if joueur.anim.Etat <> 'run' then 
-          begin
-          memflip:=joueur.anim.isfliped;
-          InitAnimation(joueur.anim,joueur.anim.objectName,'run',6,True);
-          joueur.anim.isfliped:=memflip;
-          end;
-      end;
-    
-      if ( (sdlKeyboardState[SDL_SCANCODE_D] = 1) AND not(joueur.stats.pendu)) OR ((sdlKeyboardState[SDL_SCANCODE_A] = 1) AND joueur.stats.pendu) then
+    if (joueur.stats.tp.restants>0) or (joueur.stats.tp.duree>0) then
+      if joueur.stats.tp.duree>0 then
         begin
-        joueur.image.rect.x := joueur.image.rect.x + joueur.stats.Vitesse;
-        joueur.anim.isFliped := False;
-        if joueur.anim.Etat <> 'run' then InitAnimation(joueur.anim,joueur.anim.objectName,'run',6,True);
-    end;
-
-    if ((joueur.anim.etat='sort') and animFinie(joueur.anim)) or ((joueur.anim.Etat = 'run') and not((sdlKeyboardState[SDL_SCANCODE_D] = 1) or (sdlKeyboardState[SDL_SCANCODE_S] = 1) or (sdlKeyboardState[SDL_SCANCODE_W] = 1) or (sdlKeyboardState[SDL_SCANCODE_A] = 1))) 
-      then begin
-        memflip:=joueur.anim.isfliped;
-        InitAnimation(joueur.anim,joueur.anim.objectName,'idle',12,True);
-        joueur.anim.isfliped:=memflip;
+        joueur.image.rect.x:=(joueur.image.rect.x+joueur.stats.tp.desttempx) div 2;
+        joueur.image.rect.y:=(joueur.image.rect.y+joueur.stats.tp.desttempy) div 2;
+        joueur.stats.tp.duree:=joueur.stats.tp.duree-1;
+        end
+      else
+        begin
+        joueur.stats.tp.duree:=3;
+        joueur.stats.tp.restants:=joueur.stats.tp.restants-1;
+        if joueur.stats.tp.restants=0 then
+          begin
+          joueur.stats.tp.desttempx:=joueur.stats.tp.destx;
+          joueur.stats.tp.desttempy:=joueur.stats.tp.desty;
+          end
+        else
+          begin
+          joueur.stats.tp.destTempx:=random(10)*60+200;
+          joueur.stats.tp.destTempy:=random(10)*60+100;
+          end
+        end
+      else joueur.col.estActif:=True;
+    if joueur.anim.etat<>'degats' then
+      begin
+        if ( (sdlKeyboardState[SDL_SCANCODE_W] = 1) AND not(joueur.stats.pendu)) OR ((sdlKeyboardState[SDL_SCANCODE_S] = 1) AND joueur.stats.pendu) then //si z appuyé (ou s si pendu activé) alors déplacer vers le haut
+        begin
+          joueur.image.rect.y := joueur.image.rect.y - joueur.stats.Vitesse;
+        if joueur.anim.Etat <> 'run' then 
+            begin
+            memflip:=joueur.anim.isfliped;
+            InitAnimation(joueur.anim,joueur.anim.objectName,'run',6,True);
+            joueur.anim.isfliped:=memflip;
+            end;
         end;
-    end
-		
+      
+        if ( (sdlKeyboardState[SDL_SCANCODE_A] = 1) AND not(joueur.stats.pendu)) OR ((sdlKeyboardState[SDL_SCANCODE_D] = 1) AND joueur.stats.pendu) then
+        begin
+          joueur.image.rect.x := joueur.image.rect.x - joueur.stats.Vitesse;
+          if joueur.anim.Etat <> 'run' then InitAnimation(joueur.anim,joueur.anim.objectName,'run',6,True);
+          joueur.anim.isFliped := True;
+        end;
+        
+        if ( (sdlKeyboardState[SDL_SCANCODE_S] = 1) AND not(joueur.stats.pendu)) OR ((sdlKeyboardState[SDL_SCANCODE_W] = 1) AND joueur.stats.pendu) then
+        begin
+          joueur.image.rect.y := joueur.image.rect.y + joueur.stats.Vitesse;
+          if joueur.anim.Etat <> 'run' then 
+            begin
+            memflip:=joueur.anim.isfliped;
+            InitAnimation(joueur.anim,joueur.anim.objectName,'run',6,True);
+            joueur.anim.isfliped:=memflip;
+            end;
+        end;
+      
+        if ( (sdlKeyboardState[SDL_SCANCODE_D] = 1) AND not(joueur.stats.pendu)) OR ((sdlKeyboardState[SDL_SCANCODE_A] = 1) AND joueur.stats.pendu) then
+          begin
+          joueur.image.rect.x := joueur.image.rect.x + joueur.stats.Vitesse;
+          joueur.anim.isFliped := False;
+          if joueur.anim.Etat <> 'run' then InitAnimation(joueur.anim,joueur.anim.objectName,'run',6,True);
+      end;
+
+      if ((joueur.anim.etat='sort') and animFinie(joueur.anim)) or ((joueur.anim.Etat = 'run') and not((sdlKeyboardState[SDL_SCANCODE_D] = 1) or (sdlKeyboardState[SDL_SCANCODE_S] = 1) or (sdlKeyboardState[SDL_SCANCODE_W] = 1) or (sdlKeyboardState[SDL_SCANCODE_A] = 1))) 
+        then begin
+          memflip:=joueur.anim.isfliped;
+          InitAnimation(joueur.anim,joueur.anim.objectName,'idle',12,True);
+          joueur.anim.isfliped:=memflip;
+          end;
+      end;
   end;
 
 procedure InitUICombat();
@@ -152,21 +200,21 @@ begin
    
     //if (icarteChoisie>2) or (icarteChoisie<0) then writeln(icarteChoisie);
     CreateRawImage(CombatUI[3],min(820,max(GetMouseX-20,140)),GetMouseY-5,90,90,stats.deck^[icarteChoisie].dir);
-    if ((LObjets[0].stats.mana<LObjets[0].stats.deck^[iCarteChoisie].cout) and not (LObjets[0].stats.deck^[iCarteChoisie].active)) then
+    if ((stats.mana<stats.deck^[iCarteChoisie].cout) and not (stats.deck^[iCarteChoisie].active)) then
       begin
       //sdl_settexturecolormod(combatUI[3].imgTexture,120,120,120);
-      if LObjets[0].stats.relique=10 then
+      if stats.relique=10 then
         begin
         afficherCarte(stats.deck^[iCarteChoisie],150,combatUI[3]);
-        if (LObjets[0].stats.deck^[iCarteChoisie].numero=27) or (LObjets[0].stats.deck^[iCarteChoisie].numero=28) then
-          drawRect(red_color,20+5*(-LObjets[0].stats.mana+LObjets[0].stats.deck^[iCarteChoisie].cout),CombatUI[3].rect.x+8,CombatUI[3].rect.y+7,76,76)
+        if (stats.deck^[iCarteChoisie].numero=27) or (stats.deck^[iCarteChoisie].numero=28) then
+          drawRect(red_color,20+5*(-stats.mana+stats.deck^[iCarteChoisie].cout),CombatUI[3].rect.x+8,CombatUI[3].rect.y+7,76,76)
         else
-          drawRect(red_color,20+5*(-LObjets[0].stats.mana+LObjets[0].stats.deck^[iCarteChoisie].cout),CombatUI[3].rect.x+14,CombatUI[3].rect.y,63,90)
+          drawRect(red_color,20+5*(-stats.mana+stats.deck^[iCarteChoisie].cout),CombatUI[3].rect.x+14,CombatUI[3].rect.y,63,90)
         end
       else
         begin
         afficherCarte(stats.deck^[iCarteChoisie],100,combatUI[3]);
-        if (LObjets[0].stats.deck^[iCarteChoisie].numero=27) or (LObjets[0].stats.deck^[iCarteChoisie].numero=28) then
+        if (stats.deck^[iCarteChoisie].numero=27) or (stats.deck^[iCarteChoisie].numero=28) then
           drawRect(black_color,100,CombatUI[3].rect.x+8,CombatUI[3].rect.y+7,76,76)
         else
           drawRect(black_color,100,CombatUI[3].rect.x+14,CombatUI[3].rect.y,63,90)
@@ -210,8 +258,8 @@ begin
       begin
       SDL_FreeSurface(CombatUI[6+i].imgSurface);
       SDL_DestroyTexture(CombatUI[6+i].imgTexture);
-      if (LObjets[0].stats.deck^[i-1].active) then
-        drawRect(black_color,round(180*(LObjets[0].stats.deck^[i-1].charges)/(LObjets[0].stats.deck^[i-1].chargesMax)),933,(68+150*(i-1)),135,132);
+      if (stats.deck^[i-1].active) then
+        drawRect(black_color,round(180*(stats.deck^[i-1].charges)/(stats.deck^[i-1].chargesMax)),933,(68+150*(i-1)),135,132);
       end;
     createRawImage(CombatUI[7],940,70 ,128,128,stats.deck^[0].dir);
     createRawImage(CombatUI[8],940,220,128,128,stats.deck^[1].dir);

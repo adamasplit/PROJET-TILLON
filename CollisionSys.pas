@@ -387,7 +387,7 @@ var
 begin
   
   for i := 0 to High(LObjets) do
-  if (i<=High(LObjets)) and not (leMonde and (i<>0)) then
+  if (i<=High(LObjets)) and not (leMonde and (LObjets[i].stats.genre=joueur)) and not (LObjets[i].stats.genre=afterimage) then
   begin
     LObjets[i].col.hasCollided:=False;
     //Limite la position d'un objet aux murs
@@ -398,7 +398,7 @@ begin
     begin
       destructionI:=False;
       for j := i + 1 to High(LObjets) do
-      if (j<=High(LObjets)) and (i<=High(LObjets)) and (not destructionI) then
+      if (j<=High(LObjets)) and (i<=High(LObjets)) and (not destructionI) and not (LObjets[j].stats.genre=afterimage) then
       begin
         //writeln('i=',i,',j=',j,',High(LObjets)=',high(lobjets));
         if (LObjets[i].anim.objectName='Roue') then 

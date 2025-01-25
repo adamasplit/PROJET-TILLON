@@ -572,7 +572,7 @@ begin
         end;
     if (ennemi.anim.etat='cast') and (ennemi.anim.currentFrame=2) and (ennemi.stats.compteurAction<3) then
       begin
-      XXIII(typeObjet(1),ennemi.stats,ennemi.image.rect.x,ennemi.image.rect.y,x,y,110);
+      XXIII(False,typeObjet(1),ennemi.stats,ennemi.image.rect.x,ennemi.image.rect.y,x,y,110);
       end;
       end;
     15:begin
@@ -1462,7 +1462,7 @@ begin
         else
           begin
           if ennemi.anim.objectName='elementaire_temps' then
-            LObjets[0].stats.vitesse:=statsJoueur.vitesse;
+            LObjets[joueur.stats.indice].stats.vitesse:=statsJoueur.vitesse;
           supprimeObjet(ennemi);
           vagueFinie:=True;
           for i:=1 to High(LObjets) do
