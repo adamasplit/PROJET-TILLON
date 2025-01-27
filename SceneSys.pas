@@ -621,7 +621,7 @@ begin
 						statsJoueur.tailleCollection:=4; 
 						for i:=1 to 4 do 
 							begin
-							statsJoueur.collection[i]:=Cartes[22]; 
+							statsJoueur.collection[i]:=Cartes[10+random(3)]; 
 							statsJoueur.collection[i].inverse:=True;
 							end;
 						end;
@@ -756,7 +756,11 @@ begin
 						HandleButtonClick(boutons[i].button, getmousex, getmousey);
 						end;
 					end;
-				'Deck':if iDeck<=statsJoueur.tailleCollection then statsJoueur.collection[ideck].inverse:=not(statsJoueur.collection[ideck].inverse);
+				'Deck':if iDeck<=statsJoueur.tailleCollection then 
+					begin
+					statsJoueur.collection[ideck].inverse:=not(statsJoueur.collection[ideck].inverse);
+					reactualiserDeck(False);
+					end;
 				'DDShop','DShop','US':begin
 					OnMouseClick(boutons[1], getmousex, getmousey);
 					HandleButtonClickRelique(boutons[4], getmousex, getmousey,0,statsJoueur);

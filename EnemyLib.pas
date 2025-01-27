@@ -567,7 +567,7 @@ begin
     14:begin
     if (random(30)=0) and (ennemi.anim.etat='rage') then begin
         alea1:=random(100)*10;alea2:=random(50)*15;
-        creerRayon(typeObjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,alea1,alea2,400,200,alea1,alea2-100,0,100,100,ennemi.stats.nomAttaque,obj);
+        creerRayon(typeObjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,alea1,alea2,400,200,alea1,alea2-100,0,30,100,ennemi.stats.nomAttaque,obj);
         ajoutObjet(obj)
         end;
     if (ennemi.anim.etat='cast') and (ennemi.anim.currentFrame=2) and (ennemi.stats.compteurAction<3) then

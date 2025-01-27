@@ -252,7 +252,7 @@ begin
   createRawImage(obj.image,x,y,w,h,getFramePath(obj.anim));
   obj.col.estActif:=False;
   obj.col.nom:=nom;
-  obj.stats.fixeJoueur:=fixeJoueur;
+  obj.stats.fixeJoueur:=False;
 end;
 
 procedure CreerRayon(origine:TypeObjet;flat,force:Integer;multiplicateurDegat:Real;volVie:Boolean;x,y,l,w,xdest,ydest:Integer;vitRotation:Real;dureeVie,delai:Integer;nom:PChar;var rayon:TObjet);
@@ -756,7 +756,7 @@ end;
     var proj : TObjet;
     begin
         if inv then
-            creerBoule(joueur, 4+lanceur.stats.vitesse div 5, lanceur.stats.force, lanceur.stats.multiplicateurDegat+1, min(1080,max(0,trouvercentrex(lanceur)+(x-trouvercentrex(lanceur))*2)), min(720,max(0,trouvercentrey(lanceur)+(y-trouvercentrey(lanceur))*2)),100,100, {vitesse} 29, x,y, 'projectile', proj)
+            creerBoule(joueur, 4+lanceur.stats.vitesse div 5, lanceur.stats.force+2, lanceur.stats.multiplicateurDegat, min(1080,max(0,trouvercentrex(lanceur)+(x-trouvercentrex(lanceur))*2)), min(720,max(0,trouvercentrey(lanceur)+(y-trouvercentrey(lanceur))*2)),60,60, {vitesse} 29, x,y, 'projectile', proj)
         else
             creerBoule(joueur, 4+lanceur.stats.vitesse div 5, lanceur.stats.force, lanceur.stats.multiplicateurDegat, trouvercentrex(lanceur), trouvercentrey(lanceur),100,100, {vitesse} 29, x,Y, 'projectile', proj);
         ajoutObjet(proj);
@@ -821,7 +821,7 @@ end;
         else
             begin
             lanceur.stats.defense := lanceur.stats.defense + 4;
-            creerEffet(0,0,140,140,12,'chariot2',True,eff);
+            creerEffet(lanceur.image.rect.x,lanceur.image.rect.y,140,140,12,'chariot2',True,eff);
             ajoutObjet(eff);
             end;
     end; 
@@ -853,7 +853,7 @@ end;
         else
             begin
             lanceur.stats.multiplicateurMana := lanceur.stats.multiplicateurMana * 1.2;
-            creerEffet(0,0,100,140,20,'ermite',True,eff);
+            creerEffet(lanceur.image.rect.x,lanceur.image.rect.y,100,140,20,'ermite',True,eff);
             ajoutObjet(eff);
             end;
 
@@ -874,13 +874,13 @@ end;
             4 : if inv then
                     begin
                     lanceur.stats.defense := lanceur.stats.defense + 3;
-                    creerEffet(0,0,100,100,11,'chariot',True,eff);
+                    creerEffet(lanceur.image.rect.x,lanceur.image.rect.y,100,100,11,'chariot',True,eff);
                     ajoutObjet(eff);
                     end
                 else
                     begin
                     lanceur.stats.force := lanceur.stats.force + 3;
-                    creerEffet(0,0,100,100,16,'force',True,eff);
+                    creerEffet(lanceur.image.rect.x,lanceur.image.rect.y,100,100,16,'force',True,eff);
                     ajoutObjet(eff);
                     end; // +3 force
             5,6,7,8  :if inv then
@@ -895,7 +895,7 @@ end;
                 else 
                     begin 
                     lanceur.stats.mana := lanceur.stats.mana + 2;
-                    creerEffet(0,0,70,70,12,'plus',True,eff);
+                    creerEffet(lanceur.image.rect.x,lanceur.image.rect.y,70,70,12,'plus',True,eff);
                     ajoutObjet(eff);
                     end
                 
@@ -919,7 +919,7 @@ end;
         else
             begin
             lanceur.stats.force := lanceur.stats.force + 1;
-            creerEffet(0,0,100,100,16,'force',True,eff);
+            creerEffet(lanceur.image.rect.x,lanceur.image.rect.y,100,100,16,'force',True,eff);
             ajoutObjet(eff);
             end
     end;
@@ -963,7 +963,7 @@ end;
             begin
             lanceur.stats.laMort := True;
             updateTimeMort:=sdl_getticks;
-            creerEffet(0,0,120,120,12,'mort',True,eff);
+            creerEffet(lanceur.image.rect.x,lanceur.image.rect.y,120,120,12,'mort',True,eff);
             ajoutObjet(eff);
             end;
     end;
@@ -981,7 +981,7 @@ end;
         else
             begin
             lanceur.stats.defense := lanceur.stats.defense + 1;
-            creerEffet(0,0,100,100,11,'chariot',True,eff);
+            creerEffet(lanceur.image.rect.x,lanceur.image.rect.y,100,100,11,'chariot',True,eff);
             ajoutObjet(eff);
             end
     end;
@@ -1009,7 +1009,7 @@ end;
             sPerm.defense := sPerm.defense + 1; // appliqué aussi au lanceur.stats de sauvegarde
             lanceur.stats.multiplicateurDegat := lanceur.stats.multiplicateurDegat + 0.5;
             sPerm.multiplicateurDegat := sPerm.multiplicateurDegat + 0.5;
-            creerEffet(0,0,120,120,15,'diable',True,eff);
+            creerEffet(lanceur.image.rect.x,lanceur.image.rect.y,120,120,15,'diable',True,eff);
             ajoutObjet(eff);
             end;
     end;
@@ -1072,12 +1072,12 @@ end;
         if inv then
             subirDegats(lanceur.stats, round(15-5*lanceur.stats.multiplicateurSoin),lanceur.image.rect.x,lanceur.image.rect.y)
         else subirDegats(lanceur.stats, round(-5*lanceur.stats.multiplicateurSoin),lanceur.image.rect.x,lanceur.image.rect.y); // soin de 5 pv 
-        creerEffet(0,0,150,150,15,'soleil',True,eff);
+        creerEffet(lanceur.image.rect.x,lanceur.image.rect.y,150,150,15,'soleil',True,eff);
         ajoutObjet(eff);
         for i := 0 to high(LOBjets) do
             if (LOBjets[i].stats.genre=ennemi) then
                 if inv then
-                    LOBjets[i].stats.defense:=LOBjets[i].stats.defense-1
+                    LOBjets[i].stats.force:=LOBjets[i].stats.force-2
                 else
                     subirDegats(LObjets[i].stats,degat(1,lanceur.stats.force,LObjets[i].stats.defense,lanceur.stats.multiplicateurDegat,false),trouverCentreX(LObjets[i]),trouverCentreY(LObjets[i]));
         for i := 0 to high(LOBjets) do
@@ -1104,11 +1104,21 @@ end;
             end
         else
             begin
-            if lanceur.stats.vieMax<20 then lanceur.stats.vieMax:=20;
+            for i:=1 to high(LObjets) do
+                if LObjets[i].stats.genre=joueur then
+                    begin
+                    if LObjets[i].stats.vieMax<20 then LObjets[i].stats.vieMax:=20;
+                    subirDegats(LObjets[i].stats, round(-10*LObjets[i].stats.multiplicateurSoin),LObjets[i].image.rect.x,LObjets[i].image.rect.y);
+                    end;
             subirDegats(lanceur.stats, round(-20*lanceur.stats.multiplicateurSoin),lanceur.image.rect.x,lanceur.image.rect.y);
-            creerEffet(0,0,150,150,15,'ange',True,eff);
-            ajoutObjet(eff);
+            for i:=0 to high(LObjets) do
+                if LObjets[i].stats.genre=joueur then
+                    begin
+                    creerEffet(LObjets[i].image.rect.x,LObjets[i].image.rect.y,150,150,15,'ange',True,eff);
+                    ajoutObjet(eff);
+                    end;
             end;
+            
     end;
 
     //21 Le monde
@@ -1122,7 +1132,7 @@ end;
             lanceur.stats.compteurLemonde := lanceur.stats.compteurLemonde +1;
             leMonde:=True; //arrête le temps
             updateTimeMonde:=sdl_getticks;
-            creerEffet(0,0,150,150,6,'monde',True,eff);
+            creerEffet(lanceur.image.rect.x,lanceur.image.rect.y,150,150,6,'monde',True,eff);
             ajoutObjet(eff);
             end;
     end;
@@ -1144,7 +1154,7 @@ end;
         else
             begin
             lanceur.stats.lefou:=min(4,lanceur.stats.lefou+2);
-            creerEffet(0,0,100,100,25,'fou',True,eff);
+            creerEffet(lanceur.image.rect.x,lanceur.image.rect.y,100,100,25,'fou',True,eff);
             ajoutObjet(eff);
             end
     end;

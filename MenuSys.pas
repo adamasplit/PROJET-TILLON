@@ -51,6 +51,7 @@ procedure actualiserDeck();
 procedure actualiserBestiaire();
 procedure scrollBestiaire();
 procedure InitJoueur(continuer:Boolean);
+procedure reactualiserDeck(total:Boolean);
 
 implementation
 
@@ -437,7 +438,7 @@ begin
     
 end;
 
-procedure reactualiserDeck();
+procedure reactualiserDeck(total:Boolean);
 begin
 	//writeln(ideck);
 	
@@ -454,7 +455,7 @@ begin
 			initDialogueBox(dialogues[4],nil,nil,460,120,500,600,extractionTexte('DESC_CAR_INV_'+intToStr(statsJoueur.collection[iDeck].numero)),10,Fantasy20,25)
 		else
 			initDialogueBox(dialogues[4],nil,nil,460,120,500,600,extractionTexte('DESC_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),10,Fantasy20,25);
-		initDialogueBox(dialogues[3],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),10);
+		if total then initDialogueBox(dialogues[3],'Sprites/Menu/Button1.bmp','Sprites/Menu/CombatUI_5.bmp',000,450,1080,350,extractionTexte('COMM_CAR_'+intToStr(statsJoueur.collection[iDeck].numero)),10);
 		end;
 end;
 
@@ -465,7 +466,7 @@ begin
 	sceneActive:='Deck';
 	iDeck:=1;
 	iDeckPrec:=1;
-	reactualiserDeck;
+	reactualiserDeck(True);
 end;
 
 procedure afficheStat(x,y:Integer;stat,statBase:Real;nom:String);
@@ -507,7 +508,7 @@ begin
 			sdl_destroytexture(carteDeck.imgTexture);
 			sdl_freeSurface(carteDeck.imgSurface);
 			end;
-		reactualiserDeck;
+		reactualiserDeck(True);
 		iDeckPrec:=iDeck;
 		end;
 	
