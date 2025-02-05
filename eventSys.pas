@@ -66,37 +66,15 @@ end;
 procedure updateAfterimage(var image:TObjet);
 begin
     image.stats.vie:=image.stats.vie-1;
-    if image.stats.vie<=0 then supprimeObjet(image)
+    if image.stats.vie<=0 then 
+      supprimeObjet(image)
     else
-        image.stats.transparence:=round(image.stats.vie/image.stats.vieMax*50)
+      image.stats.transparence:=round(image.stats.vie/image.stats.vieMax*50)
 end;
 
 procedure MouvementJoueur(var joueur:TObjet);
 var memflip:Boolean;
   begin
-    if (joueur.stats.tp.restants>0) or (joueur.stats.tp.duree>0) then
-      if joueur.stats.tp.duree>0 then
-        begin
-        joueur.image.rect.x:=(joueur.image.rect.x+joueur.stats.tp.desttempx) div 2;
-        joueur.image.rect.y:=(joueur.image.rect.y+joueur.stats.tp.desttempy) div 2;
-        joueur.stats.tp.duree:=joueur.stats.tp.duree-1;
-        end
-      else
-        begin
-        joueur.stats.tp.duree:=3;
-        joueur.stats.tp.restants:=joueur.stats.tp.restants-1;
-        if joueur.stats.tp.restants=0 then
-          begin
-          joueur.stats.tp.desttempx:=joueur.stats.tp.destx;
-          joueur.stats.tp.desttempy:=joueur.stats.tp.desty;
-          end
-        else
-          begin
-          joueur.stats.tp.destTempx:=random(10)*60+200;
-          joueur.stats.tp.destTempy:=random(10)*60+100;
-          end
-        end
-      else joueur.col.estActif:=True;
     if joueur.anim.etat<>'degats' then
       begin
         if ( (sdlKeyboardState[SDL_SCANCODE_W] = 1) AND not(joueur.stats.pendu)) OR ((sdlKeyboardState[SDL_SCANCODE_S] = 1) AND joueur.stats.pendu) then //si z appuyé (ou s si pendu activé) alors déplacer vers le haut

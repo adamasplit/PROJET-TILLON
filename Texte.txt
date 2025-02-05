@@ -174,7 +174,7 @@
 
 <TXT_MAP10>Plus qu'un chemin possible, on dirait... Il faut que je sorte d'ici.;
 <TXT_MAP20>On dirait qu'il est temps pour mon conseil de discipline, mais quel genre de fou peut vouloir vivre dans un endroit pareil?;
-<TXT_MAP30>Je préfère ne pas savoir quelle créature a fait cette ouverture, mais je n'ai pas le choix si je veux ressortir vivante au milieu de toutes ces choses.;
+<TXT_MAP30>Je préfère ne pas savoir quelle créature a fait cette ouverture, mais je n'ai pas le choix si je veux ressortir vivante au milieu de ces créatures.;
 <TXT_MAP40>Ma quête touche à sa fin. Derrière ces portes... se trouve le Conseil. Je n'y suis pas la bienvenue.;
 
 <REPRISE_1>Bon... on s'y remet?;
@@ -199,6 +199,7 @@
 <DESC_REL_9>Symboles de la dualité, les lames jumelles de l'Eclipse permettent parfois de lancer deux sorts.;
 <DESC_REL_10>Cet objet datant des temps anciens est une création jointe des deux races originelles, et a été scellé pour empêcher leur résurrection. Il permet la conversion entre vie et magie.;
 <DESC_REL_11>La légendaire lame incandescente, Lionheart. En théorie, nul ne peut la manier sauf celui qui l'a extraite de son propre coeur.;
+<DESC_REL_12>L'Eternal Return, artéfact d'un autre monde. Entre les mains d'un être assez puissant, il peut accorder le contrôle total sur les temporalités. (Appuyez sur ESPACE pour remonter le temps);
 <COMM_REL_1>Eh bien, c'est un effet simple mais toujours utile. Je ne les utiliserai pas pour fuir.;
 <COMM_REL_2>J'espère bien que si j'ai été jugée méritante, ce n'est pas uniquement parce que j'ai affronté les serviteurs des dieux.;
 <COMM_REL_3>Je ne reconnais pas cette matière. Et... est-ce mon propre sang?;
@@ -210,7 +211,7 @@
 <COMM_REL_9>La dualité est la base d'un certain nombre de choses. L'histoire de notre monde, les domaines de la magie... les guerres...;
 <COMM_REL_10>C'est étrange, je ne vois pas l'emblème d'un dragon... Est-ce que cette gemme contient vraiment encore leur influence ? Si c'est le cas, je dois faire attention, j'ai déjà assez d'ennemis comme ça.;
 <COMM_REL_11>Quelle volonté m'a poussé à lui prendre sa propre arme? C'est étrange... Et je la sens brûler ardemment même entre mes mains.;
-
+<COMM_REL_12>N'exagérons rien, je suis à peine assez forte pour revenir en arrière de quelques secondes. Mais cet objet semble avoir un potentiel vraiment immense.;
 <GAMEOVER_1>Quelle terrible prémonition! Il ne tient qu'à moi de faire en sorte qu'elle ne se réalise pas.;
 <GAMEOVER_2>Non... Est-ce vraiment ce à quoi je me destine?;
 <GAMEOVER_3>J'ai déjà lu mon propre destin, ce n'est pas comme ça que les choses se passeront. Recommençons.;
@@ -260,6 +261,21 @@
 <INTRO_EVENT6_12>Efficace et rapide. Comme toi...?;
 <FIN_EVENT6_1>Et merci!! Bon courage!;
 <FIN_EVENT6_2>Ouais, ouais. Allez, on y va?;
+<SPEC_EVENT5_1>Attendez... C'est l'Eternal Return?!;
+<SPEC_EVENT5_2>Hum, oui... J'imagine?;
+<SPEC_EVENT5_3>Mais... vous arrivez à l'utiliser?;
+<SPEC_EVENT5_4>Je peux remonter un peu le temps, oui.;
+<SPEC_EVENT5_5>C'est une folie!;
+<SPEC_EVENT5_6>Pourquoi, cet artéfact est à vous?;
+<SPEC_EVENT5_7>Non, pas vraiment, je suis juste... "tombé" dessus ... par hasard.;
+<SPEC_EVENT5_8>Pendant un moment, j'ai pu l'utiliser pour créer une boucle temporelle. Mais je...;
+<SPEC_EVENT5_9>Tu en as perdu l'usage en mourant, c'est ça?;
+<SPEC_EVENT5_10>Oui, peut-être. De toute façon, ça fait un moment que je ne l'ai pas eu sous la main.;
+<SPEC_EVENT5_11>Mais si vous arrivez à vous en servir, pas de galères, gardez-le.;
+<SPEC_EVENT5_12>Bon, très bien. Je tenterai d'en faire bon usage, mais je suis sans doute moins puissante que vous.;
+<SPEC_EVENT5_13>Heh. Je pense que vous vous en servirez mieux que lui.;
+<SPEC_EVENT5_14>...;
+<SPEC_EVENT5_15>Bref.;
 <SPEC_EVENT6_1>Attendez, j'ai votre carte... Enfin, je crois?;
 <SPEC_EVENT6_2>Ah oui, c'est moi! Qui a fait ça?;
 <SPEC_EVENT6_3>Je ne connais qu'une seule personne assez tordue pour faire un truc pareil...;
@@ -275,7 +291,7 @@
 <INTRO_EVENT7_6>T'es trop gentil... On a pas à aider tout le monde sur notre chemin.;
 <INTRO_EVENT7_7>Quoi, tu voudrais un truc en échange? Tu es un gourmand!;
 <INTRO_EVENT7_8>...;
-<INTRO_EVENT7_9>...Je peux donner un effet de réduction de la consommation de mana, parce qu'on est pas des consommateurs ici.;
+<INTRO_EVENT7_9>...Je peux donner un effet de réduction de la consommation de mana, si vous voulez.;
 <INTRO_EVENT7_10>Tu vois quand tu veux!;
 <SPEC_EVENT7_1>Hmm... J'ai une carte qui a l'air de vous représenter.;
 <SPEC_EVENT7_2>Ah ouais.;
@@ -453,11 +469,11 @@
 <DIALOGUE_BOSS2_1_1>HO HO HO ! Qui vient me déranger dans mes recherches ?;
 <DIALOGUE_BOSS2_1_2>Je suis Nym-;
 <DIALOGUE_BOSS2_1_3>-mera Amarisse, cartomancienne de Sarkota ayant étudié la cartomancie à Clamsofort et fameuse cheffe des événements.;
-<DIALOGUE_BOSS2_1_4>...?;
+<DIALOGUE_BOSS2_1_4>D'accord...?;
 <DIALOGUE_BOSS2_1_5>HO HO HO ! Je sais tout ce qu'il y a à savoir. Ma connaissance n'a de limite que votre imagination !;
-<DIALOGUE_BOSS2_1_6>D'où vient donc cet excès de confiance ?;
+<DIALOGUE_BOSS2_1_6>Très bien... et qu'est-ce qui vous fait croire ça?;
 <DIALOGUE_BOSS2_1_7>Je suis un ancien d'avant l'an I. J'ai plus de 6 millénaires d'études sur le pouvoir magique des dieux.;
-<DIALOGUE_BOSS2_1_8>Ha, vous savez tout ce qui s'est passé dans l'histoire ?;
+<DIALOGUE_BOSS2_1_8>Donc vous savez tout ce qui s'est passé dans l'histoire ?;
 <DIALOGUE_BOSS2_1_9>On peut dire cela, oui! HO HO !;
 <DIALOGUE_BOSS2_1_10>Dans ce cas, est-ce vrai que le président du conseil voulait s'accaparer les terres des druides par la guerre ?;
 <DIALOGUE_BOSS2_1_11>Hmph... Tu sais jeune fille, tous les secrets n'ont pas besoin d'être révelés au grand jour.;

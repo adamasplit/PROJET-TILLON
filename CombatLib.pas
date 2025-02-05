@@ -14,7 +14,9 @@ uses
     fichierSys,
     sysutils;
 
+const MAXRETOUR=15;
 var updateTimeMonde:UInt32;updateTimeMort:UInt32;
+var updateTimeEternalReturn:UInt32;eternelRetour:array[1..MAXRETOUR] of TObjet;
 
 function degat(flat : Integer ; force : Integer ; defense : Integer;multiplicateurDegat:Real;cap:Boolean): Integer;
 procedure RegenMana(var LastUpdateTime : UInt32;var mana:Integer;manaMax:Integer;relique:Integer;var vie:Integer;multiplicateurMana:Real);
@@ -209,8 +211,14 @@ end;
 
 //Lancement du combat
 procedure initStatsCombat(statsPerm:TStats;var joueur:TObjet);
-//var i:Integer;
+var i:Integer;
 begin
+    updateTimeEternalReturn:=sdl_getTicks;
+    for i:=1 to 5 do
+        begin
+        eternelRetour[i].stats.indice:=-10;
+        eternelRetour[i].anim.objectName:='';
+        end;
     joueur.col.isTrigger := False;
     joueur.col.estActif := True;
     joueur.col.dimensions.w := 50;
@@ -914,6 +922,12 @@ end;
                 if LObjets[i].stats.genre=ennemi then
                 begin
                 LObjets[i].stats.defense:=LObjets[i].stats.defense-1;
+                end;
+            for i:=1 to high(LObjets) do
+                if LObjets[i].stats.genre=ennemi then
+                begin
+                creerEffet(LObjets[i].image.rect.x,LObjets[i].image.rect.y,LObjets[i].image.rect.w,LObjets[i].image.rect.h,10,'antidefense',False,eff);
+                ajoutObjet(eff);
                 end
             end
         else
@@ -1098,7 +1112,7 @@ end;
                 if LObjets[i].stats.genre=ennemi then
                 begin
                 LObjets[i].stats.compteurAction:=0;
-                creerRayon(typeObjet(0),2,lanceur.stats.force,lanceur.stats.multiplicateurDegat,false,trouvercentrex(LObjets[i]),trouverCentrey(LObjets[i])+100,300,150,trouvercentrex(LObjets[i]),trouvercentrey(LObjets[i])-100,0,50,30{-ennemi.stats.compteurAction},'arcane',obj);
+                creerRayon(typeObjet(0),10,lanceur.stats.force,lanceur.stats.multiplicateurDegat+lanceur.stats.multiplicateurSoin,false,trouvercentrex(LObjets[i]),trouverCentrey(LObjets[i])+100,300,150,trouvercentrex(LObjets[i]),trouvercentrey(LObjets[i])-100,0,50,30{-ennemi.stats.compteurAction},'arcange',obj);
                 ajoutObjet(obj);
                 end
             end

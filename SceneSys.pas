@@ -26,13 +26,37 @@ implementation
 var UpdateTimeTuto : UInt32; indiceTuto:Integer;
 
 procedure updateObjets(); //met à jour tous les objets autres que le joueur et les ennemis
-var i:Integer;interruption:Boolean;
+var i,j:Integer;interruption,retour:Boolean;
 begin
 interruption:=False;
 for i:=0 to High(LObjets) do
       if (not interruption) and (i<=High(LObjets)) then
 	  	begin
             LObjets[i].stats.indice:=i;
+			if (LObjets[i].stats.tp.restants>0) or (LObjets[i].stats.tp.duree>0) then
+				if LObjets[i].stats.tp.duree>0 then
+					begin
+					LObjets[i].image.rect.x:=(LObjets[i].image.rect.x+LObjets[i].stats.tp.desttempx) div 2;
+					LObjets[i].image.rect.y:=(LObjets[i].image.rect.y+LObjets[i].stats.tp.desttempy) div 2;
+					LObjets[i].stats.tp.duree:=LObjets[i].stats.tp.duree-1;
+					end
+				else
+					begin
+					LObjets[i].stats.tp.duree:=3;
+					LObjets[i].stats.tp.restants:=LObjets[i].stats.tp.restants-1;
+					if LObjets[i].stats.tp.restants=0 then
+						begin
+						LObjets[i].stats.tp.desttempx:=LObjets[i].stats.tp.destx;
+						LObjets[i].stats.tp.desttempy:=LObjets[i].stats.tp.desty;
+						end
+					else
+						begin
+						LObjets[i].stats.tp.destTempx:=random(10)*60+200;
+						LObjets[i].stats.tp.destTempy:=random(10)*60+100;
+						end
+					end
+				else begin
+					if LObjets[i].stats.genre=joueur then LObjets[i].col.estActif:=True;
 			case LObjets[i].stats.genre of
 			joueur:begin
 				if LObjets[i].stats.vie>LObjets[i].stats.vieMax then LObjets[i].stats.vie:=LObjets[i].stats.vieMax;
@@ -48,7 +72,21 @@ for i:=0 to High(LObjets) do
 					LObjets[i].stats.vie:=0;
 					if i<>0 then supprimeObjet(LObjets[i]);
 					end;
-				if ((LObjets[i].stats.vitesse>10) and ((SDL_GetTicks mod 100) mod LObjets[i].stats.vitesse=0)) or (LObjets[i].stats.tp.duree>0) then createAfterimage(Lobjets[i],30);
+				if (LObjets[i].stats.relique=12) and (sdl_getTicks>updateTimeEternalReturn+1000+100*LObjets[i].stats.compteurLeMonde) then
+					begin
+					updateTimeEternalReturn:=sdl_getTicks;
+					for j:=MAXRETOUR downto 2 do
+						eternelRetour[j]:=eternelRetour[j-1];
+					eternelRetour[1]:=LObjets[i];
+					retour:=False;
+					for j:=5 downto 1 do
+						if (eternelRetour[j].anim.objectName<>'') and not(retour) then
+							begin
+							createAfterimage(eternelRetour[j],100);
+							retour:=True;
+							end;
+					end
+				//else if ((LObjets[i].stats.vitesse>10) and ((SDL_GetTicks mod 100) mod LObjets[i].stats.vitesse=0)) or (LObjets[i].stats.tp.duree>0) then createAfterimage(Lobjets[i],30);
 				end;
 			ennemi: if not leMonde then
 					begin
@@ -70,6 +108,7 @@ for i:=0 to High(LObjets) do
 				LObjets[i].image.rect.x:=trouvercentrex(LObjets[0])-(LObjets[i].image.rect.w div 2);
 				LObjets[i].image.rect.y:=trouvercentrey(LObjets[0])-(LObjets[i].image.rect.h div 2);
 				end;
+			end;
 			end;
 		end
 end;
@@ -147,7 +186,11 @@ var faucheuse : TObjet;
 			end;
 		if vagueFinie then ajoutVague;
 		if combatFini then 
+			begin
+			//while (high(LObjets)>0) and (LObjets[1].stats.genre<>joueur) do
+			//	supprimeObjet(LObjets[High(Lobjets)]);
 			victoire(statsJoueur,boss,enn);
+			end;
 		
 	end;
 
@@ -389,7 +432,7 @@ end;
 
 
 procedure GameUpdate(var indice:Integer;var updateTime:UINT32);
-var i:Integer;son,boss:Boolean;ennemiActuel:Integer;cardHover:Array [1..3] of Boolean;clone:TObjet;carteJouee:TCarte;
+var i,j,x,y:Integer;son,boss:Boolean;ennemiActuel:Integer;cardHover:Array [1..3] of Boolean;clone,eff:TObjet;carteJouee:TCarte;
 begin
    while not QUITGAME do
   begin
@@ -439,8 +482,17 @@ begin
 		end;
   		'Jeu': 
   		begin
-		boss:=((high(LObjets)>=1) and (LObjets[1].stats.boss));
-		if boss then ennemiActuel:=LObjets[1].stats.numero;
+		if high(LObjets)>1 then boss:=False;
+		i:=0;
+		while (boss=False) and (i<High(LObjets)) do
+			begin
+			if (LObjets[i].stats.genre=ennemi) and (LObjets[i].stats.boss) then
+				begin
+				boss:=True;
+				ennemiActuel:=LObjets[i].stats.numero;
+				end;
+			i:=i+1;
+			end;
 		ActualiserJeu(boss,ennemiActuel);
 		end;
   		'MenuEnJeu': 
@@ -538,18 +590,23 @@ begin
 		begin
 		affichertout;
 		UpdateDialogueBox(dialogues[2]);
-		if (LObjets[0].anim.etat<>'idle') then
-			initAnimation(LObjets[0].anim,LObjets[0].anim.objectName,'idle',12,True);
-		updateanimation(LObjets[0].anim,LObjets[0].image);
-		
-		if LObjets[1].anim.objectName='Béhémoth' then fond.rect.x:=88-4+random(9);
+		for i:=0 to high(LObjets) do 
+			if LObjets[i].anim.objectName='Béhémoth' then 
+				fond.rect.x:=88-4+random(9)
+			else if LObjets[i].stats.genre=joueur then
+				begin
+				if (LObjets[0].anim.etat<>'idle') then
+					initAnimation(LObjets[0].anim,LObjets[0].anim.objectName,'idle',12,True);
+				updateanimation(LObjets[0].anim,LObjets[0].image);
+				end;
 		end;
 		'Behemoth_Mort':
 		begin
 		affichertout;
 		UpdateDialogueBox(dialogues[2]);
-		updateanimation(LObjets[0].anim,LObjets[0].image);
-		updateanimation(LObjets[1].anim,LObjets[1].image);
+		for i:=0 to high(LObjets) do
+		if (LObjets[i].anim.objectName='Béhémoth') or (LObjets[i].stats.genre=joueur) then
+			updateanimation(LObjets[i].anim,LObjets[i].image);
 		if sdl_getTicks mod 1 = 0 then 
 			begin
 			fond.rect.x:=88+random(9);
@@ -557,13 +614,18 @@ begin
 		while (SDL_PollEvent( EventSystem ) = 1) do
     		begin
       			case EventSystem^.type_ of
-					SDL_mousebuttondown:if dialogues[2].letterdelay=0 then begin 
+					SDL_mousebuttondown:if dialogues[2].letterdelay=0 then 
+						begin 
 						jouerSonEnn('dragon3');
-						InitAnimation(LObjets[1].anim,LObjets[1].anim.objectName,'mort',LObjets[1].stats.nbFramesMort,False);
-						sceneActive:='Jeu';
-						end
+						for i:=0 to high(LObjets) do
+						if (LObjets[i].anim.objectName='Béhémoth') then
+							begin
+							InitAnimation(LObjets[1].anim,LObjets[1].anim.objectName,'mort',LObjets[1].stats.nbFramesMort,False);
+							sceneActive:='Jeu';
+							end
 						else
 							dialogues[2].LetterDelay:=0;
+						end
 				end
 			end
 		end;
@@ -583,12 +645,12 @@ begin
 						if sceneActive='Event' then activationEvent(sceneSuiv)
 						else if sceneActive='Cutscene' then 
 							begin
-							if (LObjets[1].anim.objectName='Leo_Transe') and (LObjets[1].anim.etat='mort') then victoire(statsJoueur,23)
+							for i:=0 to high(LObjets) do if (LObjets[i].anim.objectName='Leo_Transe') and (LObjets[i].anim.etat='mort') then victoire(statsJoueur,23)
 							else
 								sceneActive:='Jeu';
 							while high(queueDialogues)>-1 do
 								supprimeDialogue(1);
-							if LObjets[1].anim.objectName='Béhémoth' then begin
+							for i:=0 to high(LObjets) do if LObjets[i].anim.objectName='Béhémoth' then begin
 							indiceMusiqueJouee:=13;
 							mix_resumeMusic;
 							end
@@ -596,14 +658,48 @@ begin
 						else if (sceneActive<>'Menu') and (sceneActive<>'Credits') and (sceneActive<>'Fondu') and (sceneActive<>'mortJoueur') and (sceneActive<>'GameOver') then menuEnJeu;
 						end;
 					SDLK_SPACE:begin
-						if leMonde then leMonde:=False;
+						if LObjets[0].stats.relique=12 then
+							begin
+							x:=LObjets[0].image.rect.x;
+							y:=LObjets[0].image.rect.y;
+							i:=5;
+							repeat
+							//writeln(i);
+								if eternelRetour[i].anim.objectName<>'' then
+									begin
+									LObjets[0]:=eternelRetour[i];
+									LObjets[0].col.estActif:=False;
+									LObjets[0].stats.tp.duree:=5;
+									LObjets[0].stats.tp.restants:=0;
+									LObjets[0].stats.tp.destx:=eternelRetour[i].image.rect.x;
+									LObjets[0].stats.tp.desty:=eternelRetour[i].image.rect.y;
+									LObjets[0].stats.tp.destTempx:=eternelRetour[i].image.rect.x;
+									LObjets[0].stats.tp.destTempy:=eternelRetour[i].image.rect.y;
+									LObjets[0].image.rect.x:=x;
+									LObjets[0].image.rect.y:=y;
+									createRawImage(LObjets[0].image,x,y,LObjets[0].image.rect.w,LObjets[0].image.rect.h,getframepath(LObjets[0].anim));
+									//Mix_SetMusicPosition(((sdl_getTicks-updatetimemusique) div 1000)-i);
+									updatetimemusique:=updatetimemusique+i*1000;
+									for j:=1 to MAXRETOUR-5 do
+										eternelRetour[j]:=eternelRetour[j+5];
+									i:=0;
+									end;
+								i:=i-1;
+							until i<0;
+							creerEffet(LObjets[0].stats.tp.destx,LObjets[0].stats.tp.desty,120,120,17,'retour',False,eff);
+							ajoutObjet(eff);
+							end;
+						//if leMonde then leMonde:=False;
 						//LObjets[0].stats.compteurLeMonde:=100;
 						//updateTimeMonde:=sdl_getTicks;
 						end;
 					SDLK_M:writeln(LObjets[0].stats.multiplicateurMana);
 					SDLK_UP:  LObjets[0].stats.vie := LObjets[0].stats.vie +10;
 					SDLK_DOWN: LObjets[0].stats.vie := LObjets[0].stats.vie-10;
-					SDLK_O:LOBjets[0].stats.multiplicateurMana:=LOBjets[0].stats.multiplicateurMana+100;
+					SDLK_O:begin
+						LOBjets[0].stats.multiplicateurMana:=LOBjets[0].stats.multiplicateurMana+100;
+						LObjets[0].stats.mana:=LObjets[0].stats.manaMax;
+						end;
 					SDLK_H : choixSalle();
 					SDLK_F2:begin
 						LObjets[0].stats.force:=LObjets[0].stats.force+10;
@@ -627,7 +723,7 @@ begin
 						end;
 					SDLK_F8:for i:=0 to high(LObjets[0].stats.deck^) do LObjets[0].stats.deck^[i]:=Cartes[6];
 					SDLK_F9:statsJoueur.avancement:=statsJoueur.avancement+MAXSALLES-2;
-					SDLK_F10:statsJoueur.multiplicateurSoin:=1;
+					SDLK_F10:statsJoueur.relique:=12;
 					SDLK_L:LObjets[0].anim.objectName:=stringtoPchar('Joueur'+inttoStr(random(2)+2));
 					SDLK_F11:begin
 						clone:=LObjets[0];
@@ -687,7 +783,10 @@ begin
 				'Jeu': for i:=0 to high(LObjets) do 
 					if (Lobjets[i].stats.genre=joueur) and (i<High(LObjets)) then 
 						if cyclerCarte(Lobjets[i],icarteChoisie,carteJouee) then
+							begin
+							carteJouee.inverse:=(carteJouee.inverse and (EventSystem^.button.button=SDL_BUTTON_LEFT)) or (not(carteJouee.inverse) and (EventSystem^.button.button=SDL_BUTTON_RIGHT));
 							jouerCarte(Lobjets[i],carteJouee,getmousex,getmousey);
+							end;
 				'defausse':begin
 					OnMouseClick(boutons[3], getmousex, getmousey);
 					HandleButtonClickCarte(boutons[3], getmousex, getmousey,statsjoueur.collection[ichoix1],statsJoueur);

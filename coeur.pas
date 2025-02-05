@@ -60,6 +60,9 @@ type TStats=record //(version variable)
     xreel,yreel,angle:Real;
     etatPrec:TANimation; //dans le cas où l'objet est interrompu (par des dégâts par exemple) 
     inamovible:Boolean;
+    tp:record
+      restants,duree,destTempx,destTempy,destx,desty:Integer;
+      end;
     case genre:typeObjet of 
         joueur:(mana:Integer;
           manaMax:Integer;
@@ -78,9 +81,6 @@ type TStats=record //(version variable)
           laMort,ophiucus:Boolean;
           nbJustice : Integer;
           nbMarchand: Integer;
-          tp:record
-            restants,duree,destTempx,destTempy,destx,desty:Integer;
-            end;
           relique:Integer);// numéro de la relique équipée
         
         ennemi:(
@@ -244,7 +244,12 @@ end;
 
 procedure AjoutObjet(var obj:TObjet); //Ajoute directement un projectile/autre à LObjets
 begin
-    
+    obj.stats.tp.restants :=-1;
+    obj.stats.tp.duree    :=-1;
+    obj.stats.tp.destTempx:=-1;
+    obj.stats.tp.destTempy:=-1;
+    obj.stats.tp.destx    :=-1;
+    obj.stats.tp.desty    :=-1;
     obj.stats.indice:=High(LObjets)+1;
     setlength(LObjets,obj.stats.indice+1);
     if (obj.stats.indice<=High(LObjets)) then

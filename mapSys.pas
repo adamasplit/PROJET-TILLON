@@ -1296,7 +1296,14 @@ case alea of
             begin
             ajoutDialogue('Sprites/Portraits/ulgatr.bmp',extractionTexte('INTRO_EVENT6_3'));
             ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('INTRO_EVENT6_4'));
-            if trouverCarte(statsJoueur,26) then
+            if statsJoueur.relique=12 then
+                for i:=1 to 15 do
+                    case i of 
+                    1,3,5,7,8,10,11,14,15:ajoutDialogue('Sprites/Portraits/ulgatr.bmp',extractionTexte('SPEC_EVENT5_'+intToSTR(i)));
+                    9,13:ajoutDialogue('Sprites/Portraits/soeryo.bmp',extractionTexte('SPEC_EVENT5_'+intToSTR(i)));
+                    else ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('SPEC_EVENT5_'+intToStr(i)));
+                    end
+            else if trouverCarte(statsJoueur,26) then
                 for i:=1 to 9 do
                     case i of 
                     2,4,5,7,9:ajoutDialogue('Sprites/Portraits/ulgatr.bmp',extractionTexte('SPEC_EVENT6_'+intToSTR(i)));
