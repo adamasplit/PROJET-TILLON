@@ -91,8 +91,8 @@ for i:=0 to High(LObjets) do
 			ennemi: if not leMonde then
 					begin
 					vagueFinie:=False;
-					if not (LObjets[i].anim.etat='dodge') then
-						LObjets[i].col.estActif:=True;
+					//if not (LObjets[i].anim.etat='dodge') then
+					//	LObjets[i].col.estActif:=True;
 					IAEnnemi(LObjets[i],LObjets[0]);
 					if (LObjets[i].anim.etat='dodge') or (LObjets[i].anim.etat='dash') then createAfterimage(Lobjets[i],20);
 					end;
@@ -679,7 +679,7 @@ begin
 									LObjets[0].image.rect.y:=y;
 									createRawImage(LObjets[0].image,x,y,LObjets[0].image.rect.w,LObjets[0].image.rect.h,getframepath(LObjets[0].anim));
 									//Mix_SetMusicPosition(((sdl_getTicks-updatetimemusique) div 1000)-i);
-									updatetimemusique:=updatetimemusique+i*1000;
+									//updatetimemusique:=updatetimemusique+i*1000;
 									for j:=1 to MAXRETOUR-5 do
 										eternelRetour[j]:=eternelRetour[j+5];
 									i:=0;
@@ -724,7 +724,7 @@ begin
 					SDLK_F8:for i:=0 to high(LObjets[0].stats.deck^) do LObjets[0].stats.deck^[i]:=Cartes[6];
 					SDLK_F9:statsJoueur.avancement:=statsJoueur.avancement+MAXSALLES-2;
 					SDLK_F10:statsJoueur.relique:=12;
-					SDLK_L:LObjets[0].anim.objectName:=stringtoPchar('Joueur'+inttoStr(random(2)+2));
+					SDLK_L:LObjets[0].anim.objectName:=stringtoPchar('Joueur'+inttoStr(random(3)+2));
 					SDLK_F11:begin
 						clone:=LObjets[0];
 						clone.stats.pendu:=not(clone.stats.pendu);

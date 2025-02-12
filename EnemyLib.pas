@@ -19,7 +19,7 @@ uses
 var templatesEnnemis:array[1..MAXENNEMIS] of TObjet;
     ennemis:Array of TOBjet;
 //procedure initStatEnnemi(nom:PChar;typeIA_MVT,vie,att,dmg,def,vitesse,w,h,framesA,frames1,frames2,frames3,framesM:Integer;var ennemi:TObjet;wcol,hcol,offx,offy:Integer;nomAttaques:PChar);
-procedure IAEnnemi(var ennemi:TObjet;joueur:TObjet);
+procedure IAEnnemi(var ennemi:TObjet;var joueur:TObjet);
 procedure ajoutVague();
 procedure initEnnemis;
 
@@ -29,13 +29,12 @@ procedure transformation(var ennemi:TObjet;num:Integer); //remplace un ennemi pa
 var x,y:Integer;
 begin
   statsJoueur.bestiaire[ennemi.stats.numero]:=True;
-  x:=ennemi.image.rect.x;
-  y:=ennemi.image.rect.y;
+  x:=trouvercentreX(ennemi);
+  y:=trouvercentreX(ennemi);
   sdl_destroytexture(ennemi.image.imgTexture);
   sdl_freeSurface(ennemi.image.imgSurface);
   ennemi:=templatesEnnemis[num];
-  ennemi.image.rect.x:=x;
-  ennemi.image.rect.y:=y;
+  createRawImage(ennemi.image,x-ennemi.col.offset.x-(ennemi.col.dimensions.w div 2),y-ennemi.col.offset.y-(ennemi.col.dimensions.h div 2),ennemi.image.rect.w,ennemi.image.rect.h,getframepath(ennemi.anim));
   jouerSonEnn(ennemi.anim.objectName+'_apparition');
 end;
 
@@ -158,17 +157,21 @@ end;
 
 //permet à un ennemi de se téléporter au hasard
 procedure IATeleport(var ennemi:TObjet;targetx,targety:Integer);
-var xdest,ydest:Integer;
+var xdest,ydest,i:Integer;
 begin
   randomize();
   ennemi.col.estActif:=False;
+  i:=0;
   //endroit choisi entre certaines bornes et pas trop près du joueur
   repeat
     xdest:=random(10)*100;
-  until (xdest<=800) and (xdest>=200) and (abs(xdest-targetx)>60) and (abs(xdest-ennemi.image.rect.x)>60);
+    i:=i+1
+  until (i>20) or (xdest<=800) and (xdest>=0) and (abs(xdest-targetx)>60) and (abs(xdest-ennemi.image.rect.x)>120);
+  i:=0;
   repeat
     ydest:=random(10)*100;
-  until (ydest<700) and (ydest>0) and (abs(ydest-targety)>60) and (abs(ydest-ennemi.image.rect.y)>60);
+    i:=i+1
+  until (i>20) or (ydest<700) and (ydest>0) and (abs(ydest-targety)>60) and (abs(ydest-ennemi.image.rect.y)>120);
   InitAnimation(ennemi.anim,ennemi.anim.ObjectName,'warp', ennemi.stats.nbframes2,False);
   ennemi.stats.xcible:=xdest;ennemi.stats.ycible:=ydest;
   ennemi.stats.compteurAction:=0;
@@ -676,10 +679,71 @@ begin
         ajoutObjet(obj)
         end;
       end;
+    21:begin
+        if (ennemi.anim.etat='spell') and (ennemi.stats.compteurAction mod 1=0) then
+          begin
+          initAngle(ennemi.stats.xcible-trouvercentrex(ennemi),ennemi.stats.ycible-trouvercentrey(ennemi),angle);
+          angle:=angle+(ennemi.stats.compteurAction/100-0.5);
+          if ennemi.stats.xcible<trouvercentreX(ennemi) then
+            begin
+            alea1:=trouvercentrex(ennemi)-round(100*cos(angle))+20-random(5)*10;//x-(trouvercentreX(ennemi)-x) div ennemi.stats.compteurAction;
+            alea2:=trouvercentrey(ennemi)-round(100*sin(angle))+20-random(5)*10;//y-(trouvercentrey(ennemi)-y) div ennemi.stats.compteurAction;
+            end
+          else
+            begin
+            alea1:=trouvercentrex(ennemi)+round(100*cos(angle))+20-random(5)*10;//x-(trouvercentreX(ennemi)-x) div ennemi.stats.compteurAction;
+            alea2:=trouvercentrey(ennemi)+round(100*sin(angle))+20-random(5)*10;//y-(trouvercentrey(ennemi)-y) div ennemi.stats.compteurAction;
+            end;
+          if ennemi.stats.xcible<trouvercentreX(ennemi) then
+            creerRayon(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,alea1,alea2,1000,70,alea1-round(cos(angle)*100),alea2-round(sin(angle)*100),0,10,60,'rayonOph',obj)
+          else
+            creerRayon(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,alea1,alea2,1000,70,alea1+round(cos(angle)*100),alea2+round(sin(angle)*100),0,10,60,'rayonOph',obj);
+          ajoutObjet(obj)
+          end;
+        end;
+    22:if (ennemi.anim.etat='warp') and (ennemi.stats.compteurAction=50) then
+      begin
+      creerRayon(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,((trouvercentreX(ennemi)+x) div 2) + ((trouvercentreX(ennemi)+x) div 4),((trouvercentrey(ennemi)+y) div 2) + ((trouvercentrey(ennemi)+y) div 4),400,200,x,y,0,20,20,'griffe',obj);
+      ajoutObjet(obj)
+      end;
+    23:begin
+        if (ennemi.anim.etat='throw') and (ennemi.stats.compteurAction=1) then
+          begin
+          creerBoule(typeObjet(1),5,ennemi.stats.force,ennemi.stats.multiplicateurDegat,trouvercentreX(ennemi),trouvercentreY(ennemi),120,120,5,x,trouvercentrey(ennemi)+abs(x-trouvercentrex(ennemi)),'lance',obj);
+          obj.stats.vitRotation:=1+1000 div (round(sqrt((trouvercentrex(ennemi)-ennemi.stats.xcible)**2+(trouvercentrey(ennemi)-ennemi.stats.ycible)**2)));
+          if x>trouvercentrex(ennemi) then obj.stats.vitRotation:=-obj.stats.vitRotation;
+          ajoutObjet(obj);
+          end;
+        if (ennemi.anim.etat='tir') and (ennemi.stats.compteurAction mod 5=1) then
+          begin
+          initAngle(ennemi.stats.xcible-trouvercentrex(ennemi),ennemi.stats.ycible-trouvercentrey(ennemi),angle);
+          angle:=angle+(ennemi.stats.compteurAction/25-1);
+          i:=round(sqrt((trouvercentrex(ennemi)-ennemi.stats.xcible)**2+(trouvercentrey(ennemi)-ennemi.stats.ycible)**2));
+          if ennemi.stats.xcible<trouvercentreX(ennemi) then
+            begin
+            alea1:=trouvercentrex(ennemi)-round(i*cos(angle))+40-random(5)*20;
+            alea2:=trouvercentrey(ennemi)-round(i*sin(angle))+40-random(5)*20;
+            end
+          else
+            begin
+            alea1:=trouvercentrex(ennemi)+round(i*cos(angle))+40-random(5)*20;
+            alea2:=trouvercentrey(ennemi)+round(i*sin(angle))+40-random(5)*20;
+            end;
+          creerRayon(typeobjet(1),2,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,alea1,alea2,100,100,x,y,0,20,50,'cible',obj);
+          ajoutObjet(obj);
+          end;
+        end;
+    24: begin
+          if (ennemi.anim.etat='warp') and (ennemi.stats.compteurAction=1) then
+            begin
+            creerRayon(typeobjet(1),0,ennemi.stats.force,ennemi.stats.multiplicateurDegat,false,trouverCentreX(ennemi),trouvercentreY(ennemi),round(sqrt((trouvercentrex(ennemi)-ennemi.stats.xcible)**2+(trouvercentrey(ennemi)-ennemi.stats.ycible)**2)),100,ennemi.stats.xcible,ennemi.stats.ycible,0,20,50,ennemi.stats.nomAttaque,obj);
+            ajoutObjet(obj);
+            end;
+        end;
     end;
 end;
 
-procedure DeplacementEnnemi(var ennemi:TObjet;joueur:TObjet); //déplace un ennemi 
+procedure DeplacementEnnemi(var ennemi:TObjet;var joueur:TObjet); //déplace un ennemi 
 var i:Integer;rect1,rect2:TSDL_REct;trouve:Boolean;
 begin
   if (random(100)=0) and ((ennemi.anim.objectName='vestige') or (ennemi.anim.objectName[0]+ennemi.anim.objectName[1]+ennemi.anim.objectName[2]+ennemi.anim.objectName[3]+ennemi.anim.objectName[4]+ennemi.anim.objectName[5]+ennemi.anim.objectName[6]+ennemi.anim.objectName[7]+ennemi.anim.objectName[8]+ennemi.anim.objectName[9]+ennemi.anim.objectName[10]='elementaire')) then
@@ -1318,10 +1382,148 @@ begin
       else
         ennemi.anim.isFliped:=(trouverCentreX(joueur)>trouverCentreX(ennemi));
     end;
+    21:begin
+          if (ennemi.anim.etat='rewarp') and  (ennemi.anim.currentFrame=ennemi.anim.totalFrames) then
+            begin
+              ennemi.stats.compteurAction:=0;
+              ennemi.stats.xcible:=trouvercentrex(joueur);
+              ennemi.stats.ycible:=trouvercentrey(joueur);
+              case random(4)+1 of
+              1:if ennemi.stats.vie>=ennemi.stats.vieMax then InitAnimation(ennemi.anim,ennemi.anim.objectName,'spell', 10,False)
+                else InitAnimation(ennemi.anim,ennemi.anim.objectName,'absorb', 8,False);
+              2:InitAnimation(ennemi.anim,ennemi.anim.objectName,'shield', 6,False);
+              3:InitAnimation(ennemi.anim,ennemi.anim.objectName,'spell', 10,False);
+              4:InitAnimation(ennemi.anim,ennemi.anim.objectName,'chase', ennemi.stats.nbFrames1,True);
+              end;
+            end;
+          if animFinie(ennemi.anim) and ((ennemi.anim.etat='shield') or (ennemi.anim.etat='spell') or (ennemi.anim.etat='absorb')) then
+            case random(2)+1 of
+            1:InitAnimation(ennemi.anim,ennemi.anim.objectName,'chase', ennemi.stats.nbFrames1,True);
+            2:IATeleport(ennemi,joueur.image.rect.x,joueur.image.rect.y);
+            end;
+          if (ennemi.anim.etat='chase') and ((animFinie(ennemi.anim)) and ((random(5)=0)) or (sqrt((trouvercentreX(ennemi)-trouvercentreX(joueur))**2+(trouvercentrey(ennemi)-trouvercentrey(joueur))**2)<150))  then 
+            begin
+              jouerSonEnn(ennemi.anim.objectName);
+              ennemi.stats.compteurAction:=0;
+              IATeleport(ennemi,joueur.image.rect.x,joueur.image.rect.y);
+            end;
+          if (ennemi.anim.etat='warp') then
+            ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
+          if (ennemi.anim.etat='warp') and (ennemi.anim.currentFrame=ennemi.anim.totalFrames) and (ennemi.stats.compteurAction>0) then
+            begin
+            IAReapparition(ennemi);
+            end;
+          if (ennemi.anim.etat='absorb') then
+            begin
+            ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
+            if (ennemi.stats.compteurAction mod 5 = 0) and (joueur.stats.mana>0) then
+              begin
+              subirDegats(ennemi.stats,-1-random(1),trouvercentreX(ennemi),trouvercentreY(ennemi));
+              joueur.stats.mana:=joueur.stats.mana-1;
+              end;
+            end;
+          if (ennemi.anim.etat='shield') then
+            ennemi.stats.leFou:=2;
+          if (ennemi.anim.etat='spell') then
+            ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
+          ennemi.anim.isFliped:=(trouverCentreX(joueur)>trouverCentreX(ennemi));
+        end;
+    22:begin
+          if ennemi.anim.etat='walk' then
+            begin
+            AIPathFollow(ennemi,joueur,ennemi.stats.vitessePoursuite,true,true);
+            if animFinie(ennemi.anim) then InitAnimation(ennemi.anim,ennemi.anim.objectName,'chase', ennemi.stats.nbFrames1,True);
+            end;
+          if (ennemi.anim.etat='rewarp') and animFinie(ennemi.anim) then
+            InitAnimation(ennemi.anim,ennemi.anim.objectName,'walk', 5,True);
+          if (animFinie(ennemi.anim) and (ennemi.anim.etat='chase') and (random(2)=0))  then 
+            begin
+              jouerSonEnn(ennemi.anim.objectName);
+              ennemi.stats.compteurAction:=0;
+              IATeleport(ennemi,joueur.image.rect.x,joueur.image.rect.y);
+              ennemi.stats.xcible:=trouvercentreX(joueur);
+              ennemi.stats.ycible:=trouvercentrey(joueur);
+              
+            end;
+          if (ennemi.anim.etat='warp') then
+            ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
+          if (ennemi.anim.etat='warp') and (ennemi.anim.currentFrame=ennemi.anim.totalFrames) and (ennemi.stats.compteurAction>100) then
+            begin
+            IAReapparition(ennemi);
+            end;
+          ennemi.anim.isFliped:=(trouverCentreX(joueur)>trouverCentreX(ennemi));
+        end;
+    23:begin
+          if (animFinie(ennemi.anim) and (ennemi.anim.etat='chase') and (random(5)=0))  then 
+            begin
+              jouerSonEnn(ennemi.anim.objectName);
+              ennemi.stats.compteurAction:=0;
+              IATeleport(ennemi,joueur.image.rect.x,joueur.image.rect.y);
+              ennemi.col.estActif:=True;
+            end;
+          if (ennemi.anim.etat='tir') or (ennemi.anim.etat='sort') or (ennemi.anim.etat='throw') then
+            begin 
+            ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
+            if animFinie(ennemi.anim) then InitAnimation(ennemi.anim,ennemi.anim.objectName,'chase', ennemi.stats.nbFrames1,True);
+            end;
+          if (ennemi.anim.etat='warp') and (ennemi.anim.currentFrame=ennemi.anim.totalFrames) then
+            begin
+            ennemi.col.estActif:=True;
+            ennemi.image.rect.x:=ennemi.stats.xcible;
+            ennemi.image.rect.y:=ennemi.stats.ycible;
+            ennemi.stats.xcible:=trouvercentreX(joueur);
+            ennemi.stats.ycible:=trouvercentrey(joueur);
+            case random(3)+1 of
+              1:initAnimation(ennemi.anim,ennemi.anim.objectName,'tir',9,False);
+              2:begin
+                initAnimation(ennemi.anim,ennemi.anim.objectName,'sort',6,False);
+                for i:=0 to high(LObjets) do
+                  if LObjets[i].stats.genre=typeobjet(1) then
+                    begin
+                    subirDegats(LObjets[i].stats,-4,trouverCentreX(LObjets[i]),trouvercentreY(LObjets[i]));
+                    LObjets[i].stats.vie:=min(LObjets[i].stats.vie,LObjets[i].stats.vieMax);
+                    LObjets[i].stats.leFou:=max(LObjets[i].stats.leFou,1);
+                    end;
+                end;
+              3:initAnimation(ennemi.anim,ennemi.anim.objectName,'throw',9,False);
+              end;
+            end;
+          ennemi.anim.isFliped:=(trouverCentreX(joueur)>trouverCentreX(ennemi));
+        end;
+    24:
+      begin
+          if (ennemi.anim.etat='chase') or (ennemi.anim.etat='rewarp') then
+            begin
+            ennemi.stats.xcible:=trouverCentreX(joueur);
+            ennemi.stats.ycible:=trouvercentreY(joueur)
+            end;
+          if ((ennemi.anim.etat='strike')) and animFinie(ennemi.anim) then
+            begin
+            ennemi.stats.vitessePoursuite:=0;
+            InitAnimation(ennemi.anim,ennemi.anim.objectName,'chase', ennemi.stats.nbFrames1,True);
+            end;
+          if ((ennemi.anim.etat='chase') and (random(100)=50)) or ((ennemi.anim.etat='rewarp') and animFinie(ennemi.anim)) then 
+            begin
+              jouerSonEnn(ennemi.anim.objectName);
+              ennemi.stats.compteurAction:=0;
+              ennemi.stats.vitessePoursuite:=ennemi.stats.vitessePoursuite+1;
+              if (ennemi.stats.vitessePoursuite>10) then
+                initAnimation(ennemi.anim,ennemi.anim.objectName,'strike',10,False)
+              else
+                IATeleport(ennemi,joueur.image.rect.x,joueur.image.rect.y);
+            end;
+          if (ennemi.anim.etat='warp') then
+            ennemi.stats.compteurAction:=ennemi.stats.compteurAction+1;
+          if (ennemi.anim.etat='warp') and (ennemi.anim.currentFrame=ennemi.anim.totalFrames) then
+            begin
+            IAReapparition(ennemi);
+            end;
+          ennemi.anim.isFliped:=(ennemi.stats.xcible>trouverCentreX(ennemi));
+      end;
     end
 end;
 
-procedure IAEnnemi(var ennemi:TObjet;joueur:TObjet);
+procedure IAEnnemi(var ennemi:TObjet;var joueur:TObjet);
 var i:Integer;
 begin
   if animFinie(ennemi.anim) and (ennemi.anim.etat='apparition') then
@@ -1408,6 +1610,19 @@ begin
         sceneActive:='Cutscene';
         ennemi.stats.compteurAction:=1;
       end;
+    if (ennemi.anim.objectName='Ophiucus') then
+      begin
+        InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portrait_Ophiucus1.bmp',0,0,1080,300,extractionTexte('DIALOGUE_EVENT_BOSS2_1'),10);
+        sceneActive:='Cutscene';
+        ennemi.stats.compteurAction:=1;
+      end;
+    if (ennemi.anim.objectName='Soeryo') then
+      begin
+        InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/soeryo2.bmp',0,0,1080,300,extractionTexte('DIALOGUE_EVENT_BOSS3_1'),10);
+        ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('DIALOGUE_EVENT_BOSS3_3'));
+        sceneActive:='Cutscene';
+        ennemi.stats.compteurAction:=1;
+      end;
     if (ennemi.anim.objectName='Archimage') then
       begin
         InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Game/Archimage/Archimage_chase_1.bmp',0,0,1080,300,extractionTexte('DIALOGUE_BOSS4_1_1'),100);
@@ -1424,9 +1639,12 @@ begin
     ennemi.col.estActif:=False;
   if ennemi.stats.cooldown>0 then
     ennemi.stats.cooldown:=ennemi.stats.cooldown-1;
-  DrawRect(black_color,255, ennemi.image.rect.x-2+ennemi.col.offset.x,ennemi.image.rect.y+ennemi.col.dimensions.h+ennemi.col.offset.y+5, ennemi.col.dimensions.w+4, 14);
-  if ennemi.stats.vieMax>0 then
-  DrawRect(red_color,255, ennemi.image.rect.x+ennemi.col.offset.x,ennemi.image.rect.y+ennemi.col.dimensions.h+ennemi.col.offset.y+7, max(0,Round(ennemi.col.dimensions.w*(ennemi.stats.vie/ennemi.stats.vieMax))), 10 );
+  if (ennemi.col.estActif) then
+    begin
+    DrawRect(black_color,255, ennemi.image.rect.x-2+ennemi.col.offset.x,ennemi.image.rect.y+ennemi.col.dimensions.h+ennemi.col.offset.y+5, ennemi.col.dimensions.w+4, 14);
+    if ennemi.stats.vieMax>0 then
+    DrawRect(red_color,255, ennemi.image.rect.x+ennemi.col.offset.x,ennemi.image.rect.y+ennemi.col.dimensions.h+ennemi.col.offset.y+7, max(0,Round(ennemi.col.dimensions.w*(ennemi.stats.vie/ennemi.stats.vieMax))), 10 );
+    end;
   if ennemi.stats.vie<0 then ennemi.stats.vie:=0;
   if (ennemi.stats.vie>0) and (ennemi.anim.etat<>'apparition') then 
     begin
@@ -1435,6 +1653,7 @@ begin
     end
 		else
       if (animFinie(ennemi.anim)) and (ennemi.anim.etat='mort') then
+
         if ennemi.anim.objectName='Leo' then begin
           InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portrait_Leo8.bmp',0,0,1080,300,extractionTexte('DIALOGUE_EVENT_BOSS_2'),10);
           ajoutDialogue('Sprites/Portraits/portrait_Leo7.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_3'));
@@ -1459,6 +1678,29 @@ begin
           ajoutDialogue('Sprites/Portraits/portrait_Leo6.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_7'));
           ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('DIALOGUE_EVENT_BOSS_8'));
           end
+        else if (ennemi.anim.objectName='Ophiucus') then
+            begin
+            InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portrait_Ophiucus2.bmp',0,0,1080,300,extractionTexte('DIALOGUE_EVENT_BOSS2_2'),100);
+            ajoutDialogue('Sprites/Portraits/portrait_Ophiucus3.bmp',extractionTexte('DIALOGUE_EVENT_BOSS2_3'));
+            ajoutDialogue('Sprites/Portraits/portrait_Ophiucus3.bmp',extractionTexte('DIALOGUE_EVENT_BOSS2_4'));
+            ajoutDialogue('Sprites/Menu/CombatUI_5.bmp',extractionTexte('DIALOGUE_EVENT_BOSS2_5'));
+            ajoutDialogue('Sprites/Portraits/portrait_Ophiucus1.bmp',extractionTexte('DIALOGUE_EVENT_BOSS2_6'));
+            sceneActive:='Cutscene';
+            transformation(ennemi,40)
+            end
+        else if (ennemi.anim.objectName='Ophiucus_Transe') and (ennemi.stats.compteurAction<>-1) then
+        begin
+          InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/portrait_Ophiucus1.bmp',0,0,1080,300,extractionTexte('DIALOGUE_EVENT_BOSS2_7'),10);
+          sceneActive:='Cutscene';
+          ennemi.stats.compteurAction:=-1;
+        end
+        else if (ennemi.anim.objectName='Soeryo') and (ennemi.stats.compteurAction<>-1) then
+        begin
+          InitDialogueBox(dialogues[2],'Sprites/Menu/Button1.bmp','Sprites/Portraits/soeryo4.bmp',0,0,1080,300,extractionTexte('DIALOGUE_EVENT_BOSS3_8'),10);
+          ajoutDialogue('Sprites/Portraits/soeryo3.bmp',extractionTexte('DIALOGUE_EVENT_BOSS3_9'));
+          sceneActive:='Cutscene';
+          ennemi.stats.compteurAction:=-1;
+        end
         else
           begin
           if ennemi.anim.objectName='elementaire_temps' then
@@ -1592,6 +1834,10 @@ initStatEnnemi(35,   'gardien',               16,  500, 2,   1,   0,   1,   300,
 initStatEnnemi(36,   'Geist',                 17,  200, 10,  0,   -10, 4,   300, 300, 21,                24,            3,               7,               9,           80,   80,   110,  160,  'rayonAL');
 initStatEnnemi(37,   'creature',              20,  1000,15,  0,   0,   0,   600, 560, 46,                12,            14,              14,              20,          500,  460,  50,   50,   'arcane');
 initStatEnnemi(38,   'Béhémoth',              10,  2000,20,  10,  10,  5,   463, 614, 12,                32,            40,              12,              39,          400,  307,  63,   307,  'rayonRykor');
+initStatEnnemi(39,   'Ophiucus',              21,  80  ,5 ,  0 ,  0 ,  9,   210, 150, 15,                12,            5,               4,               6 ,          80,  120,  65,   15,  'rayonOph');
+initStatEnnemi(40,   'Ophiucus_Transe',       22,  120 ,15 , 0 ,  0 ,  4,   305, 225, 15,                16,            6,               4,               11,          200,  120,  40,   100,  'griffe');
+initStatEnnemi(41,   'Soeryo',                23,  90 , 8 , 0 ,  2 ,   4,   240, 240, 14,                8 ,            9,               7,               9,           120,  160,  60,   80,  'ouragan');
+initStatEnnemi(42,   'Ulgatr',                24,  90 , 8 , 0 ,  1 ,  0,   190, 190, 14,                8,            3,               3,               4,            90,  160,  50,   30,  'eclair');
 
 end;
 

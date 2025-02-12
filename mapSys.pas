@@ -225,6 +225,7 @@ begin
         6:choisirennemi:=random(2)+28;
         9:choisirennemi:=random(2)+25;
         end;
+    choisirennemi:=42;
 end;
 
 function choisirMusique(avancement:Integer):Integer;
@@ -1284,7 +1285,7 @@ randomize;
 if (trouverCarte(statsJoueur,23)) and not (statsJoueur.ophiucus) and (random(4)=0) then alea:=2
     else if statsJoueur.avancement>(MAXSALLES div 2) then alea:=random(9)+1
     else alea:=random(8)+1;
-case alea of
+case 2 of
 2:  if (statsJoueur.ophiucus) then 
         begin
         echangeFait:=((random(100) mod 2)=0);

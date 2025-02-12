@@ -26,6 +26,7 @@
 <DESC_CAR_26>Une carte qui représente une créature inconnue. Elle contrôle la foudre et peut donc fusiller une cible d'éclairs.;
 <DESC_CAR_27>Un tome qui détaille le sort le plus puissant de la création, Ultima. Entre les mains des dieux, on dit qu'il aurait la puissance de réinitialiser l'univers, en commençant par l'anéantir.;
 <DESC_CAR_28>Le tome d'une magie qui tente de répliquer l'incroyable pouvoir de création de matière des dragons, en manifestant une gigantesque météorite. Il a été écrit par les humains de l'ancien monde.;
+
 <DESC_CAR_INV_1>Faisant fausse route, le bateleur prend donc une trajectoire imprévisible.;
 <DESC_CAR_INV_2>;
 <DESC_CAR_INV_3>;
@@ -54,6 +55,7 @@
 <DESC_CAR_INV_26>La vitesse du dieu de la foudre dépasse tout ce qui peut être imaginable. On dit même qu'elle lui donne le don d'ubiquité.;
 <DESC_CAR_INV_27>Lues de la sorte, les instructions de l'ancien temps ne peuvent qu'avoir le même effet.;
 <DESC_CAR_INV_28>Lues de la sorte, les instructions de l'ancien temps ne peuvent qu'avoir le même effet.;
+
 <COMM_CAR_1>Il faut bien commencer quelque part. J'accepte l'aide que les cartes m'accorderont.;
 <COMM_CAR_2>Je manque encore d'expérience, c'est vrai, mais je ne serai pas naïve.;
 <COMM_CAR_3>Certes, il faut que je me batte, mais je vais faire attention à moi. Si je meurs maintenant, personne ne me pleurera.;
@@ -82,6 +84,7 @@
 <COMM_CAR_26>L'être qui est représenté ici... Existe-t-il vraiment? Sinon, quel genre d'artiste fou a pu créer de pareilles cartes?;
 <COMM_CAR_27>Quelle puissance ! Mais retranscrites par des humains, ces instructions sont quasiment incompréhensibles...;
 <COMM_CAR_28>Le pouvoir de création, hein? Paradoxalement, ce sort ne sert qu'à détruire. C'est bien ironique. Mais j'imagine que notre emprise sur ce pouvoir est limitée par le fait que les dragons soient encore vivants.;
+
 <DESC_ENN_1>Cette gelée s'est formée de souillure et de magie.;
 <DESC_ENN_2>Un grimoire à qui la puissante magie qu'il contient a conféré une sorte de conscience.;
 <DESC_ENN_3>L'esprit d'un innocent tué par la guerre. Sa tristesse a fini par devenir de la haine.;
@@ -120,6 +123,10 @@
 <DESC_ENN_36>Un être créé pour surpasser la mort. Il fait donc tout pour survivre.;
 <DESC_ENN_37>Une immense créature faite de toutes pièces. Le fait qu'elle soit encore en vie est un miracle... ou une malédiction.;
 <DESC_ENN_38>Un dragon des temps anciens, oublié de tous. Suite à sa réincarnation, il cherche sa vengeance sur le monde qui l'a abattu. Sa puissance dépasse de loin celle de n'importe quelle autre forme de vie.;
+<DESC_ENN_39>Une entité dotée d'une importante capacité à manipuler l'énergie magique, le rendant capable d'en absorber et d'en dissiper.;
+<DESC_ENN_40>Une forme plus évoluée de l'entité du Serpentaire. Sous cette forme, elle met la priorité sur l'offensive.;
+<DESC_ENN_41>Une créature réincarnée. Dotée d'un arsenal avancé qu'elle tire de son propre corps, elle a accès à une variété de sorts et attaques.;
+<DESC_ENN_42>Un être ressuscité. Il regrette sa vie mortelle, mais tente de trouver un sens à celle-ci. Sa vitesse d'attaque dépasse l'entendement.;
 
 <COMM_ENN_1>Je ne sais si cette chose a réellement une conscience.;
 <COMM_ENN_2>Cela doit être un tome de magie d'électricité. Sans doute, il s'est animé à l'aide des sentiments négatifs de ses porteurs.;
@@ -159,6 +166,10 @@
 <COMM_ENN_36>Je comprends la volonté de s'accrocher à la vie. Mais...;
 <COMM_ENN_37>Je... je ne veux pas me remémorer ça!;
 <COMM_ENN_38>Dans nos légendes, les dragons sont réputés pour leur hargne, mais... Qu'a-t'il pu bien se passer pour en arriver là? Dans tous les cas, le seul moyen de le renvoyer dans la mort est de tuer son réceptacle.;
+<COMM_ENN_39>D'où peuvent donc venir tous ces êtres humanoïdes? Et en plus, ils ont l'air de se connaître.;
+<COMM_ENN_40>Cette "Transe" ne semble pas aussi puissante que celle du Lion. Mais pourquoi donc? On dirait que c'est une question de volonté...;
+<COMM_ENN_41>Alors voilà ce que les mages cherchaient à faire ? Se servir des âmes des morts pour en tirer de l'énergie?;
+<COMM_ENN_42>Eh bien, vu la puissance de ces êtres... j'ai de la chance qu'ils ne soient pas fidèles à leurs créateurs!;
 
 <SORT1_1>Lumière sacrée, oracle de l'univers. J'en appelle à toi... Ultima!;
 <SORT1_2>Transperce le ciel et déchaîne ton énergie... Ultima!;
@@ -199,7 +210,8 @@
 <DESC_REL_9>Symboles de la dualité, les lames jumelles de l'Eclipse permettent parfois de lancer deux sorts.;
 <DESC_REL_10>Cet objet datant des temps anciens est une création jointe des deux races originelles, et a été scellé pour empêcher leur résurrection. Il permet la conversion entre vie et magie.;
 <DESC_REL_11>La légendaire lame incandescente, Lionheart. En théorie, nul ne peut la manier sauf celui qui l'a extraite de son propre coeur.;
-<DESC_REL_12>L'Eternal Return, artéfact d'un autre monde. Entre les mains d'un être assez puissant, il peut accorder le contrôle total sur les temporalités. (Appuyez sur ESPACE pour remonter le temps);
+<DESC_REL_12>L'Eternal Return, artéfact d'un autre monde. Entre les mains d'un être assez puissant, il peut accorder le contrôle total sur les temporalités. (Appuyez sur ESPACE pour remonter le temps!);
+
 <COMM_REL_1>Eh bien, c'est un effet simple mais toujours utile. Je ne les utiliserai pas pour fuir.;
 <COMM_REL_2>J'espère bien que si j'ai été jugée méritante, ce n'est pas uniquement parce que j'ai affronté les serviteurs des dieux.;
 <COMM_REL_3>Je ne reconnais pas cette matière. Et... est-ce mon propre sang?;
@@ -212,6 +224,7 @@
 <COMM_REL_10>C'est étrange, je ne vois pas l'emblème d'un dragon... Est-ce que cette gemme contient vraiment encore leur influence ? Si c'est le cas, je dois faire attention, j'ai déjà assez d'ennemis comme ça.;
 <COMM_REL_11>Quelle volonté m'a poussé à lui prendre sa propre arme? C'est étrange... Et je la sens brûler ardemment même entre mes mains.;
 <COMM_REL_12>N'exagérons rien, je suis à peine assez forte pour revenir en arrière de quelques secondes. Mais cet objet semble avoir un potentiel vraiment immense.;
+
 <GAMEOVER_1>Quelle terrible prémonition! Il ne tient qu'à moi de faire en sorte qu'elle ne se réalise pas.;
 <GAMEOVER_2>Non... Est-ce vraiment ce à quoi je me destine?;
 <GAMEOVER_3>J'ai déjà lu mon propre destin, ce n'est pas comme ça que les choses se passeront. Recommençons.;
@@ -229,14 +242,17 @@
 <INTRO_EVENT1_3>Dans une salle, vous apercevez un être étrange: mi-humain, mi-animal.;
 <INTRO_EVENT1_4>Il semble assoupi mais réagit rapidement à votre présence. Instinctivement, vous vous mettez sur vos gardes.;
 <INTRO_EVENT1_5>Vous décidez cependant d'observer ses actions, plutôt que de l'attaquer tout de suite. Après tout, qui sait?;
+
 <INTRO_EVENT2_1>Dans des zones distordues par l'utilisation abusive de sorts...;
 <INTRO_EVENT2_2>Une créature à tête d'oiseau vous observe brièvement puis vous adresse la parole, manifestement intriguée par vos pouvoirs.;
+
 <INTRO_EVENT3_1>Vous entrez dans une salle qui semble vide . . .;
 <INTRO_EVENT3_2>Aucun monstre, aucun bruit, vous allez enfin pouvoir vous reposer un peu...;
 <INTRO_EVENT3_3>Un bruit assourdissant vous réveille ..!;
 <INTRO_EVENT3_4>Des monstres approchent !;
 <INTRO_EVENT3_5>Vous vous réveillez..;
 <INTRO_EVENT3_6>La salle est toujours aussi vide. Vous reprenez votre aventure !;
+
 <INTRO_EVENT4_1>Dans le silence, interrompu uniquement par vos propres pas...;
 <INTRO_EVENT4_2>Vous entrez dans une salle immense plongée dans les ténèbres.;
 <INTRO_EVENT4_3>Une fois que vos yeux se sont habitués à l'obscurité, vous êtes instantanément figée par la terreur.;
@@ -247,6 +263,7 @@
 <INTRO_EVENT5_1>Le peu de lumière qui vous entoure disparaît et vous êtes subitement plongée dans l'obscurité.;
 <INTRO_EVENT5_2>Une voix résonne dans votre esprit et vous propose un marché...;
 <INTRO_EVENT5_3>"En échange de votre énergie, nous pouvons accomplir de grandes choses ensemble... Qu'en dites-vous?";
+
 <INTRO_EVENT6_1>En traversant des couloirs, vous apercevez un duo de créatures humanoïdes que vous ne pouvez pas identifier.;
 <INTRO_EVENT6_2>L'une d'elles vous voit aussi et vous adresse la parole...;
 <INTRO_EVENT6_3>Salut! Ça va?;
@@ -300,13 +317,17 @@
 <SPEC_EVENT7_5>Hmph.;
 <ECH_EVENT6_0>Allez, dites moi ce qui vous ferait plaisir!;
 <ECH_EVENT6_1>Vous êtes sûre?;
+<ECH_EVENT6_2>Oh! Alors là ça m'intéresse! Mais bon, faites attention à vous, hein.;
 <ECH_EVENT7_0>...Dépêchez. J'ai pas toute la journée.;
 <ECH_EVENT7_1>C'est bon? Un coût négatif vous redonnerait du mana à l'utilisation, je précise.;
+<ECH_EVENT7_2>Hmph... Vous croyez avoir une chance ? J'aimerais bien voir ça.;
+
 <ECH_EVENT5_0>Heh heh heh... Bien.;
 <ECH_EVENT5_1>"Bien entendu... je dois être certain que c'est ce que vous voulez...";
 <ECH_EVENT5_3>"Cette magie... Améliorons-la. Vous pourrez enchaîner ce sort...";
 <FIN_EVENT5_0>"Heh heh heh! Il faut croire que les humains ne sont pas tous si bêtes. Vous en avez, du courage, jeune fille...";
 <FIN_EVENT5_1>La voix disparaît lentement...;
+
 <DIALOGUE_EVENT2_0>Ah, euh...bonjour. Hum...;
 <DIALOGUE_EVENT2_1>Qu'est-ce que vous voulez?;
 <DIALOGUE_EVENT2_2>Je... Cette carte que vous portez, je peux la voir?;
@@ -322,6 +343,8 @@
 <DIALOGUE_EVENT2_12>Attendez, je ne vous ai pas déjà combattu?;
 <DIALOGUE_EVENT2_13>Hein? Euh... Ah, c'est possible. Je suis vraiment désolé! Je cherchais quelqu'un, et... je ne réfléchissais pas à mon entourage...;
 <DIALOGUE_EVENT2_14>D'accord...;
+<DIALOGUE_EVENT2_15>Ah! M-moi? Vous êtes sûre? Euh... je suis tout sauf prêt !;
+
 <DIALOGUE_EVENT_0>Hmmm.... Ah, qu'est-ce que vous voulez? Je viens de me réveiller...;
 <DIALOGUE_EVENT_1>Qui êtes-vous?;
 <DIALOGUE_EVENT_2>Mon nom ... Peu importe. Je suis une création des mages, en quelque sorte.;
@@ -329,6 +352,7 @@
 <DIALOGUE_EVENT_4>Non, évidemment, je n'ai pas d'allégeance envers qui que ce soit! Mais... C'est dur de trouver des adversaires de taille, si vous voyez ce que je veux dire...;
 <DIALOGUE_EVENT_5>En plus, j'ai dû me séparer de ceux avec qui je suis arrivé ici... Une mauvaise journée, quoi. Mais bon, on fait avec.;
 <DIALOGUE_EVENT_6>...;
+
 <DIALOGUE_EVENT_BOSS_1>Très bien, on va voir ce que vous valez!;
 <DIALOGUE_EVENT_BOSS_2>Il y a bien longtemps que je n'ai pas eu autant de difficultés... Vous êtes certainement très tenace!;
 <DIALOGUE_EVENT_BOSS_3>Ah, mais je ne vais pas m'en plaindre, depuis le temps que j'attends un adversaire digne de ce nom! Il est temps de se battre à pleine puissance!;
@@ -337,6 +361,25 @@
 <DIALOGUE_EVENT_BOSS_6>Merci pour ce combat, c'était exactement ce qu'il me fallait! En échange...;
 <DIALOGUE_EVENT_BOSS_7>Voilà, ma propre carte!;
 <DIALOGUE_EVENT_BOSS_8>Une carte? Comment se fait-il que je ne la connaisse pas?;
+
+<DIALOGUE_EVENT_BOSS2_1>J-je vais faire de mon mieux... préparez-vous!;
+<DIALOGUE_EVENT_BOSS2_2>Ah... évidemment, qu'est-ce que je croyais...;
+<DIALOGUE_EVENT_BOSS2_3>...(Le pouvoir de la Transe... est-ce hors de ma portée, ou...);
+<DIALOGUE_EVENT_BOSS2_4>...Je suis déjà à bout de forces...;
+<DIALOGUE_EVENT_BOSS2_5>J'ai déjà vu ça, vous allez vous transformer, c'est ça ?;
+<DIALOGUE_EVENT_BOSS2_6>Je vais essayer !;
+<DIALOGUE_EVENT_BOSS2_7>Urgh ! Désolé... de vous avoir fait perdre votre temps...;
+
+<DIALOGUE_EVENT_BOSS3_1>Finissons-en sans cérémonie.;
+<DIALOGUE_EVENT_BOSS3_2>Hé, l'occasion est quand même rare ! Restons vigilants .;
+<DIALOGUE_EVENT_BOSS3_3>(Ces deux-là vont vraiment me donner du fil à retordre...);
+<DIALOGUE_EVENT_BOSS3_4>Ulgatr !;
+<DIALOGUE_EVENT_BOSS3_5>Ngh... ça va aller... Je me retire pour l'instant, si tu veux bien.;
+<DIALOGUE_EVENT_BOSS3_6>Vous allez le regretter.;
+<DIALOGUE_EVENT_BOSS3_7>(Oui, je devrais m'en douter à ce stade... une deuxième forme.);
+<DIALOGUE_EVENT_BOSS3_8>...!;
+<DIALOGUE_EVENT_BOSS3_9>Qui aurait cru... même à pleine puissance, j'ai été incapable de vous battre ?;
+
 <DIALOGUE_EVENT4_0>...;
 <DIALOGUE_EVENT4_1>!! Qu'est-ce que...;
 <DIALOGUE_EVENT4_2>Une humaine... Il y a bien longtemps.;
@@ -348,7 +391,7 @@
 <DIALOGUE_EVENT4_8>Si j'ai été rejeté... il est bien trop tard pour contester cette décision. Les humains sont une création plus aboutie.;
 <DIALOGUE_EVENT4_9>...;
 <ECH_EVENT4_0>Avec le peu qu'il me reste... je voudrais emprunter un fragment de votre force, pour comprendre leur choix. Je suis prêt à faire des concessions.;
-<ECH_EVENT4_1>Un pacte avec moi aura moins de répercussions qu'un vrai dragon... mais je me dois de m'assurer de votre coopération.;
+<ECH_EVENT4_1>Un pacte avec moi aura moins de répercussions qu'avec un vrai dragon... mais je me dois de m'assurer de votre coopération.;
 <FEU_DE_CAMP_1>Enfin un feu de camp, je vais pouvoir me reposer.;
 <FEU_DE_CAMP_2>Un peu de chaleur, ce batiment est froid à mourir...;
 <FEU_DE_CAMP_3>Enfin un peu de lumière après tant d'ombre.;
@@ -478,6 +521,7 @@
 <DIALOGUE_BOSS2_1_10>Dans ce cas, est-ce vrai que le président du conseil voulait s'accaparer les terres des druides par la guerre ?;
 <DIALOGUE_BOSS2_1_11>Hmph... Tu sais jeune fille, tous les secrets n'ont pas besoin d'être révelés au grand jour.;
 <DIALOGUE_BOSS2_1_12>Je vais prendre ça pour un oui ...;
+
 <DIALOGUE_BOSS2_2_1>Hmph! Quelle insolence! Je ne tolèrerais jamais ça venant de mes élèves.;
 <DIALOGUE_BOSS2_2_2>Oui, en effet je doute que vos élèves tentent de vous tuer... Ou que vous essayiez de le faire en retour, d'ailleurs.;
 <DIALOGUE_BOSS2_2_3>Et elle répond, en plus! Tu es bien impertinente, Nymera!;
@@ -488,8 +532,10 @@
 <DIALOGUE_BOSS2_2_8>Les dieux? Vous ne valez pas mieux que les druides, si vous cherchez à les ressusciter...;
 <DIALOGUE_BOSS2_2_9>Qui parle de les ressusciter? Je vais prendre tout leur pouvoir!;
 <DIALOGUE_BOSS2_2_10>Assez parlé! Observe... et tu comprendras tout dans ta prochaine vie.;
+
 <DIALOGUE_BOSS2_3_1>;
 <DIALOGUE_BOSS2_3_2>;
+
 <DIALOGUE_BOSS2_4_1>Haeurk!... Comment est-ce possible ?;
 <DIALOGUE_BOSS2_4_2>Vous ne l'aviez pas vue venir celle-là ?;
 <DIALOGUE_BOSS2_4_3>Ma... Ma magie... Elle s'efface... Comment oses-tu tuer un ancien ?;
@@ -538,20 +584,24 @@
 <DIALOGUE_BOSS4_1_4>Vous n'êtes qu'une enfant... Pensez-vous vraiment pouvoir me tuer?;
 <DIALOGUE_BOSS4_1_5>On dirait bien que vous me sous-estimez.;
 <DIALOGUE_BOSS4_1_6>Ne vous en prenez qu'à vous-même. Les épreuves que vous avez mises dans mon chemin m'ont rendue bien plus forte.;
+
 <DIALOGUE_BOSS4_2_1>Me voilà maintenant une véritable criminelle...;
 <DIALOGUE_BOSS4_2_2>Je ne chercherai en rien à me dédouaner de mes actions. C'est ce que j'ai choisi.;
 <DIALOGUE_BOSS4_2_3>... Nous n'en avons pas encore fini...;
 <DIALOGUE_BOSS4_2_4>À moi, puissance de l'ancien temps, zénith de la vie! Accorde-moi ta force!;
 <DIALOGUE_BOSS4_2_5>Oh? C'est mauvais signe... Je dois rester sur mes gardes!;
+
 <DIALOGUE_BOSS4_3_1>Pauvre enfant. J'aurais presque pitié de vous... Presque.;
 <DIALOGUE_BOSS4_3_2>Soyez témoin de la forme que je prendrai pour guider l'humanité vers une nouvelle ère!;
 <DIALOGUE_BOSS4_3_3>Qu'est-ce que ça veut dire? Quel genre de magie démoniaque est-ce?;
 <DIALOGUE_BOSS4_3_4>Pourquoi gaspiller mon souffle à vous le dire? Vous le comprendez bien assez tôt, impudente.;
+
 <DIALOGUE_BOSS4_4_1>Ngh! Qu'est-ce que... Grrr....;
 <DIALOGUE_BOSS4_4_2>(Hein? Il est en train de perdre le contrôle... Mais en faveur de quoi?);
 <DIALOGUE_BOSS4_4_3>Ça s'annonce vraiment mal! Arrêtez ça, vous avez déjà perdu!;
 <DIALOGUE_BOSS4_4_4>...................;
 <DIALOGUE_BOSS4_4_5>RAAAAAAAAAAAAAAAAAARGH!!!!!;
+
 <DIALOGUE_BOSS4_1>Heh heh heh. Me voilà débarrassé de cet esprit misérable, enfin! L'humanité connaîtra mon courroux pour ces millénaires de souffrance.;
 <DIALOGUE_BOSS4_2>Un dragon...?! Comment est-ce possible? Qu'est-il advenu de l'archimage qui vous a invoqué?;
 <DIALOGUE_BOSS4_3>Un imbécile qui croyait pouvoir maîtriser ma force... un sacrifice nécessaire pour ma réincarnation. Les humains tentent toujours de manipuler des pouvoirs qui les dépassent.;

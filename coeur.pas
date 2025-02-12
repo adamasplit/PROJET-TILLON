@@ -10,7 +10,7 @@ uses
 
 
 const MAXSALLES=40; //nombre de salles total pour finir le jeu
-  MAXENNEMIS=38; //nombre d'ennemis ayant une entrée dans le bestiaire
+  MAXENNEMIS=42; //nombre d'ennemis ayant une entrée dans le bestiaire
   MAXCARTES=60; //taille max du deck
   TAILLE_VAGUE=4;
 var whiteCol,b_color,bf_color,f_color,navy_color,red_color,black_col,yellowCol,bk_col: TSDL_Color;
@@ -60,6 +60,7 @@ type TStats=record //(version variable)
     xreel,yreel,angle:Real;
     etatPrec:TANimation; //dans le cas où l'objet est interrompu (par des dégâts par exemple) 
     inamovible:Boolean;
+    leFou:Integer;
     tp:record
       restants,duree,destTempx,destTempy,destx,desty:Integer;
       end;
@@ -77,7 +78,7 @@ type TStats=record //(version variable)
           tailleCollection:Integer;
           bestiaire:array[1..MAXENNEMIS] of Boolean;
           pendu,clone:Boolean;
-          compteurLeMonde,leFou:Integer;
+          compteurLeMonde:Integer;
           laMort,ophiucus:Boolean;
           nbJustice : Integer;
           nbMarchand: Integer;

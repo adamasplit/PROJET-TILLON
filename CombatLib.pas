@@ -667,7 +667,7 @@ var popUpColor : TSDL_Color;
 begin
     if (victime.anim.etat<>'degats') then 
     begin //inflige des dégâts seulement si la victime n'est pas déjà immobilisée
-        if (victime.stats.genre=joueur) and (victime.stats.leFou>0) then //gère les effets d'immunité
+        if (victime.stats.leFou>0) then //gère les effets d'immunité
             victime.stats.leFou:=victime.stats.leFou-1
         else
         if (victime.stats.genre=joueur) and (victime.stats.lamort) and (degats>victime.stats.vie) then //protège le joueur de la mort si la carte correspondante a été activée

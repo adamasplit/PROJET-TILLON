@@ -130,7 +130,7 @@ end;
 
 function animFinie(anim:TAnimation):Boolean;
 begin
-  animFinie:=(anim.currentFrame=anim.totalFrames) and (sdl_getticks-anim.lastUpdateTime>60)
+  animFinie:=(anim.currentFrame=anim.totalFrames) and (sdl_getticks-anim.lastUpdateTime>30)
 end;
 
 procedure InitButtonGroup(var btnGroup: TButtonGroup;  x, y, w, h: Integer; imgPath: PChar;labelText: PAnsiChar;onClick: ButtonProcedure);
